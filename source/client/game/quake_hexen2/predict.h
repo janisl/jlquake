@@ -26,11 +26,11 @@ extern Cvar* cl_predict_players2;
 
 void CLQW_SetSolidEntities();
 void CLHW_SetSolidEntities();
-void CLQW_PredictUsercmd(qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t* u, bool spectator);
-void CLHW_PredictUsercmd(hwplayer_state_t* from, hwplayer_state_t* to, hwusercmd_t* u, bool spectator);
-void CLQW_SetUpPlayerPrediction(bool dopred);
-void CLHW_SetUpPlayerPrediction(bool dopred);
-void CLQHW_SetSolidPlayers(int playernum);
+void CLQW_PredictUsercmd( qwplayer_state_t* from, qwplayer_state_t* to, qwusercmd_t* u, bool spectator );
+void CLHW_PredictUsercmd( hwplayer_state_t* from, hwplayer_state_t* to, hwusercmd_t* u, bool spectator );
+void CLQW_SetUpPlayerPrediction( bool dopred );
+void CLHW_SetUpPlayerPrediction( bool dopred );
+void CLQHW_SetSolidPlayers( int playernum );
 void CLQW_PredictMove();
 void CLHW_PredictMove();
 void CLQHW_InitPrediction();

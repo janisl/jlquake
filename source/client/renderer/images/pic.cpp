@@ -23,10 +23,9 @@
 
 // TYPES -------------------------------------------------------------------
 
-struct qpic_t
-{
+struct qpic_t {
 	int width, height;
-	byte data[4];					// variably sized
+	byte data[ 4 ];						// variably sized
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -49,28 +48,24 @@ struct qpic_t
 //
 //==========================================================================
 
-void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
-{
-	qpic_t* QPic = (qpic_t*)Data;
-	int w = LittleLong(QPic->width);
-	int h = LittleLong(QPic->height);
-	if (Width)
-	{
+void R_LoadPICMem( byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode ) {
+	qpic_t* QPic = ( qpic_t* )Data;
+	int w = LittleLong( QPic->width );
+	int h = LittleLong( QPic->height );
+	if ( Width ) {
 		*Width = w;
 	}
-	if (Height)
-	{
+	if ( Height ) {
 		*Height = h;
 	}
 
 	// HACK HACK HACK --- we need to keep the bytes for the translatable
 	// player picture just for the menu configuration dialog
-	if (TransPixels)
-	{
-		Com_Memcpy(TransPixels, QPic->data, w * h);
+	if ( TransPixels ) {
+		Com_Memcpy( TransPixels, QPic->data, w * h );
 	}
 
-	*Pic = R_ConvertImage8To32(QPic->data, w, h, Mode);
+	*Pic = R_ConvertImage8To32( QPic->data, w, h, Mode );
 }
 
 //==========================================================================
@@ -79,14 +74,12 @@ void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPi
 //
 //==========================================================================
 
-void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
-{
+void R_LoadPIC( const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode ) {
 	idList<byte> Buffer;
-	if (FS_ReadFile(FileName, Buffer) <= 0)
-	{
+	if ( FS_ReadFile( FileName, Buffer ) <= 0 ) {
 		*Pic = NULL;
 		return;
 	}
 
-	R_LoadPICMem(Buffer.Ptr(), Pic, Width, Height, TransPixels, Mode);
+	R_LoadPICMem( Buffer.Ptr(), Pic, Width, Height, TransPixels, Mode );
 }

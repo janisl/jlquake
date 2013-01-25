@@ -18,256 +18,205 @@
 #include "../tech3/local.h"
 #include "local.h"
 
-bool idETEntity::GetEFlagViewingCamera() const
-{
+bool idETEntity::GetEFlagViewingCamera() const {
 	return false;
 }
 
-bool idETEntity::GetEFlagDead() const
-{
+bool idETEntity::GetEFlagDead() const {
 	return false;
 }
 
-void idETEntity::SetEFlagNoDraw()
-{
+void idETEntity::SetEFlagNoDraw() {
 	gentity->eFlags |= ETEF_NODRAW;
 }
 
-int idETEntity::GetModelIndex() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->s.modelindex;
+int idETEntity::GetModelIndex() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->s.modelindex;
 }
 
-void idETEntity::SetModelIndex(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->s.modelindex = value;
+void idETEntity::SetModelIndex( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->s.modelindex = value;
 }
 
-int idETEntity::GetSolid() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->s.solid;
+int idETEntity::GetSolid() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->s.solid;
 }
 
-void idETEntity::SetSolid(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->s.solid = value;
+void idETEntity::SetSolid( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->s.solid = value;
 }
 
-int idETEntity::GetGeneric1() const
-{
+int idETEntity::GetGeneric1() const {
 	return 0;
 }
 
-void idETEntity::SetGeneric1(int value)
-{
+void idETEntity::SetGeneric1( int value ) {
 }
 
-bool idETEntity::GetLinked() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.linked;
+bool idETEntity::GetLinked() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.linked;
 }
 
-void idETEntity::SetLinked(bool value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.linked = value;
+void idETEntity::SetLinked( bool value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.linked = value;
 }
 
-void idETEntity::IncLinkCount()
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.linkcount++;
+void idETEntity::IncLinkCount() {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.linkcount++;
 }
 
-int idETEntity::GetSvFlags() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags;
+int idETEntity::GetSvFlags() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags;
 }
 
-void idETEntity::SetSvFlags(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags = value;
+void idETEntity::SetSvFlags( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags = value;
 }
 
-bool idETEntity::GetSvFlagCapsule() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_CAPSULE);
+bool idETEntity::GetSvFlagCapsule() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_CAPSULE );
 }
 
-bool idETEntity::GetSvFlagCastAI() const
-{
+bool idETEntity::GetSvFlagCastAI() const {
 	return false;
 }
 
-bool idETEntity::GetSvFlagNoServerInfo() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOSERVERINFO);
+bool idETEntity::GetSvFlagNoServerInfo() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_NOSERVERINFO );
 }
 
-bool idETEntity::GetSvFlagSelfPortal() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_SELF_PORTAL);
+bool idETEntity::GetSvFlagSelfPortal() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & ETSVF_SELF_PORTAL );
 }
 
-bool idETEntity::GetSvFlagSelfPortalExclusive() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_SELF_PORTAL_EXCLUSIVE);
+bool idETEntity::GetSvFlagSelfPortalExclusive() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & ETSVF_SELF_PORTAL_EXCLUSIVE );
 }
 
-bool idETEntity::GetSvFlagSingleClient() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_SINGLECLIENT);
+bool idETEntity::GetSvFlagSingleClient() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_SINGLECLIENT );
 }
 
-bool idETEntity::GetSvFlagNotSingleClient() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_NOTSINGLECLIENT);
+bool idETEntity::GetSvFlagNotSingleClient() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_NOTSINGLECLIENT );
 }
 
-bool idETEntity::GetSvFlagClientMask() const
-{
+bool idETEntity::GetSvFlagClientMask() const {
 	return false;
 }
 
-bool idETEntity::GetSvFlagIgnoreBModelExtents() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & ETSVF_IGNOREBMODELEXTENTS);
+bool idETEntity::GetSvFlagIgnoreBModelExtents() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & ETSVF_IGNOREBMODELEXTENTS );
 }
 
-bool idETEntity::GetSvFlagVisDummy() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY);
+bool idETEntity::GetSvFlagVisDummy() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_VISDUMMY );
 }
 
-bool idETEntity::GetSvFlagVisDummyMultiple() const
-{
-	return !!(reinterpret_cast<etsharedEntity_t*>(gentity)->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE);
+bool idETEntity::GetSvFlagVisDummyMultiple() const {
+	return !!( reinterpret_cast<etsharedEntity_t*>( gentity )->r.svFlags & WOLFSVF_VISDUMMY_MULTIPLE );
 }
 
-int idETEntity::GetSingleClient() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.singleClient;
+int idETEntity::GetSingleClient() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.singleClient;
 }
 
-void idETEntity::SetSingleClient(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.singleClient = value;
+void idETEntity::SetSingleClient( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.singleClient = value;
 }
 
-bool idETEntity::GetBModel() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.bmodel;
+bool idETEntity::GetBModel() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.bmodel;
 }
 
-void idETEntity::SetBModel(bool value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.bmodel = value;
+void idETEntity::SetBModel( bool value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.bmodel = value;
 }
 
-const float* idETEntity::GetMins() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.mins;
+const float* idETEntity::GetMins() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.mins;
 }
 
-void idETEntity::SetMins(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.mins);
+void idETEntity::SetMins( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.mins );
 }
 
-const float* idETEntity::GetMaxs() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.maxs;
+const float* idETEntity::GetMaxs() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.maxs;
 }
 
-void idETEntity::SetMaxs(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.maxs);
+void idETEntity::SetMaxs( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.maxs );
 }
 
-int idETEntity::GetContents() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.contents;
+int idETEntity::GetContents() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.contents;
 }
 
-void idETEntity::SetContents(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.contents = value;
+void idETEntity::SetContents( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.contents = value;
 }
 
-float* idETEntity::GetAbsMin()
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.absmin;
+float* idETEntity::GetAbsMin() {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.absmin;
 }
 
-void idETEntity::SetAbsMin(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.absmin);
+void idETEntity::SetAbsMin( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.absmin );
 }
 
-float* idETEntity::GetAbsMax()
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.absmax;
+float* idETEntity::GetAbsMax() {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.absmax;
 }
 
-void idETEntity::SetAbsMax(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.absmax);
+void idETEntity::SetAbsMax( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.absmax );
 }
 
-const float* idETEntity::GetCurrentOrigin() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.currentOrigin;
+const float* idETEntity::GetCurrentOrigin() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.currentOrigin;
 }
 
-void idETEntity::SetCurrentOrigin(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.currentOrigin);
+void idETEntity::SetCurrentOrigin( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.currentOrigin );
 }
 
-const float* idETEntity::GetCurrentAngles() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.currentAngles;
+const float* idETEntity::GetCurrentAngles() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.currentAngles;
 }
 
-void idETEntity::SetCurrentAngles(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<etsharedEntity_t*>(gentity)->r.currentAngles);
+void idETEntity::SetCurrentAngles( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<etsharedEntity_t*>( gentity )->r.currentAngles );
 }
 
-int idETEntity::GetOwnerNum() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.ownerNum;
+int idETEntity::GetOwnerNum() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.ownerNum;
 }
 
-void idETEntity::SetOwnerNum(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.ownerNum = value;
+void idETEntity::SetOwnerNum( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.ownerNum = value;
 }
 
-int idETEntity::GetEventTime() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.eventTime;
+int idETEntity::GetEventTime() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.eventTime;
 }
 
-void idETEntity::SetEventTime(int value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.eventTime = value;
+void idETEntity::SetEventTime( int value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.eventTime = value;
 }
 
-bool idETEntity::GetSnapshotCallback() const
-{
-	return reinterpret_cast<etsharedEntity_t*>(gentity)->r.snapshotCallback;
+bool idETEntity::GetSnapshotCallback() const {
+	return reinterpret_cast<etsharedEntity_t*>( gentity )->r.snapshotCallback;
 }
 
-void idETEntity::SetSnapshotCallback(bool value)
-{
-	reinterpret_cast<etsharedEntity_t*>(gentity)->r.snapshotCallback = value;
+void idETEntity::SetSnapshotCallback( bool value ) {
+	reinterpret_cast<etsharedEntity_t*>( gentity )->r.snapshotCallback = value;
 }
 
-void idETEntity::SetTempBoxModelContents(clipHandle_t clipHandle) const
-{
-	CM_SetTempBoxModelContents(clipHandle, reinterpret_cast<etsharedEntity_t*>(gentity)->r.contents);
+void idETEntity::SetTempBoxModelContents( clipHandle_t clipHandle ) const {
+	CM_SetTempBoxModelContents( clipHandle, reinterpret_cast<etsharedEntity_t*>( gentity )->r.contents );
 }
 
-bool idETEntity::IsETypeProp() const
-{
+bool idETEntity::IsETypeProp() const {
 	return false;
 }

@@ -105,22 +105,20 @@
 #define MAX_TOKEN                   1024
 
 //script flags
-#define SCFL_NOERRORS               BIT(0)
-#define SCFL_NOWARNINGS             BIT(1)
-#define SCFL_NOSTRINGWHITESPACES    BIT(2)
-#define SCFL_NOSTRINGESCAPECHARS    BIT(3)
-#define SCFL_PRIMITIVE              BIT(4)
+#define SCFL_NOERRORS               BIT( 0 )
+#define SCFL_NOWARNINGS             BIT( 1 )
+#define SCFL_NOSTRINGWHITESPACES    BIT( 2 )
+#define SCFL_NOSTRINGESCAPECHARS    BIT( 3 )
+#define SCFL_PRIMITIVE              BIT( 4 )
 
-struct punctuation_t
-{
+struct punctuation_t {
 	const char* p;				//punctuation character(s)
 	int n;						//punctuation indication
 	punctuation_t* next;		//next punctuation
 };
 
-struct token_t
-{
-	char string[MAX_TOKEN];		//available token
+struct token_t {
+	char string[ MAX_TOKEN ];		//available token
 	int type;					//last read token type
 	int subtype;				//last read token sub type
 	unsigned int intvalue;		//integer value
@@ -132,9 +130,8 @@ struct token_t
 	token_t* next;				//next token in chain
 };
 
-struct script_t
-{
-	char filename[MAX_QPATH];		//file name of the script
+struct script_t {
+	char filename[ MAX_QPATH ];			//file name of the script
 	char* buffer;					//buffer containing the script
 	char* script_p;					//current pointer in the script
 	char* end_p;					//pointer to the end of the script
@@ -153,30 +150,30 @@ struct script_t
 };
 
 //set the base folder to load files from
-void PS_SetBaseFolder(const char* path);
+void PS_SetBaseFolder( const char* path );
 //set an array with punctuations, NULL restores default C/C++ set
-void SetScriptPunctuations(script_t* script, punctuation_t* p);
+void SetScriptPunctuations( script_t* script, punctuation_t* p );
 //load a script from the given file at the given offset with the given length
-script_t* LoadScriptFile(const char* filename);
+script_t* LoadScriptFile( const char* filename );
 //load a script from the given memory with the given length
-script_t* LoadScriptMemory(const char* ptr, int length, const char* name);
+script_t* LoadScriptMemory( const char* ptr, int length, const char* name );
 //free a script
-void FreeScript(script_t* script);
+void FreeScript( script_t* script );
 //set script flags
-void SetScriptFlags(script_t* script, int flags);
+void SetScriptFlags( script_t* script, int flags );
 //print a script error with filename and line number
-void ScriptError(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
+void ScriptError( script_t* script, const char* str, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
 //print a script warning with filename and line number
-void ScriptWarning(script_t* script, const char* str, ...) id_attribute((format(printf, 2, 3)));
+void ScriptWarning( script_t* script, const char* str, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
 //read a token from the script
-bool PS_ReadToken(script_t* script, token_t* token);
+bool PS_ReadToken( script_t* script, token_t* token );
 //expect a certain token type
-bool PS_ExpectTokenType(script_t* script, int type, int subtype, token_t* token);
+bool PS_ExpectTokenType( script_t* script, int type, int subtype, token_t* token );
 //returns true if at the end of the script
-bool EndOfScript(script_t* script);
+bool EndOfScript( script_t* script );
 //remove any leading and trailing double quotes from the token
-void StripDoubleQuotes(char* string);
+void StripDoubleQuotes( char* string );
 //remove any leading and trailing single quotes from the token
-void StripSingleQuotes(char* string);
+void StripSingleQuotes( char* string );
 
 #endif

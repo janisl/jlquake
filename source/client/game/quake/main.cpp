@@ -16,10 +16,9 @@
 
 #include "local.h"
 
-void CLQ1_ClearState()
-{
+void CLQ1_ClearState() {
 	// clear other arrays
-	Com_Memset(clq1_entities, 0, sizeof(clq1_entities));
-	Com_Memset(clq1_baselines, 0, sizeof(clq1_baselines));
+	Com_Memset( clq1_entities, 0, sizeof ( clq1_entities ) );
+	Com_Memset( clq1_baselines, 0, sizeof ( clq1_baselines ) );
 	CLQ1_ClearTEnts();
 }

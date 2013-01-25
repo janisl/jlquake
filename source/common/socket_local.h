@@ -19,10 +19,10 @@
 
 #include "socket.h"
 
-bool SOCK_GetAddressByName(const char* string, netadr_t* Address);
+bool SOCK_GetAddressByName( const char* string, netadr_t* Address );
 
 #define MAX_IPS     16
 extern int numIP;
-extern byte localIP[MAX_IPS][4];
+extern byte localIP[ MAX_IPS ][ 4 ];
 
 #endif

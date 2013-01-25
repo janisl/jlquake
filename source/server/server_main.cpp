@@ -29,214 +29,149 @@ server_t sv;						// local server
 
 Cvar* sv_maxclients;
 
-netadr_t master_adr[MAX_MASTERS];		// address of group servers
+netadr_t master_adr[ MAX_MASTERS ];			// address of group servers
 
-static ucmd_t* SV_GetUserCommands()
-{
-	if (GGameType & GAME_Quake)
-	{
-		if (GGameType & GAME_QuakeWorld)
-		{
+static ucmd_t* SV_GetUserCommands() {
+	if ( GGameType & GAME_Quake ) {
+		if ( GGameType & GAME_QuakeWorld ) {
 			return qw_ucmds;
 		}
 		return q1_ucmds;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		if (GGameType & GAME_HexenWorld)
-		{
+	if ( GGameType & GAME_Hexen2 ) {
+		if ( GGameType & GAME_HexenWorld ) {
 			return hw_ucmds;
 		}
 		return h2_ucmds;
 	}
-	if (GGameType & GAME_Quake2)
-	{
+	if ( GGameType & GAME_Quake2 ) {
 		return q2_ucmds;
 	}
-	if (GGameType & GAME_ET)
-	{
+	if ( GGameType & GAME_ET ) {
 		return et_ucmds;
 	}
 	return q3_ucmds;
 }
 
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart)
-{
-	Cmd_TokenizeString(s, !!(GGameType & GAME_Quake2));
+void SV_ExecuteClientCommand( client_t* cl, const char* s, bool clientOK, bool preMapRestart ) {
+	Cmd_TokenizeString( s, !!( GGameType & GAME_Quake2 ) );
 
 	// see if it is a server level command
-	for (ucmd_t* u = SV_GetUserCommands(); u->name; u++)
-	{
-		if (!String::Cmp(Cmd_Argv(0), u->name))
-		{
-			if (preMapRestart && !u->allowedpostmapchange)
-			{
+	for ( ucmd_t* u = SV_GetUserCommands(); u->name; u++ ) {
+		if ( !String::Cmp( Cmd_Argv( 0 ), u->name ) ) {
+			if ( preMapRestart && !u->allowedpostmapchange ) {
 				continue;
 			}
 
-			u->func(cl);
+			u->func( cl );
 			return;
 		}
 	}
 
-	if (GGameType & GAME_QuakeHexen)
-	{
-		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-		{
-			NET_OutOfBandPrint(NS_SERVER, cl->netchan.remoteAddress, "Bad user command: %s\n", Cmd_Argv(0));
+	if ( GGameType & GAME_QuakeHexen ) {
+		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+			NET_OutOfBandPrint( NS_SERVER, cl->netchan.remoteAddress, "Bad user command: %s\n", Cmd_Argv( 0 ) );
+		} else   {
+			common->DPrintf( "%s tried to %s\n", cl->name, s );
 		}
-		else
-		{
-			common->DPrintf("%s tried to %s\n", cl->name, s);
+	} else if ( GGameType & GAME_Quake2 )     {
+		if ( sv.state == SS_GAME ) {
+			ge->ClientCommand( cl->q2_edict );
 		}
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		if (sv.state == SS_GAME)
-		{
-			ge->ClientCommand(cl->q2_edict);
-		}
-	}
-	else
-	{
-		if (clientOK)
-		{
+	} else   {
+		if ( clientOK ) {
 			// pass unknown strings to the game
-			if (sv.state == SS_GAME)
-			{
-				SVT3_GameClientCommand(cl - svs.clients);
+			if ( sv.state == SS_GAME ) {
+				SVT3_GameClientCommand( cl - svs.clients );
 			}
-		}
-		else
-		{
-			common->DPrintf("client text ignored for %s: %s\n", cl->name, Cmd_Argv(0));
+		} else   {
+			common->DPrintf( "client text ignored for %s: %s\n", cl->name, Cmd_Argv( 0 ) );
 		}
 	}
 }
 
-bool SV_IsServerActive()
-{
+bool SV_IsServerActive() {
 	return sv.state == SS_GAME;
 }
 
-void SV_CvarChanged(Cvar* var)
-{
-	if (!(GGameType & GAME_QuakeHexen))
-	{
+void SV_CvarChanged( Cvar* var ) {
+	if ( !( GGameType & GAME_QuakeHexen ) ) {
 		return;
 	}
 
-	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-	{
-		if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')
-		{
-			Info_SetValueForKey(svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
-				64, 64, !svqh_highchars || !svqh_highchars->value, false);
-			if (sv.state != SS_DEAD)
-			{
-				if (GGameType & GAME_HexenWorld)
-				{
-					SVQH_BroadcastCommand("fullserverinfo \"%s\"\n", svs.qh_info);
-				}
-				else
-				{
-					SVQW_SendServerInfoChange(var->name, var->string);
+	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+		if ( var->flags & CVAR_SERVERINFO && var->name[ 0 ] != '*' ) {
+			Info_SetValueForKey( svs.qh_info, var->name, var->string, MAX_SERVERINFO_STRING,
+				64, 64, !svqh_highchars || !svqh_highchars->value, false );
+			if ( sv.state != SS_DEAD ) {
+				if ( GGameType & GAME_HexenWorld ) {
+					SVQH_BroadcastCommand( "fullserverinfo \"%s\"\n", svs.qh_info );
+				} else   {
+					SVQW_SendServerInfoChange( var->name, var->string );
 				}
 			}
 		}
-	}
-	else
-	{
-		if ((var->flags & CVAR_SERVERINFO))
-		{
-			if (sv.state != SS_DEAD)
-			{
-				SVQH_BroadcastPrintf(0, "\"%s\" changed to \"%s\"\n", var->name, var->string);
+	} else   {
+		if ( ( var->flags & CVAR_SERVERINFO ) ) {
+			if ( sv.state != SS_DEAD ) {
+				SVQH_BroadcastPrintf( 0, "\"%s\" changed to \"%s\"\n", var->name, var->string );
 			}
 		}
 	}
 }
 
-int SVQH_GetMaxClients()
-{
+int SVQH_GetMaxClients() {
 	return svs.qh_maxclients;
 }
 
-int SVQH_GetMaxClientsLimit()
-{
+int SVQH_GetMaxClientsLimit() {
 	return svs.qh_maxclientslimit;
 }
 
-void SV_Init()
-{
-	if (GGameType & GAME_QuakeHexen)
-	{
+void SV_Init() {
+	if ( GGameType & GAME_QuakeHexen ) {
 		SVQH_Init();
-	}
-	else if (GGameType & GAME_Quake2)
-	{
+	} else if ( GGameType & GAME_Quake2 )     {
 		SVQ2_Init();
-	}
-	else
-	{
+	} else   {
 		SVT3_Init();
 	}
 }
 
-void SV_Shutdown(const char* finalMessage)
-{
-	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-	{
-		SVQHW_Shutdown(finalMessage);
-	}
-	else if (GGameType & GAME_QuakeHexen)
-	{
+void SV_Shutdown( const char* finalMessage ) {
+	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+		SVQHW_Shutdown( finalMessage );
+	} else if ( GGameType & GAME_QuakeHexen )     {
 		SVQH_Shutdown();
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		SVQ2_Shutdown(finalMessage, false);
-	}
-	else
-	{
-		SVT3_Shutdown(finalMessage);
+	} else if ( GGameType & GAME_Quake2 )     {
+		SVQ2_Shutdown( finalMessage, false );
+	} else   {
+		SVT3_Shutdown( finalMessage );
 	}
 }
 
-void SV_Frame(int msec)
-{
-	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-	{
-		SVQHW_ServerFrame(msec);
-	}
-	else if (GGameType & GAME_QuakeHexen)
-	{
-		SVQH_ServerFrame(msec * 0.001);
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		SVQ2_Frame(msec);
-	}
-	else
-	{
-		SVT3_Frame(msec);
+void SV_Frame( int msec ) {
+	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+		SVQHW_ServerFrame( msec );
+	} else if ( GGameType & GAME_QuakeHexen )     {
+		SVQH_ServerFrame( msec * 0.001 );
+	} else if ( GGameType & GAME_Quake2 )     {
+		SVQ2_Frame( msec );
+	} else   {
+		SVT3_Frame( msec );
 	}
 }
 
-int SVQH_GetNumConnectedClients()
-{
+int SVQH_GetNumConnectedClients() {
 	int c = 0;
-	for (int i = 0; i < svs.qh_maxclients; i++)
-	{
-		if (svs.clients[i].state >= CS_CONNECTED)
-		{
+	for ( int i = 0; i < svs.qh_maxclients; i++ ) {
+		if ( svs.clients[ i ].state >= CS_CONNECTED ) {
 			c++;
 		}
 	}
 	return c;
 }
 
-void SVQH_SetRealTime(int time)
-{
+void SVQH_SetRealTime( int time ) {
 	svs.realtime = time;
 }

@@ -25,112 +25,92 @@
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 
-static void SCRQ2_DrawPause()
-{
-	if (!scr_showpause->value)		// turn off for screenshots
-	{
+static void SCRQ2_DrawPause() {
+	if ( !scr_showpause->value ) {		// turn off for screenshots
 		return;
 	}
 
-	if (!cl_paused->value)
-	{
+	if ( !cl_paused->value ) {
 		return;
 	}
 
 	int w, h;
-	R_GetPicSize(&w, &h, "pause");
-	UI_DrawNamedPic((viddef.width - w) / 2, viddef.height / 2 + 8, "pause");
+	R_GetPicSize( &w, &h, "pause" );
+	UI_DrawNamedPic( ( viddef.width - w ) / 2, viddef.height / 2 + 8, "pause" );
 }
 
-static void SCRQ2_DrawLoading()
-{
-	if (!scr_draw_loading)
-	{
+static void SCRQ2_DrawLoading() {
+	if ( !scr_draw_loading ) {
 		return;
 	}
 
 	scr_draw_loading = false;
 	int w, h;
-	R_GetPicSize(&w, &h, "loading");
-	UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
+	R_GetPicSize( &w, &h, "loading" );
+	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
 }
 
 //	A new packet was just parsed
-void CLQ2_AddNetgraph()
-{
+void CLQ2_AddNetgraph() {
 	// if using the debuggraph for something else, don't
 	// add the net lines
-	if (cl_debuggraph->value || cl_timegraph->value)
-	{
+	if ( cl_debuggraph->value || cl_timegraph->value ) {
 		return;
 	}
 
-	for (int i = 0; i < clc.netchan.dropped; i++)
-	{
-		SCR_DebugGraph(30, 0x40);
+	for ( int i = 0; i < clc.netchan.dropped; i++ ) {
+		SCR_DebugGraph( 30, 0x40 );
 	}
 
-	for (int i = 0; i < cl.q2_surpressCount; i++)
-	{
-		SCR_DebugGraph(30, 0xdf);
+	for ( int i = 0; i < cl.q2_surpressCount; i++ ) {
+		SCR_DebugGraph( 30, 0xdf );
 	}
 
 	// see what the latency was on this packet
-	int in = clc.netchan.incomingAcknowledged & (CMD_BACKUP_Q2 - 1);
-	int ping = cls.realtime - cl.q2_cmd_time[in];
+	int in = clc.netchan.incomingAcknowledged & ( CMD_BACKUP_Q2 - 1 );
+	int ping = cls.realtime - cl.q2_cmd_time[ in ];
 	ping /= 30;
-	if (ping > 30)
-	{
+	if ( ping > 30 ) {
 		ping = 30;
 	}
-	SCR_DebugGraph(ping, 0xd0);
+	SCR_DebugGraph( ping, 0xd0 );
 }
 
-void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation)
-{
-	R_BeginFrame(stereoFrame);
+void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
+	R_BeginFrame( stereoFrame );
 
-	if (scr_draw_loading == 2)
-	{	//  loading plaque over black screen
+	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
 		int w, h;
 
-		UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 1);
+		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
 		scr_draw_loading = false;
-		R_GetPicSize(&w, &h, "loading");
-		UI_DrawNamedPic((viddef.width - w) / 2, (viddef.height - h) / 2, "loading");
+		R_GetPicSize( &w, &h, "loading" );
+		UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
 	}
 	// if a cinematic is supposed to be running, handle menus
 	// and console specially
-	else if (SCR_DrawCinematic())
-	{
-		if (in_keyCatchers & KEYCATCH_UI)
-		{
+	else if ( SCR_DrawCinematic() ) {
+		if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_DrawMenu();
-		}
-		else if (in_keyCatchers & KEYCATCH_CONSOLE)
-		{
+		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
 			Con_DrawConsole();
 		}
-	}
-	else
-	{
+	} else   {
 		// do 3D refresh drawing, and then update the screen
 		SCR_CalcVrect();
 
 		// clear any dirty part of the background
 		SCR_TileClear();
 
-		VQ2_RenderView(separation);
+		VQ2_RenderView( separation );
 
 		SCRQ2_DrawHud();
 
-		if (cl_timegraph->value)
-		{
-			SCR_DebugGraph(cls.frametime * 0.25, 0);
+		if ( cl_timegraph->value ) {
+			SCR_DebugGraph( cls.frametime * 0.25, 0 );
 		}
 
-		if (cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value)
-		{
+		if ( cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value ) {
 			SCR_DrawDebugGraph();
 		}
 
@@ -146,46 +126,36 @@ void SCRQ2_DrawScreen(stereoFrame_t stereoFrame, float separation)
 }
 
 //	Set a specific sky and rotation speed
-static void SCR_Sky_f()
-{
-	if (Cmd_Argc() < 2)
-	{
-		common->Printf("Usage: sky <basename> <rotate> <axis x y z>\n");
+static void SCR_Sky_f() {
+	if ( Cmd_Argc() < 2 ) {
+		common->Printf( "Usage: sky <basename> <rotate> <axis x y z>\n" );
 		return;
 	}
 	float rotate;
-	if (Cmd_Argc() > 2)
-	{
-		rotate = String::Atof(Cmd_Argv(2));
-	}
-	else
-	{
+	if ( Cmd_Argc() > 2 ) {
+		rotate = String::Atof( Cmd_Argv( 2 ) );
+	} else   {
 		rotate = 0;
 	}
 	vec3_t axis;
-	if (Cmd_Argc() == 6)
-	{
-		axis[0] = String::Atof(Cmd_Argv(3));
-		axis[1] = String::Atof(Cmd_Argv(4));
-		axis[2] = String::Atof(Cmd_Argv(5));
-	}
-	else
-	{
-		axis[0] = 0;
-		axis[1] = 0;
-		axis[2] = 1;
+	if ( Cmd_Argc() == 6 ) {
+		axis[ 0 ] = String::Atof( Cmd_Argv( 3 ) );
+		axis[ 1 ] = String::Atof( Cmd_Argv( 4 ) );
+		axis[ 2 ] = String::Atof( Cmd_Argv( 5 ) );
+	} else   {
+		axis[ 0 ] = 0;
+		axis[ 1 ] = 0;
+		axis[ 2 ] = 1;
 	}
 
-	R_SetSky(Cmd_Argv(1), rotate, axis);
+	R_SetSky( Cmd_Argv( 1 ), rotate, axis );
 }
 
-static void SCR_Loading_f()
-{
-	SCRQ2_BeginLoadingPlaque(false);
+static void SCR_Loading_f() {
+	SCRQ2_BeginLoadingPlaque( false );
 }
 
-void SCRQ2_Init()
-{
-	Cmd_AddCommand("loading", SCR_Loading_f);
-	Cmd_AddCommand("sky", SCR_Sky_f);
+void SCRQ2_Init() {
+	Cmd_AddCommand( "loading", SCR_Loading_f );
+	Cmd_AddCommand( "sky", SCR_Sky_f );
 }

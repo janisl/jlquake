@@ -36,40 +36,39 @@ enum netadrtype_t
 #define SOCKSEND_ERROR      -1
 #define SOCKSEND_WOULDBLOCK -2
 
-struct netadr_t
-{
+struct netadr_t {
 	netadrtype_t type;
-	quint8 ip[4];
+	quint8 ip[ 4 ];
 	quint16 port;
 };
 
-bool SOCK_StringToAdr(const char* string, netadr_t* Address, int DefaultPort);
-const char* SOCK_AdrToString(const netadr_t& Address);
-const char* SOCK_BaseAdrToString(const netadr_t& Address);
-bool SOCK_CompareAdr(const netadr_t& AddressA, const netadr_t& AddressB);
-bool SOCK_CompareBaseAdr(const netadr_t& AddressA, const netadr_t& AddressB);
-bool SOCK_IsLocalAddress(const netadr_t& Address);
-bool SOCK_IsLocalIP(const netadr_t& Address);
-bool SOCK_IsLANAddress(const netadr_t& Address);
+bool SOCK_StringToAdr( const char* string, netadr_t* Address, int DefaultPort );
+const char* SOCK_AdrToString( const netadr_t& Address );
+const char* SOCK_BaseAdrToString( const netadr_t& Address );
+bool SOCK_CompareAdr( const netadr_t& AddressA, const netadr_t& AddressB );
+bool SOCK_CompareBaseAdr( const netadr_t& AddressA, const netadr_t& AddressB );
+bool SOCK_IsLocalAddress( const netadr_t& Address );
+bool SOCK_IsLocalIP( const netadr_t& Address );
+bool SOCK_IsLANAddress( const netadr_t& Address );
 void SOCK_ShowIP();
-int SOCK_GetPort(netadr_t* Address);
-void SOCK_SetPort(netadr_t* Address, int Port);
-void SOCK_CheckAddr(netadr_t* addr);
+int SOCK_GetPort( netadr_t* Address );
+void SOCK_SetPort( netadr_t* Address, int Port );
+void SOCK_CheckAddr( netadr_t* addr );
 
 bool SOCK_Init();
 void SOCK_Shutdown();
 void SOCK_GetLocalAddress();
 
 bool SOCK_GetSocksCvars();
-void SOCK_OpenSocks(int Port);
+void SOCK_OpenSocks( int Port );
 void SOCK_CloseSocks();
 
-int SOCK_Open(const char* NetInterface, int Port);
-void SOCK_Close(int Socket);
-int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);
-int SOCK_Send(int Socket, const void* Data, int Length, const netadr_t& To);
-bool SOCK_Sleep(int Socket, int MiliSeconds);
-bool SOCK_GetAddr(int Socket, netadr_t* Address);
+int SOCK_Open( const char* NetInterface, int Port );
+void SOCK_Close( int Socket );
+int SOCK_Recv( int Socket, void* Buffer, int Length, netadr_t* From );
+int SOCK_Send( int Socket, const void* Data, int Length, const netadr_t& To );
+bool SOCK_Sleep( int Socket, int MiliSeconds );
+bool SOCK_GetAddr( int Socket, netadr_t* Address );
 
 extern Cvar* net_socksEnabled;
 extern Cvar* net_socksServer;

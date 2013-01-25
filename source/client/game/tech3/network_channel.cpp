@@ -24,10 +24,8 @@
 //  long serverId;
 //  long messageAcknowledge;
 //  long reliableAcknowledge;
-static void CLT3_Netchan_Encode(QMsg* msg)
-{
-	if (msg->cursize <= Q3CL_ENCODE_START)
-	{
+static void CLT3_Netchan_Encode( QMsg* msg ) {
+	if ( msg->cursize <= Q3CL_ENCODE_START ) {
 		return;
 	}
 
@@ -47,35 +45,29 @@ static void CLT3_Netchan_Encode(QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	byte* string = (byte*)clc.q3_serverCommands[reliableAcknowledge & ((GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF) - 1)];
+	byte* string = ( byte* )clc.q3_serverCommands[ reliableAcknowledge & ( ( GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF ) - 1 ) ];
 	int index = 0;
 
 	byte key = clc.q3_challenge ^ serverId ^ messageAcknowledge;
-	for (int i = Q3CL_ENCODE_START; i < msg->cursize; i++)
-	{
+	for ( int i = Q3CL_ENCODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last received now acknowledged server command
-		if (!string[index])
-		{
+		if ( !string[ index ] ) {
 			index = 0;
 		}
-		if (string[index] > 127 || string[index] == '%')
-		{
-			key ^= '.' << (i & 1);
-		}
-		else
-		{
-			key ^= string[index] << (i & 1);
+		if ( string[ index ] > 127 || string[ index ] == '%' ) {
+			key ^= '.' << ( i & 1 );
+		} else   {
+			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;
 		// encode the data with this key
-		*(msg->_data + i) = (*(msg->_data + i)) ^ key;
+		*( msg->_data + i ) = ( *( msg->_data + i ) ) ^ key;
 	}
 }
 
 // first four bytes of the data are always:
 //  long reliableAcknowledge;
-static void CLT3_Netchan_Decode(QMsg* msg)
-{
+static void CLT3_Netchan_Decode( QMsg* msg ) {
 	int srdc = msg->readcount;
 	int sbit = msg->bit;
 	int soob = msg->oob;
@@ -88,81 +80,66 @@ static void CLT3_Netchan_Decode(QMsg* msg)
 	msg->bit = sbit;
 	msg->readcount = srdc;
 
-	byte* string = (byte*)clc.q3_reliableCommands[reliableAcknowledge & ((GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF) - 1)];
+	byte* string = ( byte* )clc.q3_reliableCommands[ reliableAcknowledge & ( ( GGameType & GAME_Quake3 ? MAX_RELIABLE_COMMANDS_Q3 : MAX_RELIABLE_COMMANDS_WOLF ) - 1 ) ];
 	int index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	byte key = clc.q3_challenge ^ LittleLong(*(unsigned*)msg->_data);
-	for (int i = msg->readcount + Q3CL_DECODE_START; i < msg->cursize; i++)
-	{
+	byte key = clc.q3_challenge ^ LittleLong( *( unsigned* )msg->_data );
+	for ( int i = msg->readcount + Q3CL_DECODE_START; i < msg->cursize; i++ ) {
 		// modify the key with the last sent and with this message acknowledged client command
-		if (!string[index])
-		{
+		if ( !string[ index ] ) {
 			index = 0;
 		}
-		if (string[index] > 127 || string[index] == '%')
-		{
-			key ^= '.' << (i & 1);
-		}
-		else
-		{
-			key ^= string[index] << (i & 1);
+		if ( string[ index ] > 127 || string[ index ] == '%' ) {
+			key ^= '.' << ( i & 1 );
+		} else   {
+			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;
 		// decode the data with this key
-		*(msg->_data + i) = *(msg->_data + i) ^ key;
+		*( msg->_data + i ) = *( msg->_data + i ) ^ key;
 	}
 }
 
-static void CLET_WriteBinaryMessage(QMsg* msg)
-{
-	if (!clc.et_binaryMessageLength)
-	{
+static void CLET_WriteBinaryMessage( QMsg* msg ) {
+	if ( !clc.et_binaryMessageLength ) {
 		return;
 	}
 
 	msg->Uncompressed();
 
-	if ((msg->cursize + clc.et_binaryMessageLength) >= msg->maxsize)
-	{
+	if ( ( msg->cursize + clc.et_binaryMessageLength ) >= msg->maxsize ) {
 		clc.et_binaryMessageOverflowed = true;
 		return;
 	}
 
-	msg->WriteData(clc.et_binaryMessage, clc.et_binaryMessageLength);
+	msg->WriteData( clc.et_binaryMessage, clc.et_binaryMessageLength );
 	clc.et_binaryMessageLength = 0;
 	clc.et_binaryMessageOverflowed = false;
 }
 
-void CLT3_Netchan_TransmitNextFragment(netchan_t* chan)
-{
-	Netchan_TransmitNextFragment(chan);
+void CLT3_Netchan_TransmitNextFragment( netchan_t* chan ) {
+	Netchan_TransmitNextFragment( chan );
 }
 
-void CLT3_Netchan_Transmit(netchan_t* chan, QMsg* msg)
-{
-	msg->WriteByte(q3clc_EOF);
-	if (GGameType & GAME_ET)
-	{
-		CLET_WriteBinaryMessage(msg);
+void CLT3_Netchan_Transmit( netchan_t* chan, QMsg* msg ) {
+	msg->WriteByte( q3clc_EOF );
+	if ( GGameType & GAME_ET ) {
+		CLET_WriteBinaryMessage( msg );
 	}
 
-	if (!(GGameType & GAME_WolfSP) && (!(GGameType & GAME_ET) || !SVET_GameIsSinglePlayer()))
-	{
-		CLT3_Netchan_Encode(msg);
+	if ( !( GGameType & GAME_WolfSP ) && ( !( GGameType & GAME_ET ) || !SVET_GameIsSinglePlayer() ) ) {
+		CLT3_Netchan_Encode( msg );
 	}
-	Netchan_Transmit(chan, msg->cursize, msg->_data);
+	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
-bool CLT3_Netchan_Process(netchan_t* chan, QMsg* msg)
-{
-	int ret = Netchan_Process(chan, msg);
-	if (!ret)
-	{
+bool CLT3_Netchan_Process( netchan_t* chan, QMsg* msg ) {
+	int ret = Netchan_Process( chan, msg );
+	if ( !ret ) {
 		return false;
 	}
-	if (!(GGameType & GAME_WolfSP) && (!(GGameType & GAME_ET) || !SVET_GameIsSinglePlayer()))
-	{
-		CLT3_Netchan_Decode(msg);
+	if ( !( GGameType & GAME_WolfSP ) && ( !( GGameType & GAME_ET ) || !SVET_GameIsSinglePlayer() ) ) {
+		CLT3_Netchan_Decode( msg );
 	}
 	return true;
 }

@@ -16,8 +16,7 @@
 
 //a bot goal
 //!!!! Do not change so that mem-copy can be used with game versions.
-struct bot_goal_t
-{
+struct bot_goal_t {
 	vec3_t origin;				//origin of the goal
 	int areanum;				//area number of the goal
 	vec3_t mins, maxs;			//mins and maxs of the goal
@@ -38,7 +37,7 @@ void BotShutdownChatAI();
 void BotShutdownCharacters();
 
 //setup the goal AI
-int BotSetupGoalAI(bool singleplayer);
+int BotSetupGoalAI( bool singleplayer );
 //shut down the goal AI
 void BotShutdownGoalAI();
 
@@ -48,7 +47,7 @@ void BotSetBrushModelTypes();
 int BotSetupMoveAI();
 //shutdown movement AI
 void BotShutdownMoveAI();
-int BotFuzzyPointReachabilityArea(const vec3_t origin);
+int BotFuzzyPointReachabilityArea( const vec3_t origin );
 
 //setup the weapon AI
 int BotSetupWeaponAI();

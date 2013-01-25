@@ -17,57 +17,46 @@
 #include "../tech3/local.h"
 #include "local.h"
 
-float idWolfMPPlayerState::GetLeanf() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->leanf;
+float idWolfMPPlayerState::GetLeanf() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->leanf;
 }
 
-void idWolfMPPlayerState::SetLeanf(float value)
-{
-	reinterpret_cast<wmplayerState_t*>(ps)->leanf = value;
+void idWolfMPPlayerState::SetLeanf( float value ) {
+	reinterpret_cast<wmplayerState_t*>( ps )->leanf = value;
 }
 
-int idWolfMPPlayerState::GetClientNum() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->clientNum;
+int idWolfMPPlayerState::GetClientNum() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->clientNum;
 }
 
-void idWolfMPPlayerState::SetClientNum(int value)
-{
-	reinterpret_cast<wmplayerState_t*>(ps)->clientNum = value;
+void idWolfMPPlayerState::SetClientNum( int value ) {
+	reinterpret_cast<wmplayerState_t*>( ps )->clientNum = value;
 }
 
-const float* idWolfMPPlayerState::GetViewAngles() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->viewangles;
+const float* idWolfMPPlayerState::GetViewAngles() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->viewangles;
 }
 
-void idWolfMPPlayerState::SetViewAngles(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<wmplayerState_t*>(ps)->viewangles);
+void idWolfMPPlayerState::SetViewAngles( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<wmplayerState_t*>( ps )->viewangles );
 }
 
-int idWolfMPPlayerState::GetViewHeight() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->viewheight;
+int idWolfMPPlayerState::GetViewHeight() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->viewheight;
 }
 
-void idWolfMPPlayerState::SetViewHeight(int value)
-{
-	reinterpret_cast<wmplayerState_t*>(ps)->viewheight = value;
+void idWolfMPPlayerState::SetViewHeight( int value ) {
+	reinterpret_cast<wmplayerState_t*>( ps )->viewheight = value;
 }
 
-int idWolfMPPlayerState::GetPersistantScore() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->persistant[WMPERS_SCORE];
+int idWolfMPPlayerState::GetPersistantScore() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->persistant[ WMPERS_SCORE ];
 }
 
-int idWolfMPPlayerState::GetPing() const
-{
-	return reinterpret_cast<wmplayerState_t*>(ps)->ping;
+int idWolfMPPlayerState::GetPing() const {
+	return reinterpret_cast<wmplayerState_t*>( ps )->ping;
 }
 
-void idWolfMPPlayerState::SetPing(int value)
-{
-	reinterpret_cast<wmplayerState_t*>(ps)->ping = value;
+void idWolfMPPlayerState::SetPing( int value ) {
+	reinterpret_cast<wmplayerState_t*>( ps )->ping = value;
 }

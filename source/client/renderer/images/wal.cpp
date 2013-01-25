@@ -25,12 +25,11 @@
 
 // TYPES -------------------------------------------------------------------
 
-struct miptex_t
-{
-	char name[32];
+struct miptex_t {
+	char name[ 32 ];
 	unsigned width, height;
-	unsigned offsets[MIPLEVELS];		// four mip maps stored
-	char animname[32];					// next frame in animation chain
+	unsigned offsets[ MIPLEVELS ];			// four mip maps stored
+	char animname[ 32 ];					// next frame in animation chain
 	int flags;
 	int contents;
 	int value;
@@ -56,30 +55,26 @@ struct miptex_t
 //
 //==========================================================================
 
-void R_LoadWAL(const char* FileName, byte** Pic, int* WidthPtr, int* HeightPtr)
-{
+void R_LoadWAL( const char* FileName, byte** Pic, int* WidthPtr, int* HeightPtr ) {
 	*Pic = NULL;
 
 	miptex_t* mt;
-	FS_ReadFile(FileName, (void**)&mt);
-	if (!mt)
-	{
+	FS_ReadFile( FileName, ( void** )&mt );
+	if ( !mt ) {
 		return;
 	}
 
-	int width = LittleLong(mt->width);
-	int height = LittleLong(mt->height);
-	int ofs = LittleLong(mt->offsets[0]);
-	if (WidthPtr)
-	{
+	int width = LittleLong( mt->width );
+	int height = LittleLong( mt->height );
+	int ofs = LittleLong( mt->offsets[ 0 ] );
+	if ( WidthPtr ) {
 		*WidthPtr = width;
 	}
-	if (HeightPtr)
-	{
+	if ( HeightPtr ) {
 		*HeightPtr = height;
 	}
 
-	*Pic = R_ConvertImage8To32((byte*)mt + ofs, width, height, IMG8MODE_Normal);
+	*Pic = R_ConvertImage8To32( ( byte* )mt + ofs, width, height, IMG8MODE_Normal );
 
-	FS_FreeFile((void*)mt);
+	FS_FreeFile( ( void* )mt );
 }

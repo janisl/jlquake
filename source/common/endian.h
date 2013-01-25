@@ -22,12 +22,12 @@
 //	Endianess handling
 extern bool GBigEndian;
 
-extern qint16 (* LittleShort)(qint16);
-extern qint16 (* BigShort)(qint16);
-extern qint32 (* LittleLong)(qint32);
-extern qint32 (* BigLong)(qint32);
-extern float (* LittleFloat)(float);
-extern float (* BigFloat)(float);
+extern qint16 ( * LittleShort )( qint16 );
+extern qint16 ( * BigShort )( qint16 );
+extern qint32 ( * LittleLong )( qint32 );
+extern qint32 ( * BigLong )( qint32 );
+extern float ( * LittleFloat )( float );
+extern float ( * BigFloat )( float );
 
 void Com_InitByteOrder();
 

@@ -31,6 +31,6 @@ enum
 extern Cvar* cl_language;
 
 void CL_InitTranslation();
-void CL_TranslateString(const char* string, char* dest_buffer);
+void CL_TranslateString( const char* string, char* dest_buffer );
 
 #endif

@@ -33,7 +33,7 @@
 #define _SPRFILE_H
 
 //	Little-endian "IDSP"
-#define IDSPRITE1HEADER     (('P' << 24) + ('S' << 16) + ('D' << 8) + 'I')
+#define IDSPRITE1HEADER     ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'D' << 8 ) + 'I' )
 
 #define SPRITE1_VERSION     1
 
@@ -59,8 +59,7 @@ enum sprite1frametype_t
 	SPR_GROUP
 };
 
-struct dsprite1_t
-{
+struct dsprite1_t {
 	qint32 ident;
 	qint32 version;
 	qint32 type;
@@ -72,25 +71,21 @@ struct dsprite1_t
 	qint32 synctype;
 };
 
-struct dsprite1frame_t
-{
-	qint32 origin[2];
+struct dsprite1frame_t {
+	qint32 origin[ 2 ];
 	qint32 width;
 	qint32 height;
 };
 
-struct dsprite1group_t
-{
+struct dsprite1group_t {
 	qint32 numframes;
 };
 
-struct dsprite1interval_t
-{
+struct dsprite1interval_t {
 	float interval;
 };
 
-struct dsprite1frametype_t
-{
+struct dsprite1frametype_t {
 	qint32 type;
 };
 

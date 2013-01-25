@@ -42,8 +42,7 @@ enum
 	MAX_JOYSTICK_AXIS
 };
 
-struct qkey_t
-{
+struct qkey_t {
 	bool down;
 	int repeats;				// if > 1, it is autorepeating
 	char* binding;
@@ -56,20 +55,20 @@ void In_Restart_f();
 extern int in_keyCatchers;		// bit flags
 extern int anykeydown;
 
-extern qkey_t keys[MAX_KEYS];
+extern qkey_t keys[ MAX_KEYS ];
 extern bool key_overstrikeMode;
 extern Cvar* clwm_missionStats;
 extern Cvar* clwm_waitForFire;
 
 bool Key_GetOverstrikeMode();
-void Key_SetOverstrikeMode(bool state);
-bool Key_IsDown(int keynum);
-const char* Key_KeynumToString(int keynum, bool translate);
-void Key_SetBinding(int keynum, const char* binding);
-const char* Key_GetBinding(int keynum);
-int Key_GetKey(const char* binding);
-void Key_GetKeysForBinding(const char* binding, int* key1, int* key2);
-void Key_UnbindCommand(const char* command);
+void Key_SetOverstrikeMode( bool state );
+bool Key_IsDown( int keynum );
+const char* Key_KeynumToString( int keynum, bool translate );
+void Key_SetBinding( int keynum, const char* binding );
+const char* Key_GetBinding( int keynum );
+int Key_GetKey( const char* binding );
+void Key_GetKeysForBinding( const char* binding, int* key1, int* key2 );
+void Key_UnbindCommand( const char* command );
 void Key_ClearStates();
 
 #endif

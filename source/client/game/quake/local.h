@@ -25,11 +25,11 @@
 
 extern Cvar* cl_doubleeyes;
 
-extern q1entity_state_t clq1_baselines[MAX_EDICTS_QH];
-extern q1entity_t clq1_entities[MAX_EDICTS_QH];
-extern q1entity_t clq1_static_entities[MAX_STATIC_ENTITIES_Q1];
+extern q1entity_state_t clq1_baselines[ MAX_EDICTS_QH ];
+extern q1entity_t clq1_entities[ MAX_EDICTS_QH ];
+extern q1entity_t clq1_static_entities[ MAX_STATIC_ENTITIES_Q1 ];
 
-extern image_t* clq1_playertextures[BIGGEST_MAX_CLIENTS_QH];
+extern image_t* clq1_playertextures[ BIGGEST_MAX_CLIENTS_QH ];
 
 extern int clq1_spikeindex;
 extern int clq1_playerindex;
@@ -45,21 +45,21 @@ void CLQ1_SignonReply();
 int CLQW_CalcNet();
 bool CLQW_IsUploading();
 void CLQW_NextUpload();
-void CLQW_StartUpload(const byte* data, int size);
+void CLQW_StartUpload( const byte* data, int size );
 void CLQW_StopUpload();
 void CLQW_SendCmd();
 
 //
 //	Entities
 //
-void CLQ1_ParseSpawnBaseline(QMsg& message);
-void CLQ1_ParseSpawnStatic(QMsg& message);
-void CLQ1_ParseUpdate(QMsg& message, int bits);
-void CLQW_ParsePacketEntities(QMsg& message);
-void CLQW_ParseDeltaPacketEntities(QMsg& message);
-void CLQW_ParsePlayerinfo(QMsg& message);
-void CLQ1_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
-void CLQ1_TranslatePlayerSkin(int playernum);
+void CLQ1_ParseSpawnBaseline( QMsg& message );
+void CLQ1_ParseSpawnStatic( QMsg& message );
+void CLQ1_ParseUpdate( QMsg& message, int bits );
+void CLQW_ParsePacketEntities( QMsg& message );
+void CLQW_ParseDeltaPacketEntities( QMsg& message );
+void CLQW_ParsePlayerinfo( QMsg& message );
+void CLQ1_SetRefEntAxis( refEntity_t* ent, vec3_t ent_angles );
+void CLQ1_TranslatePlayerSkin( int playernum );
 void CLQ1_EmitEntities();
 void CLQW_EmitEntities();
 
@@ -71,27 +71,27 @@ void CLQ1_ClearState();
 //
 //	Parse
 //
-void CLQ1_ParseServerMessage(QMsg& message);
-void CLQW_ParseServerMessage(QMsg& message);
+void CLQ1_ParseServerMessage( QMsg& message );
+void CLQW_ParseServerMessage( QMsg& message );
 
 //
 //	Projectiles
 //
 void CLQ1_ClearProjectiles();
-void CLQW_ParseNails(QMsg& message);
+void CLQW_ParseNails( QMsg& message );
 void CLQ1_LinkProjectiles();
 
 //
 //	Screen
 //
-void SCRQ1_DrawScreen(stereoFrame_t stereoFrame);
+void SCRQ1_DrawScreen( stereoFrame_t stereoFrame );
 void SCRQ1_Init();
 
 //
 //	Skin
 //
-void CLQW_SkinFind(q1player_info_t* sc);
-byte* CLQW_SkinCache(qw_skin_t* skin);
+void CLQW_SkinFind( q1player_info_t* sc );
+byte* CLQW_SkinCache( qw_skin_t* skin );
 void CLQW_SkinNextDownload();
 void CLQW_SkinSkins_f();
 void CLQW_SkinAllSkins_f();
@@ -104,7 +104,7 @@ extern Cvar* clqw_hudswap;
 
 void SbarQ1_Init();
 void SbarQ1_InitImages();
-int SbarQH_itoa(int num, char* buf);
+int SbarQH_itoa( int num, char* buf );
 // called every frame by screen
 void SbarQ1_Draw();
 // called each frame after the level has been completed
@@ -116,8 +116,8 @@ void SbarQ1_FinaleOverlay();
 //
 void CLQ1_InitTEnts();
 void CLQ1_ClearTEnts();
-void CLQ1_ParseTEnt(QMsg& message);
-void CLQW_ParseTEnt(QMsg& message);
+void CLQ1_ParseTEnt( QMsg& message );
+void CLQW_ParseTEnt( QMsg& message );
 void CLQ1_UpdateTEnts();
 
 #endif

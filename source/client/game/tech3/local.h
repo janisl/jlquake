@@ -25,27 +25,27 @@
 //
 //	CDKey
 //
-bool CLT3_CDKeyValidate(const char* key, const char* checksum);
-void CLT3_CDKeyForAuthorize(char* nums);
-void CLT3UI_GetCDKey(char* buf, int buflen);
-void CLT3UI_SetCDKey(char* buf);
+bool CLT3_CDKeyValidate( const char* key, const char* checksum );
+void CLT3_CDKeyForAuthorize( char* nums );
+void CLT3UI_GetCDKey( char* buf, int buflen );
+void CLT3UI_SetCDKey( char* buf );
 
 //
 //	CGame
 //
 void CLT3_InitCGame();
 void CLT3_ShutdownCGame();
-void CLT3_CGameRendering(stereoFrame_t stereo);
+void CLT3_CGameRendering( stereoFrame_t stereo );
 int CLT3_CrosshairPlayer();
 int CLT3_LastAttacker();
-void CLT3_KeyEvent(int key, bool down);
-void CLT3_MouseEvent(int dx, int dy);
+void CLT3_KeyEvent( int key, bool down );
+void CLT3_MouseEvent( int dx, int dy );
 void CLT3_EventHandling();
-void Key_GetBindingBuf(int keynum, char* buf, int buflen);
-void Key_KeynumToStringBuf(int keynum, char* buf, int buflen);
+void Key_GetBindingBuf( int keynum, char* buf, int buflen );
+void Key_KeynumToStringBuf( int keynum, char* buf, int buflen );
 int Key_GetCatcher();
-void KeyQ3_SetCatcher(int catcher);
-void KeyWM_SetCatcher(int catcher);
+void KeyQ3_SetCatcher( int catcher );
+void KeyWM_SetCatcher( int catcher );
 void CLT3_SetCGameTime();
 
 //
@@ -57,7 +57,7 @@ void CLT3_SendPureChecksums();
 void CLET_ClearStaticDownload();
 void CLT3_NextDownload();
 void CLT3_InitDownloads();
-void CLT3_Disconnect(bool showMainMenu);
+void CLT3_Disconnect( bool showMainMenu );
 void CLT3_CheckForResend();
 void CLT3_Connect_f();
 void CLT3_Reconnect_f();
@@ -68,8 +68,8 @@ void CLT3_CheckUserinfo();
 //
 //	Demo
 //
-void CLT3_Record(const char* demoName, const char* name);
-void CLT3_WriteDemoMessage(QMsg* msg, int headerBytes);
+void CLT3_Record( const char* demoName, const char* name );
+void CLT3_WriteDemoMessage( QMsg* msg, int headerBytes );
 void CLT3_StopRecord_f();
 void CLT3_Record_f();
 void CLT3_ReadDemoMessage();
@@ -111,33 +111,33 @@ void CLT3_Vid_Restart_f();
 //
 //	Network channel
 //
-void CLT3_Netchan_TransmitNextFragment(netchan_t* chan);
-bool CLT3_Netchan_Process(netchan_t* chan, QMsg* msg);
-void CLT3_Netchan_Transmit(netchan_t* chan, QMsg* msg);
+void CLT3_Netchan_TransmitNextFragment( netchan_t* chan );
+bool CLT3_Netchan_Process( netchan_t* chan, QMsg* msg );
+void CLT3_Netchan_Transmit( netchan_t* chan, QMsg* msg );
 
 //
 //	Parse
 //
 void CLT3_SystemInfoChanged();
-void CLT3_ParseServerMessage(QMsg* msg);
+void CLT3_ParseServerMessage( QMsg* msg );
 
 //
 //	Screen
 //
-void SCRT3_DrawScreenField(stereoFrame_t stereoFrame);
+void SCRT3_DrawScreenField( stereoFrame_t stereoFrame );
 
 //
 //	ServerList
 //
-int CLT3_ServerStatus(char* serverAddress, char* serverStatusString, int maxLen);
-void CLT3_ServerStatusResponse(netadr_t from, QMsg* msg);
+int CLT3_ServerStatus( char* serverAddress, char* serverStatusString, int maxLen );
+void CLT3_ServerStatusResponse( netadr_t from, QMsg* msg );
 int CLT3_GetPingQueueCount();
-void CLT3_ClearPing(int n);
-void CLT3_GetPing(int n, char* buf, int buflen, int* pingtime);
-void CLT3_GetPingInfo(int n, char* buf, int buflen);
-bool CLT3_UpdateVisiblePings(int source);
-void CLT3_ServerInfoPacket(netadr_t from, QMsg* msg);
-void CLT3_ServersResponsePacket(netadr_t from, QMsg* msg);
+void CLT3_ClearPing( int n );
+void CLT3_GetPing( int n, char* buf, int buflen, int* pingtime );
+void CLT3_GetPingInfo( int n, char* buf, int buflen );
+bool CLT3_UpdateVisiblePings( int source );
+void CLT3_ServerInfoPacket( netadr_t from, QMsg* msg );
+void CLT3_ServersResponsePacket( netadr_t from, QMsg* msg );
 void CLT3_InitServerLists();
 
 //
@@ -148,18 +148,18 @@ extern vm_t* uivm;				// interface to ui dll or vm
 void UIT3_Init();
 void CLT3_InitUI();
 void CLT3_ShutdownUI();
-void UIT3_KeyEvent(int key, bool down);
-void UIT3_KeyDownEvent(int key);
-void UIT3_MouseEvent(int dx, int dy);
-void UIT3_Refresh(int time);
+void UIT3_KeyEvent( int key, bool down );
+void UIT3_KeyDownEvent( int key );
+void UIT3_MouseEvent( int dx, int dy );
+void UIT3_Refresh( int time );
 bool UIT3_IsFullscreen();
-void UIT3_SetActiveMenu(int menu);
+void UIT3_SetActiveMenu( int menu );
 void UIT3_ForceMenuOff();
 void UIT3_SetMainMenu();
 void UIT3_SetInGameMenu();
-void UIT3_DrawConnectScreen(bool overlay);
+void UIT3_DrawConnectScreen( bool overlay );
 bool UIT3_UsesUniqueCDKey();
-bool UIT3_CheckKeyExec(int key);
-void CLT3_GetServersForSource(int source, q3serverInfo_t*& servers, int& max, int*& count);
+bool UIT3_CheckKeyExec( int key );
+void CLT3_GetServersForSource( int source, q3serverInfo_t*& servers, int& max, int*& count );
 
 #endif

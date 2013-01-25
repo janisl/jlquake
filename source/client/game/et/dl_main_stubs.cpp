@@ -16,16 +16,13 @@
 
 #include "dl_public.h"
 
-void DL_Shutdown()
-{
+void DL_Shutdown() {
 }
 
-bool DL_BeginDownload(const char* localName, const char* remoteName, int debug)
-{
+bool DL_BeginDownload( const char* localName, const char* remoteName, int debug ) {
 	return true;
 }
 
-dlStatus_t DL_DownloadLoop()
-{
+dlStatus_t DL_DownloadLoop() {
 	return DL_DONE;
 }

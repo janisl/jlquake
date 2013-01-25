@@ -19,16 +19,16 @@
 
 #include "../tech3/local.h"
 
-bool CLWS_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-qintptr CLWS_CgameSystemCalls(qintptr* args);
+bool CLWS_GetTag( int clientNum, const char* tagname, orientation_t* _or );
+qintptr CLWS_CgameSystemCalls( qintptr* args );
 
 int UIWS_GetActiveMenu();
-bool UIWS_ConsoleCommand(int realTime);
-void UIWS_DrawConnectScreen(bool overlay);
+bool UIWS_ConsoleCommand( int realTime );
+void UIWS_DrawConnectScreen( bool overlay );
 bool UIWS_HasUniqueCDKey();
 void UIWS_SetEndGameMenu();
-void UIWS_KeyDownEvent(int key);
+void UIWS_KeyDownEvent( int key );
 void UIWS_Init();
-qintptr CLWS_UISystemCalls(qintptr* args);
+qintptr CLWS_UISystemCalls( qintptr* args );
 
 #endif

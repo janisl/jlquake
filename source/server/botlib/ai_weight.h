@@ -21,8 +21,7 @@
 #define MAX_WEIGHTS         128
 
 //fuzzy seperator
-struct fuzzyseperator_t
-{
+struct fuzzyseperator_t {
 	int index;
 	int value;
 	int type;
@@ -34,33 +33,31 @@ struct fuzzyseperator_t
 };
 
 //fuzzy weight
-struct weight_t
-{
+struct weight_t {
 	char* name;
 	fuzzyseperator_t* firstseperator;
 };
 
 //weight configuration
-struct weightconfig_t
-{
+struct weightconfig_t {
 	int numweights;
-	weight_t weights[MAX_WEIGHTS];
-	char filename[MAX_QPATH];
+	weight_t weights[ MAX_WEIGHTS ];
+	char filename[ MAX_QPATH ];
 };
 
 //reads a weight configuration
-weightconfig_t* ReadWeightConfig(const char* filename);
+weightconfig_t* ReadWeightConfig( const char* filename );
 //free a weight configuration
-void FreeWeightConfig(weightconfig_t* config);
+void FreeWeightConfig( weightconfig_t* config );
 //find the fuzzy weight with the given name
-int FindFuzzyWeight(weightconfig_t* wc, const char* name);
+int FindFuzzyWeight( weightconfig_t* wc, const char* name );
 //returns the fuzzy weight for the given inventory and weight
-float FuzzyWeight(const int* inventory, const weightconfig_t* wc, int weightnum);
-float FuzzyWeightUndecided(const int* inventory, const weightconfig_t* wc, int weightnum);
+float FuzzyWeight( const int* inventory, const weightconfig_t* wc, int weightnum );
+float FuzzyWeightUndecided( const int* inventory, const weightconfig_t* wc, int weightnum );
 //evolves the weight configuration
-void EvolveWeightConfig(weightconfig_t* config);
+void EvolveWeightConfig( weightconfig_t* config );
 //interbreed the weight configurations and stores the interbreeded one in configout
-void InterbreedWeightConfigs(weightconfig_t* config1, weightconfig_t* config2, weightconfig_t* configout);
+void InterbreedWeightConfigs( weightconfig_t* config1, weightconfig_t* config2, weightconfig_t* configout );
 //frees cached weight configurations
 void BotShutdownWeights();
 

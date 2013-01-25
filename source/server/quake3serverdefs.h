@@ -41,10 +41,9 @@ enum
 #define MAX_DOWNLOAD_WINDOW         8		// max of eight download frames
 #define MAX_DOWNLOAD_BLKSIZE        2048	// 2048 byte block chunks
 
-struct q3clientSnapshot_t
-{
+struct q3clientSnapshot_t {
 	int areabytes;
-	byte areabits[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	byte areabits[ MAX_MAP_AREA_BYTES ];					// portalarea visibility bits
 	q3playerState_t q3_ps;
 	wsplayerState_t ws_ps;
 	wmplayerState_t wm_ps;
@@ -58,16 +57,14 @@ struct q3clientSnapshot_t
 	int messageSize;					// used to rate drop packets
 };
 
-struct netchan_buffer_t
-{
+struct netchan_buffer_t {
 	QMsg msg;
-	byte msgBuffer[MAX_MSGLEN];
-	char lastClientCommandString[MAX_STRING_CHARS];
+	byte msgBuffer[ MAX_MSGLEN ];
+	char lastClientCommandString[ MAX_STRING_CHARS ];
 	netchan_buffer_t* next;
 };
 
-struct q3entityShared_t
-{
+struct q3entityShared_t {
 	q3entityState_t s;				// communicated by server to clients
 
 	qboolean linked;				// false if not in any good cluster
@@ -103,8 +100,7 @@ struct q3entityShared_t
 };
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
-struct q3sharedEntity_t
-{
+struct q3sharedEntity_t {
 	q3entityState_t s;				// communicated by server to clients
 	q3entityShared_t r;				// shared by both the server system and game
 };
@@ -113,8 +109,7 @@ struct q3sharedEntity_t
 
 struct worldSector_t;
 
-struct q3svEntity_t
-{
+struct q3svEntity_t {
 	worldSector_t* worldSector;
 	q3svEntity_t* nextEntityInWorldSector;
 
@@ -123,7 +118,7 @@ struct q3svEntity_t
 	wmentityState_t wm_baseline;	// for delta compression of initial sighting
 	etentityState_t et_baseline;	// for delta compression of initial sighting
 	int numClusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS_Q3];
+	int clusternums[ MAX_ENT_CLUSTERS_Q3 ];
 	int lastCluster;				// if all the clusters don't fit in clusternums
 	int areanum, areanum2;
 	int snapshotCounter;			// used to prevent double adding from portal views

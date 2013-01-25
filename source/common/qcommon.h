@@ -51,22 +51,22 @@
 #endif
 
 #ifndef __GNUC__
-#define id_attribute(whatever)
+#define id_attribute( whatever )
 #else
-#define id_attribute(params) __attribute__(params)
+#define id_attribute( params ) __attribute__( params )
 #endif
 
 #ifndef _WIN32
-#define __declspec(whatever)
+#define __declspec( whatever )
 #endif
 
-#if (defined _M_IX86 || defined __i386__) && !defined C_ONLY && !defined __sun__
+#if ( defined _M_IX86 || defined __i386__ ) && !defined C_ONLY && !defined __sun__
 #define id386   1
 #else
 #define id386   0
 #endif
 
-#if (defined(powerc) || defined(powerpc) || defined(ppc) || defined(__ppc) || defined(__ppc__)) && !defined(C_ONLY)
+#if ( defined( powerc ) || defined( powerpc ) || defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) ) && !defined( C_ONLY )
 #define idppc   1
 #else
 #define idppc   0
@@ -78,17 +78,17 @@
 //
 //==========================================================================
 
-#define MIN_QINT8   ((qint8) - 128)
-#define MIN_QINT16  ((qint16) - 32768)
-#define MIN_QINT32  ((qint32) - 2147483648)
+#define MIN_QINT8   ( ( qint8 ) - 128 )
+#define MIN_QINT16  ( ( qint16 ) - 32768 )
+#define MIN_QINT32  ( ( qint32 ) - 2147483648 )
 
-#define MAX_QINT8   ((qint8)0x7f)
-#define MAX_QINT16  ((qint16)0x7fff)
-#define MAX_QINT32  ((qint32)0x7fffffff)
+#define MAX_QINT8   ( ( qint8 )0x7f )
+#define MAX_QINT16  ( ( qint16 )0x7fff )
+#define MAX_QINT32  ( ( qint32 )0x7fffffff )
 
-#define MAX_QUINT8  ((quint8)0xff)
-#define MAX_QUINT16 ((quint16)0xffff)
-#define MAX_QUINT32 ((quint32)0xffffffff)
+#define MAX_QUINT8  ( ( quint8 )0xff )
+#define MAX_QUINT16 ( ( quint16 )0xffff )
+#define MAX_QUINT32 ( ( quint32 )0xffffffff )
 
 typedef unsigned char byte;
 
@@ -126,8 +126,7 @@ typedef int qboolean;
 //
 //  Base class for abstract classes that need virtual destructor.
 //
-class Interface
-{
+class Interface {
 public:
 	virtual ~Interface();
 };
@@ -143,13 +142,13 @@ public:
 // centralized and cleaned, that's the max string you can send to a common->Printf / common->DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
-#define ANGLE2SHORT(x)      ((int)((x) * 65536 / 360) & 65535)
-#define SHORT2ANGLE(x)      ((x) * (360.0 / 65536))
+#define ANGLE2SHORT( x )      ( ( int )( ( x ) * 65536 / 360 ) & 65535 )
+#define SHORT2ANGLE( x )      ( ( x ) * ( 360.0 / 65536 ) )
 
-#define random()    ((rand() & 0x7fff) / ((float)0x7fff))
-#define crandom()   (2.0 * (random() - 0.5))
+#define random()    ( ( rand() & 0x7fff ) / ( ( float )0x7fff ) )
+#define crandom()   ( 2.0 * ( random() - 0.5 ) )
 
-#define BIT(num)    (1 << (num))
+#define BIT( num )    ( 1 << ( num ) )
 
 //==========================================================================
 //
@@ -157,14 +156,14 @@ public:
 //
 //==========================================================================
 
-void Com_Memset(void* dest, const int val, const size_t count);
-void Com_Memcpy(void* dest, const void* src, const size_t count);
-void AssertFailed(const char* file, int line, const char* expression);
+void Com_Memset( void* dest, const int val, const size_t count );
+void Com_Memcpy( void* dest, const void* src, const size_t count );
+void AssertFailed( const char* file, int line, const char* expression );
 
 #ifdef _DEBUG
-void AssertFailed( const char *file, int line, const char *expression );
+void AssertFailed( const char* file, int line, const char* expression );
 #undef assert
-#define assert(x)		if (x) {} else AssertFailed(__FILE__, __LINE__, #x)
+#define assert( x )       if ( x ) {} else AssertFailed( __FILE__, __LINE__, # x )
 #endif
 
 #include "memory.h"		//	Memory allocation

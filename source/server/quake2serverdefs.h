@@ -23,10 +23,9 @@
 #define LATENCY_COUNTS  16
 #define RATE_MESSAGES   10
 
-struct q2client_frame_t
-{
+struct q2client_frame_t {
 	int areabytes;
-	byte areabits[BSP38MAX_MAP_AREAS / 8];	// portalarea visibility bits
+	byte areabits[ BSP38MAX_MAP_AREAS / 8 ];	// portalarea visibility bits
 	q2player_state_t ps;
 	int num_entities;
 	int first_entity;						// into the circular sv_packet_entities[]
@@ -53,8 +52,7 @@ enum q2solid_t
 
 #define MAX_ENT_CLUSTERS_Q2    16
 
-struct q2gclient_t
-{
+struct q2gclient_t {
 	q2player_state_t ps;		// communicated by server to clients
 	int ping;
 	// the game dll can add anything it wants after
@@ -62,8 +60,7 @@ struct q2gclient_t
 };
 
 
-struct q2edict_t
-{
+struct q2edict_t {
 	q2entity_state_t s;
 	q2gclient_t* client;
 	qboolean inuse;
@@ -73,7 +70,7 @@ struct q2edict_t
 	link_t area;					// linked to a division node or leaf
 
 	int num_clusters;				// if -1, use headnode instead
-	int clusternums[MAX_ENT_CLUSTERS_Q2];
+	int clusternums[ MAX_ENT_CLUSTERS_Q2 ];
 	int headnode;					// unused if num_clusters != -1
 	int areanum, areanum2;
 

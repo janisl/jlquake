@@ -24,8 +24,7 @@
 
 #define MAX_SIGNON_BUFFERS  8
 
-struct qwclient_frame_t
-{
+struct qwclient_frame_t {
 	double senttime;
 	float ping_time;
 	qwpacket_entities_t entities;

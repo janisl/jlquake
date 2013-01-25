@@ -37,8 +37,7 @@ enum
 };
 
 // snapshots are a view of the server at a given time
-struct wsclSnapshot_t
-{
+struct wsclSnapshot_t {
 	qboolean valid;					// cleared if delta parsing was invalid
 	int snapFlags;					// rate delayed and dropped commands
 
@@ -47,7 +46,7 @@ struct wsclSnapshot_t
 	int messageNum;					// copied from netchan->incoming_sequence
 	int deltaNum;					// messageNum the delta is from
 	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	byte areamask[ MAX_MAP_AREA_BYTES ];					// portalarea visibility bits
 
 	int cmdNum;						// the next cmdNum the server is expecting
 	wsplayerState_t ps;							// complete information about the current player at this time
@@ -60,8 +59,7 @@ struct wsclSnapshot_t
 };
 
 // snapshots are a view of the server at a given time
-struct wmclSnapshot_t
-{
+struct wmclSnapshot_t {
 	qboolean valid;					// cleared if delta parsing was invalid
 	int snapFlags;					// rate delayed and dropped commands
 
@@ -70,7 +68,7 @@ struct wmclSnapshot_t
 	int messageNum;					// copied from netchan->incoming_sequence
 	int deltaNum;					// messageNum the delta is from
 	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	byte areamask[ MAX_MAP_AREA_BYTES ];					// portalarea visibility bits
 
 	int cmdNum;						// the next cmdNum the server is expecting
 	wmplayerState_t ps;							// complete information about the current player at this time
@@ -83,8 +81,7 @@ struct wmclSnapshot_t
 };
 
 // snapshots are a view of the server at a given time
-struct etclSnapshot_t
-{
+struct etclSnapshot_t {
 	qboolean valid;					// cleared if delta parsing was invalid
 	int snapFlags;					// rate delayed and dropped commands
 
@@ -93,7 +90,7 @@ struct etclSnapshot_t
 	int messageNum;					// copied from netchan->incoming_sequence
 	int deltaNum;					// messageNum the delta is from
 	int ping;						// time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	byte areamask[ MAX_MAP_AREA_BYTES ];					// portalarea visibility bits
 
 	int cmdNum;						// the next cmdNum the server is expecting
 	etplayerState_t ps;							// complete information about the current player at this time
@@ -105,32 +102,28 @@ struct etclSnapshot_t
 											// making the snapshot current
 };
 
-struct wsgameState_t
-{
-	int stringOffsets[MAX_CONFIGSTRINGS_WS];
-	char stringData[MAX_GAMESTATE_CHARS_Q3];
+struct wsgameState_t {
+	int stringOffsets[ MAX_CONFIGSTRINGS_WS ];
+	char stringData[ MAX_GAMESTATE_CHARS_Q3 ];
 	int dataCount;
 };
 
-struct wmgameState_t
-{
-	int stringOffsets[MAX_CONFIGSTRINGS_WM];
-	char stringData[MAX_GAMESTATE_CHARS_Q3];
+struct wmgameState_t {
+	int stringOffsets[ MAX_CONFIGSTRINGS_WM ];
+	char stringData[ MAX_GAMESTATE_CHARS_Q3 ];
 	int dataCount;
 };
 
-struct etgameState_t
-{
-	int stringOffsets[MAX_CONFIGSTRINGS_ET];
-	char stringData[MAX_GAMESTATE_CHARS_Q3];
+struct etgameState_t {
+	int stringOffsets[ MAX_CONFIGSTRINGS_ET ];
+	char stringData[ MAX_GAMESTATE_CHARS_Q3 ];
 	int dataCount;
 };
 
 // Arnout: for double tapping
-struct etdoubleTap_t
-{
-	int pressedTime[ETDT_NUM];
-	int releasedTime[ETDT_NUM];
+struct etdoubleTap_t {
+	int pressedTime[ ETDT_NUM ];
+	int releasedTime[ ETDT_NUM ];
 
 	int lastdoubleTap;
 };

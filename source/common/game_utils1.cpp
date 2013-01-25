@@ -20,32 +20,27 @@
 static Cvar* cl_rollspeed;
 static Cvar* cl_rollangle;
 
-void VQH_InitRollCvars()
-{
-	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
-	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+void VQH_InitRollCvars() {
+	cl_rollspeed = Cvar_Get( "cl_rollspeed", "200", 0 );
+	cl_rollangle = Cvar_Get( "cl_rollangle", "2.0", 0 );
 }
 
-float VQH_CalcRoll(const vec3_t angles, const vec3_t velocity)
-{
+float VQH_CalcRoll( const vec3_t angles, const vec3_t velocity ) {
 	vec3_t forward, right, up;
 	float sign;
 	float side;
 	float value;
 
-	AngleVectors(angles, forward, right, up);
-	side = DotProduct(velocity, right);
+	AngleVectors( angles, forward, right, up );
+	side = DotProduct( velocity, right );
 	sign = side < 0 ? -1 : 1;
-	side = idMath::Fabs(side);
+	side = idMath::Fabs( side );
 
 	value = cl_rollangle->value;
 
-	if (side < cl_rollspeed->value)
-	{
+	if ( side < cl_rollspeed->value ) {
 		side = side * value / cl_rollspeed->value;
-	}
-	else
-	{
+	} else   {
 		side = value;
 	}
 

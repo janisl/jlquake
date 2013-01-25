@@ -24,11 +24,11 @@
 
 #define MAX_EPAIRKEY        128
 
-#define MAX_BOTLIB_CLIENTS  (GGameType & GAME_WolfSP ? MAX_CLIENTS_WS : \
-							GGameType & GAME_WolfMP ? MAX_CLIENTS_WM : \
-							GGameType & GAME_ET ? MAX_CLIENTS_ET : \
-							MAX_CLIENTS_Q3)
-#define MAX_BOTLIB_CLIENTS_ARRAY	MAX_CLIENTS_WS
+#define MAX_BOTLIB_CLIENTS  ( GGameType & GAME_WolfSP ? MAX_CLIENTS_WS : \
+							  GGameType & GAME_WolfMP ? MAX_CLIENTS_WM : \
+							  GGameType & GAME_ET ? MAX_CLIENTS_ET : \
+							  MAX_CLIENTS_Q3 )
+#define MAX_BOTLIB_CLIENTS_ARRAY    MAX_CLIENTS_WS
 
 //#define DEBUG			//debug code
 
@@ -43,30 +43,28 @@
 #define PRT_FATAL               4
 #define PRT_EXIT                5
 
-struct bot_debugpoly_t
-{
+struct bot_debugpoly_t {
 	int inuse;
 	int color;
 	int numPoints;
-	vec3_t points[128];
+	vec3_t points[ 128 ];
 };
 
 extern bot_debugpoly_t* debugpolygons;
 extern int bot_maxdebugpolys;
 
-void BotImport_Print(int type, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
+void BotImport_Print( int type, const char* fmt, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
 int BotImport_DebugLineCreate();
-void BotImport_DebugLineDelete(int line);
-void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color);
-void BotClientCommand(int client, const char* command);
+void BotImport_DebugLineDelete( int line );
+void BotImport_DebugLineShow( int line, const vec3_t start, const vec3_t end, int color );
+void BotClientCommand( int client, const char* command );
 
 //
 //	Interface
 //
 
 //FIXME: get rid of this global structure
-struct botlib_globals_t
-{
+struct botlib_globals_t {
 	int botlibsetup;						//true when the bot library has been setup
 	int maxentities;						//maximum number of entities
 	int maxclients;							//maximum number of clients
@@ -80,8 +78,7 @@ extern botlib_globals_t botlibglobals;
 //
 
 //library variable
-struct libvar_t
-{
+struct libvar_t {
 	char* name;
 	char* string;
 	float value;
@@ -91,28 +88,28 @@ struct libvar_t
 //removes all library variables
 void LibVarDeAllocAll();
 //gets the string of the library variable with the given name
-const char* LibVarGetString(const char* var_name);
+const char* LibVarGetString( const char* var_name );
 //gets the value of the library variable with the given name
-float LibVarGetValue(const char* var_name);
+float LibVarGetValue( const char* var_name );
 //creates the library variable if not existing already and returns it
-libvar_t* LibVar(const char* var_name, const char* value);
+libvar_t* LibVar( const char* var_name, const char* value );
 //creates the library variable if not existing already and returns the value
-float LibVarValue(const char* var_name, const char* value);
+float LibVarValue( const char* var_name, const char* value );
 //creates the library variable if not existing already and returns the value string
-const char* LibVarString(const char* var_name, const char* value);
+const char* LibVarString( const char* var_name, const char* value );
 //sets the library variable
-void LibVarSet(const char* var_name, const char* value);
+void LibVarSet( const char* var_name, const char* value );
 
 //
 //	Logging
 //
 
 //open a log file
-void Log_Open(const char* filename);
+void Log_Open( const char* filename );
 //close log file if present
 void Log_Shutdown();
 //write to the current opened log file
-void Log_Write(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+void Log_Write( const char* fmt, ... ) id_attribute( ( format( printf, 1, 2 ) ) );
 
 //
 //	Struct
@@ -128,8 +125,7 @@ void Log_Write(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
 #define FT_ARRAY                    0x0100	// array of type
 
 //structure field definition
-struct fielddef_t
-{
+struct fielddef_t {
 	const char* name;						//name of the field
 	int offset;								//offset in the structure
 	int type;								//type of the field
@@ -138,14 +134,13 @@ struct fielddef_t
 };
 
 //structure definition
-struct structdef_t
-{
+struct structdef_t {
 	int size;
 	fielddef_t* fields;
 };
 
 //read a structure from a script
-bool ReadStructure(source_t* source, const structdef_t* def, char* structure);
+bool ReadStructure( source_t* source, const structdef_t* def, char* structure );
 
 #include "aasfile.h"
 #include "ai_local.h"

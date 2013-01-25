@@ -52,10 +52,9 @@ enum
 #define MAX_INVENTORY_H2            15		// Max inventory array size
 
 #define H2MAX_SCOREBOARDNAME    32
-struct h2player_info_t
-{
+struct h2player_info_t {
 	// scoreboard information
-	char name[H2MAX_SCOREBOARDNAME];
+	char name[ H2MAX_SCOREBOARDNAME ];
 	float entertime;
 	int frags;
 
@@ -66,7 +65,7 @@ struct h2player_info_t
 
 	//	New to HexenWorld
 	int userid;
-	char userinfo[MAX_INFO_STRING_QW];
+	char userinfo[ MAX_INFO_STRING_QW ];
 
 	int ping;
 
@@ -82,8 +81,7 @@ struct h2player_info_t
 
 // hwplayer_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
-struct hwplayer_state_t
-{
+struct hwplayer_state_t {
 	int messagenum;		// all player's won't be updated each frame
 
 	double state_time;		// not the same as the packet time,
@@ -110,8 +108,7 @@ struct hwplayer_state_t
 	int oldbuttons;
 };
 
-struct hwframe_t
-{
+struct hwframe_t {
 	// generated on client side
 	hwusercmd_t cmd;		// cmd that generated the frame
 	double senttime;	// time cmd was sent off
@@ -119,25 +116,23 @@ struct hwframe_t
 
 	// received from server
 	double receivedtime;	// time message was received, or -1
-	hwplayer_state_t playerstate[MAX_CLIENTS_QHW];	// message received that reflects performing
+	hwplayer_state_t playerstate[ MAX_CLIENTS_QHW ];	// message received that reflects performing
 	// the usercmd
 	hwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };
 
-struct h2entity_t
-{
+struct h2entity_t {
 	h2entity_state_t state;
 	float syncbase;			// for client-side animations
 
 	double msgtime;			// time of last update
-	vec3_t msg_origins[2];	// last two updates (0 is newest)
-	vec3_t msg_angles[2];	// last two updates (0 is newest)
+	vec3_t msg_origins[ 2 ];	// last two updates (0 is newest)
+	vec3_t msg_angles[ 2 ];		// last two updates (0 is newest)
 };
 
-struct h2client_frames2_t
-{
-	h2entity_state_t states[MAX_CLIENT_STATES_H2 * 2];
+struct h2client_frames2_t {
+	h2entity_state_t states[ MAX_CLIENT_STATES_H2 * 2 ];
 	int count;
 };
 

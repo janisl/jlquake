@@ -23,25 +23,25 @@
 //
 //	Game
 //
-etsharedEntity_t* SVET_GentityNum(int num);
-etplayerState_t* SVET_GameClientNum(int num);
-q3svEntity_t* SVET_SvEntityForGentity(const etsharedEntity_t* gEnt);
+etsharedEntity_t* SVET_GentityNum( int num );
+etplayerState_t* SVET_GameClientNum( int num );
+q3svEntity_t* SVET_SvEntityForGentity( const etsharedEntity_t* gEnt );
 bool SVET_GameIsCoop();
-void SVET_ClientThink(client_t* cl, etusercmd_t* cmd);
-bool SVET_BotVisibleFromPos(vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy);
-bool SVET_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
-void SVET_BotFrame(int time);
-qintptr SVET_GameSystemCalls(qintptr* args);
-void SVET_GameClientDisconnect(client_t* drop);
-void SVET_GameInit(int serverTime, int randomSeed, bool restart);
-void SVET_GameShutdown(bool restart);
+void SVET_ClientThink( client_t* cl, etusercmd_t* cmd );
+bool SVET_BotVisibleFromPos( vec3_t srcorigin, int srcnum, vec3_t destorigin, int destent, bool dummy );
+bool SVET_BotCheckAttackAtPos( int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld );
+void SVET_BotFrame( int time );
+qintptr SVET_GameSystemCalls( qintptr* args );
+void SVET_GameClientDisconnect( client_t* drop );
+void SVET_GameInit( int serverTime, int randomSeed, bool restart );
+void SVET_GameShutdown( bool restart );
 bool SVET_GameConsoleCommand();
-void SVET_GameBinaryMessageReceived(int cno, const char* buf, int buflen, int commandTime);
-bool SVET_GameSnapshotCallback(int entityNumber, int clientNumber);
-void SVET_GameClientBegin(int clientNum);
-void SVET_GameClientUserInfoChanged(int clientNum);
-const char* SVET_GameClientConnect(int clientNum, bool firstTime, bool isBot);
-void SVET_GameClientCommand(int clientNum);
-void SVET_GameRunFrame(int time);
+void SVET_GameBinaryMessageReceived( int cno, const char* buf, int buflen, int commandTime );
+bool SVET_GameSnapshotCallback( int entityNumber, int clientNumber );
+void SVET_GameClientBegin( int clientNum );
+void SVET_GameClientUserInfoChanged( int clientNum );
+const char* SVET_GameClientConnect( int clientNum, bool firstTime, bool isBot );
+void SVET_GameClientCommand( int clientNum );
+void SVET_GameRunFrame( int time );
 
 #endif

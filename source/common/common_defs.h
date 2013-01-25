@@ -53,14 +53,14 @@ extern int GGameType;
 //
 //==========================================================================
 
-char* __CopyString(const char* in);
+char* __CopyString( const char* in );
 
 extern Cvar* com_dedicated;
 extern Cvar* com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern Cvar* com_timescale;
 
 extern Cvar* com_developer;
-#if defined(_DEBUG)
+#if defined( _DEBUG )
 extern Cvar* com_noErrorInterrupt;
 #endif
 
@@ -105,11 +105,10 @@ extern int time_after_ref;
 
 void COM_InitCommonCvars();
 
-int Com_HashKey(const char* string, int maxlen);
+int Com_HashKey( const char* string, int maxlen );
 
 // real time
-struct qtime_t
-{
+struct qtime_t {
 	int tm_sec;		/* seconds after the minute - [0,59] */
 	int tm_min;		/* minutes after the hour - [0,59] */
 	int tm_hour;	/* hours since midnight - [0,23] */
@@ -121,40 +120,40 @@ struct qtime_t
 	int tm_isdst;	/* daylight savings time flag */
 };
 
-int Com_RealTime(qtime_t* qtime);
+int Com_RealTime( qtime_t* qtime );
 
-byte COMQW_BlockSequenceCRCByte(byte* base, int length, int sequence);
-byte COMQ2_BlockSequenceCRCByte(byte* base, int length, int sequence);
+byte COMQW_BlockSequenceCRCByte( byte* base, int length, int sequence );
+byte COMQ2_BlockSequenceCRCByte( byte* base, int length, int sequence );
 
 extern char* rd_buffer;
 extern int rd_buffersize;
-extern void (* rd_flush)(char* buffer);
+extern void ( * rd_flush )( char* buffer );
 
-void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*));
+void Com_BeginRedirect( char* buffer, int buffersize, void ( * flush )( char* ) );
 void Com_EndRedirect();
 
 extern bool com_errorEntered;
 
 int ComQ2_ServerState();		// this should have just been a cvar...
-void ComQ2_SetServerState(int state);
+void ComQ2_SetServerState( int state );
 
 extern bool com_fullyInitialized;
 
-void Com_WriteConfigToFile(const char* filename);
+void Com_WriteConfigToFile( const char* filename );
 void Com_WriteConfiguration();
 void Com_WriteConfig_f();
 
-void Com_SetRecommended(bool vid_restart);
+void Com_SetRecommended( bool vid_restart );
 
-void Com_LogToFile(const char* msg);
+void Com_LogToFile( const char* msg );
 void Com_Shutdown();
 void ComQH_HostShutdown();
 
 void Com_Quit_f();
 void COM_InitCommonCommands();
 
-bool ComET_CheckProfile(const char* profile_path);
-bool ComET_WriteProfile(const char* profile_path);
+bool ComET_CheckProfile( const char* profile_path );
+bool ComET_WriteProfile( const char* profile_path );
 
 void COMQH_CheckRegistered();
 

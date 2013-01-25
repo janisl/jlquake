@@ -17,24 +17,19 @@
 #include "dynamic_lights.h"
 #include "../client_main.h"
 
-cdlight_t cl_dlights[MAX_DLIGHTS];
+cdlight_t cl_dlights[ MAX_DLIGHTS ];
 
-void CL_ClearDlights()
-{
-	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
+void CL_ClearDlights() {
+	Com_Memset( cl_dlights, 0, sizeof ( cl_dlights ) );
 }
 
-cdlight_t* CL_AllocDlight(int key)
-{
+cdlight_t* CL_AllocDlight( int key ) {
 	// first look for an exact key match
-	if (key)
-	{
+	if ( key ) {
 		cdlight_t* dl = cl_dlights;
-		for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
-		{
-			if (dl->key == key)
-			{
-				Com_Memset(dl, 0, sizeof(*dl));
+		for ( int i = 0; i < MAX_DLIGHTS; i++, dl++ ) {
+			if ( dl->key == key ) {
+				Com_Memset( dl, 0, sizeof ( *dl ) );
 				dl->key = key;
 				return dl;
 			}
@@ -43,55 +38,45 @@ cdlight_t* CL_AllocDlight(int key)
 
 	// then look for anything else
 	cdlight_t* dl = cl_dlights;
-	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
-	{
-		if (dl->die < cl.serverTime)
-		{
-			Com_Memset(dl, 0, sizeof(*dl));
+	for ( int i = 0; i < MAX_DLIGHTS; i++, dl++ ) {
+		if ( dl->die < cl.serverTime ) {
+			Com_Memset( dl, 0, sizeof ( *dl ) );
 			dl->key = key;
 			return dl;
 		}
 	}
 
-	dl = &cl_dlights[0];
-	Com_Memset(dl, 0, sizeof(*dl));
+	dl = &cl_dlights[ 0 ];
+	Com_Memset( dl, 0, sizeof ( *dl ) );
 	dl->key = key;
 	return dl;
 }
 
-void CL_RunDLights()
-{
+void CL_RunDLights() {
 	float time = cls.frametime * 0.001;
 
 	cdlight_t* dl = cl_dlights;
-	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
-	{
-		if (!dl->radius)
-		{
+	for ( int i = 0; i < MAX_DLIGHTS; i++, dl++ ) {
+		if ( !dl->radius ) {
 			continue;
 		}
-		if (dl->die < cl.serverTime)
-		{
+		if ( dl->die < cl.serverTime ) {
 			dl->radius = 0;
 			continue;
 		}
 		dl->radius -= time * dl->decay;
-		if (dl->radius < 0)
-		{
+		if ( dl->radius < 0 ) {
 			dl->radius = 0;
 		}
 	}
 }
 
-void CL_AddDLights()
-{
+void CL_AddDLights() {
 	cdlight_t* dl = cl_dlights;
-	for (int i = 0; i < MAX_DLIGHTS; i++, dl++)
-	{
-		if (!dl->radius)
-		{
+	for ( int i = 0; i < MAX_DLIGHTS; i++, dl++ ) {
+		if ( !dl->radius ) {
 			continue;
 		}
-		R_AddLightToScene(dl->origin, dl->radius, dl->color[0], dl->color[1], dl->color[2]);
+		R_AddLightToScene( dl->origin, dl->radius, dl->color[ 0 ], dl->color[ 1 ], dl->color[ 2 ] );
 	}
 }

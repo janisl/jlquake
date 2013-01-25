@@ -32,8 +32,7 @@
 
 // TYPES -------------------------------------------------------------------
 
-struct waveFormat_t
-{
+struct waveFormat_t {
 	const char* name;
 	int format;
 };
@@ -110,11 +109,10 @@ static waveFormat_t waveFormats[] = {
 //
 //==========================================================================
 
-static short GetLittleShort()
-{
+static short GetLittleShort() {
 	short val = 0;
 	val = *data_p;
-	val = val + (*(data_p + 1) << 8);
+	val = val + ( *( data_p + 1 ) << 8 );
 	data_p += 2;
 	return val;
 }
@@ -125,13 +123,12 @@ static short GetLittleShort()
 //
 //==========================================================================
 
-static int GetLittleLong()
-{
+static int GetLittleLong() {
 	int val = 0;
 	val = *data_p;
-	val = val + (*(data_p + 1) << 8);
-	val = val + (*(data_p + 2) << 16);
-	val = val + (*(data_p + 3) << 24);
+	val = val + ( *( data_p + 1 ) << 8 );
+	val = val + ( *( data_p + 2 ) << 16 );
+	val = val + ( *( data_p + 3 ) << 24 );
 	data_p += 4;
 	return val;
 }
@@ -142,14 +139,11 @@ static int GetLittleLong()
 //
 //==========================================================================
 
-static void FindNextChunk(const char* name)
-{
-	while (1)
-	{
+static void FindNextChunk( const char* name ) {
+	while ( 1 ) {
 		data_p = last_chunk;
 
-		if (data_p >= iff_end)
-		{
+		if ( data_p >= iff_end ) {
 			// didn't find the chunk
 			data_p = NULL;
 			return;
@@ -157,15 +151,13 @@ static void FindNextChunk(const char* name)
 
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
-		if (iff_chunk_len < 0)
-		{
+		if ( iff_chunk_len < 0 ) {
 			data_p = NULL;
 			return;
 		}
 		data_p -= 8;
-		last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
-		if (!String::NCmp((char*)data_p, name, 4))
-		{
+		last_chunk = data_p + 8 + ( ( iff_chunk_len + 1 ) & ~1 );
+		if ( !String::NCmp( ( char* )data_p, name, 4 ) ) {
 			return;
 		}
 	}
@@ -177,19 +169,15 @@ static void FindNextChunk(const char* name)
 //
 //==========================================================================
 
-static void FindChunk(const char* name)
-{
+static void FindChunk( const char* name ) {
 	last_chunk = iff_data;
-	FindNextChunk(name);
+	FindNextChunk( name );
 }
 
-static const char* GetWaveFormatName(const int format)
-{
-	for (int i = 0; waveFormats[i].name; i++)
-	{
-		if (format == waveFormats[i].format)
-		{
-			return waveFormats[i].name;
+static const char* GetWaveFormatName( const int format ) {
+	for ( int i = 0; waveFormats[ i ].name; i++ ) {
+		if ( format == waveFormats[ i ].format ) {
+			return waveFormats[ i ].name;
 		}
 	}
 	return "Unknown";
@@ -202,14 +190,12 @@ static const char* GetWaveFormatName(const int format)
 //
 //==========================================================================
 
-static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
-{
+static wavinfo_t GetWavinfo( const char* name, byte* wav, int wavlength ) {
 	wavinfo_t info;
 
-	Com_Memset(&info, 0, sizeof(info));
+	Com_Memset( &info, 0, sizeof ( info ) );
 
-	if (!wav)
-	{
+	if ( !wav ) {
 		return info;
 	}
 
@@ -217,20 +203,18 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	iff_end = wav + wavlength;
 
 	// find "RIFF" chunk
-	FindChunk("RIFF");
-	if (!(data_p && !String::NCmp((char*)data_p + 8, "WAVE", 4)))
-	{
-		common->Printf("Missing RIFF/WAVE chunks\n");
+	FindChunk( "RIFF" );
+	if ( !( data_p && !String::NCmp( ( char* )data_p + 8, "WAVE", 4 ) ) ) {
+		common->Printf( "Missing RIFF/WAVE chunks\n" );
 		return info;
 	}
 
 	// get "fmt " chunk
 	iff_data = data_p + 12;
 
-	FindChunk("fmt ");
-	if (!data_p)
-	{
-		common->Printf("Missing fmt chunk\n");
+	FindChunk( "fmt " );
+	if ( !data_p ) {
+		common->Printf( "Missing fmt chunk\n" );
 		return info;
 	}
 	data_p += 8;
@@ -240,43 +224,36 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 	data_p += 4 + 2;
 	info.width = GetLittleShort() / 8;
 
-	if (info.format != 1)
-	{
-		common->Printf("Unsupported format: %s\n", GetWaveFormatName(info.format));
-		common->Printf("Microsoft PCM format only\n");
+	if ( info.format != 1 ) {
+		common->Printf( "Unsupported format: %s\n", GetWaveFormatName( info.format ) );
+		common->Printf( "Microsoft PCM format only\n" );
 		return info;
 	}
 
 	// get cue chunk
-	FindChunk("cue ");
-	if (!(GGameType & GAME_Tech3) && data_p)
-	{
+	FindChunk( "cue " );
+	if ( !( GGameType & GAME_Tech3 ) && data_p ) {
 		data_p += 32;
 		info.loopstart = GetLittleLong();
 
 		// if the next chunk is a LIST chunk, look for a cue length marker
-		FindNextChunk("LIST");
-		if (data_p)
-		{
-			if (!String::NCmp((char*)data_p + 28, "mark", 4))
-			{
+		FindNextChunk( "LIST" );
+		if ( data_p ) {
+			if ( !String::NCmp( ( char* )data_p + 28, "mark", 4 ) ) {
 				// this is not a proper parse, but it works with cooledit...
 				data_p += 24;
 				int i = GetLittleLong();	// samples in loop
 				info.samples = info.loopstart + i;
 			}
 		}
-	}
-	else
-	{
+	} else   {
 		info.loopstart = -1;
 	}
 
 	// find data chunk
-	FindChunk("data");
-	if (!data_p)
-	{
-		common->Printf("Missing data chunk\n");
+	FindChunk( "data" );
+	if ( !data_p ) {
+		common->Printf( "Missing data chunk\n" );
 		return info;
 	}
 
@@ -295,35 +272,29 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 //
 //==========================================================================
 
-static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
-{
-	float stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
+static void ResampleSfx( sfx_t* sfx, int inrate, int inwidth, byte* data ) {
+	float stepscale = ( float )inrate / dma.speed;		// this is usually 0.5, 1, or 2
 
-	int outcount = (int)(sfx->Length / stepscale);
+	int outcount = ( int )( sfx->Length / stepscale );
 	sfx->Length = outcount;
-	if (sfx->LoopStart != -1)
-	{
-		sfx->LoopStart = (int)(sfx->LoopStart / stepscale);
+	if ( sfx->LoopStart != -1 ) {
+		sfx->LoopStart = ( int )( sfx->LoopStart / stepscale );
 	}
 
 	int samplefrac = 0;
 	int fracstep = stepscale * 256;
-	sfx->Data = new short[outcount];
+	sfx->Data = new short[ outcount ];
 
-	for (int i = 0; i < outcount; i++)
-	{
+	for ( int i = 0; i < outcount; i++ ) {
 		int srcsample = samplefrac >> 8;
 		samplefrac += fracstep;
 		int sample;
-		if (inwidth == 2)
-		{
-			sample = LittleShort(((short*)data)[srcsample]);
+		if ( inwidth == 2 ) {
+			sample = LittleShort( ( ( short* )data )[ srcsample ] );
+		} else   {
+			sample = ( int )( ( unsigned char )( data[ srcsample ] ) - 128 ) << 8;
 		}
-		else
-		{
-			sample = (int)((unsigned char)(data[srcsample]) - 128) << 8;
-		}
-		sfx->Data[i] = sample;
+		sfx->Data[ i ] = sample;
 	}
 }
 
@@ -336,18 +307,15 @@ static void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 //
 //==========================================================================
 
-bool S_LoadSound(sfx_t* sfx)
-{
+bool S_LoadSound( sfx_t* sfx ) {
 	// player specific sounds are never directly loaded
-	if (sfx->Name[0] == '*')
-	{
+	if ( sfx->Name[ 0 ] == '*' ) {
 		sfx->DefaultSound = true;
 		return false;
 	}
 
 	// see if still in memory
-	if (sfx->Data)
-	{
+	if ( sfx->Data ) {
 		sfx->InMemory = true;
 		return true;
 	}
@@ -355,52 +323,42 @@ bool S_LoadSound(sfx_t* sfx)
 	// load it in
 	char* name = sfx->TrueName ? sfx->TrueName : sfx->Name;
 
-	char namebuffer[MAX_QPATH];
-	if (GGameType & GAME_Tech3)
-	{
+	char namebuffer[ MAX_QPATH ];
+	if ( GGameType & GAME_Tech3 ) {
 		//	Quake 3 uses full names.
-		String::Cpy(namebuffer, name);
-	}
-	else if ((GGameType & GAME_Quake2) && name[0] == '#')
-	{
+		String::Cpy( namebuffer, name );
+	} else if ( ( GGameType & GAME_Quake2 ) && name[ 0 ] == '#' )         {
 		//	In Quake 2 sounds prefixed with # are followed by full name.
-		String::Cpy(namebuffer, &name[1]);
-	}
-	else
-	{
+		String::Cpy( namebuffer, &name[ 1 ] );
+	} else   {
 		//	The rest are prefixed with sound/
-		String::Sprintf(namebuffer, sizeof(namebuffer), "sound/%s", name);
+		String::Sprintf( namebuffer, sizeof ( namebuffer ), "sound/%s", name );
 	}
 
 	idList<byte> data;
-	int size = FS_ReadFile(namebuffer, data);
-	if (size <= 0)
-	{
-		common->DPrintf("Couldn't load %s\n", namebuffer);
+	int size = FS_ReadFile( namebuffer, data );
+	if ( size <= 0 ) {
+		common->DPrintf( "Couldn't load %s\n", namebuffer );
 		sfx->DefaultSound = true;
 		return false;
 	}
 
-	wavinfo_t info = GetWavinfo(sfx->Name, data.Ptr(), size);
-	if (info.channels != 1)
-	{
-		common->Printf("%s is a stereo wav file\n", sfx->Name);
+	wavinfo_t info = GetWavinfo( sfx->Name, data.Ptr(), size );
+	if ( info.channels != 1 ) {
+		common->Printf( "%s is a stereo wav file\n", sfx->Name );
 		sfx->DefaultSound = true;
 		return false;
 	}
 
-	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
-	{
+	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
 		sfx->LastTimeUsed = Sys_Milliseconds() + 1;
-	}
-	else
-	{
+	} else   {
 		sfx->LastTimeUsed = Com_Milliseconds() + 1;
 	}
 	sfx->Length = info.samples;
 	sfx->LoopStart = info.loopstart;
 
-	ResampleSfx(sfx, info.rate, info.width, &data[info.dataofs]);
+	ResampleSfx( sfx, info.rate, info.width, &data[ info.dataofs ] );
 
 	sfx->InMemory = true;
 	return true;

@@ -20,6 +20,6 @@
 #include "mathlib.h"
 
 void VQH_InitRollCvars();
-float VQH_CalcRoll(const vec3_t angles, const vec3_t velocity);
+float VQH_CalcRoll( const vec3_t angles, const vec3_t velocity );
 
 #endif

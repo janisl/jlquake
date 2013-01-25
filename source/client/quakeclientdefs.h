@@ -34,20 +34,18 @@ enum
 
 #define MAX_SCOREBOARDNAME_Q1   32
 
-struct q1entity_t
-{
+struct q1entity_t {
 	q1entity_state_t state;
 	float syncbase;			// for client-side animations
 
 	double msgtime;			// time of last update
-	vec3_t msg_origins[2];	// last two updates (0 is newest)
-	vec3_t msg_angles[2];	// last two updates (0 is newest)
+	vec3_t msg_origins[ 2 ];	// last two updates (0 is newest)
+	vec3_t msg_angles[ 2 ];		// last two updates (0 is newest)
 };
 
 // qwplayer_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
-struct qwplayer_state_t
-{
+struct qwplayer_state_t {
 	int messagenum;		// all player's won't be updated each frame
 
 	double state_time;		// not the same as the packet time,
@@ -71,8 +69,7 @@ struct qwplayer_state_t
 	int oldbuttons;
 };
 
-struct qwframe_t
-{
+struct qwframe_t {
 	// generated on client side
 	qwusercmd_t cmd;		// cmd that generated the frame
 	double senttime;	// time cmd was sent off
@@ -80,22 +77,20 @@ struct qwframe_t
 
 	// received from server
 	double receivedtime;	// time message was received, or -1
-	qwplayer_state_t playerstate[MAX_CLIENTS_QHW];	// message received that reflects performing
+	qwplayer_state_t playerstate[ MAX_CLIENTS_QHW ];	// message received that reflects performing
 	// the usercmd
 	qwpacket_entities_t packet_entities;
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };
 
-struct qw_skin_t
-{
-	char name[16];
+struct qw_skin_t {
+	char name[ 16 ];
 	bool failedload;		// the name isn't a valid skin
 	byte* data;
 };
 
-struct q1player_info_t
-{
-	char name[MAX_SCOREBOARDNAME_Q1];
+struct q1player_info_t {
+	char name[ MAX_SCOREBOARDNAME_Q1 ];
 	float entertime;
 	int frags;
 
@@ -105,7 +100,7 @@ struct q1player_info_t
 
 	// New to QuakeWorld
 	int userid;
-	char userinfo[MAX_INFO_STRING_QW];
+	char userinfo[ MAX_INFO_STRING_QW ];
 
 	int ping;
 	byte pl;

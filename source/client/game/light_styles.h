@@ -21,19 +21,18 @@
 
 #define MAX_STYLESTRING 64
 
-struct clightstyle_t
-{
+struct clightstyle_t {
 	int length;
 	int rate;
-	float value[3];
-	char mapStr[MAX_STYLESTRING];
-	float map[MAX_STYLESTRING];
+	float value[ 3 ];
+	char mapStr[ MAX_STYLESTRING ];
+	float map[ MAX_STYLESTRING ];
 };
 
-extern clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+extern clightstyle_t cl_lightstyle[ MAX_LIGHTSTYLES ];
 
 void CL_ClearLightStyles();
-void CL_SetLightStyle(int i, const char* map);
+void CL_SetLightStyle( int i, const char* map );
 void CL_RunLightStyles();
 void CL_AddLightStyles();
 

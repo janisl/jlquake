@@ -25,7 +25,7 @@
 
 #define UPDATE_BACKUP_Q2    16	// copies of q2entity_state_t to keep buffered
 // must be power of two
-#define UPDATE_MASK_Q2      (UPDATE_BACKUP_Q2 - 1)
+#define UPDATE_MASK_Q2      ( UPDATE_BACKUP_Q2 - 1 )
 
 // q2entity_state_t->effects
 // Effects are things handled on the client side (lights, particles, frame animations)
@@ -69,8 +69,7 @@
 // q2entity_state_t is the information conveyed from the server
 // in an update message about entities that the client will
 // need to render in some way
-struct q2entity_state_t
-{
+struct q2entity_state_t {
 	int number;				// edict index
 
 	vec3_t origin;
@@ -118,16 +117,15 @@ enum q2pmtype_t
 // prediction stays in sync, so no floats are used.
 // if any part of the game code modifies this struct, it
 // will result in a prediction error of some degree.
-struct q2pmove_state_t
-{
+struct q2pmove_state_t {
 	q2pmtype_t pm_type;
-	short origin[3];		// 12.3
-	short velocity[3];		// 12.3
+	short origin[ 3 ];			// 12.3
+	short velocity[ 3 ];		// 12.3
 	byte pm_flags;			// ducked, jump_held, etc
 	byte pm_time;			// each unit = 8 ms
 	short gravity;
-	short delta_angles[3];	// add to command angles to get view direction
-							// changed by spawns, rotating objects, and teleporters
+	short delta_angles[ 3 ];	// add to command angles to get view direction
+								// changed by spawns, rotating objects, and teleporters
 };
 
 // player_state->stats[] indexes
@@ -156,8 +154,7 @@ struct q2pmove_state_t
 // to rendered a view.  There will only be 10 q2player_state_t sent each second,
 // but the number of q2pmove_state_t changes will be reletive to client
 // frame rates
-struct q2player_state_t
-{
+struct q2player_state_t {
 	q2pmove_state_t pmove;	// for prediction
 
 	// these fields do not need to be communicated bit-precise
@@ -172,13 +169,13 @@ struct q2player_state_t
 	int gunindex;
 	int gunframe;
 
-	float blend[4];			// rgba full screen effect
+	float blend[ 4 ];			// rgba full screen effect
 
 	float fov;				// horizontal field of view
 
 	int rdflags;			// refdef flags
 
-	short stats[MAX_STATS_Q2];	// fast status bar updates
+	short stats[ MAX_STATS_Q2 ];	// fast status bar updates
 };
 
 #define Q2SPLASH_UNKNOWN        0
@@ -538,11 +535,10 @@ enum q2entity_event_t
 };
 
 // q2usercmd_t is sent to the server each client frame
-struct q2usercmd_t
-{
+struct q2usercmd_t {
 	byte msec;
 	byte buttons;
-	short angles[3];
+	short angles[ 3 ];
 	short forwardmove, sidemove, upmove;
 	byte impulse;			// remove?
 	byte lightlevel;		// light level the player is standing on
@@ -551,39 +547,39 @@ struct q2usercmd_t
 // q2entity_state_t communication
 
 // try to pack the common update flags into the first byte
-#define Q2U_ORIGIN1     (1 << 0)
-#define Q2U_ORIGIN2     (1 << 1)
-#define Q2U_ANGLE2      (1 << 2)
-#define Q2U_ANGLE3      (1 << 3)
-#define Q2U_FRAME8      (1 << 4)		// frame is a byte
-#define Q2U_EVENT       (1 << 5)
-#define Q2U_REMOVE      (1 << 6)		// REMOVE this entity, don't add it
-#define Q2U_MOREBITS1   (1 << 7)		// read one additional byte
+#define Q2U_ORIGIN1     ( 1 << 0 )
+#define Q2U_ORIGIN2     ( 1 << 1 )
+#define Q2U_ANGLE2      ( 1 << 2 )
+#define Q2U_ANGLE3      ( 1 << 3 )
+#define Q2U_FRAME8      ( 1 << 4 )			// frame is a byte
+#define Q2U_EVENT       ( 1 << 5 )
+#define Q2U_REMOVE      ( 1 << 6 )			// REMOVE this entity, don't add it
+#define Q2U_MOREBITS1   ( 1 << 7 )			// read one additional byte
 
 // second byte
-#define Q2U_NUMBER16    (1 << 8)		// NUMBER8 is implicit if not set
-#define Q2U_ORIGIN3     (1 << 9)
-#define Q2U_ANGLE1      (1 << 10)
-#define Q2U_MODEL       (1 << 11)
-#define Q2U_RENDERFX8   (1 << 12)		// fullbright, etc
-#define Q2U_EFFECTS8    (1 << 14)		// autorotate, trails, etc
-#define Q2U_MOREBITS2   (1 << 15)		// read one additional byte
+#define Q2U_NUMBER16    ( 1 << 8 )			// NUMBER8 is implicit if not set
+#define Q2U_ORIGIN3     ( 1 << 9 )
+#define Q2U_ANGLE1      ( 1 << 10 )
+#define Q2U_MODEL       ( 1 << 11 )
+#define Q2U_RENDERFX8   ( 1 << 12 )			// fullbright, etc
+#define Q2U_EFFECTS8    ( 1 << 14 )			// autorotate, trails, etc
+#define Q2U_MOREBITS2   ( 1 << 15 )			// read one additional byte
 
 // third byte
-#define Q2U_SKIN8       (1 << 16)
-#define Q2U_FRAME16     (1 << 17)		// frame is a short
-#define Q2U_RENDERFX16  (1 << 18)	// 8 + 16 = 32
-#define Q2U_EFFECTS16   (1 << 19)		// 8 + 16 = 32
-#define Q2U_MODEL2      (1 << 20)		// weapons, flags, etc
-#define Q2U_MODEL3      (1 << 21)
-#define Q2U_MODEL4      (1 << 22)
-#define Q2U_MOREBITS3   (1 << 23)		// read one additional byte
+#define Q2U_SKIN8       ( 1 << 16 )
+#define Q2U_FRAME16     ( 1 << 17 )			// frame is a short
+#define Q2U_RENDERFX16  ( 1 << 18 )		// 8 + 16 = 32
+#define Q2U_EFFECTS16   ( 1 << 19 )			// 8 + 16 = 32
+#define Q2U_MODEL2      ( 1 << 20 )			// weapons, flags, etc
+#define Q2U_MODEL3      ( 1 << 21 )
+#define Q2U_MODEL4      ( 1 << 22 )
+#define Q2U_MOREBITS3   ( 1 << 23 )			// read one additional byte
 
 // fourth byte
-#define Q2U_OLDORIGIN   (1 << 24)		// FIXME: get rid of this
-#define Q2U_SKIN16      (1 << 25)
-#define Q2U_SOUND       (1 << 26)
-#define Q2U_SOLID       (1 << 27)
+#define Q2U_OLDORIGIN   ( 1 << 24 )			// FIXME: get rid of this
+#define Q2U_SKIN16      ( 1 << 25 )
+#define Q2U_SOUND       ( 1 << 26 )
+#define Q2U_SOLID       ( 1 << 27 )
 
 //=========================================
 
@@ -648,7 +644,7 @@ enum
 #define MAX_SOUNDS_Q2           256		// so they cannot be blindly increased
 #define MAX_IMAGES_Q2           256
 #define MAX_ITEMS_Q2            256
-#define MAX_GENERAL_Q2          (MAX_CLIENTS_Q2 * 2)	// general config strings
+#define MAX_GENERAL_Q2          ( MAX_CLIENTS_Q2 * 2 )		// general config strings
 
 // q2entity_state_t->renderfx flags
 #define Q2RF_MINLIGHT       1		// allways have some light (viewmodel)
@@ -698,13 +694,13 @@ enum
 #define Q2CS_MAPCHECKSUM        31		// for catching cheater maps
 
 #define Q2CS_MODELS         32
-#define Q2CS_SOUNDS         (Q2CS_MODELS + MAX_MODELS_Q2)
-#define Q2CS_IMAGES         (Q2CS_SOUNDS + MAX_SOUNDS_Q2)
-#define Q2CS_LIGHTS         (Q2CS_IMAGES + MAX_IMAGES_Q2)
-#define Q2CS_ITEMS          (Q2CS_LIGHTS + MAX_LIGHTSTYLES_Q2)
-#define Q2CS_PLAYERSKINS        (Q2CS_ITEMS + MAX_ITEMS_Q2)
-#define Q2CS_GENERAL            (Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2)
-#define MAX_CONFIGSTRINGS_Q2    (Q2CS_GENERAL + MAX_GENERAL_Q2)
+#define Q2CS_SOUNDS         ( Q2CS_MODELS + MAX_MODELS_Q2 )
+#define Q2CS_IMAGES         ( Q2CS_SOUNDS + MAX_SOUNDS_Q2 )
+#define Q2CS_LIGHTS         ( Q2CS_IMAGES + MAX_IMAGES_Q2 )
+#define Q2CS_ITEMS          ( Q2CS_LIGHTS + MAX_LIGHTSTYLES_Q2 )
+#define Q2CS_PLAYERSKINS        ( Q2CS_ITEMS + MAX_ITEMS_Q2 )
+#define Q2CS_GENERAL            ( Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 )
+#define MAX_CONFIGSTRINGS_Q2    ( Q2CS_GENERAL + MAX_GENERAL_Q2 )
 
 //
 // button bits
@@ -716,14 +712,14 @@ enum
 // user_cmd_t communication
 
 // ms and light always sent, the others are optional
-#define Q2CM_ANGLE1     BIT(0)
-#define Q2CM_ANGLE2     BIT(1)
-#define Q2CM_ANGLE3     BIT(2)
-#define Q2CM_FORWARD    BIT(3)
-#define Q2CM_SIDE       BIT(4)
-#define Q2CM_UP         BIT(5)
-#define Q2CM_BUTTONS    BIT(6)
-#define Q2CM_IMPULSE    BIT(7)
+#define Q2CM_ANGLE1     BIT( 0 )
+#define Q2CM_ANGLE2     BIT( 1 )
+#define Q2CM_ANGLE3     BIT( 2 )
+#define Q2CM_FORWARD    BIT( 3 )
+#define Q2CM_SIDE       BIT( 4 )
+#define Q2CM_UP         BIT( 5 )
+#define Q2CM_BUTTONS    BIT( 6 )
+#define Q2CM_IMPULSE    BIT( 7 )
 
 //
 // key / value info strings
@@ -733,33 +729,33 @@ enum
 #define MAX_INFO_STRING_Q2  512
 
 // a sound without an ent or pos will be a local only sound
-#define Q2SND_VOLUME        BIT(0)		// a byte
-#define Q2SND_ATTENUATION   BIT(1)		// a byte
-#define Q2SND_POS           BIT(2)		// three coordinates
-#define Q2SND_ENT           BIT(3)		// a short 0-2: channel, 3-12: entity
-#define Q2SND_OFFSET        BIT(4)		// a byte, msec offset from frame start
+#define Q2SND_VOLUME        BIT( 0 )		// a byte
+#define Q2SND_ATTENUATION   BIT( 1 )		// a byte
+#define Q2SND_POS           BIT( 2 )		// three coordinates
+#define Q2SND_ENT           BIT( 3 )		// a short 0-2: channel, 3-12: entity
+#define Q2SND_OFFSET        BIT( 4 )		// a byte, msec offset from frame start
 
 #define Q2DEFAULT_SOUND_PACKET_VOLUME        1.0
 #define Q2DEFAULT_SOUND_PACKET_ATTENUATION   1.0
 
 // plyer_state_t communication
 
-#define Q2PS_M_TYPE         BIT(0)
-#define Q2PS_M_ORIGIN       BIT(1)
-#define Q2PS_M_VELOCITY     BIT(2)
-#define Q2PS_M_TIME         BIT(3)
-#define Q2PS_M_FLAGS        BIT(4)
-#define Q2PS_M_GRAVITY      BIT(5)
-#define Q2PS_M_DELTA_ANGLES BIT(6)
+#define Q2PS_M_TYPE         BIT( 0 )
+#define Q2PS_M_ORIGIN       BIT( 1 )
+#define Q2PS_M_VELOCITY     BIT( 2 )
+#define Q2PS_M_TIME         BIT( 3 )
+#define Q2PS_M_FLAGS        BIT( 4 )
+#define Q2PS_M_GRAVITY      BIT( 5 )
+#define Q2PS_M_DELTA_ANGLES BIT( 6 )
 
-#define Q2PS_VIEWOFFSET     BIT(7)
-#define Q2PS_VIEWANGLES     BIT(8)
-#define Q2PS_KICKANGLES     BIT(9)
-#define Q2PS_BLEND          BIT(10)
-#define Q2PS_FOV            BIT(11)
-#define Q2PS_WEAPONINDEX    BIT(12)
-#define Q2PS_WEAPONFRAME    BIT(13)
-#define Q2PS_RDFLAGS        BIT(14)
+#define Q2PS_VIEWOFFSET     BIT( 7 )
+#define Q2PS_VIEWANGLES     BIT( 8 )
+#define Q2PS_KICKANGLES     BIT( 9 )
+#define Q2PS_BLEND          BIT( 10 )
+#define Q2PS_FOV            BIT( 11 )
+#define Q2PS_WEAPONINDEX    BIT( 12 )
+#define Q2PS_WEAPONFRAME    BIT( 13 )
+#define Q2PS_RDFLAGS        BIT( 14 )
 
 #define Q2PORT_MASTER 27900
 

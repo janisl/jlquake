@@ -23,91 +23,74 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 
-clightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
+clightstyle_t cl_lightstyle[ MAX_LIGHTSTYLES ];
 
 static int lastofs;
 
-void CL_ClearLightStyles()
-{
-	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
+void CL_ClearLightStyles() {
+	Com_Memset( cl_lightstyle, 0, sizeof ( cl_lightstyle ) );
 	lastofs = -1;
 }
 
-void CL_SetLightStyle(int i, const char* s)
-{
-	if (i >= MAX_LIGHTSTYLES)
-	{
-		common->Error("svc_lightstyle > MAX_LIGHTSTYLES");
+void CL_SetLightStyle( int i, const char* s ) {
+	if ( i >= MAX_LIGHTSTYLES ) {
+		common->Error( "svc_lightstyle > MAX_LIGHTSTYLES" );
 	}
 
-	int j = String::Length(s);
-	if (j >= MAX_STYLESTRING)
-	{
-		common->Error("svc_lightstyle length=%i", j);
+	int j = String::Length( s );
+	if ( j >= MAX_STYLESTRING ) {
+		common->Error( "svc_lightstyle length=%i", j );
 	}
 
-	String::Cpy(cl_lightstyle[i].mapStr,  s);
+	String::Cpy( cl_lightstyle[ i ].mapStr,  s );
 
-	cl_lightstyle[i].rate = 0;
-	if (GGameType & GAME_Hexen2)
-	{
-		int c = s[0];
-		if (c == '1' || c == '2' || c == '3')
-		{
+	cl_lightstyle[ i ].rate = 0;
+	if ( GGameType & GAME_Hexen2 ) {
+		int c = s[ 0 ];
+		if ( c == '1' || c == '2' || c == '3' ) {
 			// Explicit anim rate
-			cl_lightstyle[i].rate = c - '1';
+			cl_lightstyle[ i ].rate = c - '1';
 			j--;
 			s++;
 		}
 	}
-	cl_lightstyle[i].length = j;
+	cl_lightstyle[ i ].length = j;
 
-	for (int k = 0; k < j; k++)
-	{
-		cl_lightstyle[i].map[k] = (float)(s[k] - 'a') / (float)('m' - 'a');
+	for ( int k = 0; k < j; k++ ) {
+		cl_lightstyle[ i ].map[ k ] = ( float )( s[ k ] - 'a' ) / ( float )( 'm' - 'a' );
 	}
 }
 
-void CL_RunLightStyles()
-{
-	int locusHz[3];
-	locusHz[0] = cl.serverTime / 100;
-	locusHz[1] = cl.serverTime / 50;
-	locusHz[2] = cl.serverTime * 3 / 100;
+void CL_RunLightStyles() {
+	int locusHz[ 3 ];
+	locusHz[ 0 ] = cl.serverTime / 100;
+	locusHz[ 1 ] = cl.serverTime / 50;
+	locusHz[ 2 ] = cl.serverTime * 3 / 100;
 
-	if (!(GGameType & GAME_Hexen2))
-	{
-		if (locusHz[0] == lastofs)
-		{
+	if ( !( GGameType & GAME_Hexen2 ) ) {
+		if ( locusHz[ 0 ] == lastofs ) {
 			return;
 		}
-		lastofs = locusHz[0];
+		lastofs = locusHz[ 0 ];
 	}
 
 	clightstyle_t* ls = cl_lightstyle;
-	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
-	{
-		if (!ls->length)
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = 1.0;
+	for ( int i = 0; i < MAX_LIGHTSTYLES; i++, ls++ ) {
+		if ( !ls->length ) {
+			ls->value[ 0 ] = ls->value[ 1 ] = ls->value[ 2 ] = 1.0;
 			continue;
 		}
-		if (ls->length == 1)
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[0];
-		}
-		else
-		{
-			ls->value[0] = ls->value[1] = ls->value[2] = ls->map[locusHz[ls->rate] % ls->length];
+		if ( ls->length == 1 ) {
+			ls->value[ 0 ] = ls->value[ 1 ] = ls->value[ 2 ] = ls->map[ 0 ];
+		} else {
+			ls->value[ 0 ] = ls->value[ 1 ] = ls->value[ 2 ] = ls->map[ locusHz[ ls->rate ] % ls->length ];
 		}
 	}
 }
 
-void CL_AddLightStyles()
-{
+void CL_AddLightStyles() {
 	clightstyle_t* ls = cl_lightstyle;
-	for (int i = 0; i < MAX_LIGHTSTYLES; i++, ls++)
-	{
-		R_AddLightStyleToScene(i, ls->value[0], ls->value[1], ls->value[2]);
+	for ( int i = 0; i < MAX_LIGHTSTYLES; i++, ls++ ) {
+		R_AddLightStyleToScene( i, ls->value[ 0 ], ls->value[ 1 ], ls->value[ 2 ] );
 	}
 }

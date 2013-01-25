@@ -21,25 +21,23 @@
 #ifndef _SP2FILE_H
 #define _SP2FILE_H
 
-#define IDSPRITE2HEADER     (('2' << 24) + ('S' << 16) + ('D' << 8) + 'I')
+#define IDSPRITE2HEADER     ( ( '2' << 24 ) + ( 'S' << 16 ) + ( 'D' << 8 ) + 'I' )
 // little-endian "IDS2"
 #define SPRITE2_VERSION     2
 
 #define MAX_SP2_SKINNAME    64
 
-struct dsp2_frame_t
-{
+struct dsp2_frame_t {
 	int width, height;
 	int origin_x, origin_y;			// raster coordinates inside pic
-	char name[MAX_SP2_SKINNAME];		// name of pcx file
+	char name[ MAX_SP2_SKINNAME ];			// name of pcx file
 };
 
-struct dsprite2_t
-{
+struct dsprite2_t {
 	int ident;
 	int version;
 	int numframes;
-	dsp2_frame_t frames[1];				// variable sized
+	dsp2_frame_t frames[ 1 ];				// variable sized
 };
 
 #endif

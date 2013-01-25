@@ -16,8 +16,7 @@
 
 #define VM_MAGIC    0x12721444
 
-struct vmHeader_t
-{
+struct vmHeader_t {
 	int vmMagic;
 
 	int instructionCount;

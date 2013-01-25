@@ -19,25 +19,25 @@
 
 #include "../../../common/message.h"
 
-void CLQH_ParseTime(QMsg& message);
+void CLQH_ParseTime( QMsg& message );
 void CLQH_ParseDisconnect();
-void CLQH_ParseSetAngle(QMsg& message);
-void CLQH_ParseSetView(QMsg& message);
-void CLQH_ParseLightStyle(QMsg& message);
-void CLQH_ParseStartSoundPacket(QMsg& message, int overflowMask);
-void CLQHW_ParseStartSoundPacket(QMsg& message, float attenuationScale);
-void CLQH_ParseStopSound(QMsg& message);
-void CLQH_ParseSetPause(QMsg& message);
+void CLQH_ParseSetAngle( QMsg& message );
+void CLQH_ParseSetView( QMsg& message );
+void CLQH_ParseLightStyle( QMsg& message );
+void CLQH_ParseStartSoundPacket( QMsg& message, int overflowMask );
+void CLQHW_ParseStartSoundPacket( QMsg& message, float attenuationScale );
+void CLQH_ParseStopSound( QMsg& message );
+void CLQH_ParseSetPause( QMsg& message );
 void CLQH_ParseKilledMonster();
 void CLQH_ParseFoundSecret();
-void CLQH_ParseUpdateStat(QMsg& message);
-void CLQH_ParseStaticSound(QMsg& message);
-void CLQHW_ParseCDTrack(QMsg& message);
+void CLQH_ParseUpdateStat( QMsg& message );
+void CLQH_ParseStaticSound( QMsg& message );
+void CLQHW_ParseCDTrack( QMsg& message );
 void CLQH_ParseSellScreen();
-void CLQHW_ParseFinale(QMsg& message);
+void CLQHW_ParseFinale( QMsg& message );
 void CLQHW_ParseSmallKick();
 void CLQHW_ParseBigKick();
-void CLQHW_ParseMaxSpeed(QMsg& message);
-void CLQHW_ParseEntGravity(QMsg& message);
+void CLQHW_ParseMaxSpeed( QMsg& message );
+void CLQHW_ParseEntGravity( QMsg& message );
 
 #endif

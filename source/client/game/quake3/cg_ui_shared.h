@@ -17,8 +17,7 @@
 #ifndef _QUAKE3_CG_UI_SHARED_H
 #define _QUAKE3_CG_UI_SHARED_H
 
-struct q3refEntity_t
-{
+struct q3refEntity_t {
 	refEntityType_t reType;
 	int renderfx;
 
@@ -28,7 +27,7 @@ struct q3refEntity_t
 	vec3_t lightingOrigin;		// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
 	float shadowPlane;		// projection shadows go here, stencils go slightly lower
 
-	vec3_t axis[3];			// rotation vectors
+	vec3_t axis[ 3 ];			// rotation vectors
 	qboolean nonNormalizedAxes;	// axis are not normalized, i.e. they have scale
 	vec3_t origin;				// also used as MODEL_BEAM's "from"
 	int frame;				// also used as MODEL_BEAM's diameter
@@ -44,8 +43,8 @@ struct q3refEntity_t
 	qhandle_t customShader;		// use one image for the entire thing
 
 	// misc
-	byte shaderRGBA[4];		// colors used by rgbgen entity shaders
-	float shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
+	byte shaderRGBA[ 4 ];		// colors used by rgbgen entity shaders
+	float shaderTexCoord[ 2 ];		// texture coordinates used by tcMod entity modifiers
 	float shaderTime;			// subtracted from refdef time to control effect start times
 	// Also used for synctime
 
@@ -54,8 +53,7 @@ struct q3refEntity_t
 	float rotation;
 };
 
-struct q3refdef_t
-{
+struct q3refdef_t {
 	int x;
 	int y;
 	int width;
@@ -63,7 +61,7 @@ struct q3refdef_t
 	float fov_x;
 	float fov_y;
 	vec3_t vieworg;
-	vec3_t viewaxis[3];		// transformation matrix
+	vec3_t viewaxis[ 3 ];		// transformation matrix
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
 	int time;
@@ -71,18 +69,17 @@ struct q3refdef_t
 	int rdflags;			// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
-	byte areamask[MAX_MAP_AREA_BYTES];
+	byte areamask[ MAX_MAP_AREA_BYTES ];
 
 	// text messages for deform text shaders
-	char text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+	char text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
 };
 
-struct q3glconfig_t
-{
-	char renderer_string[MAX_STRING_CHARS];
-	char vendor_string[MAX_STRING_CHARS];
-	char version_string[MAX_STRING_CHARS];
-	char extensions_string[BIG_INFO_STRING];
+struct q3glconfig_t {
+	char renderer_string[ MAX_STRING_CHARS ];
+	char vendor_string[ MAX_STRING_CHARS ];
+	char version_string[ MAX_STRING_CHARS ];
+	char extensions_string[ BIG_INFO_STRING ];
 
 	int maxTextureSize;			// queried from GL
 	int maxActiveTextures;		// multitexture ability
@@ -111,8 +108,8 @@ struct q3glconfig_t
 	qboolean smpActive;		// dual processor
 };
 
-void CLQ3_GetGlconfig(q3glconfig_t* glconfig);
-void CLQ3_AddRefEntityToScene(const q3refEntity_t* ent);
-void CLQ3_RenderScene(const q3refdef_t* refdef);
+void CLQ3_GetGlconfig( q3glconfig_t* glconfig );
+void CLQ3_AddRefEntityToScene( const q3refEntity_t* ent );
+void CLQ3_RenderScene( const q3refdef_t* refdef );
 
 #endif

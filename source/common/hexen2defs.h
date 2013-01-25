@@ -60,8 +60,7 @@
 
 // h2entity_state_t is the information conveyed from the server
 // in an update message
-struct h2entity_state_t
-{
+struct h2entity_state_t {
 	int number;			// edict index
 
 	vec3_t origin;
@@ -76,7 +75,7 @@ struct h2entity_state_t
 	int abslight;		// for Alias models
 	int wpn_sound;		// for cheap playing of sounds
 	int flags;			// nolerp, etc
-	byte ClearCount[32];
+	byte ClearCount[ 32 ];
 };
 
 // Types for various chunks
@@ -258,47 +257,39 @@ struct h2entity_state_t
 
 #define MAX_EFFECTS_H2 256
 
-struct h2EffectT
-{
+struct h2EffectT {
 	int type;
 	int expire_time;
 	unsigned client_list;
 
-	union
-	{
-		struct
-		{
+	union {
+		struct {
 			vec3_t min_org, max_org, e_size, dir;
 			float next_time, wait;
 			int color, count;
 		} Rain;
-		struct
-		{
+		struct {
 			vec3_t min_org, max_org, dir;
 			float next_time;
 			int count, flags;
 		} Snow;
-		struct
-		{
+		struct {
 			vec3_t pos,angle,movedir;
 			vec3_t vforward,vup,vright;
 			int color,cnt;
 		} Fountain;
-		struct
-		{
+		struct {
 			vec3_t origin;
 			float radius;
 		} Quake;
-		struct
-		{
+		struct {
 			vec3_t origin;
 			vec3_t velocity;
 			int entity_index;
 			float time_amount,framelength,frame;
 			int entity_index2;	//second is only used for telesmk1
 		} Smoke;
-		struct
-		{
+		struct {
 			vec3_t origin;
 			vec3_t velocity;
 			int ent1,owner;
@@ -306,36 +297,31 @@ struct h2EffectT
 			float time_amount,height;
 			int sound_time;
 		} Chain;
-		struct
-		{
+		struct {
 			vec3_t origin;
 			int entity_index;
 			float time_amount;
 			int reverse;	// Forward animation has been run, now go backwards
 		} Flash;
-		struct
-		{
+		struct {
 			vec3_t origin;
 			float time_amount;
 			int stage;
 		} RD;	// Rider Death
-		struct
-		{
+		struct {
 			vec3_t origin;
 			float time_amount;
 			int color;
 			float lifetime;
 		} GravityWell;
-		struct
-		{
-			int entity_index[16];
+		struct {
+			int entity_index[ 16 ];
 			vec3_t origin;
-			vec3_t velocity[16];
+			vec3_t velocity[ 16 ];
 			float time_amount,framelength;
 			float skinnum;
 		} Teleporter;
-		struct
-		{
+		struct {
 			vec3_t angle;
 			vec3_t origin;
 			vec3_t avelocity;
@@ -344,8 +330,7 @@ struct h2EffectT
 			float time_amount;
 			float speed;// Only for HWCE_HWDRILLA
 		} Missile;
-		struct
-		{
+		struct {
 			vec3_t angle;	//as per missile
 			vec3_t origin;
 			vec3_t avelocity;
@@ -356,34 +341,31 @@ struct h2EffectT
 			int scaleDir;
 			int ent1, ent2;
 		} Star;
-		struct
-		{
-			vec3_t origin[6];
+		struct {
+			vec3_t origin[ 6 ];
 			vec3_t velocity;
 			vec3_t angle;
-			vec3_t vel[5];
-			int ent[5];
-			float gonetime[5];	//when a bolt isn't active, check here
-								//to see where in the gone process it is?--not sure if that's
-								//the best way to handle it
-			int state[5];
+			vec3_t vel[ 5 ];
+			int ent[ 5 ];
+			float gonetime[ 5 ];	//when a bolt isn't active, check here
+									//to see where in the gone process it is?--not sure if that's
+									//the best way to handle it
+			int state[ 5 ];
 			int activebolts,turnedbolts;
 			int bolts;
 			float time_amount;
 			int randseed;
 		} Xbow;
-		struct
-		{
+		struct {
 			vec3_t offset;
 			int owner;
 			int count;
 			float time_amount;
 		} Bubble;
-		struct
-		{
-			int entity_index[16];
-			vec3_t velocity[16];
-			vec3_t avel[3];
+		struct {
+			int entity_index[ 16 ];
+			vec3_t velocity[ 16 ];
+			vec3_t avel[ 3 ];
 			vec3_t origin;
 			unsigned char type;
 			vec3_t srcVel;
@@ -394,8 +376,7 @@ struct h2EffectT
 	};
 };
 
-struct h2usercmd_t
-{
+struct h2usercmd_t {
 	vec3_t viewangles;
 
 	// intended velocities
@@ -405,8 +386,7 @@ struct h2usercmd_t
 	byte lightlevel;
 };
 
-struct hwusercmd_t
-{
+struct hwusercmd_t {
 	byte msec;
 	vec3_t angles;
 	short forwardmove, sidemove, upmove;
@@ -417,15 +397,14 @@ struct hwusercmd_t
 
 #define HWMAX_PACKET_ENTITIES   64	// doesn't count nails
 
-struct hwpacket_entities_t
-{
+struct hwpacket_entities_t {
 	int num_entities;
-	h2entity_state_t entities[HWMAX_PACKET_ENTITIES];
+	h2entity_state_t entities[ HWMAX_PACKET_ENTITIES ];
 };
 
 #define UPDATE_BACKUP_HW    64	// copies of entity_state_t to keep buffered
 // must be power of two
-#define UPDATE_MASK_HW  (UPDATE_BACKUP_HW - 1)
+#define UPDATE_MASK_HW  ( UPDATE_BACKUP_HW - 1 )
 
 //
 // temp entity events
@@ -512,55 +491,55 @@ struct hwpacket_entities_t
 #define HWTE_CHAINLIGHTNING         81
 
 // if the high bit of the servercmd is set, the low bits are fast update flags:
-#define H2U_MOREBITS    (1 << 0)
-#define H2U_ORIGIN1     (1 << 1)
-#define H2U_ORIGIN2     (1 << 2)
-#define H2U_ORIGIN3     (1 << 3)
-#define H2U_ANGLE2      (1 << 4)
-#define H2U_NOLERP      (1 << 5)		// don't interpolate movement
-#define H2U_FRAME       (1 << 6)
-#define H2U_SIGNAL      (1 << 7)		// just differentiates from other updates
+#define H2U_MOREBITS    ( 1 << 0 )
+#define H2U_ORIGIN1     ( 1 << 1 )
+#define H2U_ORIGIN2     ( 1 << 2 )
+#define H2U_ORIGIN3     ( 1 << 3 )
+#define H2U_ANGLE2      ( 1 << 4 )
+#define H2U_NOLERP      ( 1 << 5 )			// don't interpolate movement
+#define H2U_FRAME       ( 1 << 6 )
+#define H2U_SIGNAL      ( 1 << 7 )			// just differentiates from other updates
 
 // svc_update can pass all of the fast update bits, plus more
-#define H2U_ANGLE1      (1 << 8)
-#define H2U_ANGLE3      (1 << 9)
-#define H2U_MODEL       (1 << 10)
-#define H2U_CLEAR_ENT   (1 << 11)
-#define H2U_ENT_OFF     (1 << 13)
-#define H2U_LONGENTITY  (1 << 14)
-#define H2U_MOREBITS2   (1 << 15)
+#define H2U_ANGLE1      ( 1 << 8 )
+#define H2U_ANGLE3      ( 1 << 9 )
+#define H2U_MODEL       ( 1 << 10 )
+#define H2U_CLEAR_ENT   ( 1 << 11 )
+#define H2U_ENT_OFF     ( 1 << 13 )
+#define H2U_LONGENTITY  ( 1 << 14 )
+#define H2U_MOREBITS2   ( 1 << 15 )
 
-#define H2U_SKIN        (1 << 16)
-#define H2U_EFFECTS     (1 << 17)
-#define H2U_SCALE       (1 << 18)
-#define H2U_COLORMAP    (1 << 19)
+#define H2U_SKIN        ( 1 << 16 )
+#define H2U_EFFECTS     ( 1 << 17 )
+#define H2U_SCALE       ( 1 << 18 )
+#define H2U_COLORMAP    ( 1 << 19 )
 
 // the first 16 bits of a packetentities update holds 9 bits
 // of entity number and 7 bits of flags
-#define HWU_ORIGIN1     (1 << 9)
-#define HWU_ORIGIN2     (1 << 10)
-#define HWU_ORIGIN3     (1 << 11)
-#define HWU_ANGLE2      (1 << 12)
-#define HWU_FRAME       (1 << 13)
-#define HWU_REMOVE      (1 << 14)		// REMOVE this entity, don't add it
-#define HWU_MOREBITS    (1 << 15)
+#define HWU_ORIGIN1     ( 1 << 9 )
+#define HWU_ORIGIN2     ( 1 << 10 )
+#define HWU_ORIGIN3     ( 1 << 11 )
+#define HWU_ANGLE2      ( 1 << 12 )
+#define HWU_FRAME       ( 1 << 13 )
+#define HWU_REMOVE      ( 1 << 14 )			// REMOVE this entity, don't add it
+#define HWU_MOREBITS    ( 1 << 15 )
 
 // if MOREBITS is set, these additional flags are read in next
-#define HWU_ANGLE1      (1 << 0)
-#define HWU_ANGLE3      (1 << 1)
-#define HWU_SCALE       (1 << 2)
-#define HWU_COLORMAP    (1 << 3)
-#define HWU_SKIN        (1 << 4)
-#define HWU_EFFECTS     (1 << 5)
-#define HWU_MODEL16     (1 << 6)
-#define HWU_MOREBITS2   (1 << 7)
+#define HWU_ANGLE1      ( 1 << 0 )
+#define HWU_ANGLE3      ( 1 << 1 )
+#define HWU_SCALE       ( 1 << 2 )
+#define HWU_COLORMAP    ( 1 << 3 )
+#define HWU_SKIN        ( 1 << 4 )
+#define HWU_EFFECTS     ( 1 << 5 )
+#define HWU_MODEL16     ( 1 << 6 )
+#define HWU_MOREBITS2   ( 1 << 7 )
 
 //if MOREBITS2 is set, then send the 3rd byte
 
-#define HWU_MODEL       (1 << 16)
-#define HWU_SOUND       (1 << 17)
-#define HWU_DRAWFLAGS   (1 << 18)
-#define HWU_ABSLIGHT    (1 << 19)
+#define HWU_MODEL       ( 1 << 16 )
+#define HWU_SOUND       ( 1 << 17 )
+#define HWU_DRAWFLAGS   ( 1 << 18 )
+#define HWU_ABSLIGHT    ( 1 << 19 )
 
 //==================
 // note that there are some defs.qc that mirror to these numbers
@@ -728,8 +707,7 @@ struct hwpacket_entities_t
 #define MAX_SOUNDS_H2       512			// Sent over the net as a byte
 #define MAX_SOUNDS_HW       256			// so they cannot be blindly increased
 
-struct h2client_entvars_t
-{
+struct h2client_entvars_t {
 	float movetype;
 	float health;
 	float max_health;
@@ -824,22 +802,22 @@ struct h2client_entvars_t
 // playerinfo flags from server
 // playerinfo allways sends: playernum, flags, origin[] and framenumber
 
-#define HWPF_MSEC         (1 << 0)
-#define HWPF_COMMAND      (1 << 1)
-#define HWPF_VELOCITY1    (1 << 2)
-#define HWPF_VELOCITY2    (1 << 3)
-#define HWPF_VELOCITY3    (1 << 4)
-#define HWPF_MODEL        (1 << 5)
-#define HWPF_SKINNUM      (1 << 6)
-#define HWPF_EFFECTS      (1 << 7)
-#define HWPF_WEAPONFRAME  (1 << 8)		// only sent for view player
-#define HWPF_DEAD         (1 << 9)		// don't block movement any more
-#define HWPF_CROUCH       (1 << 10)		// offset the view height differently
-#define HWPF_EFFECTS2     (1 << 11)		// player has high byte of effects set...
-#define HWPF_DRAWFLAGS    (1 << 12)
-#define HWPF_SCALE        (1 << 13)
-#define HWPF_ABSLIGHT     (1 << 14)
-#define HWPF_SOUND        (1 << 15)		//play a sound in the weapon channel
+#define HWPF_MSEC         ( 1 << 0 )
+#define HWPF_COMMAND      ( 1 << 1 )
+#define HWPF_VELOCITY1    ( 1 << 2 )
+#define HWPF_VELOCITY2    ( 1 << 3 )
+#define HWPF_VELOCITY3    ( 1 << 4 )
+#define HWPF_MODEL        ( 1 << 5 )
+#define HWPF_SKINNUM      ( 1 << 6 )
+#define HWPF_EFFECTS      ( 1 << 7 )
+#define HWPF_WEAPONFRAME  ( 1 << 8 )		// only sent for view player
+#define HWPF_DEAD         ( 1 << 9 )		// don't block movement any more
+#define HWPF_CROUCH       ( 1 << 10 )		// offset the view height differently
+#define HWPF_EFFECTS2     ( 1 << 11 )		// player has high byte of effects set...
+#define HWPF_DRAWFLAGS    ( 1 << 12 )
+#define HWPF_SCALE        ( 1 << 13 )
+#define HWPF_ABSLIGHT     ( 1 << 14 )
+#define HWPF_SOUND        ( 1 << 15 )		//play a sound in the weapon channel
 
 #define H2MAX_FRAMES 5
 
@@ -850,14 +828,14 @@ struct h2client_entvars_t
 // if the high bit of the client to server byte is set, the low bits are
 // client move cmd bits
 // ms and angle2 are allways sent, the others are optional
-#define HWCM_ANGLE1   (1 << 0)
-#define HWCM_ANGLE3   (1 << 1)
-#define HWCM_FORWARD  (1 << 2)
-#define HWCM_SIDE     (1 << 3)
-#define HWCM_UP       (1 << 4)
-#define HWCM_BUTTONS  (1 << 5)
-#define HWCM_IMPULSE  (1 << 6)
-#define HWCM_MSEC     (1 << 7)
+#define HWCM_ANGLE1   ( 1 << 0 )
+#define HWCM_ANGLE3   ( 1 << 1 )
+#define HWCM_FORWARD  ( 1 << 2 )
+#define HWCM_SIDE     ( 1 << 3 )
+#define HWCM_UP       ( 1 << 4 )
+#define HWCM_BUTTONS  ( 1 << 5 )
+#define HWCM_IMPULSE  ( 1 << 6 )
+#define HWCM_MSEC     ( 1 << 7 )
 
 // entity effects
 #define HWEF_ONFIRE               0x00000001
@@ -878,64 +856,64 @@ struct h2client_entvars_t
 #define HWEF_BEETLE_EFFECTS       0x20000000
 
 // Bits to help send server info about the client's edict variables
-#define SC1_HEALTH              (1 << 0)		// changes stat bar
-#define SC1_LEVEL               (1 << 1)		// changes stat bar
-#define SC1_INTELLIGENCE        (1 << 2)		// changes stat bar
-#define SC1_WISDOM              (1 << 3)		// changes stat bar
-#define SC1_STRENGTH            (1 << 4)		// changes stat bar
-#define SC1_DEXTERITY           (1 << 5)		// changes stat bar
-#define SC1_WEAPON              (1 << 6)		// changes stat bar
-#define SC1_TELEPORT_TIME       (1 << 6)		// can't airmove for 2 seconds
-#define SC1_BLUEMANA            (1 << 7)		// changes stat bar
-#define SC1_GREENMANA           (1 << 8)		// changes stat bar
-#define SC1_EXPERIENCE          (1 << 9)		// changes stat bar
-#define SC1_CNT_TORCH           (1 << 10)		// changes stat bar
-#define SC1_CNT_H_BOOST         (1 << 11)		// changes stat bar
-#define SC1_CNT_SH_BOOST        (1 << 12)		// changes stat bar
-#define SC1_CNT_MANA_BOOST      (1 << 13)		// changes stat bar
-#define SC1_CNT_TELEPORT        (1 << 14)		// changes stat bar
-#define SC1_CNT_TOME            (1 << 15)		// changes stat bar
-#define SC1_CNT_SUMMON          (1 << 16)		// changes stat bar
-#define SC1_CNT_INVISIBILITY    (1 << 17)		// changes stat bar
-#define SC1_CNT_GLYPH           (1 << 18)		// changes stat bar
-#define SC1_CNT_HASTE           (1 << 19)		// changes stat bar
-#define SC1_CNT_BLAST           (1 << 20)		// changes stat bar
-#define SC1_CNT_POLYMORPH       (1 << 21)		// changes stat bar
-#define SC1_CNT_FLIGHT          (1 << 22)		// changes stat bar
-#define SC1_CNT_CUBEOFFORCE     (1 << 23)		// changes stat bar
-#define SC1_CNT_INVINCIBILITY   (1 << 24)		// changes stat bar
-#define SC1_ARTIFACT_ACTIVE     (1 << 25)
-#define SC1_ARTIFACT_LOW        (1 << 26)
-#define SC1_MOVETYPE            (1 << 27)
-#define SC1_CAMERAMODE          (1 << 28)
-#define SC1_HASTED              (1 << 29)
-#define SC1_INVENTORY           (1 << 30)
-#define SC1_RINGS_ACTIVE        (1 << 31)
+#define SC1_HEALTH              ( 1 << 0 )			// changes stat bar
+#define SC1_LEVEL               ( 1 << 1 )			// changes stat bar
+#define SC1_INTELLIGENCE        ( 1 << 2 )			// changes stat bar
+#define SC1_WISDOM              ( 1 << 3 )			// changes stat bar
+#define SC1_STRENGTH            ( 1 << 4 )			// changes stat bar
+#define SC1_DEXTERITY           ( 1 << 5 )			// changes stat bar
+#define SC1_WEAPON              ( 1 << 6 )			// changes stat bar
+#define SC1_TELEPORT_TIME       ( 1 << 6 )			// can't airmove for 2 seconds
+#define SC1_BLUEMANA            ( 1 << 7 )			// changes stat bar
+#define SC1_GREENMANA           ( 1 << 8 )			// changes stat bar
+#define SC1_EXPERIENCE          ( 1 << 9 )			// changes stat bar
+#define SC1_CNT_TORCH           ( 1 << 10 )			// changes stat bar
+#define SC1_CNT_H_BOOST         ( 1 << 11 )			// changes stat bar
+#define SC1_CNT_SH_BOOST        ( 1 << 12 )			// changes stat bar
+#define SC1_CNT_MANA_BOOST      ( 1 << 13 )			// changes stat bar
+#define SC1_CNT_TELEPORT        ( 1 << 14 )			// changes stat bar
+#define SC1_CNT_TOME            ( 1 << 15 )			// changes stat bar
+#define SC1_CNT_SUMMON          ( 1 << 16 )			// changes stat bar
+#define SC1_CNT_INVISIBILITY    ( 1 << 17 )			// changes stat bar
+#define SC1_CNT_GLYPH           ( 1 << 18 )			// changes stat bar
+#define SC1_CNT_HASTE           ( 1 << 19 )			// changes stat bar
+#define SC1_CNT_BLAST           ( 1 << 20 )			// changes stat bar
+#define SC1_CNT_POLYMORPH       ( 1 << 21 )			// changes stat bar
+#define SC1_CNT_FLIGHT          ( 1 << 22 )			// changes stat bar
+#define SC1_CNT_CUBEOFFORCE     ( 1 << 23 )			// changes stat bar
+#define SC1_CNT_INVINCIBILITY   ( 1 << 24 )			// changes stat bar
+#define SC1_ARTIFACT_ACTIVE     ( 1 << 25 )
+#define SC1_ARTIFACT_LOW        ( 1 << 26 )
+#define SC1_MOVETYPE            ( 1 << 27 )
+#define SC1_CAMERAMODE          ( 1 << 28 )
+#define SC1_HASTED              ( 1 << 29 )
+#define SC1_INVENTORY           ( 1 << 30 )
+#define SC1_RINGS_ACTIVE        ( 1 << 31 )
 
-#define SC2_RINGS_LOW           (1 << 0)
-#define SC2_AMULET              (1 << 1)
-#define SC2_BRACER              (1 << 2)
-#define SC2_BREASTPLATE         (1 << 3)
-#define SC2_HELMET              (1 << 4)
-#define SC2_FLIGHT_T            (1 << 5)
-#define SC2_WATER_T             (1 << 6)
-#define SC2_TURNING_T           (1 << 7)
-#define SC2_REGEN_T             (1 << 8)
-#define SC2_HASTE_T             (1 << 9)
-#define SC2_TOME_T              (1 << 10)
-#define SC2_PUZZLE1             (1 << 11)
-#define SC2_PUZZLE2             (1 << 12)
-#define SC2_PUZZLE3             (1 << 13)
-#define SC2_PUZZLE4             (1 << 14)
-#define SC2_PUZZLE5             (1 << 15)
-#define SC2_PUZZLE6             (1 << 16)
-#define SC2_PUZZLE7             (1 << 17)
-#define SC2_PUZZLE8             (1 << 18)
-#define SC2_MAXHEALTH           (1 << 19)
-#define SC2_MAXMANA             (1 << 20)
-#define SC2_FLAGS               (1 << 21)
-#define SC2_OBJ                 (1 << 22)
-#define SC2_OBJ2                (1 << 23)
+#define SC2_RINGS_LOW           ( 1 << 0 )
+#define SC2_AMULET              ( 1 << 1 )
+#define SC2_BRACER              ( 1 << 2 )
+#define SC2_BREASTPLATE         ( 1 << 3 )
+#define SC2_HELMET              ( 1 << 4 )
+#define SC2_FLIGHT_T            ( 1 << 5 )
+#define SC2_WATER_T             ( 1 << 6 )
+#define SC2_TURNING_T           ( 1 << 7 )
+#define SC2_REGEN_T             ( 1 << 8 )
+#define SC2_HASTE_T             ( 1 << 9 )
+#define SC2_TOME_T              ( 1 << 10 )
+#define SC2_PUZZLE1             ( 1 << 11 )
+#define SC2_PUZZLE2             ( 1 << 12 )
+#define SC2_PUZZLE3             ( 1 << 13 )
+#define SC2_PUZZLE4             ( 1 << 14 )
+#define SC2_PUZZLE5             ( 1 << 15 )
+#define SC2_PUZZLE6             ( 1 << 16 )
+#define SC2_PUZZLE7             ( 1 << 17 )
+#define SC2_PUZZLE8             ( 1 << 18 )
+#define SC2_MAXHEALTH           ( 1 << 19 )
+#define SC2_MAXMANA             ( 1 << 20 )
+#define SC2_FLAGS               ( 1 << 21 )
+#define SC2_OBJ                 ( 1 << 22 )
+#define SC2_OBJ2                ( 1 << 23 )
 
 // This is to mask out those items in the inventory (for inventory changes)
 #define SC1_INV 0x01fffc00

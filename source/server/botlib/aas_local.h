@@ -20,8 +20,7 @@
 #define MAX_AAS_WORLDS      2	// one for each bounding box type
 
 //area settings
-struct aas_areasettings_t
-{
+struct aas_areasettings_t {
 	//could also add all kind of statistic fields
 	int contents;					//contents of the convex area
 	int areaflags;					//several area flags
@@ -35,8 +34,7 @@ struct aas_areasettings_t
 };
 
 //structure to link entities to areas and areas to entities
-struct aas_link_t
-{
+struct aas_link_t {
 	int entnum;
 	int areanum;
 	aas_link_t* next_ent;
@@ -46,8 +44,7 @@ struct aas_link_t
 };
 
 //structure to link entities to leaves and leaves to entities
-struct bsp_link_t
-{
+struct bsp_link_t {
 	int entnum;
 	int leafnum;
 	bsp_link_t* next_ent;
@@ -57,8 +54,7 @@ struct bsp_link_t
 };
 
 //entity
-struct aas_entity_t
-{
+struct aas_entity_t {
 	//entity info
 	aas_entityinfo_t i;
 	//links into the AAS areas
@@ -67,8 +63,7 @@ struct aas_entity_t
 	bsp_link_t* leaves;
 };
 
-struct aas_settings_t
-{
+struct aas_settings_t {
 	float phys_friction;
 	float phys_stopspeed;
 	float phys_gravity;
@@ -108,8 +103,7 @@ struct aas_settings_t
 };
 
 //routing cache
-struct aas_routingcache_t
-{
+struct aas_routingcache_t {
 	byte type;									//portal or area cache
 	float time;									//last time accessed or updated
 	int size;									//size of the routing cache
@@ -123,12 +117,11 @@ struct aas_routingcache_t
 	aas_routingcache_t* time_prev;
 	aas_routingcache_t* time_next;
 	unsigned char* reachabilities;				//reachabilities used for routing
-	unsigned short int traveltimes[1];			//travel time for every area (variable sized)
+	unsigned short int traveltimes[ 1 ];			//travel time for every area (variable sized)
 };
 
 //fields for the routing algorithm
-struct aas_routingupdate_t
-{
+struct aas_routingupdate_t {
 	int cluster;
 	int areanum;								//area number of the update
 	vec3_t start;								//start point the area was entered
@@ -140,29 +133,25 @@ struct aas_routingupdate_t
 };
 
 //reversed reachability link
-struct aas_reversedlink_t
-{
+struct aas_reversedlink_t {
 	int linknum;								//the aas_areareachability_t
 	int areanum;								//reachable from this area
 	aas_reversedlink_t* next;			//next link
 };
 
 //reversed area reachability
-struct aas_reversedreachability_t
-{
+struct aas_reversedreachability_t {
 	int numlinks;
 	aas_reversedlink_t* first;
 };
 
 //areas a reachability goes through
-struct aas_reachabilityareas_t
-{
+struct aas_reachabilityareas_t {
 	int firstarea;
 	int numareas;
 };
 
-struct aas_t
-{
+struct aas_t {
 	int loaded;									//true when an AAS file is loaded
 	int initialized;							//true when AAS has been initialized
 	int savefile;								//set true when file should be saved
@@ -171,8 +160,8 @@ struct aas_t
 	float time;
 	int numframes;
 	//name of the aas file
-	char filename[MAX_QPATH];
-	char mapname[MAX_QPATH];
+	char filename[ MAX_QPATH ];
+	char mapname[ MAX_QPATH ];
 	//bounding boxes
 	int numbboxes;
 	aas_bbox_t* bboxes;
@@ -228,7 +217,7 @@ struct aas_t
 	int maxclients;
 	aas_entity_t* entities;
 	//index to retrieve travel flag for a travel type
-	int travelflagfortype[MAX_TRAVELTYPES];
+	int travelflagfortype[ MAX_TRAVELTYPES ];
 	//travel flags for each area based on contents
 	int* areacontentstravelflags;
 	//routing update
@@ -276,8 +265,7 @@ struct aas_t
 	int* clusterTeamTravelFlags;
 };
 
-struct aas_clientmove_t
-{
+struct aas_clientmove_t {
 	vec3_t endpos;			//position at the end of movement prediction
 	int endarea;			//area at end of movement prediction
 	vec3_t velocity;		//velocity at the end of movement prediction
@@ -291,7 +279,7 @@ struct aas_clientmove_t
 };
 
 extern aas_t* aasworld;
-extern aas_t aasworlds[MAX_AAS_WORLDS];
+extern aas_t aasworlds[ MAX_AAS_WORLDS ];
 
 extern aas_settings_t aassettings;
 
@@ -300,15 +288,15 @@ int AAS_LoadBSPFile();
 //dump the loaded BSP data
 void AAS_DumpBSPData();
 //gets the mins, maxs and origin of a BSP model
-void AAS_BSPModelMinsMaxs(int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs);
+void AAS_BSPModelMinsMaxs( int modelnum, const vec3_t angles, vec3_t mins, vec3_t maxs );
 //trace through the world
-bsp_trace_t AAS_Trace(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int passent, int contentmask);
+bsp_trace_t AAS_Trace( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int passent, int contentmask );
 //calculates collision with given entity
-bool AAS_EntityCollision(int entnum, const vec3_t start, const vec3_t boxmins, const vec3_t boxmaxs,
-	const vec3_t end, int contentmask, bsp_trace_t* trace);
+bool AAS_EntityCollision( int entnum, const vec3_t start, const vec3_t boxmins, const vec3_t boxmaxs,
+	const vec3_t end, int contentmask, bsp_trace_t* trace );
 //returns true when p2 is in the PVS of p1
-bool AAS_inPVS(const vec3_t p1, const vec3_t p2);
+bool AAS_inPVS( const vec3_t p1, const vec3_t p2 );
 
 //initialize the AAS clustering
 void AAS_InitClustering();
@@ -317,48 +305,48 @@ void AAS_ClearShownPolygons();
 //clear the shown debug lines
 void AAS_ClearShownDebugLines();
 //show a debug line
-void AAS_DebugLine(const vec3_t start, const vec3_t end, int color);
+void AAS_DebugLine( const vec3_t start, const vec3_t end, int color );
 //show a permenent line
-void AAS_PermanentLine(const vec3_t start, const vec3_t end, int color);
-void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly);
+void AAS_PermanentLine( const vec3_t start, const vec3_t end, int color );
+void AAS_ShowAreaPolygons( int areanum, int color, int groundfacesonly );
 //print the travel type
-void AAS_PrintTravelType(int traveltype);
+void AAS_PrintTravelType( int traveltype );
 //visualize the given reachability
-void AAS_ShowReachability(const aas_reachability_t* reach);
+void AAS_ShowReachability( const aas_reachability_t* reach );
 
 //returns the origin of the entity
-void AAS_EntityOrigin(int entnum, vec3_t origin);
+void AAS_EntityOrigin( int entnum, vec3_t origin );
 //returns the model index of the entity
-int AAS_EntityModelindex(int entnum);
+int AAS_EntityModelindex( int entnum );
 //returns the entity type
-int AAS_EntityType(int entnum);
+int AAS_EntityType( int entnum );
 //returns the BSP model number of the entity
-int AAS_EntityModelNum(int entnum);
+int AAS_EntityModelNum( int entnum );
 //returns the origin of an entity with the given model number
-bool AAS_OriginOfMoverWithModelNum(int modelnum, vec3_t origin);
+bool AAS_OriginOfMoverWithModelNum( int modelnum, vec3_t origin );
 //resets the entity AAS and BSP links (sets areas and leaves pointers to NULL)
 void AAS_ResetEntityLinks();
 //invalidates all entity infos
 void AAS_InvalidateEntities();
 //returns the next entity
-int AAS_NextEntity(int entnum);
-bool AAS_IsEntityInArea(int entnumIgnore, int entnumIgnore2, int areanum);
+int AAS_NextEntity( int entnum );
+bool AAS_IsEntityInArea( int entnumIgnore, int entnumIgnore2, int areanum );
 //updates an entity
-int AAS_UpdateEntity(int ent, const bot_entitystate_t* state);
+int AAS_UpdateEntity( int ent, const bot_entitystate_t* state );
 //unlink not updated entities
 void AAS_UnlinkInvalidEntities();
 //returns the best reachable area the entity is situated in
-int AAS_BestReachableEntityArea(int entnum);
+int AAS_BestReachableEntityArea( int entnum );
 
 //dumps the loaded AAS data
 void AAS_DumpAASData();
 //loads the AAS file with the given name
-int AAS_LoadAASFile(const char* filename);
+int AAS_LoadAASFile( const char* filename );
 //writes an AAS file with the given name
-bool AAS_WriteAASFile(const char* filename);
+bool AAS_WriteAASFile( const char* filename );
 
 //AAS error message
-void AAS_Error(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
+void AAS_Error( const char* fmt, ... ) id_attribute( ( format( printf, 1, 2 ) ) );
 //returns true if the AAS file is loaded
 bool AAS_Loaded();
 //setup AAS with the given number of entities and clients
@@ -366,88 +354,88 @@ int AAS_Setup();
 //shutdown AAS
 void AAS_Shutdown();
 //start a new time frame
-int AAS_StartFrame(float time);
+int AAS_StartFrame( float time );
 //start a new map
-int AAS_LoadMap(const char* mapname);
+int AAS_LoadMap( const char* mapname );
 
 void AAS_InitSettings();
 //returns true if against a ladder at the given origin
-bool AAS_AgainstLadder(const vec3_t origin, int ms_areanum);
+bool AAS_AgainstLadder( const vec3_t origin, int ms_areanum );
 //calculates the horizontal velocity needed for a jump and returns true this velocity could be calculated
-bool AAS_HorizontalVelocityForJump(float zvel, const vec3_t start, const vec3_t end, float* velocity);
-bool AAS_DropToFloor(vec3_t origin, const vec3_t mins, const vec3_t maxs);
+bool AAS_HorizontalVelocityForJump( float zvel, const vec3_t start, const vec3_t end, float* velocity );
+bool AAS_DropToFloor( vec3_t origin, const vec3_t mins, const vec3_t maxs );
 //returns true if on the ground at the given origin
-bool AAS_OnGround(const vec3_t origin, int presencetype, int passent);
+bool AAS_OnGround( const vec3_t origin, int presencetype, int passent );
 //rocket jump Z velocity when rocket-jumping at origin
-float AAS_RocketJumpZVelocity(const vec3_t origin);
+float AAS_RocketJumpZVelocity( const vec3_t origin );
 //bfg jump Z velocity when bfg-jumping at origin
-float AAS_BFGJumpZVelocity(const vec3_t origin);
-bool AAS_PredictClientMovement(aas_clientmove_t* move,
+float AAS_BFGJumpZVelocity( const vec3_t origin );
+bool AAS_PredictClientMovement( aas_clientmove_t* move,
 	int entnum, const vec3_t origin,
 	int presencetype, int hitent, bool onground,
 	const vec3_t velocity, const vec3_t cmdmove,
 	int cmdframes,
 	int maxframes, float frametime,
-	int stopevent, int stopareanum, bool visualize);
+	int stopevent, int stopareanum, bool visualize );
 //predict movement until bounding box is hit
-bool AAS_ClientMovementHitBBox(aas_clientmove_t* move,
+bool AAS_ClientMovementHitBBox( aas_clientmove_t* move,
 	int entnum, const vec3_t origin,
 	int presencetype, bool onground,
 	const vec3_t velocity, const vec3_t cmdmove,
 	int cmdframes,
 	int maxframes, float frametime,
-	const vec3_t mins, const vec3_t maxs, bool visualize);
+	const vec3_t mins, const vec3_t maxs, bool visualize );
 //returns the jump reachability run start point
-void AAS_JumpReachRunStart(const aas_reachability_t* reach, vec3_t runstart);
+void AAS_JumpReachRunStart( const aas_reachability_t* reach, vec3_t runstart );
 
 void AAS_Optimize();
 
 //returns the total area of the ground faces of the given area
-float AAS_AreaGroundFaceArea(int areanum);
+float AAS_AreaGroundFaceArea( int areanum );
 //returns true if the area is crouch only
-int AAS_AreaCrouch(int areanum);
+int AAS_AreaCrouch( int areanum );
 //returns true if a player can swim in this area
-int AAS_AreaSwim(int areanum);
+int AAS_AreaSwim( int areanum );
 //returns true if the area contains lava
-int AAS_AreaLava(int areanum);
+int AAS_AreaLava( int areanum );
 //returns true if the area contains slime
-int AAS_AreaSlime(int areanum);
+int AAS_AreaSlime( int areanum );
 //returns true if the area is a jump pad
-int AAS_AreaJumpPad(int areanum);
+int AAS_AreaJumpPad( int areanum );
 //returns true if the area is donotenter
-int AAS_AreaDoNotEnter(int areanum);
+int AAS_AreaDoNotEnter( int areanum );
 //returns true if the area is donotenterlarge
-int AAS_AreaDoNotEnterLarge(int areanum);
-int AAS_BestReachableLinkArea(aas_link_t* areas);
+int AAS_AreaDoNotEnterLarge( int areanum );
+int AAS_BestReachableLinkArea( aas_link_t* areas );
 //returns the best reachable area and goal origin for a bounding box at the given origin
-int AAS_BestReachableArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec3_t goalorigin);
+int AAS_BestReachableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs, vec3_t goalorigin );
 //returns the best jumppad area from which the bbox at origin is reachable
-int AAS_BestReachableFromJumpPadArea(const vec3_t origin, const vec3_t mins, const vec3_t maxs);
+int AAS_BestReachableFromJumpPadArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 //continue calculating the reachabilities
-bool AAS_ContinueInitReachability(float time);
+bool AAS_ContinueInitReachability( float time );
 //initialize calculating the reachabilities
 void AAS_InitReachability();
 
 void AAS_RoutingInfo();
 //returns the travel flag for the given travel type
-int AAS_TravelFlagForType(int traveltype);
+int AAS_TravelFlagForType( int traveltype );
 void AAS_EnableAllAreas();
 //return the travel flag(s) for traveling through this area
-int AAS_AreaContentsTravelFlags(int areanum);
-int AAS_AreaVisible(int srcarea, int destarea);
+int AAS_AreaContentsTravelFlags( int areanum );
+int AAS_AreaVisible( int srcarea, int destarea );
 void AAS_WriteRouteCache();
 //returns the reachability with the given index
-void AAS_ReachabilityFromNum(int num, aas_reachability_t* reach);
+void AAS_ReachabilityFromNum( int num, aas_reachability_t* reach );
 //returns the index of the next reachability for the given area
-int AAS_NextAreaReachability(int areanum, int reachnum);
+int AAS_NextAreaReachability( int areanum, int reachnum );
 //returns the next reachability using the given model
-int AAS_NextModelReachability(int num, int modelnum);
+int AAS_NextModelReachability( int num, int modelnum );
 //returns the travel time from start to end in the given area
-unsigned short int AAS_AreaTravelTime(int areanum, const vec3_t start, const vec3_t end);
-bool AAS_AreaRouteToGoalArea(int areanum, const vec3_t origin, int goalareanum, int travelflags,
-	int* traveltime, int* reachnum);
+unsigned short int AAS_AreaTravelTime( int areanum, const vec3_t start, const vec3_t end );
+bool AAS_AreaRouteToGoalArea( int areanum, const vec3_t origin, int goalareanum, int travelflags,
+	int* traveltime, int* reachnum );
 //returns the travel time from the area to the goal area using the given travel flags
-int AAS_AreaTravelTimeToGoalAreaCheckLoop(int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum);
+int AAS_AreaTravelTimeToGoalAreaCheckLoop( int areanum, const vec3_t origin, int goalareanum, int travelflags, int loopareanum );
 //free the AAS routing caches
 void AAS_FreeRoutingCaches();
 //initialize the AAS routing
@@ -461,13 +449,13 @@ void AAS_FreeAASLinkHeap();
 void AAS_InitAASLinkedEntities();
 void AAS_FreeAASLinkedEntities();
 //returns the presence type(s) of the area
-int AAS_AreaPresenceType(int areanum);
+int AAS_AreaPresenceType( int areanum );
 //returns the presence type(s) at the given point
-int AAS_PointPresenceType(const vec3_t point);
-bool AAS_PointInsideFace(int facenum, const vec3_t point, float epsilon);
-void AAS_UnlinkFromAreas(aas_link_t* areas);
-aas_link_t* AAS_AASLinkEntity(const vec3_t absmins, const vec3_t absmaxs, int entnum);
-aas_link_t* AAS_LinkEntityClientBBox(const vec3_t absmins, const vec3_t absmaxs, int entnum, int presencetype);
-aas_plane_t* AAS_PlaneFromNum(int planenum);
+int AAS_PointPresenceType( const vec3_t point );
+bool AAS_PointInsideFace( int facenum, const vec3_t point, float epsilon );
+void AAS_UnlinkFromAreas( aas_link_t* areas );
+aas_link_t* AAS_AASLinkEntity( const vec3_t absmins, const vec3_t absmaxs, int entnum );
+aas_link_t* AAS_LinkEntityClientBBox( const vec3_t absmins, const vec3_t absmaxs, int entnum, int presencetype );
+aas_plane_t* AAS_PlaneFromNum( int planenum );
 //returns the result of the trace of a client bbox
-aas_trace_t AAS_TraceClientBBox(const vec3_t start, const vec3_t end, int presencetype, int passent);
+aas_trace_t AAS_TraceClientBBox( const vec3_t start, const vec3_t end, int presencetype, int passent );

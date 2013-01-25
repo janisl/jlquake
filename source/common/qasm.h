@@ -18,9 +18,9 @@
 #define _QASM_H_
 
 #ifdef ELF
-#define C(label) label
+#define C( label ) label
 #else
-#define C(label) _ ## label
+#define C( label ) _ ## label
 #endif
 
 #ifdef __i386__

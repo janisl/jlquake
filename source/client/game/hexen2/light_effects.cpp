@@ -20,102 +20,89 @@
 #include "../../public.h"
 #include "../../../common/common_defs.h"
 
-void CLH2_MuzzleFlashLight(int key, vec3_t origin, const vec3_t angles, bool adjustZ)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
-	if (adjustZ)
-	{
-		dl->origin[2] += 16;
+void CLH2_MuzzleFlashLight( int key, vec3_t origin, const vec3_t angles, bool adjustZ ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
+	if ( adjustZ ) {
+		dl->origin[ 2 ] += 16;
 	}
 	vec3_t fv, rv, uv;
-	AngleVectors(angles, fv, rv, uv);
-	VectorMA(dl->origin, 18, fv, dl->origin);
-	dl->radius = 200 + (rand() & 31);
+	AngleVectors( angles, fv, rv, uv );
+	VectorMA( dl->origin, 18, fv, dl->origin );
+	dl->radius = 200 + ( rand() & 31 );
 	dl->minlight = 32;
 	dl->die = cl.serverTime + 100;
-	if (!adjustZ)
-	{
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
+	if ( !adjustZ ) {
+		dl->color[ 0 ] = 0.2;
+		dl->color[ 1 ] = 0.1;
+		dl->color[ 2 ] = 0.05;
 	}
 }
 
-void CLH2_BrightLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
-	dl->origin[2] += 16;
-	dl->radius = 400 + (rand() & 31);
+void CLH2_BrightLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
+	dl->origin[ 2 ] += 16;
+	dl->radius = 400 + ( rand() & 31 );
 	dl->die = cl.serverTime + 1;
 }
 
-void CLH2_DimLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
-	dl->radius = 200 + (rand() & 31);
+void CLH2_DimLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
+	dl->radius = 200 + ( rand() & 31 );
 	dl->die = cl.serverTime + 1;
 }
 
-void CLH2_DarkLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
-	dl->radius = 200.0 + (rand() & 31);
+void CLH2_DarkLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
+	dl->radius = 200.0 + ( rand() & 31 );
 	dl->die = cl.serverTime + 1;
 	dl->dark = true;
 }
 
-void CLH2_Light(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
+void CLH2_Light( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
 	dl->radius = 200;
 	dl->die = cl.serverTime + 1;
 }
 
-void CLH2_FireBallLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin, dl->origin);
-	dl->radius = 120 - (rand() % 20);
+void CLH2_FireBallLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin, dl->origin );
+	dl->radius = 120 - ( rand() % 20 );
 	dl->die = cl.serverTime + 10;
 }
 
-void CLH2_SpitLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin, dl->origin);
-	dl->radius = 120 + (rand() % 20);
+void CLH2_SpitLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin, dl->origin );
+	dl->radius = 120 + ( rand() % 20 );
 	dl->die = cl.serverTime + 50;
 }
 
-void CLH2_BrightFieldLight(int key, vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(key);
-	VectorCopy(origin,  dl->origin);
-	dl->radius = 200 + cos(cl.serverTime * 0.005) * 100;
+void CLH2_BrightFieldLight( int key, vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( key );
+	VectorCopy( origin,  dl->origin );
+	dl->radius = 200 + cos( cl.serverTime * 0.005 ) * 100;
 	dl->die = cl.serverTime + 1;
 }
 
-void CLH2_ExplosionLight(vec3_t origin)
-{
-	cdlight_t* dl = CL_AllocDlight(0);
-	VectorCopy(origin, dl->origin);
+void CLH2_ExplosionLight( vec3_t origin ) {
+	cdlight_t* dl = CL_AllocDlight( 0 );
+	VectorCopy( origin, dl->origin );
 	dl->radius = 350;
 	dl->die = cl.serverTime + 500;
 	dl->decay = 300;
-	if (GGameType & GAME_HexenWorld)
-	{
-		dl->color[0] = 0.2;
-		dl->color[1] = 0.1;
-		dl->color[2] = 0.05;
+	if ( GGameType & GAME_HexenWorld ) {
+		dl->color[ 0 ] = 0.2;
+		dl->color[ 1 ] = 0.1;
+		dl->color[ 2 ] = 0.05;
 	}
 }
 
-int CLH2_GetLightStyleValue(int style)
-{
-	return (int)(cl_lightstyle[style].value[0] / 22.0 * 256.0);
+int CLH2_GetLightStyleValue( int style ) {
+	return ( int )( cl_lightstyle[ style ].value[ 0 ] / 22.0 * 256.0 );
 }

@@ -19,7 +19,7 @@
 
 #include "../../../common/message.h"
 
-void VQH_ParseDamage(QMsg& message);
+void VQH_ParseDamage( QMsg& message );
 void VQH_RenderView();
 void SCRQH_DrawTurtle();
 void VQH_Init();

@@ -58,8 +58,7 @@ enum
 
 // q1entity_state_t is the information conveyed from the server
 // in an update message
-struct q1entity_state_t
-{
+struct q1entity_state_t {
 	int number;			// edict index
 
 	vec3_t origin;
@@ -72,8 +71,7 @@ struct q1entity_state_t
 	int flags;			// nolerp, etc
 };
 
-struct q1usercmd_t
-{
+struct q1usercmd_t {
 	vec3_t viewangles;
 
 	// intended velocities
@@ -82,8 +80,7 @@ struct q1usercmd_t
 	float upmove;
 };
 
-struct qwusercmd_t
-{
+struct qwusercmd_t {
 	byte msec;
 	vec3_t angles;
 	short forwardmove, sidemove, upmove;
@@ -93,10 +90,9 @@ struct qwusercmd_t
 
 #define QWMAX_PACKET_ENTITIES   64	// doesn't count nails
 
-struct qwpacket_entities_t
-{
+struct qwpacket_entities_t {
 	int num_entities;
-	q1entity_state_t entities[QWMAX_PACKET_ENTITIES];
+	q1entity_state_t entities[ QWMAX_PACKET_ENTITIES ];
 };
 
 #define MAX_CLIENTS_QH          16
@@ -105,72 +101,72 @@ struct qwpacket_entities_t
 
 #define UPDATE_BACKUP_QW    64	// copies of entity_state_t to keep buffered
 // must be power of two
-#define UPDATE_MASK_QW      (UPDATE_BACKUP_QW - 1)
+#define UPDATE_MASK_QW      ( UPDATE_BACKUP_QW - 1 )
 
 // if the high bit of the servercmd is set, the low bits are fast update flags:
-#define Q1U_MOREBITS    (1 << 0)
-#define Q1U_ORIGIN1     (1 << 1)
-#define Q1U_ORIGIN2     (1 << 2)
-#define Q1U_ORIGIN3     (1 << 3)
-#define Q1U_ANGLE2      (1 << 4)
-#define Q1U_NOLERP      (1 << 5)		// don't interpolate movement
-#define Q1U_FRAME       (1 << 6)
-#define Q1U_SIGNAL      (1 << 7)		// just differentiates from other updates
+#define Q1U_MOREBITS    ( 1 << 0 )
+#define Q1U_ORIGIN1     ( 1 << 1 )
+#define Q1U_ORIGIN2     ( 1 << 2 )
+#define Q1U_ORIGIN3     ( 1 << 3 )
+#define Q1U_ANGLE2      ( 1 << 4 )
+#define Q1U_NOLERP      ( 1 << 5 )			// don't interpolate movement
+#define Q1U_FRAME       ( 1 << 6 )
+#define Q1U_SIGNAL      ( 1 << 7 )			// just differentiates from other updates
 
 // svc_update can pass all of the fast update bits, plus more
-#define Q1U_ANGLE1      (1 << 8)
-#define Q1U_ANGLE3      (1 << 9)
-#define Q1U_MODEL       (1 << 10)
-#define Q1U_COLORMAP    (1 << 11)
-#define Q1U_SKIN        (1 << 12)
-#define Q1U_EFFECTS     (1 << 13)
-#define Q1U_LONGENTITY  (1 << 14)
+#define Q1U_ANGLE1      ( 1 << 8 )
+#define Q1U_ANGLE3      ( 1 << 9 )
+#define Q1U_MODEL       ( 1 << 10 )
+#define Q1U_COLORMAP    ( 1 << 11 )
+#define Q1U_SKIN        ( 1 << 12 )
+#define Q1U_EFFECTS     ( 1 << 13 )
+#define Q1U_LONGENTITY  ( 1 << 14 )
 
 // the first 16 bits of a packetentities update holds 9 bits
 // of entity number and 7 bits of flags
-#define QWU_ORIGIN1     (1 << 9)
-#define QWU_ORIGIN2     (1 << 10)
-#define QWU_ORIGIN3     (1 << 11)
-#define QWU_ANGLE2      (1 << 12)
-#define QWU_FRAME       (1 << 13)
-#define QWU_REMOVE      (1 << 14)		// REMOVE this entity, don't add it
-#define QWU_MOREBITS    (1 << 15)
+#define QWU_ORIGIN1     ( 1 << 9 )
+#define QWU_ORIGIN2     ( 1 << 10 )
+#define QWU_ORIGIN3     ( 1 << 11 )
+#define QWU_ANGLE2      ( 1 << 12 )
+#define QWU_FRAME       ( 1 << 13 )
+#define QWU_REMOVE      ( 1 << 14 )			// REMOVE this entity, don't add it
+#define QWU_MOREBITS    ( 1 << 15 )
 
 // if MOREBITS is set, these additional flags are read in next
-#define QWU_ANGLE1      (1 << 0)
-#define QWU_ANGLE3      (1 << 1)
-#define QWU_MODEL       (1 << 2)
-#define QWU_COLORMAP    (1 << 3)
-#define QWU_SKIN        (1 << 4)
-#define QWU_EFFECTS     (1 << 5)
-#define QWU_SOLID       (1 << 6)		// the entity should be solid for prediction
+#define QWU_ANGLE1      ( 1 << 0 )
+#define QWU_ANGLE3      ( 1 << 1 )
+#define QWU_MODEL       ( 1 << 2 )
+#define QWU_COLORMAP    ( 1 << 3 )
+#define QWU_SKIN        ( 1 << 4 )
+#define QWU_EFFECTS     ( 1 << 5 )
+#define QWU_SOLID       ( 1 << 6 )			// the entity should be solid for prediction
 
 // playerinfo flags from server
 // playerinfo allways sends: playernum, flags, origin[] and framenumber
 
-#define QWPF_MSEC           (1 << 0)
-#define QWPF_COMMAND        (1 << 1)
-#define QWPF_VELOCITY1ND    (1 << 2)
-#define QWPF_VELOCITY2      (1 << 3)
-#define QWPF_VELOCITY3      (1 << 4)
-#define QWPF_MODEL          (1 << 5)
-#define QWPF_SKINNUM        (1 << 6)
-#define QWPF_EFFECTS        (1 << 7)
-#define QWPF_WEAPONFRAME    (1 << 8)		// only sent for view player
-#define QWPF_DEAD           (1 << 9)		// don't block movement any more
-#define QWPF_GIB            (1 << 10)		// offset the view height differently
+#define QWPF_MSEC           ( 1 << 0 )
+#define QWPF_COMMAND        ( 1 << 1 )
+#define QWPF_VELOCITY1ND    ( 1 << 2 )
+#define QWPF_VELOCITY2      ( 1 << 3 )
+#define QWPF_VELOCITY3      ( 1 << 4 )
+#define QWPF_MODEL          ( 1 << 5 )
+#define QWPF_SKINNUM        ( 1 << 6 )
+#define QWPF_EFFECTS        ( 1 << 7 )
+#define QWPF_WEAPONFRAME    ( 1 << 8 )			// only sent for view player
+#define QWPF_DEAD           ( 1 << 9 )			// don't block movement any more
+#define QWPF_GIB            ( 1 << 10 )			// offset the view height differently
 
 // if the high bit of the client to server byte is set, the low bits are
 // client move cmd bits
 // ms and angle2 are allways sent, the others are optional
-#define QWCM_ANGLE1     (1 << 0)
-#define QWCM_ANGLE3     (1 << 1)
-#define QWCM_FORWARD    (1 << 2)
-#define QWCM_SIDE       (1 << 3)
-#define QWCM_UP         (1 << 4)
-#define QWCM_BUTTONS    (1 << 5)
-#define QWCM_IMPULSE    (1 << 6)
-#define QWCM_ANGLE2     (1 << 7)
+#define QWCM_ANGLE1     ( 1 << 0 )
+#define QWCM_ANGLE3     ( 1 << 1 )
+#define QWCM_FORWARD    ( 1 << 2 )
+#define QWCM_SIDE       ( 1 << 3 )
+#define QWCM_UP         ( 1 << 4 )
+#define QWCM_BUTTONS    ( 1 << 5 )
+#define QWCM_IMPULSE    ( 1 << 6 )
+#define QWCM_ANGLE2     ( 1 << 7 )
 
 //==================
 // note that there are some defs.qc that mirror to these numbers
@@ -320,33 +316,33 @@ struct qwpacket_entities_t
 #define QHDEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
 // a sound with no channel is a local only sound
-#define QHSND_VOLUME        BIT(0)		// a byte
-#define QHSND_ATTENUATION   BIT(1)		// a byte
-#define H2SND_OVERFLOW      BIT(2)		// add 255 to snd num
+#define QHSND_VOLUME        BIT( 0 )		// a byte
+#define QHSND_ATTENUATION   BIT( 1 )		// a byte
+#define H2SND_OVERFLOW      BIT( 2 )		// add 255 to snd num
 //gonna use the rest of the bits to pack the ent+channel
 
 // the sound field has bits 0-2: channel, 3-12: entity
-#define QHWSND_VOLUME       BIT(15)		// a byte
-#define QHWSND_ATTENUATION  BIT(14)		// a byte
+#define QHWSND_VOLUME       BIT( 15 )		// a byte
+#define QHWSND_ATTENUATION  BIT( 14 )		// a byte
 
-#define Q1SU_VIEWHEIGHT     (1 << 0)
-#define Q1SU_IDEALPITCH     (1 << 1)
-#define Q1SU_PUNCH1         (1 << 2)
-#define Q1SU_PUNCH2         (1 << 3)
-#define Q1SU_PUNCH3         (1 << 4)
-#define Q1SU_VELOCITY1      (1 << 5)
-#define Q1SU_VELOCITY2      (1 << 6)
-#define Q1SU_VELOCITY3      (1 << 7)
-#define Q1SU_ITEMS          (1 << 9)
-#define Q1SU_ONGROUND       (1 << 10)		// no data follows, the bit is it
-#define Q1SU_INWATER        (1 << 11)		// no data follows, the bit is it
-#define Q1SU_WEAPONFRAME    (1 << 12)
-#define Q1SU_ARMOR          (1 << 13)
-#define Q1SU_WEAPON         (1 << 14)
+#define Q1SU_VIEWHEIGHT     ( 1 << 0 )
+#define Q1SU_IDEALPITCH     ( 1 << 1 )
+#define Q1SU_PUNCH1         ( 1 << 2 )
+#define Q1SU_PUNCH2         ( 1 << 3 )
+#define Q1SU_PUNCH3         ( 1 << 4 )
+#define Q1SU_VELOCITY1      ( 1 << 5 )
+#define Q1SU_VELOCITY2      ( 1 << 6 )
+#define Q1SU_VELOCITY3      ( 1 << 7 )
+#define Q1SU_ITEMS          ( 1 << 9 )
+#define Q1SU_ONGROUND       ( 1 << 10 )			// no data follows, the bit is it
+#define Q1SU_INWATER        ( 1 << 11 )			// no data follows, the bit is it
+#define Q1SU_WEAPONFRAME    ( 1 << 12 )
+#define Q1SU_ARMOR          ( 1 << 13 )
+#define Q1SU_WEAPON         ( 1 << 14 )
 
-#define H2SU_IDEALROLL      (1 << 8)	// I'll take that available bit
-#define H2SU_SC1            (1 << 9)
-#define H2SU_SC2            (1 << 15)
+#define H2SU_IDEALROLL      ( 1 << 8 )		// I'll take that available bit
+#define H2SU_SC1            ( 1 << 9 )
+#define H2SU_SC2            ( 1 << 15 )
 
 // defaults for clientinfo messages
 #define Q1DEFAULT_VIEWHEIGHT  22
@@ -377,10 +373,10 @@ struct qwpacket_entities_t
 #define Q1IT_INVULNERABILITY      1048576
 #define Q1IT_SUIT                 2097152
 #define Q1IT_QUAD                 4194304
-#define Q1IT_SIGIL1               (1 << 28)
-#define Q1IT_SIGIL2               (1 << 29)
-#define Q1IT_SIGIL3               (1 << 30)
-#define Q1IT_SIGIL4               (1 << 31)
+#define Q1IT_SIGIL1               ( 1 << 28 )
+#define Q1IT_SIGIL2               ( 1 << 29 )
+#define Q1IT_SIGIL3               ( 1 << 30 )
+#define Q1IT_SIGIL4               ( 1 << 31 )
 
 //rogue changed and added defines
 #define Q1RIT_SHELLS              128
@@ -399,9 +395,9 @@ struct qwpacket_entities_t
 #define Q1HIT_PROXIMITY_GUN_BIT 16
 #define Q1HIT_MJOLNIR_BIT       7
 #define Q1HIT_LASER_CANNON_BIT  23
-#define Q1HIT_PROXIMITY_GUN     (1 << Q1HIT_PROXIMITY_GUN_BIT)
-#define Q1HIT_MJOLNIR           (1 << Q1HIT_MJOLNIR_BIT)
-#define Q1HIT_LASER_CANNON      (1 << Q1HIT_LASER_CANNON_BIT)
+#define Q1HIT_PROXIMITY_GUN     ( 1 << Q1HIT_PROXIMITY_GUN_BIT )
+#define Q1HIT_MJOLNIR           ( 1 << Q1HIT_MJOLNIR_BIT )
+#define Q1HIT_LASER_CANNON      ( 1 << Q1HIT_LASER_CANNON_BIT )
 
 // out of band message id bytes
 

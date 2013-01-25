@@ -43,8 +43,7 @@ enum netsrc_t
 	NS_SERVER
 };
 
-struct netchan_t
-{
+struct netchan_t {
 	netsrc_t sock;
 
 	int dropped;			// between last packet and previous
@@ -64,7 +63,7 @@ struct netchan_t
 	// incoming fragment assembly buffer
 	int fragmentSequence;
 	int fragmentLength;
-	byte fragmentBuffer[MAX_MSGLEN];
+	byte fragmentBuffer[ MAX_MSGLEN ];
 
 	//	Reliable message buffer for pre-Quake 3 games, message is copied to
 	// this buffer when it is first transfered.
@@ -73,14 +72,14 @@ struct netchan_t
 	bool unsentFragments;
 	int unsentFragmentStart;
 	int reliableOrUnsentLength;
-	byte reliableOrUnsentBuffer[MAX_MSGLEN];
+	byte reliableOrUnsentBuffer[ MAX_MSGLEN ];
 
 	int lastReceived;		// for timeouts
 	int lastSent;			// for retransmits
 
 	// reliable staging and holding areas
 	QMsg message;		// writing buffer to send to server
-	byte messageBuffer[MAX_MSGLEN];
+	byte messageBuffer[ MAX_MSGLEN ];
 
 	int dropCount;			// dropped packets, cleared each level
 
@@ -96,16 +95,14 @@ struct netchan_t
 // gamestate of maximum size
 #define MAX_LOOPBACK    16
 
-struct loopmsg_t
-{
-	byte data[MAX_MSGLEN];
+struct loopmsg_t {
+	byte data[ MAX_MSGLEN ];
 	int datalen;
 	byte type;
 };
 
-struct loopback_t
-{
-	loopmsg_t msgs[MAX_LOOPBACK];
+struct loopback_t {
+	loopmsg_t msgs[ MAX_LOOPBACK ];
 	int get;
 	int send;
 	bool canSend;
@@ -113,56 +110,56 @@ struct loopback_t
 
 #define PACKET_HEADER   8
 
-#define FRAGMENT_BIT    (1 << 31)
-#define FRAGMENT_SIZE   (MAX_PACKETLEN - 100)
+#define FRAGMENT_BIT    ( 1 << 31 )
+#define FRAGMENT_SIZE   ( MAX_PACKETLEN - 100 )
 
 #define Q2PORT_CLIENT 27901
 #define Q2PORT_SERVER 27910
 #define Q3PORT_SERVER         27960
 
 extern Cvar* sv_hostname;
-extern loopback_t loopbacks[2];
-extern int ip_sockets[2];
+extern loopback_t loopbacks[ 2 ];
+extern int ip_sockets[ 2 ];
 extern Cvar* sv_packetloss;
 extern Cvar* sv_packetdelay;
 extern Cvar* cl_packetloss;
 extern Cvar* cl_packetdelay;
 extern Cvar* showpackets;
-extern const char* netsrcString[2];
+extern const char* netsrcString[ 2 ];
 extern Cvar* qport;
 extern Cvar* showdrop;
 extern Cvar* net_noudp;
 extern bool networkingEnabled;
 
-void Netchan_Init(int port);
-void Netchan_Setup(netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qport);
-int NET_GetLoopPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
-void NET_SendLoopPacket(netsrc_t sock, int length, const void* data, int type);
-bool NET_GetUdpPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
-bool NET_GetPacket(netsrc_t sock, netadr_t* net_from, QMsg* net_message);
-void NET_SendPacket(netsrc_t sock, int length, const void* data, const netadr_t& to);
-void NET_OutOfBandPrint(netsrc_t sock, const netadr_t& adr, const char* format, ...) id_attribute((format(printf, 3, 4)));
-void NET_OutOfBandData(netsrc_t sock, const netadr_t& adr, const byte* data, int length);
-void Netchan_TransmitNextFragment(netchan_t* chan);
-void Netchan_Transmit(netchan_t* chan, int length, const byte* data);
-bool Netchan_CanReliable(netchan_t* chan);
-bool Netchan_Process(netchan_t* chan, QMsg* msg);
-void NETQHW_Init(int port);
+void Netchan_Init( int port );
+void Netchan_Setup( netsrc_t sock, netchan_t* chan, const netadr_t& adr, int qport );
+int NET_GetLoopPacket( netsrc_t sock, netadr_t* net_from, QMsg* net_message );
+void NET_SendLoopPacket( netsrc_t sock, int length, const void* data, int type );
+bool NET_GetUdpPacket( netsrc_t sock, netadr_t* net_from, QMsg* net_message );
+bool NET_GetPacket( netsrc_t sock, netadr_t* net_from, QMsg* net_message );
+void NET_SendPacket( netsrc_t sock, int length, const void* data, const netadr_t& to );
+void NET_OutOfBandPrint( netsrc_t sock, const netadr_t& adr, const char* format, ... ) id_attribute( ( format( printf, 3, 4 ) ) );
+void NET_OutOfBandData( netsrc_t sock, const netadr_t& adr, const byte* data, int length );
+void Netchan_TransmitNextFragment( netchan_t* chan );
+void Netchan_Transmit( netchan_t* chan, int length, const byte* data );
+bool Netchan_CanReliable( netchan_t* chan );
+bool Netchan_Process( netchan_t* chan, QMsg* msg );
+void NETQHW_Init( int port );
 bool NET_GetCvars();
-void NET_Config(bool enableNetworking);
+void NET_Config( bool enableNetworking );
 void NETQ23_Init();
 void NET_Shutdown();
 void NET_Restart();
 void Net_Restart_f();
-void NET_Sleep(int msec);
+void NET_Sleep( int msec );
 
 #define NET_NAME_ID         "HEXENII"
 
 #define Q1NET_PROTOCOL_VERSION    3
 #define H2NET_PROTOCOL_VERSION    5
 
-#define NET_HEADERSIZE      (2 * sizeof(unsigned int))
-#define NET_DATAGRAMSIZE    (MAX_DATAGRAM_QH + NET_HEADERSIZE)
+#define NET_HEADERSIZE      ( 2 * sizeof ( unsigned int ) )
+#define NET_DATAGRAMSIZE    ( MAX_DATAGRAM_QH + NET_HEADERSIZE )
 
 // NetHeader flags
 #define NETFLAG_LENGTH_MASK 0x0000ffff
@@ -186,11 +183,10 @@ void NET_Sleep(int msec);
 
 #define HOSTCACHESIZE   8
 
-struct hostcache_t
-{
-	char name[16];
-	char map[16];
-	char cname[32];
+struct hostcache_t {
+	char name[ 16 ];
+	char map[ 16 ];
+	char cname[ 32 ];
 	int users;
 	int maxusers;
 	int driver;
@@ -198,7 +194,7 @@ struct hostcache_t
 };
 
 extern int hostCacheCount;
-extern hostcache_t hostcache[HOSTCACHESIZE];
+extern hostcache_t hostcache[ HOSTCACHESIZE ];
 extern int net_activeconnections;
 extern double net_time;
 extern bool tcpipAvailable;
@@ -213,16 +209,16 @@ extern bool net_listening;
 extern int DEFAULTnet_hostport;
 
 double SetNetTime();
-void Loop_SearchForHosts(bool xmit);
-bool Loop_Connect(const char* host, netchan_t* chan);
-bool Loop_CheckNewConnections(netadr_t* outaddr);
-int  UDPNQ_OpenSocket(int port);
-int UDP_CloseSocket(int socket);
-int  UDP_Read(int socket, byte* buf, int len, netadr_t* addr);
-int  UDP_Write(int socket, byte* buf, int len, netadr_t* addr);
-int  UDP_Broadcast(int socket, byte* buf, int len);
-int  UDP_GetAddrFromName(const char* name, netadr_t* addr);
-int  UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2);
+void Loop_SearchForHosts( bool xmit );
+bool Loop_Connect( const char* host, netchan_t* chan );
+bool Loop_CheckNewConnections( netadr_t* outaddr );
+int  UDPNQ_OpenSocket( int port );
+int UDP_CloseSocket( int socket );
+int  UDP_Read( int socket, byte* buf, int len, netadr_t* addr );
+int  UDP_Write( int socket, byte* buf, int len, netadr_t* addr );
+int  UDP_Broadcast( int socket, byte* buf, int len );
+int  UDP_GetAddrFromName( const char* name, netadr_t* addr );
+int  UDP_AddrCompare( netadr_t* addr1, netadr_t* addr2 );
 void NET_Ban_f();
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
@@ -230,22 +226,22 @@ void NET_Ban_f();
 // like an illegal protocal conversation.  Client calls when disconnecting
 // from a server.
 // A netcon_t number will not be reused until this function is called for it
-void NET_Close(netchan_t* chan);
+void NET_Close( netchan_t* chan );
 // returns data in net_message sizebuf
 // returns 0 if no data is waiting
 // returns 1 if a message was received
 // returns 2 if an unreliable message was received
 // returns -1 if the connection died
-int NET_GetMessage(netchan_t* chan, QMsg* message);
+int NET_GetMessage( netchan_t* chan, QMsg* message );
 // returns 0 if the message connot be delivered reliably, but the connection
 //		is still considered valid
 // returns 1 if the message was sent properly
 // returns -1 if the connection died
-int NET_SendMessage(netchan_t* chan, QMsg* data);
-int NET_SendUnreliableMessage(netchan_t* chan, QMsg* data);
+int NET_SendMessage( netchan_t* chan, QMsg* data );
+int NET_SendUnreliableMessage( netchan_t* chan, QMsg* data );
 // Returns true or false if the given qsocket can currently accept a
 // message to be transmitted.
-bool NET_CanSendMessage(netchan_t* chan);
+bool NET_CanSendMessage( netchan_t* chan );
 void NETQH_Init();
 void NETQH_Shutdown();
 

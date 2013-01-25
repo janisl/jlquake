@@ -22,48 +22,42 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int main(int argc, char* argv[])
-{
+int main( int argc, char* argv[] ) {
 	InitSig();
 
 	// go back to real user for config loads
-	seteuid(getuid());
+	seteuid( getuid() );
 
-	Sys_ParseArgs(argc, argv);	// bk010104 - added this for support
+	Sys_ParseArgs( argc, argv );	// bk010104 - added this for support
 
 	// merge the command line, this is kinda silly
 	int len = 1;
-	for (int i = 1; i < argc; i++)
-	{
-		len += String::Length(argv[i]) + 1;
+	for ( int i = 1; i < argc; i++ ) {
+		len += String::Length( argv[ i ] ) + 1;
 	}
-	char* cmdline = (char*)malloc(len);
+	char* cmdline = ( char* )malloc( len );
 	*cmdline = 0;
-	for (int i = 1; i < argc; i++)
-	{
-		if (i > 1)
-		{
-			String::Cat(cmdline, len, " ");
+	for ( int i = 1; i < argc; i++ ) {
+		if ( i > 1 ) {
+			String::Cat( cmdline, len, " " );
 		}
-		String::Cat(cmdline, len, argv[i]);
+		String::Cat( cmdline, len, argv[ i ] );
 	}
 
-	Com_Init(argc, argv, cmdline);
+	Com_Init( argc, argv, cmdline );
 
-	fcntl(0, F_SETFL, fcntl(0, F_GETFL, 0) | FNDELAY);
+	fcntl( 0, F_SETFL, fcntl( 0, F_GETFL, 0 ) | FNDELAY );
 
 	Sys_ConsoleInputInit();
 
-	while (1)
-	{
+	while ( 1 ) {
 #ifdef __linux__
 		Sys_ConfigureFPU();
 #endif
 		Com_Frame();
 
-		if (com_dedicated && com_dedicated->integer && com_sv_running && !com_sv_running->integer)
-		{
-			usleep(25000);
+		if ( com_dedicated && com_dedicated->integer && com_sv_running && !com_sv_running->integer ) {
+			usleep( 25000 );
 		}
 	}
 	return 0;

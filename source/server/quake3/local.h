@@ -23,20 +23,20 @@
 //
 //	Game
 //
-q3sharedEntity_t* SVQ3_GentityNum(int num);
-q3playerState_t* SVQ3_GameClientNum(int num);
-q3svEntity_t* SVQ3_SvEntityForGentity(const q3sharedEntity_t* gEnt);
-qintptr SVQ3_GameSystemCalls(qintptr* args);
-void SVQ3_ClientThink(client_t* cl, q3usercmd_t* cmd);
-void SVQ3_BotFrame(int time);
-void SVQ3_GameClientDisconnect(client_t* drop);
-void SVQ3_GameInit(int serverTime, int randomSeed, bool restart);
-void SVQ3_GameShutdown(bool restart);
+q3sharedEntity_t* SVQ3_GentityNum( int num );
+q3playerState_t* SVQ3_GameClientNum( int num );
+q3svEntity_t* SVQ3_SvEntityForGentity( const q3sharedEntity_t* gEnt );
+qintptr SVQ3_GameSystemCalls( qintptr* args );
+void SVQ3_ClientThink( client_t* cl, q3usercmd_t* cmd );
+void SVQ3_BotFrame( int time );
+void SVQ3_GameClientDisconnect( client_t* drop );
+void SVQ3_GameInit( int serverTime, int randomSeed, bool restart );
+void SVQ3_GameShutdown( bool restart );
 bool SVQ3_GameConsoleCommand();
-void SVQ3_GameClientBegin(int clientNum);
-void SVQ3_GameClientUserInfoChanged(int clientNum);
-const char* SVQ3_GameClientConnect(int clientNum, bool firstTime, bool isBot);
-void SVQ3_GameClientCommand(int clientNum);
-void SVQ3_GameRunFrame(int time);
+void SVQ3_GameClientBegin( int clientNum );
+void SVQ3_GameClientUserInfoChanged( int clientNum );
+const char* SVQ3_GameClientConnect( int clientNum, bool firstTime, bool isBot );
+void SVQ3_GameClientCommand( int clientNum );
+void SVQ3_GameRunFrame( int time );
 
 #endif

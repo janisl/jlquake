@@ -18,7 +18,7 @@
 #define _BSP46FILE_H
 
 // little-endian "IBSP"
-#define BSP46_IDENT             (('P' << 24) + ('S' << 16) + ('B' << 8) + 'I')
+#define BSP46_IDENT             ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' )
 
 #define BSP46_VERSION           46
 
@@ -71,60 +71,53 @@ enum bsp46_mapSurfaceType_t
 	BSP46MST_FLARE
 };
 
-struct bsp46_lump_t
-{
+struct bsp46_lump_t {
 	qint32 fileofs;
 	qint32 filelen;
 };
 
-struct bsp46_dheader_t
-{
+struct bsp46_dheader_t {
 	qint32 ident;
 	qint32 version;
 
-	bsp46_lump_t lumps[BSP46_HEADER_LUMPS];
+	bsp46_lump_t lumps[ BSP46_HEADER_LUMPS ];
 };
 
-struct bsp46_dmodel_t
-{
-	float mins[3];
-	float maxs[3];
+struct bsp46_dmodel_t {
+	float mins[ 3 ];
+	float maxs[ 3 ];
 	qint32 firstSurface;
 	qint32 numSurfaces;
 	qint32 firstBrush;
 	qint32 numBrushes;
 };
 
-struct bsp46_dshader_t
-{
-	char shader[MAX_QPATH];
+struct bsp46_dshader_t {
+	char shader[ MAX_QPATH ];
 	qint32 surfaceFlags;
 	qint32 contentFlags;
 };
 
 // planes x^1 is allways the opposite of plane x
 
-struct bsp46_dplane_t
-{
-	float normal[3];
+struct bsp46_dplane_t {
+	float normal[ 3 ];
 	float dist;
 };
 
-struct bsp46_dnode_t
-{
+struct bsp46_dnode_t {
 	qint32 planeNum;
-	qint32 children[2];			// negative numbers are -(leafs+1), not nodes
-	qint32 mins[3];				// for frustom culling
-	qint32 maxs[3];
+	qint32 children[ 2 ];			// negative numbers are -(leafs+1), not nodes
+	qint32 mins[ 3 ];				// for frustom culling
+	qint32 maxs[ 3 ];
 };
 
-struct bsp46_dleaf_t
-{
+struct bsp46_dleaf_t {
 	qint32 cluster;					// -1 = opaque cluster (do I still store these?)
 	qint32 area;
 
-	qint32 mins[3];					// for frustum culling
-	qint32 maxs[3];
+	qint32 mins[ 3 ];					// for frustum culling
+	qint32 maxs[ 3 ];
 
 	qint32 firstLeafSurface;
 	qint32 numLeafSurfaces;
@@ -133,37 +126,32 @@ struct bsp46_dleaf_t
 	qint32 numLeafBrushes;
 };
 
-struct bsp46_dbrushside_t
-{
+struct bsp46_dbrushside_t {
 	qint32 planeNum;				// positive plane side faces out of the leaf
 	qint32 shaderNum;
 };
 
-struct bsp46_dbrush_t
-{
+struct bsp46_dbrush_t {
 	qint32 firstSide;
 	qint32 numSides;
 	qint32 shaderNum;			// the shader that determines the contents flags
 };
 
-struct bsp46_dfog_t
-{
-	char shader[MAX_QPATH];
+struct bsp46_dfog_t {
+	char shader[ MAX_QPATH ];
 	qint32 brushNum;
 	qint32 visibleSide;			// the brush side that ray tests need to clip against (-1 == none)
 };
 
-struct bsp46_drawVert_t
-{
+struct bsp46_drawVert_t {
 	vec3_t xyz;
-	float st[2];
-	float lightmap[2];
+	float st[ 2 ];
+	float lightmap[ 2 ];
 	vec3_t normal;
-	quint8 color[4];
+	quint8 color[ 4 ];
 };
 
-struct bsp46_dsurface_t
-{
+struct bsp46_dsurface_t {
 	qint32 shaderNum;
 	qint32 fogNum;
 	qint32 surfaceType;
@@ -181,7 +169,7 @@ struct bsp46_dsurface_t
 	qint32 lightmapHeight;
 
 	vec3_t lightmapOrigin;
-	vec3_t lightmapVecs[3];			// for patches, [0] and [1] are lodbounds
+	vec3_t lightmapVecs[ 3 ];			// for patches, [0] and [1] are lodbounds
 
 	qint32 patchWidth;
 	qint32 patchHeight;

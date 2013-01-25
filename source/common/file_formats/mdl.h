@@ -18,8 +18,8 @@
 #define _MDLFILE_H
 
 //	Little-endian "IDPO"
-#define IDPOLYHEADER        (('O' << 24) + ('P' << 16) + ('D' << 8) + 'I')
-#define RAPOLYHEADER        (('O' << 24) + ('P' << 16) + ('A' << 8) + 'R')
+#define IDPOLYHEADER        ( ( 'O' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
+#define RAPOLYHEADER        ( ( 'O' << 24 ) + ( 'P' << 16 ) + ( 'A' << 8 ) + 'R' )
 
 #define MESH1_VERSION       6
 #define MESH1_NEWVERSION    50
@@ -50,8 +50,7 @@ enum mdl_frametype_t
 	ALIAS_GROUP
 };
 
-struct mdl_t
-{
+struct mdl_t {
 	qint32 ident;
 	qint32 version;
 	vec3_t scale;
@@ -69,8 +68,7 @@ struct mdl_t
 	float size;
 };
 
-struct newmdl_t
-{
+struct newmdl_t {
 	qint32 ident;
 	qint32 version;
 	vec3_t scale;
@@ -89,68 +87,57 @@ struct newmdl_t
 	qint32 num_st_verts;
 };
 
-struct dmdl_skintype_t
-{
+struct dmdl_skintype_t {
 	qint32 type;
 };
 
-struct dmdl_skingroup_t
-{
+struct dmdl_skingroup_t {
 	qint32 numskins;
 };
 
-struct dmdl_skininterval_t
-{
+struct dmdl_skininterval_t {
 	float interval;
 };
 
-struct dmdl_stvert_t
-{
+struct dmdl_stvert_t {
 	qint32 onseam;
 	qint32 s;
 	qint32 t;
 };
 
-struct dmdl_triangle_t
-{
+struct dmdl_triangle_t {
 	qint32 facesfront;
-	qint32 vertindex[3];
+	qint32 vertindex[ 3 ];
 };
 
-struct dmdl_newtriangle_t
-{
+struct dmdl_newtriangle_t {
 	qint32 facesfront;
-	quint16 vertindex[3];
-	quint16 stindex[3];
+	quint16 vertindex[ 3 ];
+	quint16 stindex[ 3 ];
 };
 
-struct dmdl_frametype_t
-{
+struct dmdl_frametype_t {
 	qint32 type;
 };
 
-struct dmdl_trivertx_t
-{
-	quint8 v[3];
+struct dmdl_trivertx_t {
+	quint8 v[ 3 ];
 	quint8 lightnormalindex;
 };
 
-struct dmdl_frame_t
-{
+struct dmdl_frame_t {
 	dmdl_trivertx_t bboxmin;	// lightnormal isn't used
 	dmdl_trivertx_t bboxmax;	// lightnormal isn't used
-	char name[16];			// frame name from grabbing
+	char name[ 16 ];			// frame name from grabbing
 };
 
-struct dmdl_group_t
-{
+struct dmdl_group_t {
 	qint32 numframes;
 	dmdl_trivertx_t bboxmin;	// lightnormal isn't used
 	dmdl_trivertx_t bboxmax;	// lightnormal isn't used
 };
 
-struct dmdl_interval_t
-{
+struct dmdl_interval_t {
 	float interval;
 };
 

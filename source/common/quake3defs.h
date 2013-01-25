@@ -33,20 +33,19 @@
 #define Q3CS_WARMUP         5		// server time when the match will be restarted
 
 #define GENTITYNUM_BITS_Q3      10		// don't need to send any more
-#define MAX_GENTITIES_Q3        (1 << GENTITYNUM_BITS_Q3)
+#define MAX_GENTITIES_Q3        ( 1 << GENTITYNUM_BITS_Q3 )
 
 // entitynums are communicated with GENTITY_BITS, so any reserved
 // values that are going to be communcated over the net need to
 // also be in this range
-#define Q3ENTITYNUM_NONE        (MAX_GENTITIES_Q3 - 1)
-#define Q3ENTITYNUM_WORLD       (MAX_GENTITIES_Q3 - 2)
-#define Q3ENTITYNUM_MAX_NORMAL  (MAX_GENTITIES_Q3 - 2)
+#define Q3ENTITYNUM_NONE        ( MAX_GENTITIES_Q3 - 1 )
+#define Q3ENTITYNUM_WORLD       ( MAX_GENTITIES_Q3 - 2 )
+#define Q3ENTITYNUM_MAX_NORMAL  ( MAX_GENTITIES_Q3 - 2 )
 
 // q3usercmd_t is sent to the server each client frame
-struct q3usercmd_t
-{
+struct q3usercmd_t {
 	int serverTime;
-	int angles[3];
+	int angles[ 3 ];
 	int buttons;
 	byte weapon;			// weapon
 	signed char forwardmove, rightmove, upmove;
@@ -105,8 +104,7 @@ enum
 // q3playerState_t is a full superset of q3entityState_t as it is used by players,
 // so if a q3playerState_t is transmitted, the q3entityState_t can be fully derived
 // from it.
-struct q3playerState_t
-{
+struct q3playerState_t {
 	int commandTime;	// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;		// for view bobbing and footstep generation
@@ -118,8 +116,8 @@ struct q3playerState_t
 	int weaponTime;
 	int gravity;
 	int speed;
-	int delta_angles[3];	// add to command angles to get view direction
-							// changed by spawns, rotating objects, and teleporters
+	int delta_angles[ 3 ];		// add to command angles to get view direction
+								// changed by spawns, rotating objects, and teleporters
 
 	int groundEntityNum;// Q3ENTITYNUM_NONE = in air
 
@@ -139,8 +137,8 @@ struct q3playerState_t
 	int eFlags;			// copied to q3entityState_t->eFlags
 
 	int eventSequence;	// pmove generated events
-	int events[MAX_PS_EVENTS_Q3];
-	int eventParms[MAX_PS_EVENTS_Q3];
+	int events[ MAX_PS_EVENTS_Q3 ];
+	int eventParms[ MAX_PS_EVENTS_Q3 ];
 
 	int externalEvent;	// events set on player from another source
 	int externalEventParm;
@@ -159,10 +157,10 @@ struct q3playerState_t
 	int damagePitch;
 	int damageCount;
 
-	int stats[MAX_STATS_Q3];
-	int persistant[MAX_PERSISTANT_Q3];	// stats that aren't cleared on death
-	int powerups[MAX_POWERUPS_Q3];	// level.time that the powerup runs out
-	int ammo[MAX_WEAPONS_Q3];
+	int stats[ MAX_STATS_Q3 ];
+	int persistant[ MAX_PERSISTANT_Q3 ];	// stats that aren't cleared on death
+	int powerups[ MAX_POWERUPS_Q3 ];	// level.time that the powerup runs out
+	int ammo[ MAX_WEAPONS_Q3 ];
 
 	int generic1;
 	int loopSound;
@@ -178,8 +176,7 @@ struct q3playerState_t
 // if entityState->solid == Q3SOLID_BMODEL, modelindex is an inline model number
 #define Q3SOLID_BMODEL  0xffffff
 
-struct q3trajectory_t
-{
+struct q3trajectory_t {
 	int trType;
 	int trTime;
 	int trDuration;			// if non 0, trTime + trDuration = stop time
@@ -194,8 +191,7 @@ struct q3trajectory_t
 // The messages are delta compressed, so it doesn't really matter if
 // the structure size is fairly large
 
-struct q3entityState_t
-{
+struct q3entityState_t {
 	int number;			// entity index
 	int eType;			// entityType_t
 	int eFlags;
@@ -241,7 +237,7 @@ struct q3entityState_t
 
 #define PACKET_BACKUP_Q3    32	// number of old messages that must be kept on client and
 // server for delta comrpession and ping estimation
-#define PACKET_MASK_Q3      (PACKET_BACKUP_Q3 - 1)
+#define PACKET_MASK_Q3      ( PACKET_BACKUP_Q3 - 1 )
 
 #define MAX_RELIABLE_COMMANDS_Q3    64			// max string commands buffered for restransmit
 
@@ -273,10 +269,9 @@ enum
 	Q3CHAN_ANNOUNCER		// announcer voices, etc
 };
 
-struct orientation_t
-{
+struct orientation_t {
 	vec3_t origin;
-	vec3_t axis[3];
+	vec3_t axis[ 3 ];
 };
 
 // player_state->persistant[] indexes

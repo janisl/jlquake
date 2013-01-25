@@ -68,7 +68,7 @@ static Cvar* joy_threshold;
 static int joy_fd = -1;
 
 //	We translate axes movement into keypresses.
-static int joy_keys[16] =
+static int joy_keys[ 16 ] =
 {
 	K_LEFTARROW, K_RIGHTARROW,
 	K_UPARROW, K_DOWNARROW,
@@ -96,31 +96,28 @@ static int joy_keys[16] =
 //
 //**************************************************************************
 
-static char* XLateKey(XKeyEvent* ev, int& key)
-{
+static char* XLateKey( XKeyEvent* ev, int& key ) {
 	key = 0;
 
 	// get the buffer without messing with shifts, for SE_CHAR
-	static char buf[64];
+	static char buf[ 64 ];
 	KeySym keysym;
-	int XLookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
+	int XLookupRet = XLookupString( ev, buf, sizeof ( buf ), &keysym, 0 );
 #ifdef KBD_DBG
-	common->Printf("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
+	common->Printf( "XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym );
 #endif
 
-	static char shiftlessbuf[2];
-	if (!in_shiftedkeys->integer)
-	{
+	static char shiftlessbuf[ 2 ];
+	if ( !in_shiftedkeys->integer ) {
 		// get the keysym and a buffer with no shifts at all, for SE_KEY
 		ev->state = 0;
-		XLookupRet = XLookupString(ev, shiftlessbuf, sizeof(shiftlessbuf), &keysym, 0);
+		XLookupRet = XLookupString( ev, shiftlessbuf, sizeof ( shiftlessbuf ), &keysym, 0 );
 #ifdef KBD_DBG
-		common->Printf("XLookupString ret (shiftless): %d buf: %s keysym: %x\n", XLookupRet, shiftlessbuf, keysym);
+		common->Printf( "XLookupString ret (shiftless): %d buf: %s keysym: %x\n", XLookupRet, shiftlessbuf, keysym );
 #endif
 	}
 
-	switch (keysym)
-	{
+	switch ( keysym ) {
 	case XK_KP_Page_Up:
 	case XK_KP_9:
 		key = K_KP_PGUP;
@@ -383,31 +380,25 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 		break;
 
 	default:
-		if (XLookupRet == 0)
-		{
-			common->DPrintf("Warning: XLookupString failed on KeySym %lu\n", keysym);
+		if ( XLookupRet == 0 ) {
+			common->DPrintf( "Warning: XLookupString failed on KeySym %lu\n", keysym );
 			return NULL;
 		}
 		// XK_* tests failed, but XLookupString got a buffer, so let's try it
-		if (in_shiftedkeys->integer)
-		{
+		if ( in_shiftedkeys->integer ) {
 			// old hackish style, for some keyboards that are absolutely strange.
 			// (no shiftless numbers...)
-			key = *(unsigned char*)buf;
-			if (key >= 'A' && key <= 'Z')
-			{
+			key = *( unsigned char* )buf;
+			if ( key >= 'A' && key <= 'Z' ) {
 				key = key - 'A' + 'a';
 			}
 			// if ctrl is pressed, the keys are not between 'A' and 'Z', for instance ctrl-z == 26 ^Z ^C etc.
 			// see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=19
-			else if (key >= 1 && key <= 26)
-			{
+			else if ( key >= 1 && key <= 26 ) {
 				key = key + 'a' - 1;
 			}
-		}
-		else
-		{
-			key = shiftlessbuf[0];
+		} else   {
+			key = shiftlessbuf[ 0 ];
 		}
 		break;
 	}
@@ -423,15 +414,13 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 // is that you get focus handling for free, which is a major win with debug
 // and windowed mode. It rests on the assumption that the X server will use
 // the same timestamp on press/release event pairs for key repeats.
-static bool X11_PendingInput()
-{
-	assert(dpy != NULL);
+static bool X11_PendingInput() {
+	assert( dpy != NULL );
 
 	// Flush the display connection
 	//  and look to see if events are queued
-	XFlush(dpy);
-	if (XEventsQueued(dpy, QueuedAlready))
-	{
+	XFlush( dpy );
+	if ( XEventsQueued( dpy, QueuedAlready ) ) {
 		return true;
 	}
 
@@ -439,12 +428,11 @@ static bool X11_PendingInput()
 	static struct timeval zero_time;
 	fd_set fdset;
 
-	int x11_fd = ConnectionNumber(dpy);
-	FD_ZERO(&fdset);
-	FD_SET(x11_fd, &fdset);
-	if (select(x11_fd + 1, &fdset, NULL, NULL, &zero_time) == 1)
-	{
-		return XPending(dpy);
+	int x11_fd = ConnectionNumber( dpy );
+	FD_ZERO( &fdset );
+	FD_SET( x11_fd, &fdset );
+	if ( select( x11_fd + 1, &fdset, NULL, NULL, &zero_time ) == 1 ) {
+		return XPending( dpy );
 	}
 
 	// Oh well, nothing is ready ..
@@ -452,22 +440,19 @@ static bool X11_PendingInput()
 }
 
 // bk001206 - from Ryan's Fakk2. See above.
-static bool repeated_press(XEvent* event)
-{
-	assert(dpy != NULL);
+static bool repeated_press( XEvent* event ) {
+	assert( dpy != NULL );
 
 	bool repeated = false;
-	if (X11_PendingInput())
-	{
+	if ( X11_PendingInput() ) {
 		XEvent peekevent;
-		XPeekEvent(dpy, &peekevent);
+		XPeekEvent( dpy, &peekevent );
 
-		if ((peekevent.type == KeyPress) &&
-			(peekevent.xkey.keycode == event->xkey.keycode) &&
-			(peekevent.xkey.time == event->xkey.time))
-		{
+		if ( ( peekevent.type == KeyPress ) &&
+			 ( peekevent.xkey.keycode == event->xkey.keycode ) &&
+			 ( peekevent.xkey.time == event->xkey.time ) ) {
 			repeated = true;
-			XNextEvent(dpy, &peekevent);	// skip event.
+			XNextEvent( dpy, &peekevent );		// skip event.
 		}
 	}
 
@@ -481,144 +466,120 @@ static bool repeated_press(XEvent* event)
 //**************************************************************************
 
 //	Makes a null cursor.
-static Cursor CreateNullCursor(Display* display, Window root)
-{
-	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1 /*depth*/);
+static Cursor CreateNullCursor( Display* display, Window root ) {
+	Pixmap cursormask = XCreatePixmap( display, root, 1, 1, 1 /*depth*/ );
 	XGCValues xgc;
 	xgc.function = GXclear;
-	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
-	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
+	GC gc =  XCreateGC( display, cursormask, GCFunction, &xgc );
+	XFillRectangle( display, cursormask, gc, 0, 0, 1, 1 );
 	XColor dummycolour;
 	dummycolour.pixel = 0;
 	dummycolour.red = 0;
 	dummycolour.flags = 04;
-	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-		&dummycolour, &dummycolour, 0,0);
-	XFreePixmap(display, cursormask);
-	XFreeGC(display, gc);
+	Cursor cursor = XCreatePixmapCursor( display, cursormask, cursormask,
+		&dummycolour, &dummycolour, 0,0 );
+	XFreePixmap( display, cursormask );
+	XFreeGC( display, gc );
 	return cursor;
 }
 
-static void install_grabs()
-{
+static void install_grabs() {
 	// inviso cursor
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-	XSync(dpy, False);
+	XWarpPointer( dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2 );
+	XSync( dpy, False );
 
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
+	XDefineCursor( dpy, win, CreateNullCursor( dpy, win ) );
 
-	XGrabPointer(dpy, win,	// bk010108 - do this earlier?
+	XGrabPointer( dpy, win,	// bk010108 - do this earlier?
 		False,
 		MOUSE_MASK,
 		GrabModeAsync, GrabModeAsync,
 		win,
 		None,
-		CurrentTime);
+		CurrentTime );
 
-	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
-		&mouse_threshold);
+	XGetPointerControl( dpy, &mouse_accel_numerator, &mouse_accel_denominator,
+		&mouse_threshold );
 
-	XChangePointerControl(dpy, True, True, 1, 1, 0);
+	XChangePointerControl( dpy, True, True, 1, 1, 0 );
 
-	XSync(dpy, False);
+	XSync( dpy, False );
 
 	mouseResetTime = Sys_Milliseconds();
 
-	if (in_dgamouse->value)
-	{
+	if ( in_dgamouse->value ) {
 		int MajorVersion, MinorVersion;
 
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
-		{
+		if ( !XF86DGAQueryVersion( dpy, &MajorVersion, &MinorVersion ) ) {
 			// unable to query, probalby not supported, force the setting to 0
-			common->Printf("Failed to detect XF86DGA Mouse\n");
-			Cvar_Set("in_dgamouse", "0");
-		}
-		else
-		{
-			if (!XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse))
-			{
-				common->Printf("XF86DGADirectVideo failed despite advertised XF86DGAQueryVersion - broken drivers?");
-				Cvar_Set("in_dgamouse", "0");
-			}
-			else
-			{
-				XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+			common->Printf( "Failed to detect XF86DGA Mouse\n" );
+			Cvar_Set( "in_dgamouse", "0" );
+		} else   {
+			if ( !XF86DGADirectVideo( dpy, DefaultScreen( dpy ), XF86DGADirectMouse ) ) {
+				common->Printf( "XF86DGADirectVideo failed despite advertised XF86DGAQueryVersion - broken drivers?" );
+				Cvar_Set( "in_dgamouse", "0" );
+			} else   {
+				XWarpPointer( dpy, None, win, 0, 0, 0, 0, 0, 0 );
 			}
 		}
 	}
 
 	// don't else, it may have been canceled
-	if (!in_dgamouse->value)
-	{
+	if ( !in_dgamouse->value ) {
 		mwx = glConfig.vidWidth / 2;
 		mwy = glConfig.vidHeight / 2;
 		mx = my = 0;
 	}
 
 
-	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+	XGrabKeyboard( dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime );
 
-	XSync(dpy, False);
+	XSync( dpy, False );
 }
 
-static void uninstall_grabs()
-{
-	if (in_dgamouse->value)
-	{
-		common->DPrintf("DGA Mouse - Disabling DGA DirectVideo\n");
-		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+static void uninstall_grabs() {
+	if ( in_dgamouse->value ) {
+		common->DPrintf( "DGA Mouse - Disabling DGA DirectVideo\n" );
+		XF86DGADirectVideo( dpy, DefaultScreen( dpy ), 0 );
 	}
 
-	XChangePointerControl(dpy, True, True, mouse_accel_numerator,
-		mouse_accel_denominator, mouse_threshold);
+	XChangePointerControl( dpy, True, True, mouse_accel_numerator,
+		mouse_accel_denominator, mouse_threshold );
 
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
+	XUngrabPointer( dpy, CurrentTime );
+	XUngrabKeyboard( dpy, CurrentTime );
 
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XWarpPointer( dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2 );
 
 	// inviso cursor
-	XUndefineCursor(dpy, win);
+	XUndefineCursor( dpy, win );
 }
 
-void IN_ActivateMouse()
-{
-	if (!mouse_avail || !dpy || !win)
-	{
+void IN_ActivateMouse() {
+	if ( !mouse_avail || !dpy || !win ) {
 		return;
 	}
 
-	if (!mouse_active)
-	{
-		if (!in_nograb->value)
-		{
+	if ( !mouse_active ) {
+		if ( !in_nograb->value ) {
 			install_grabs();
-		}
-		else if (in_dgamouse->value)// force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
+		} else if ( in_dgamouse->value )     {	// force dga mouse to 0 if using nograb
+			Cvar_Set( "in_dgamouse", "0" );
 		}
 		mouse_active = true;
 	}
 }
 
-void IN_DeactivateMouse()
-{
-	if (!mouse_avail || !dpy || !win)
-	{
+void IN_DeactivateMouse() {
+	if ( !mouse_avail || !dpy || !win ) {
 		return;
 	}
 
-	if (mouse_active)
-	{
-		if (!in_nograb->value)
-		{
+	if ( mouse_active ) {
+		if ( !in_nograb->value ) {
 			uninstall_grabs();
-		}
-		else if (in_dgamouse->value)// force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
+		} else if ( in_dgamouse->value )     {	// force dga mouse to 0 if using nograb
+			Cvar_Set( "in_dgamouse", "0" );
 		}
 		mouse_active = false;
 	}
@@ -641,12 +602,10 @@ void IN_DeactivateMouse()
 // we clamp sys_timeBase*1000 to unsigned long, that gives us the current
 // origin for xtime the computation will still work if xtime wraps (at
 // ~49 days period since the Epoch) after we set sys_timeBase.
-static int Sys_XTimeToSysTime(unsigned long xtime)
-{
+static int Sys_XTimeToSysTime( unsigned long xtime ) {
 	int ret, time, test;
 
-	if (!in_subframe->value)
-	{
+	if ( !in_subframe->value ) {
 		// if you don't want to do any event times corrections
 		return Sys_Milliseconds();
 	}
@@ -665,230 +624,167 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 //	common->Printf("xtime: %p\n", xtime);
 	xtime_aux = 500;// 500 ms after wrap
 	base_aux = 0x3df3b63f;	// the base a few seconds before wrap
-	test = xtime_aux - (unsigned long)(base_aux * 1000);
-	common->Printf("xtime wrap test: %d\n", test);
+	test = xtime_aux - ( unsigned long )( base_aux * 1000 );
+	common->Printf( "xtime wrap test: %d\n", test );
 #endif
 
 	// some X servers (like suse 8.1's) report weird event times
 	// if the game is loading, resolving DNS, etc. we are also getting old events
 	// so we only deal with subframe corrections that look 'normal'
-	ret = xtime - (unsigned long)(sys_timeBase * 1000);
+	ret = xtime - ( unsigned long )( sys_timeBase * 1000 );
 	time = Sys_Milliseconds();
 	test = time - ret;
 	//printf("delta: %d\n", test);
-	if (test < 0 || test > 30)	// in normal conditions I've never seen this go above
-	{
+	if ( test < 0 || test > 30 ) {	// in normal conditions I've never seen this go above
 		return time;
 	}
 
 	return ret;
 }
 
-void Sys_SendKeyEvents()
-{
+void Sys_SendKeyEvents() {
 	int t;
 	int key;
 	char* p;
 	bool dowarp = false;
 
-	if (!dpy)
-	{
+	if ( !dpy ) {
 		return;
 	}
 
-	while (XPending(dpy))
-	{
+	while ( XPending( dpy ) ) {
 		XEvent event;
-		XNextEvent(dpy, &event);
-		switch (event.type)
-		{
+		XNextEvent( dpy, &event );
+		switch ( event.type ) {
 		case KeyPress:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-			p = XLateKey(&event.xkey, key);
-			if (key)
-			{
-				Sys_QueEvent(t, SE_KEY, key, true, 0, NULL);
+			t = Sys_XTimeToSysTime( event.xkey.time );
+			p = XLateKey( &event.xkey, key );
+			if ( key ) {
+				Sys_QueEvent( t, SE_KEY, key, true, 0, NULL );
 			}
-			if (p)
-			{
-				while (*p)
-				{
-					Sys_QueEvent(t, SE_CHAR, *p++, 0, 0, NULL);
+			if ( p ) {
+				while ( *p ) {
+					Sys_QueEvent( t, SE_CHAR, *p++, 0, 0, NULL );
 				}
 			}
 			break;
 
 		case KeyRelease:
-			t = Sys_XTimeToSysTime(event.xkey.time);
+			t = Sys_XTimeToSysTime( event.xkey.time );
 			// bk001206 - handle key repeat w/o XAutRepatOn/Off
 			//            also: not done if console/menu is active.
 			// From Ryan's Fakk2.
 			// see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.
-			if (in_keyCatchers == 0)
-			{
+			if ( in_keyCatchers == 0 ) {
 				// FIXME: KEYCATCH_NONE
-				if (repeated_press(&event))
-				{
+				if ( repeated_press( &event ) ) {
 					break;
 				}
 			}
-			XLateKey(&event.xkey, key);
-			if (key)
-			{
-				Sys_QueEvent(t, SE_KEY, key, false, 0, NULL);
+			XLateKey( &event.xkey, key );
+			if ( key ) {
+				Sys_QueEvent( t, SE_KEY, key, false, 0, NULL );
 			}
 			break;
 
 		case ButtonPress:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-			if (event.xbutton.button == 4)
-			{
-				Sys_QueEvent(t, SE_KEY, K_MWHEELUP, true, 0, NULL);
-			}
-			else if (event.xbutton.button == 5)
-			{
-				Sys_QueEvent(t, SE_KEY, K_MWHEELDOWN, true, 0, NULL);
-			}
-			else
-			{
+			t = Sys_XTimeToSysTime( event.xkey.time );
+			if ( event.xbutton.button == 4 ) {
+				Sys_QueEvent( t, SE_KEY, K_MWHEELUP, true, 0, NULL );
+			} else if ( event.xbutton.button == 5 )     {
+				Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, true, 0, NULL );
+			} else   {
 				// NOTE TTimo there seems to be a weird mapping for K_MOUSE1 K_MOUSE2 K_MOUSE3 ..
 				int b = -1;
-				if (event.xbutton.button == 1)
-				{
+				if ( event.xbutton.button == 1 ) {
 					b = 0;	// K_MOUSE1
-				}
-				else if (event.xbutton.button == 2)
-				{
+				} else if ( event.xbutton.button == 2 )     {
 					b = 2;	// K_MOUSE3
-				}
-				else if (event.xbutton.button == 3)
-				{
+				} else if ( event.xbutton.button == 3 )     {
 					b = 1;	// K_MOUSE2
-				}
-				else if (event.xbutton.button == 6)
-				{
+				} else if ( event.xbutton.button == 6 )     {
 					b = 3;	// K_MOUSE4
-				}
-				else if (event.xbutton.button == 7)
-				{
+				} else if ( event.xbutton.button == 7 )     {
 					b = 4;	// K_MOUSE5
 				}
-				if (b >= 0)
-				{
-					Sys_QueEvent(t, SE_KEY, K_MOUSE1 + b, true, 0, NULL);
+				if ( b >= 0 ) {
+					Sys_QueEvent( t, SE_KEY, K_MOUSE1 + b, true, 0, NULL );
 				}
 			}
 			break;
 
 		case ButtonRelease:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-			if (event.xbutton.button == 4)
-			{
-				Sys_QueEvent(t, SE_KEY, K_MWHEELUP, false, 0, NULL);
-			}
-			else if (event.xbutton.button == 5)
-			{
-				Sys_QueEvent(t, SE_KEY, K_MWHEELDOWN, false, 0, NULL);
-			}
-			else
-			{
+			t = Sys_XTimeToSysTime( event.xkey.time );
+			if ( event.xbutton.button == 4 ) {
+				Sys_QueEvent( t, SE_KEY, K_MWHEELUP, false, 0, NULL );
+			} else if ( event.xbutton.button == 5 )     {
+				Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, false, 0, NULL );
+			} else   {
 				int b = -1;
-				if (event.xbutton.button == 1)
-				{
+				if ( event.xbutton.button == 1 ) {
 					b = 0;
-				}
-				else if (event.xbutton.button == 2)
-				{
+				} else if ( event.xbutton.button == 2 )     {
 					b = 2;
-				}
-				else if (event.xbutton.button == 3)
-				{
+				} else if ( event.xbutton.button == 3 )     {
 					b = 1;
-				}
-				else if (event.xbutton.button == 6)
-				{
+				} else if ( event.xbutton.button == 6 )     {
 					b = 3;	// K_MOUSE4
-				}
-				else if (event.xbutton.button == 7)
-				{
+				} else if ( event.xbutton.button == 7 )     {
 					b = 4;	// K_MOUSE5
 				}
-				if (b >= 0)
-				{
-					Sys_QueEvent(t, SE_KEY, K_MOUSE1 + b, false, 0, NULL);
+				if ( b >= 0 ) {
+					Sys_QueEvent( t, SE_KEY, K_MOUSE1 + b, false, 0, NULL );
 				}
 			}
 			break;
 
 		case MotionNotify:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-			if (mouse_active)
-			{
-				if (in_dgamouse->value)
-				{
-					if (in_dgamouse->value >= 2)
-					{
+			t = Sys_XTimeToSysTime( event.xkey.time );
+			if ( mouse_active ) {
+				if ( in_dgamouse->value ) {
+					if ( in_dgamouse->value >= 2 ) {
 						mx += event.xmotion.x_root;
 						my += event.xmotion.y_root;
-					}
-					else
-					{
-						if (abs(event.xmotion.x_root) > 1)
-						{
+					} else   {
+						if ( abs( event.xmotion.x_root ) > 1 ) {
 							mx += event.xmotion.x_root * 2;
-						}
-						else
-						{
+						} else   {
 							mx += event.xmotion.x_root;
 						}
-						if (abs(event.xmotion.y_root) > 1)
-						{
+						if ( abs( event.xmotion.y_root ) > 1 ) {
 							my += event.xmotion.y_root * 2;
-						}
-						else
-						{
+						} else   {
 							my += event.xmotion.y_root;
 						}
 					}
-					if (t - mouseResetTime > MOUSE_RESET_DELAY)
-					{
-						Sys_QueEvent(t, SE_MOUSE, mx, my, 0, NULL);
+					if ( t - mouseResetTime > MOUSE_RESET_DELAY ) {
+						Sys_QueEvent( t, SE_MOUSE, mx, my, 0, NULL );
 					}
 					mx = 0;
 					my = 0;
-				}
-				else
-				{
+				} else   {
 					// If it's a center motion, we've just returned from our warp
-					if (event.xmotion.x == glConfig.vidWidth / 2 &&
-						event.xmotion.y == glConfig.vidHeight / 2)
-					{
+					if ( event.xmotion.x == glConfig.vidWidth / 2 &&
+						 event.xmotion.y == glConfig.vidHeight / 2 ) {
 						mwx = glConfig.vidWidth / 2;
 						mwy = glConfig.vidHeight / 2;
-						if (t - mouseResetTime > MOUSE_RESET_DELAY)
-						{
-							Sys_QueEvent(t, SE_MOUSE, mx, my, 0, NULL);
+						if ( t - mouseResetTime > MOUSE_RESET_DELAY ) {
+							Sys_QueEvent( t, SE_MOUSE, mx, my, 0, NULL );
 						}
 						mx = my = 0;
 						break;
 					}
 
-					int dx = ((int)event.xmotion.x - mwx);
-					int dy = ((int)event.xmotion.y - mwy);
-					if (abs(dx) > 1)
-					{
+					int dx = ( ( int )event.xmotion.x - mwx );
+					int dy = ( ( int )event.xmotion.y - mwy );
+					if ( abs( dx ) > 1 ) {
 						mx += dx * 2;
-					}
-					else
-					{
+					} else   {
 						mx += dx;
 					}
-					if (abs(dy) > 1)
-					{
+					if ( abs( dy ) > 1 ) {
 						my += dy * 2;
-					}
-					else
-					{
+					} else   {
 						my += dy;
 					}
 
@@ -900,18 +796,16 @@ void Sys_SendKeyEvents()
 			break;
 
 		case ClientMessage:
-			if (event.xclient.message_type == wm_protocols &&
-				(Atom)event.xclient.data.l[0] == wm_delete_window)
-			{
-				Cbuf_ExecuteText(EXEC_APPEND, "quit");
+			if ( event.xclient.message_type == wm_protocols &&
+				 ( Atom )event.xclient.data.l[ 0 ] == wm_delete_window ) {
+				Cbuf_ExecuteText( EXEC_APPEND, "quit" );
 			}
 			break;
 		}
 	}
 
-	if (dowarp)
-	{
-		XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	if ( dowarp ) {
+		XWarpPointer( dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2 );
 	}
 }
 
@@ -923,56 +817,48 @@ void Sys_SendKeyEvents()
 
 #ifdef __linux__
 
-static void IN_StartupJoystick()
-{
+static void IN_StartupJoystick() {
 	joy_fd = -1;
 
-	if (!in_joystick->integer)
-	{
-		common->Printf("Joystick is not active.\n");
+	if ( !in_joystick->integer ) {
+		common->Printf( "Joystick is not active.\n" );
 		return;
 	}
 
-	for (int i = 0; i < 4; i++)
-	{
-		char filename[PATH_MAX];
+	for ( int i = 0; i < 4; i++ ) {
+		char filename[ PATH_MAX ];
 
-		snprintf(filename, PATH_MAX, "/dev/input/js%d", i);
+		snprintf( filename, PATH_MAX, "/dev/input/js%d", i );
 
-		joy_fd = open(filename, O_RDONLY | O_NONBLOCK);
+		joy_fd = open( filename, O_RDONLY | O_NONBLOCK );
 
-		if (joy_fd != -1)
-		{
-			common->Printf("Joystick %s found\n", filename);
+		if ( joy_fd != -1 ) {
+			common->Printf( "Joystick %s found\n", filename );
 
 			//	Get rid of initialization messages.
 			js_event event;
-			do
-			{
-				int n = read(joy_fd, &event, sizeof(event));
+			do {
+				int n = read( joy_fd, &event, sizeof ( event ) );
 
-				if (n == -1)
-				{
+				if ( n == -1 ) {
 					break;
 				}
-			}
-			while (event.type & JS_EVENT_INIT);
+			} while ( event.type & JS_EVENT_INIT );
 
 			//	Get joystick statistics.
 			char axes = 0;
-			ioctl(joy_fd, JSIOCGAXES, &axes);
+			ioctl( joy_fd, JSIOCGAXES, &axes );
 			char buttons = 0;
-			ioctl(joy_fd, JSIOCGBUTTONS, &buttons);
+			ioctl( joy_fd, JSIOCGBUTTONS, &buttons );
 
-			char name[128];
-			if (ioctl(joy_fd, JSIOCGNAME(sizeof(name)), name) < 0)
-			{
-				String::NCpy(name, "Unknown", sizeof(name));
+			char name[ 128 ];
+			if ( ioctl( joy_fd, JSIOCGNAME( sizeof ( name ) ), name ) < 0 ) {
+				String::NCpy( name, "Unknown", sizeof ( name ) );
 			}
 
-			common->Printf("Name:    %s\n", name);
-			common->Printf("Axes:    %d\n", axes);
-			common->Printf("Buttons: %d\n", buttons);
+			common->Printf( "Name:    %s\n", name );
+			common->Printf( "Axes:    %d\n", axes );
+			common->Printf( "Buttons: %d\n", buttons );
 
 			//	Our work here is done.
 			return;
@@ -980,86 +866,67 @@ static void IN_StartupJoystick()
 	}
 
 	//	No soup for you.
-	if (joy_fd == -1)
-	{
-		common->Printf("No joystick found.\n");
+	if ( joy_fd == -1 ) {
+		common->Printf( "No joystick found.\n" );
 		return;
 	}
 }
 
-static void IN_JoyMove()
-{
+static void IN_JoyMove() {
 	//	Store instantaneous joystick state. Hack to get around event model
 	// used in Linux joystick driver.
-	static int axes_state[16];
+	static int axes_state[ 16 ];
 	//	Old bits for Quake-style input compares.
 	static unsigned int old_axes = 0;
 
-	if (joy_fd == -1)
-	{
+	if ( joy_fd == -1 ) {
 		return;
 	}
 
 	//	Empty the queue, dispatching button presses immediately and updating
 	// the instantaneous state for the axes.
-	do
-	{
+	do {
 		js_event event;
-		int n = read(joy_fd, &event, sizeof(event));
+		int n = read( joy_fd, &event, sizeof ( event ) );
 
-		if (n == -1)
-		{
+		if ( n == -1 ) {
 			//	No error, we're non-blocking.
 			break;
 		}
 
-		if (event.type & JS_EVENT_BUTTON)
-		{
-			Sys_QueEvent(0, SE_KEY, K_JOY1 + event.number, event.value, 0, NULL);
-		}
-		else if (event.type & JS_EVENT_AXIS)
-		{
-			if (event.number >= 16)
-			{
+		if ( event.type & JS_EVENT_BUTTON ) {
+			Sys_QueEvent( 0, SE_KEY, K_JOY1 + event.number, event.value, 0, NULL );
+		} else if ( event.type & JS_EVENT_AXIS )     {
+			if ( event.number >= 16 ) {
 				continue;
 			}
-			axes_state[event.number] = event.value;
-		}
-		else
-		{
-			common->Printf("Unknown joystick event type\n");
+			axes_state[ event.number ] = event.value;
+		} else   {
+			common->Printf( "Unknown joystick event type\n" );
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	//	Translate our instantaneous state to bits.
 	unsigned int axes = 0;
-	for (int i = 0; i < 16; i++)
-	{
-		float f = ((float)axes_state[i]) / 32767.0f;
+	for ( int i = 0; i < 16; i++ ) {
+		float f = ( ( float )axes_state[ i ] ) / 32767.0f;
 
-		if (f < -joy_threshold->value)
-		{
-			axes |= (1 << (i * 2));
-		}
-		else if (f > joy_threshold->value)
-		{
-			axes |= (1 << ((i * 2) + 1));
+		if ( f < -joy_threshold->value ) {
+			axes |= ( 1 << ( i * 2 ) );
+		} else if ( f > joy_threshold->value )     {
+			axes |= ( 1 << ( ( i * 2 ) + 1 ) );
 		}
 	}
 
 	//	Time to update axes state based on old vs. new.
-	for (int i = 0; i < 16; i++)
-	{
-		if ((axes & (1 << i)) && !(old_axes & (1 << i)))
-		{
-			Sys_QueEvent(0, SE_KEY, joy_keys[i], true, 0, NULL);
+	for ( int i = 0; i < 16; i++ ) {
+		if ( ( axes & ( 1 << i ) ) && !( old_axes & ( 1 << i ) ) ) {
+			Sys_QueEvent( 0, SE_KEY, joy_keys[ i ], true, 0, NULL );
 		}
 
-		if (!(axes & (1 << i)) && (old_axes & (1 << i)))
-		{
-			Sys_QueEvent(0, SE_KEY, joy_keys[i], false, 0, NULL);
+		if ( !( axes & ( 1 << i ) ) && ( old_axes & ( 1 << i ) ) ) {
+			Sys_QueEvent( 0, SE_KEY, joy_keys[ i ], false, 0, NULL );
 		}
 	}
 
@@ -1075,12 +942,10 @@ static void IN_JoyMove()
 
 #else
 
-static void IN_StartupJoystick()
-{
+static void IN_StartupJoystick() {
 }
 
-static void IN_JoyMove()
-{
+static void IN_JoyMove() {
 }
 
 #endif
@@ -1091,55 +956,48 @@ static void IN_JoyMove()
 //
 //**************************************************************************
 
-void IN_Init()
-{
-	common->Printf("\n------- Input Initialization -------\n");
+void IN_Init() {
+	common->Printf( "\n------- Input Initialization -------\n" );
 
 	// mouse variables
-	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
-	in_dgamouse = Cvar_Get("in_dgamouse", "1", CVAR_ARCHIVE);
+	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );
+	in_dgamouse = Cvar_Get( "in_dgamouse", "1", CVAR_ARCHIVE );
 
 	// turn on-off sub-frame timing of X events
-	in_subframe = Cvar_Get("in_subframe", "1", CVAR_ARCHIVE);
+	in_subframe = Cvar_Get( "in_subframe", "1", CVAR_ARCHIVE );
 
 	// developer feature, allows to break without loosing mouse pointer
-	in_nograb = Cvar_Get("in_nograb", "0", 0);
+	in_nograb = Cvar_Get( "in_nograb", "0", 0 );
 
 	// bk001130 - from cvs.17 (mkv), joystick variables
-	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	// bk001130 - changed this to match win32
-	in_joystickDebug = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
-	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE);// FIXME: in_joythreshold
+	in_joystickDebug = Cvar_Get( "in_debugjoystick", "0", CVAR_TEMP );
+	joy_threshold = Cvar_Get( "joy_threshold", "0.15", CVAR_ARCHIVE );	// FIXME: in_joythreshold
 
-	in_shiftedkeys = Cvar_Get("in_shiftedkeys", "1", CVAR_ARCHIVE);
+	in_shiftedkeys = Cvar_Get( "in_shiftedkeys", "1", CVAR_ARCHIVE );
 
-	if (in_mouse->value)
-	{
+	if ( in_mouse->value ) {
 		mouse_avail = true;
-	}
-	else
-	{
+	} else   {
 		mouse_avail = false;
 	}
 
 	IN_StartupJoystick();
 
-	common->Printf("------------------------------------\n");
+	common->Printf( "------------------------------------\n" );
 }
 
-void IN_Shutdown()
-{
+void IN_Shutdown() {
 	mouse_avail = false;
 }
 
-void IN_Frame()
-{
+void IN_Frame() {
 	// bk001130 - from cvs 1.17 (mkv)
 	IN_JoyMove();	// FIXME: disable if on desktop?
 
 	// temporarily deactivate if not in the game and running on the desktop
-	if (in_keyCatchers & KEYCATCH_CONSOLE && r_fullscreen->integer == 0)
-	{
+	if ( in_keyCatchers & KEYCATCH_CONSOLE && r_fullscreen->integer == 0 ) {
 		IN_DeactivateMouse();
 		return;
 	}

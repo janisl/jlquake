@@ -20,33 +20,32 @@
 #include "qcommon.h"
 #include <setjmp.h>
 
-class idCommon : public Interface
-{
+class idCommon : public Interface {
 public:
 	// Prints message to the console, which may cause a screen update.
-	virtual void Printf(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void Printf( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
 	// Prints message that only shows up if the "developer" cvar is set,
-	virtual void DPrintf(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void DPrintf( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
 	// Issues a C++ throw. Normal errors just abort to the game loop,
 	// which is appropriate for media or dynamic logic errors.
-	virtual void Error(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void Error( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
 	// Fatal errors quit all the way to a system dialog box, which is appropriate for
 	// static internal errors or cases where the system may be corrupted.
-	virtual void FatalError(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void FatalError( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
-	virtual void EndGame(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void EndGame( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
-	virtual void ServerDisconnected(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void ServerDisconnected( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 
-	virtual void Disconnect(const char* format, ...) id_attribute((format(printf, 2, 3))) = 0;
+	virtual void Disconnect( const char* format, ... ) id_attribute( ( format( printf, 2, 3 ) ) ) = 0;
 };
 
 extern idCommon* common;
 
-extern char com_errorMessage[MAXPRINTMSG];
+extern char com_errorMessage[ MAXPRINTMSG ];
 extern jmp_buf abortframe;
 
 #endif

@@ -21,41 +21,36 @@
 #include "../common/system.h"
 #include "main.h"
 
-static char sys_cmdline[MAX_STRING_CHARS];
+static char sys_cmdline[ MAX_STRING_CHARS ];
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
 	// should never get a previous instance in Win32
-	if (hPrevInstance)
-	{
+	if ( hPrevInstance ) {
 		return 0;
 	}
 
 	global_hInstance = hInstance;
-	String::NCpyZ(sys_cmdline, lpCmdLine, sizeof(sys_cmdline));
+	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof ( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
-	Sys_CreateConsole("JLQuake Console");
+	Sys_CreateConsole( "JLQuake Console" );
 
 	// no abort/retry/fail errors
-	SetErrorMode(SEM_FAILCRITICALERRORS);
+	SetErrorMode( SEM_FAILCRITICALERRORS );
 
-	Com_Init(__argc, __argv, sys_cmdline);
+	Com_Init( __argc, __argv, sys_cmdline );
 
 	// hide the early console since we've reached the point where we
 	// have a working graphics subsystems
-	if (!com_dedicated->integer && !com_viewlog->integer)
-	{
-		Sys_ShowConsole(0, false);
+	if ( !com_dedicated->integer && !com_viewlog->integer ) {
+		Sys_ShowConsole( 0, false );
 	}
 
 	// main game loop
-	while (1)
-	{
+	while ( 1 ) {
 		// if not running as a game client, sleep a bit
-		if (Minimized || (com_dedicated && com_dedicated->integer))
-		{
-			Sleep(5);
+		if ( Minimized || ( com_dedicated && com_dedicated->integer ) ) {
+			Sleep( 5 );
 		}
 
 		// run the game

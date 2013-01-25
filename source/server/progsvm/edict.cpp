@@ -26,10 +26,9 @@
 #define MAX_FIELD_LEN   64
 #define GEFV_CACHESIZE  2
 
-struct gefv_cache
-{
+struct gefv_cache {
 	ddef_t* pcache;
-	char field[MAX_FIELD_LEN];
+	char field[ MAX_FIELD_LEN ];
 };
 
 idEntVarDef entFieldLastRunTime;
@@ -174,314 +173,293 @@ Cvar* max_temp_edicts;
 
 static bool RemoveBadReferences;
 
-static gefv_cache gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
+static gefv_cache gefvCache[ GEFV_CACHESIZE ] = {{NULL, ""}, {NULL, ""}};
 
-static int type_size[8] = { 1, 1, 1, 3, 1, 1, 1, 1 };
+static int type_size[ 8 ] = { 1, 1, 1, 3, 1, 1, 1, 1 };
 
-void idEntVarDef::Init(const char* name, int offset)
-{
+void idEntVarDef::Init( const char* name, int offset ) {
 	this->name = name;
 	this->offset = offset;
 }
 
-int ED_InitEntityFields()
-{
+int ED_InitEntityFields() {
 	int offset = 32;
 
-	if (((GGameType & GAME_Quake) && (GGameType & GAME_QuakeWorld)) ||
-		((GGameType & GAME_Hexen2) && (GGameType & GAME_HexenWorld)))
-	{
-		entFieldLastRunTime.Init("lastruntime", offset);
+	if ( ( ( GGameType & GAME_Quake ) && ( GGameType & GAME_QuakeWorld ) ) ||
+		 ( ( GGameType & GAME_Hexen2 ) && ( GGameType & GAME_HexenWorld ) ) ) {
+		entFieldLastRunTime.Init( "lastruntime", offset );
 		offset += 4;
 	}
-	entFieldMoveType.Init("movetype", offset);
+	entFieldMoveType.Init( "movetype", offset );
 	offset += 4;
-	entFieldSolid.Init("solid", offset);
+	entFieldSolid.Init( "solid", offset );
 	offset += 4;
-	entFieldOrigin.Init("origin", offset);
+	entFieldOrigin.Init( "origin", offset );
 	offset += 12;
-	entFieldOldOrigin.Init("oldorigin", offset);
+	entFieldOldOrigin.Init( "oldorigin", offset );
 	offset += 12;
-	entFieldVelocity.Init("velocity", offset);
+	entFieldVelocity.Init( "velocity", offset );
 	offset += 12;
-	entFieldAngles.Init("angles", offset);
+	entFieldAngles.Init( "angles", offset );
 	offset += 12;
-	entFieldAVelocity.Init("avelocity", offset);
+	entFieldAVelocity.Init( "avelocity", offset );
 	offset += 12;
-	if (!(GGameType & GAME_QuakeWorld))
-	{
-		entFieldPunchAngle.Init("punchangle", offset);
+	if ( !( GGameType & GAME_QuakeWorld ) ) {
+		entFieldPunchAngle.Init( "punchangle", offset );
 		offset += 12;
 	}
-	entFieldClassName.Init("classname", offset);
+	entFieldClassName.Init( "classname", offset );
 	offset += 4;
-	entFieldModel.Init("model", offset);
+	entFieldModel.Init( "model", offset );
 	offset += 4;
-	entFieldFrame.Init("frame", offset);
+	entFieldFrame.Init( "frame", offset );
 	offset += 4;
-	entFieldSkin.Init("skin", offset);
+	entFieldSkin.Init( "skin", offset );
 	offset += 4;
-	entFieldEffects.Init("effects", offset);
+	entFieldEffects.Init( "effects", offset );
 	offset += 4;
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldScale.Init("scale", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldScale.Init( "scale", offset );
 		offset += 4;
-		entFieldDrawFlags.Init("drawflags", offset);
+		entFieldDrawFlags.Init( "drawflags", offset );
 		offset += 4;
-		entFieldAbsLight.Init("abslight", offset);
+		entFieldAbsLight.Init( "abslight", offset );
 		offset += 4;
 	}
-	entFieldMins.Init("mins", offset);
+	entFieldMins.Init( "mins", offset );
 	offset += 12;
-	entFieldMaxs.Init("maxs", offset);
+	entFieldMaxs.Init( "maxs", offset );
 	offset += 12;
-	entFieldSize.Init("size", offset);
+	entFieldSize.Init( "size", offset );
 	offset += 12;
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldHull.Init("hull", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldHull.Init( "hull", offset );
 		offset += 4;
 	}
-	entFieldTouch.Init("touch", offset);
+	entFieldTouch.Init( "touch", offset );
 	offset += 4;
-	entFieldUse.Init("use", offset);
+	entFieldUse.Init( "use", offset );
 	offset += 4;
-	entFieldThink.Init("think", offset);
+	entFieldThink.Init( "think", offset );
 	offset += 4;
-	entFieldBlocked.Init("blocked", offset);
+	entFieldBlocked.Init( "blocked", offset );
 	offset += 4;
-	entFieldNextThink.Init("nextthink", offset);
+	entFieldNextThink.Init( "nextthink", offset );
 	offset += 4;
-	entFieldGroundEntity.Init("groundentity", offset);
+	entFieldGroundEntity.Init( "groundentity", offset );
 	offset += 4;
-	if (GGameType & GAME_Quake)
-	{
-		entFieldHealth.Init("health", offset);
+	if ( GGameType & GAME_Quake ) {
+		entFieldHealth.Init( "health", offset );
 		offset += 4;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldStatsRestored.Init("stats_restored", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldStatsRestored.Init( "stats_restored", offset );
 		offset += 4;
 	}
-	entFieldFrags.Init("frags", offset);
+	entFieldFrags.Init( "frags", offset );
 	offset += 4;
-	entFieldWeapon.Init("weapon", offset);
+	entFieldWeapon.Init( "weapon", offset );
 	offset += 4;
-	entFieldWeaponModel.Init("weaponmodel", offset);
+	entFieldWeaponModel.Init( "weaponmodel", offset );
 	offset += 4;
-	entFieldWeaponFrame.Init("weaponframe", offset);
+	entFieldWeaponFrame.Init( "weaponframe", offset );
 	offset += 4;
-	if (GGameType & GAME_Quake)
-	{
-		entFieldCurrentAmmo.Init("currentammo", offset);
+	if ( GGameType & GAME_Quake ) {
+		entFieldCurrentAmmo.Init( "currentammo", offset );
 		offset += 4;
-		entFieldAmmoShells.Init("ammo_shells", offset);
+		entFieldAmmoShells.Init( "ammo_shells", offset );
 		offset += 4;
-		entFieldAmmoNails.Init("ammo_nails", offset);
+		entFieldAmmoNails.Init( "ammo_nails", offset );
 		offset += 4;
-		entFieldAmmoRockets.Init("ammo_rockets", offset);
+		entFieldAmmoRockets.Init( "ammo_rockets", offset );
 		offset += 4;
-		entFieldAmmoCells.Init("ammo_cells", offset);
+		entFieldAmmoCells.Init( "ammo_cells", offset );
 		offset += 4;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldHealth.Init("health", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldHealth.Init( "health", offset );
 		offset += 4;
-		entFieldMaxHealth.Init("max_health", offset);
+		entFieldMaxHealth.Init( "max_health", offset );
 		offset += 4;
-		entFieldPlayerClass.Init("playerclass", offset);
+		entFieldPlayerClass.Init( "playerclass", offset );
 		offset += 4;
-		if (GGameType & GAME_HexenWorld)
-		{
-			entFieldNextPlayerClass.Init("next_playerclass", offset);
+		if ( GGameType & GAME_HexenWorld ) {
+			entFieldNextPlayerClass.Init( "next_playerclass", offset );
 			offset += 4;
-			entFieldHasPortals.Init("has_portals", offset);
+			entFieldHasPortals.Init( "has_portals", offset );
 			offset += 4;
 		}
-		entFieldBlueMana.Init("bluemana", offset);
+		entFieldBlueMana.Init( "bluemana", offset );
 		offset += 4;
-		entFieldGreenMana.Init("greenmana", offset);
+		entFieldGreenMana.Init( "greenmana", offset );
 		offset += 4;
-		entFieldMaxMana.Init("max_mana", offset);
+		entFieldMaxMana.Init( "max_mana", offset );
 		offset += 4;
-		entFieldArmorAmulet.Init("armor_amulet", offset);
+		entFieldArmorAmulet.Init( "armor_amulet", offset );
 		offset += 4;
-		entFieldArmorBracer.Init("armor_bracer", offset);
+		entFieldArmorBracer.Init( "armor_bracer", offset );
 		offset += 4;
-		entFieldArmorBreastPlate.Init("armor_breastplate", offset);
+		entFieldArmorBreastPlate.Init( "armor_breastplate", offset );
 		offset += 4;
-		entFieldArmorHelmet.Init("armor_helmet", offset);
+		entFieldArmorHelmet.Init( "armor_helmet", offset );
 		offset += 4;
-		entFieldLevel.Init("level", offset);
+		entFieldLevel.Init( "level", offset );
 		offset += 4;
-		entFieldIntelligence.Init("intelligence", offset);
+		entFieldIntelligence.Init( "intelligence", offset );
 		offset += 4;
-		entFieldWisdom.Init("wisdom", offset);
+		entFieldWisdom.Init( "wisdom", offset );
 		offset += 4;
-		entFieldDexterity.Init("dexterity", offset);
+		entFieldDexterity.Init( "dexterity", offset );
 		offset += 4;
-		entFieldStrength.Init("strength", offset);
+		entFieldStrength.Init( "strength", offset );
 		offset += 4;
-		entFieldExperience.Init("experience", offset);
+		entFieldExperience.Init( "experience", offset );
 		offset += 4;
-		entFieldRingFlight.Init("ring_flight", offset);
+		entFieldRingFlight.Init( "ring_flight", offset );
 		offset += 4;
-		entFieldRingWater.Init("ring_water", offset);
+		entFieldRingWater.Init( "ring_water", offset );
 		offset += 4;
-		entFieldRingTurning.Init("ring_turning", offset);
+		entFieldRingTurning.Init( "ring_turning", offset );
 		offset += 4;
-		entFieldRingRegeneration.Init("ring_regeneration", offset);
+		entFieldRingRegeneration.Init( "ring_regeneration", offset );
 		offset += 4;
-		entFieldHasteTime.Init("haste_time", offset);
+		entFieldHasteTime.Init( "haste_time", offset );
 		offset += 4;
-		entFieldTomeTime.Init("tome_time", offset);
+		entFieldTomeTime.Init( "tome_time", offset );
 		offset += 4;
-		entFieldPuzzleInv1.Init("puzzle_inv1", offset);
+		entFieldPuzzleInv1.Init( "puzzle_inv1", offset );
 		offset += 4;
-		entFieldPuzzleInv2.Init("puzzle_inv2", offset);
+		entFieldPuzzleInv2.Init( "puzzle_inv2", offset );
 		offset += 4;
-		entFieldPuzzleInv3.Init("puzzle_inv3", offset);
+		entFieldPuzzleInv3.Init( "puzzle_inv3", offset );
 		offset += 4;
-		entFieldPuzzleInv4.Init("puzzle_inv4", offset);
+		entFieldPuzzleInv4.Init( "puzzle_inv4", offset );
 		offset += 4;
-		entFieldPuzzleInv5.Init("puzzle_inv5", offset);
+		entFieldPuzzleInv5.Init( "puzzle_inv5", offset );
 		offset += 4;
-		entFieldPuzzleInv6.Init("puzzle_inv6", offset);
+		entFieldPuzzleInv6.Init( "puzzle_inv6", offset );
 		offset += 4;
-		entFieldPuzzleInv7.Init("puzzle_inv7", offset);
+		entFieldPuzzleInv7.Init( "puzzle_inv7", offset );
 		offset += 4;
-		entFieldPuzzleInv8.Init("puzzle_inv8", offset);
+		entFieldPuzzleInv8.Init( "puzzle_inv8", offset );
 		offset += 4;
 		//	experience_value
 		offset += 4;
 	}
-	entFieldItems.Init("items", offset);
+	entFieldItems.Init( "items", offset );
 	offset += 4;
-	entFieldTakeDamage.Init("takedamage", offset);
+	entFieldTakeDamage.Init( "takedamage", offset );
 	offset += 4;
-	entFieldChain.Init("chain", offset);
+	entFieldChain.Init( "chain", offset );
 	offset += 4;
-	entFieldDeadFlag.Init("deadflag", offset);
+	entFieldDeadFlag.Init( "deadflag", offset );
 	offset += 4;
-	entFieldViewOfs.Init("view_ofs", offset);
+	entFieldViewOfs.Init( "view_ofs", offset );
 	offset += 12;
-	entFieldButton0.Init("button0", offset);
+	entFieldButton0.Init( "button0", offset );
 	offset += 4;
 	//	button1
 	offset += 4;
-	entFieldButton2.Init("button2", offset);
+	entFieldButton2.Init( "button2", offset );
 	offset += 4;
-	entFieldImpulse.Init("impulse", offset);
+	entFieldImpulse.Init( "impulse", offset );
 	offset += 4;
-	entFieldFixAngle.Init("fixangle", offset);
+	entFieldFixAngle.Init( "fixangle", offset );
 	offset += 4;
-	entFieldVAngle.Init("v_angle", offset);
+	entFieldVAngle.Init( "v_angle", offset );
 	offset += 12;
-	if (!(GGameType & GAME_QuakeWorld))
-	{
-		entFieldIdealPitch.Init("idealpitch", offset);
+	if ( !( GGameType & GAME_QuakeWorld ) ) {
+		entFieldIdealPitch.Init( "idealpitch", offset );
 		offset += 4;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldIdealRoll.Init("idealroll", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldIdealRoll.Init( "idealroll", offset );
 		offset += 4;
-		entFieldHoverZ.Init("hoverz", offset);
+		entFieldHoverZ.Init( "hoverz", offset );
 		offset += 4;
 	}
-	entFieldNetName.Init("netname", offset);
+	entFieldNetName.Init( "netname", offset );
 	offset += 4;
-	entFieldEnemy.Init("enemy", offset);
+	entFieldEnemy.Init( "enemy", offset );
 	offset += 4;
-	entFieldFlags.Init("flags", offset);
+	entFieldFlags.Init( "flags", offset );
 	offset += 4;
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldFlags2.Init("flags2", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldFlags2.Init( "flags2", offset );
 		offset += 4;
 		//	artifact_flags
 		offset += 4;
 	}
-	entFieldColorMap.Init("colormap", offset);
+	entFieldColorMap.Init( "colormap", offset );
 	offset += 4;
-	entFieldTeam.Init("team", offset);
+	entFieldTeam.Init( "team", offset );
 	offset += 4;
-	if (GGameType & GAME_Quake)
-	{
-		entFieldMaxHealth.Init("max_health", offset);
+	if ( GGameType & GAME_Quake ) {
+		entFieldMaxHealth.Init( "max_health", offset );
 		offset += 4;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldLightLevel.Init("light_level", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldLightLevel.Init( "light_level", offset );
 		offset += 4;
-		if (GGameType & GAME_HexenWorld)
-		{
-			entFieldWpnSound.Init("wpn_sound", offset);
+		if ( GGameType & GAME_HexenWorld ) {
+			entFieldWpnSound.Init( "wpn_sound", offset );
 			offset += 4;
-			entFieldTargAng.Init("targAng", offset);
+			entFieldTargAng.Init( "targAng", offset );
 			offset += 4;
-			entFieldTargPitch.Init("targPitch", offset);
+			entFieldTargPitch.Init( "targPitch", offset );
 			offset += 4;
-			entFieldTargDist.Init("targDist", offset);
+			entFieldTargDist.Init( "targDist", offset );
 			offset += 4;
 		}
 	}
-	entFieldTeleportTime.Init("teleport_time", offset);
+	entFieldTeleportTime.Init( "teleport_time", offset );
 	offset += 4;
 	//	armortype
 	offset += 4;
-	entFieldArmorValue.Init("armorvalue", offset);
+	entFieldArmorValue.Init( "armorvalue", offset );
 	offset += 4;
-	entFieldWaterLevel.Init("waterlevel", offset);
+	entFieldWaterLevel.Init( "waterlevel", offset );
 	offset += 4;
-	entFieldWaterType.Init("watertype", offset);
+	entFieldWaterType.Init( "watertype", offset );
 	offset += 4;
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldFriction.Init("friction", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldFriction.Init( "friction", offset );
 		offset += 4;
 	}
-	entFieldIdealYaw.Init("ideal_yaw", offset);
+	entFieldIdealYaw.Init( "ideal_yaw", offset );
 	offset += 4;
-	entFieldYawSpeed.Init("yaw_speed", offset);
+	entFieldYawSpeed.Init( "yaw_speed", offset );
 	offset += 4;
-	if (GGameType & GAME_Quake)
-	{
+	if ( GGameType & GAME_Quake ) {
 		//	aiment
 		offset += 4;
 	}
-	entFieldGoalEntity.Init("goalentity", offset);
+	entFieldGoalEntity.Init( "goalentity", offset );
 	offset += 4;
-	entFieldSpawnFlags.Init("spawnflags", offset);
+	entFieldSpawnFlags.Init( "spawnflags", offset );
 	offset += 4;
 	//	target
 	offset += 4;
 	//	targetname
 	offset += 4;
-	entFieldDmgTake.Init("dmg_take", offset);
+	entFieldDmgTake.Init( "dmg_take", offset );
 	offset += 4;
-	entFieldDmgSave.Init("dmg_save", offset);
+	entFieldDmgSave.Init( "dmg_save", offset );
 	offset += 4;
-	entFieldDmgInflictor.Init("dmg_inflictor", offset);
+	entFieldDmgInflictor.Init( "dmg_inflictor", offset );
 	offset += 4;
-	entFieldOwner.Init("owner", offset);
+	entFieldOwner.Init( "owner", offset );
 	offset += 4;
-	entFieldMoveDir.Init("movedir", offset);
+	entFieldMoveDir.Init( "movedir", offset );
 	offset += 12;
-	entFieldMessage.Init("message", offset);
+	entFieldMessage.Init( "message", offset );
 	offset += 4;
-	if (GGameType & GAME_Quake)
-	{
-		entFieldSounds.Init("sounds", offset);
+	if ( GGameType & GAME_Quake ) {
+		entFieldSounds.Init( "sounds", offset );
 		offset += 4;
 	}
-	if (GGameType & GAME_Hexen2)
-	{
-		entFieldSoundType.Init("soundtype", offset);
+	if ( GGameType & GAME_Hexen2 ) {
+		entFieldSoundType.Init( "soundtype", offset );
 		offset += 4;
 	}
 	//	noise
@@ -492,279 +470,240 @@ int ED_InitEntityFields()
 	offset += 4;
 	//	noise3
 	offset += 4;
-	if (GGameType & GAME_Hexen2)
-	{
+	if ( GGameType & GAME_Hexen2 ) {
 		//	rings
 		offset += 4;
-		entFieldRingsActive.Init("rings_active", offset);
+		entFieldRingsActive.Init( "rings_active", offset );
 		offset += 4;
-		entFieldRingsLow.Init("rings_low", offset);
+		entFieldRingsLow.Init( "rings_low", offset );
 		offset += 4;
-		entFieldArtifacts.Init("artifacts", offset);
+		entFieldArtifacts.Init( "artifacts", offset );
 		offset += 4;
-		entFieldArtifactActive.Init("artifact_active", offset);
+		entFieldArtifactActive.Init( "artifact_active", offset );
 		offset += 4;
-		entFieldArtifactLow.Init("artifact_low", offset);
+		entFieldArtifactLow.Init( "artifact_low", offset );
 		offset += 4;
-		entFieldHasted.Init("hasted", offset);
+		entFieldHasted.Init( "hasted", offset );
 		offset += 4;
-		entFieldInventory.Init("inventory", offset);
+		entFieldInventory.Init( "inventory", offset );
 		offset += 4;
-		entFieldCntTorch.Init("cnt_torch", offset);
+		entFieldCntTorch.Init( "cnt_torch", offset );
 		offset += 4;
-		entFieldCntHBoost.Init("cnt_h_boost", offset);
+		entFieldCntHBoost.Init( "cnt_h_boost", offset );
 		offset += 4;
-		entFieldCntSHBoost.Init("cnt_sh_boost", offset);
+		entFieldCntSHBoost.Init( "cnt_sh_boost", offset );
 		offset += 4;
-		entFieldCntManaBoost.Init("cnt_mana_boost", offset);
+		entFieldCntManaBoost.Init( "cnt_mana_boost", offset );
 		offset += 4;
-		entFieldCntTeleport.Init("cnt_teleport", offset);
+		entFieldCntTeleport.Init( "cnt_teleport", offset );
 		offset += 4;
-		entFieldCntTome.Init("cnt_tome", offset);
+		entFieldCntTome.Init( "cnt_tome", offset );
 		offset += 4;
-		entFieldCntSummon.Init("cnt_summon", offset);
+		entFieldCntSummon.Init( "cnt_summon", offset );
 		offset += 4;
-		entFieldCntInvisibility.Init("cnt_invisibility", offset);
+		entFieldCntInvisibility.Init( "cnt_invisibility", offset );
 		offset += 4;
-		entFieldCntGlyph.Init("cnt_glyph", offset);
+		entFieldCntGlyph.Init( "cnt_glyph", offset );
 		offset += 4;
-		entFieldCntHaste.Init("cnt_haste", offset);
+		entFieldCntHaste.Init( "cnt_haste", offset );
 		offset += 4;
-		entFieldCntBlast.Init("cnt_blast", offset);
+		entFieldCntBlast.Init( "cnt_blast", offset );
 		offset += 4;
-		entFieldCntPolyMorph.Init("cnt_polymorph", offset);
+		entFieldCntPolyMorph.Init( "cnt_polymorph", offset );
 		offset += 4;
-		entFieldCntFlight.Init("cnt_flight", offset);
+		entFieldCntFlight.Init( "cnt_flight", offset );
 		offset += 4;
-		entFieldCntCubeOfForce.Init("cnt_cubeofforce", offset);
+		entFieldCntCubeOfForce.Init( "cnt_cubeofforce", offset );
 		offset += 4;
-		entFieldCntInvincibility.Init("cnt_invincibility", offset);
+		entFieldCntInvincibility.Init( "cnt_invincibility", offset );
 		offset += 4;
-		entFieldCameraMode.Init("cameramode", offset);
+		entFieldCameraMode.Init( "cameramode", offset );
 		offset += 4;
-		entFieldMoveChain.Init("movechain", offset);
+		entFieldMoveChain.Init( "movechain", offset );
 		offset += 4;
-		entFieldChainMoved.Init("chainmoved", offset);
+		entFieldChainMoved.Init( "chainmoved", offset );
 		offset += 4;
 		//	string_index
 		offset += 4;
-		if (GGameType & GAME_HexenWorld)
-		{
-			entFieldGravity.Init("gravity", offset);
+		if ( GGameType & GAME_HexenWorld ) {
+			entFieldGravity.Init( "gravity", offset );
 			offset += 4;
-			entFieldSiegeTeam.Init("siege_team", offset);
+			entFieldSiegeTeam.Init( "siege_team", offset );
 			offset += 4;
 		}
 	}
 	return offset;
 }
 
-qhedict_t* QH_EDICT_NUM(int n)
-{
-	if (n < 0 || n >= MAX_EDICTS_QH)
-	{
-		common->Error("QH_EDICT_NUM: bad number %i", n);
+qhedict_t* QH_EDICT_NUM( int n ) {
+	if ( n < 0 || n >= MAX_EDICTS_QH ) {
+		common->Error( "QH_EDICT_NUM: bad number %i", n );
 	}
-	return (qhedict_t*)((byte*)sv.qh_edicts + (n) * pr_edict_size);
+	return ( qhedict_t* )( ( byte* )sv.qh_edicts + ( n ) * pr_edict_size );
 }
 
-int QH_NUM_FOR_EDICT(const qhedict_t* e)
-{
-	int b = (byte*)e - (byte*)sv.qh_edicts;
+int QH_NUM_FOR_EDICT( const qhedict_t* e ) {
+	int b = ( byte* )e - ( byte* )sv.qh_edicts;
 	b = b / pr_edict_size;
 
-	if (b < 0 || b >= sv.qh_num_edicts)
-	{
-		if (GGameType & GAME_Hexen2)
-		{
-			if (!RemoveBadReferences)
-			{
-				common->DPrintf("QH_NUM_FOR_EDICT: bad pointer, Index %d, Total %d", b, sv.qh_num_edicts);
+	if ( b < 0 || b >= sv.qh_num_edicts ) {
+		if ( GGameType & GAME_Hexen2 ) {
+			if ( !RemoveBadReferences ) {
+				common->DPrintf( "QH_NUM_FOR_EDICT: bad pointer, Index %d, Total %d", b, sv.qh_num_edicts );
 			}
 			return 0;
 		}
-		common->Error("QH_NUM_FOR_EDICT: bad pointer");
+		common->Error( "QH_NUM_FOR_EDICT: bad pointer" );
 	}
-	if (e->free && RemoveBadReferences)
-	{
+	if ( e->free && RemoveBadReferences ) {
 		return 0;
 	}
 	return b;
 }
 
-eval_t* GetEdictFieldValue(qhedict_t* ed, const char* field)
-{
+eval_t* GetEdictFieldValue( qhedict_t* ed, const char* field ) {
 	ddef_t* def = NULL;
 	static int rep = 0;
 
-	for (int i = 0; i < GEFV_CACHESIZE; i++)
-	{
-		if (!String::Cmp(field, gefvCache[i].field))
-		{
-			def = gefvCache[i].pcache;
+	for ( int i = 0; i < GEFV_CACHESIZE; i++ ) {
+		if ( !String::Cmp( field, gefvCache[ i ].field ) ) {
+			def = gefvCache[ i ].pcache;
 			goto Done;
 		}
 	}
 
-	def = ED_FindField(field);
+	def = ED_FindField( field );
 
-	if (String::Length(field) < MAX_FIELD_LEN)
-	{
-		gefvCache[rep].pcache = def;
-		String::Cpy(gefvCache[rep].field, field);
+	if ( String::Length( field ) < MAX_FIELD_LEN ) {
+		gefvCache[ rep ].pcache = def;
+		String::Cpy( gefvCache[ rep ].field, field );
 		rep ^= 1;
 	}
 
 Done:
-	if (!def)
-	{
+	if ( !def ) {
 		return NULL;
 	}
 
-	return (eval_t*)((char*)&ed->v + def->ofs * 4);
+	return ( eval_t* )( ( char* )&ed->v + def->ofs * 4 );
 }
 
-void ED_ClearGEFVCache()
-{
-	for (int i = 0; i < GEFV_CACHESIZE; i++)
-	{
-		gefvCache[i].field[0] = 0;
+void ED_ClearGEFVCache() {
+	for ( int i = 0; i < GEFV_CACHESIZE; i++ ) {
+		gefvCache[ i ].field[ 0 ] = 0;
 	}
 }
 
 //	Sets everything to NULL
-void ED_ClearEdict(qhedict_t* e)
-{
-	Com_Memset(&e->v, 0, progs->entityfields * 4);
-	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld))
-	{
-		Com_Memset(&e->h2_baseline, 0, sizeof(e->h2_baseline));
+void ED_ClearEdict( qhedict_t* e ) {
+	Com_Memset( &e->v, 0, progs->entityfields * 4 );
+	if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_HexenWorld ) ) {
+		Com_Memset( &e->h2_baseline, 0, sizeof ( e->h2_baseline ) );
 	}
 	e->free = false;
 }
 
 //	For debugging
-void ED_Print(const qhedict_t* ed)
-{
-	if (ed->free)
-	{
-		common->Printf("FREE\n");
+void ED_Print( const qhedict_t* ed ) {
+	if ( ed->free ) {
+		common->Printf( "FREE\n" );
 		return;
 	}
 
-	common->Printf("\nEDICT %i:\n", QH_NUM_FOR_EDICT(ed));
-	for (int i = 1; i < progs->numfielddefs; i++)
-	{
-		ddef_t* d = &pr_fielddefs[i];
-		const char* name = PR_GetString(d->s_name);
-		int l = String::Length(name);
-		if ((name[l - 2] == '_') && ((name[l - 1] == 'x') || (name[l - 1] == 'y') || (name[l - 1] == 'z')))
-		{
+	common->Printf( "\nEDICT %i:\n", QH_NUM_FOR_EDICT( ed ) );
+	for ( int i = 1; i < progs->numfielddefs; i++ ) {
+		ddef_t* d = &pr_fielddefs[ i ];
+		const char* name = PR_GetString( d->s_name );
+		int l = String::Length( name );
+		if ( ( name[ l - 2 ] == '_' ) && ( ( name[ l - 1 ] == 'x' ) || ( name[ l - 1 ] == 'y' ) || ( name[ l - 1 ] == 'z' ) ) ) {
 			continue;	// skip _x, _y, _z vars
 
 		}
-		int* v = (int*)((char*)&ed->v + d->ofs * 4);
+		int* v = ( int* )( ( char* )&ed->v + d->ofs * 4 );
 
 		// if the value is still all 0, skip the field
 		int type = d->type & ~DEF_SAVEGLOBAL;
 		int j;
-		for (j = 0; j < type_size[type]; j++)
-		{
-			if (v[j])
-			{
+		for ( j = 0; j < type_size[ type ]; j++ ) {
+			if ( v[ j ] ) {
 				break;
 			}
 		}
-		if (j == type_size[type])
-		{
+		if ( j == type_size[ type ] ) {
 			continue;
 		}
 
-		common->Printf("%s",name);
-		while (l++ < 15)
-		{
-			common->Printf(" ");
+		common->Printf( "%s",name );
+		while ( l++ < 15 ) {
+			common->Printf( " " );
 		}
 
-		common->Printf("%s\n", PR_ValueString((etype_t)d->type, (eval_t*)v));
+		common->Printf( "%s\n", PR_ValueString( ( etype_t )d->type, ( eval_t* )v ) );
 	}
 }
 
-void ED_PrintNum(int ent)
-{
-	ED_Print(QH_EDICT_NUM(ent));
+void ED_PrintNum( int ent ) {
+	ED_Print( QH_EDICT_NUM( ent ) );
 }
 
 //	For debugging, prints all the entities in the current server
-void ED_PrintEdicts()
-{
-	common->Printf("%i entities\n", sv.qh_num_edicts);
-	for (int i = 0; i < sv.qh_num_edicts; i++)
-	{
-		ED_PrintNum(i);
+void ED_PrintEdicts() {
+	common->Printf( "%i entities\n", sv.qh_num_edicts );
+	for ( int i = 0; i < sv.qh_num_edicts; i++ ) {
+		ED_PrintNum( i );
 	}
 }
 
 //	For debugging, prints a single edicy
-void ED_PrintEdict_f()
-{
-	int i = String::Atoi(Cmd_Argv(1));
-	if (i >= sv.qh_num_edicts)
-	{
-		common->Printf("Bad edict number\n");
+void ED_PrintEdict_f() {
+	int i = String::Atoi( Cmd_Argv( 1 ) );
+	if ( i >= sv.qh_num_edicts ) {
+		common->Printf( "Bad edict number\n" );
 		return;
 	}
-	ED_PrintNum(i);
+	ED_PrintNum( i );
 }
 
 //	For savegames
-void ED_Write(fileHandle_t f, const qhedict_t* ed)
-{
-	FS_Printf(f, "{\n");
+void ED_Write( fileHandle_t f, const qhedict_t* ed ) {
+	FS_Printf( f, "{\n" );
 
-	if (ed->free)
-	{
-		FS_Printf(f, "}\n");
+	if ( ed->free ) {
+		FS_Printf( f, "}\n" );
 		return;
 	}
 
-	if (GGameType & GAME_Hexen2)
-	{
+	if ( GGameType & GAME_Hexen2 ) {
 		RemoveBadReferences = true;
 	}
 
-	for (int i = 1; i < progs->numfielddefs; i++)
-	{
-		ddef_t* d = &pr_fielddefs[i];
-		const char* name = PR_GetString(d->s_name);
-		int length = String::Length(name);
-		if (name[length - 2] == '_' && name[length - 1] >= 'x' && name[length - 1] <= 'z')
-		{
+	for ( int i = 1; i < progs->numfielddefs; i++ ) {
+		ddef_t* d = &pr_fielddefs[ i ];
+		const char* name = PR_GetString( d->s_name );
+		int length = String::Length( name );
+		if ( name[ length - 2 ] == '_' && name[ length - 1 ] >= 'x' && name[ length - 1 ] <= 'z' ) {
 			continue;	// skip _x, _y, _z vars
 
 		}
-		int* v = (int*)((char*)&ed->v + d->ofs * 4);
+		int* v = ( int* )( ( char* )&ed->v + d->ofs * 4 );
 
 		// if the value is still all 0, skip the field
 		int type = d->type & ~DEF_SAVEGLOBAL;
 		int j;
-		for (j = 0; j < type_size[type]; j++)
-		{
-			if (v[j])
-			{
+		for ( j = 0; j < type_size[ type ]; j++ ) {
+			if ( v[ j ] ) {
 				break;
 			}
 		}
-		if (j == type_size[type])
-		{
+		if ( j == type_size[ type ] ) {
 			continue;
 		}
 
-		FS_Printf(f,"\"%s\" ", name);
-		FS_Printf(f,"\"%s\"\n", PR_UglyValueString((etype_t)d->type, (eval_t*)v));
+		FS_Printf( f,"\"%s\" ", name );
+		FS_Printf( f,"\"%s\"\n", PR_UglyValueString( ( etype_t )d->type, ( eval_t* )v ) );
 	}
 
-	FS_Printf(f, "}\n");
+	FS_Printf( f, "}\n" );
 
 	RemoveBadReferences = false;
 }
@@ -772,121 +711,100 @@ void ED_Write(fileHandle_t f, const qhedict_t* ed)
 //	Parses an edict out of the given string, returning the new position
 // ed should be a properly initialized empty edict.
 // Used for initial level load and for savegames.
-const char* ED_ParseEdict(const char* data, qhedict_t* ent)
-{
+const char* ED_ParseEdict( const char* data, qhedict_t* ent ) {
 	ddef_t* key;
 	qboolean anglehack;
 	qboolean init;
-	char keyname[256];
+	char keyname[ 256 ];
 	int n;
 
 	init = false;
 
 // clear it
-	if (ent != sv.qh_edicts)	// hack
-	{
-		Com_Memset(&ent->v, 0, progs->entityfields * 4);
+	if ( ent != sv.qh_edicts ) {	// hack
+		Com_Memset( &ent->v, 0, progs->entityfields * 4 );
 	}
 
 // go through all the dictionary pairs
-	while (1)
-	{
+	while ( 1 ) {
 		// parse key
-		char* token = String::Parse2(&data);
-		if (token[0] == '}')
-		{
+		char* token = String::Parse2( &data );
+		if ( token[ 0 ] == '}' ) {
 			break;
 		}
-		if (!data)
-		{
-			common->Error("ED_ParseEntity: EOF without closing brace");
+		if ( !data ) {
+			common->Error( "ED_ParseEntity: EOF without closing brace" );
 		}
 
 // anglehack is to allow QuakeEd to write single scalar angles
 // and allow them to be turned into vectors. (FIXME...)
-		if (!String::Cmp(token, "angle"))
-		{
-			String::Cpy(token, "angles");
+		if ( !String::Cmp( token, "angle" ) ) {
+			String::Cpy( token, "angles" );
 			anglehack = true;
-		}
-		else
-		{
+		} else   {
 			anglehack = false;
 		}
 
 // FIXME: change light to _light to get rid of this hack
-		if (!String::Cmp(token, "light"))
-		{
-			String::Cpy(token, "light_lev");// hack for single light def
+		if ( !String::Cmp( token, "light" ) ) {
+			String::Cpy( token, "light_lev" );	// hack for single light def
 
 		}
-		String::Cpy(keyname, token);
+		String::Cpy( keyname, token );
 
 		// another hack to fix heynames with trailing spaces
-		n = String::Length(keyname);
-		while (n && keyname[n - 1] == ' ')
-		{
-			keyname[n - 1] = 0;
+		n = String::Length( keyname );
+		while ( n && keyname[ n - 1 ] == ' ' ) {
+			keyname[ n - 1 ] = 0;
 			n--;
 		}
 
 		// parse value
-		token = String::Parse2(&data);
-		if (!data)
-		{
-			common->Error("ED_ParseEntity: EOF without closing brace");
+		token = String::Parse2( &data );
+		if ( !data ) {
+			common->Error( "ED_ParseEntity: EOF without closing brace" );
 		}
 
-		if (token[0] == '}')
-		{
-			common->Error("ED_ParseEntity: closing brace without data");
+		if ( token[ 0 ] == '}' ) {
+			common->Error( "ED_ParseEntity: closing brace without data" );
 		}
 
 		init = true;
 
 // keynames with a leading underscore are used for utility comments,
 // and are immediately discarded by quake
-		if (keyname[0] == '_')
-		{
+		if ( keyname[ 0 ] == '_' ) {
 			continue;
 		}
 
-		if (GGameType & GAME_Hexen2)
-		{
-			if (String::ICmp(keyname,"MIDI") == 0)
-			{
-				String::Cpy(sv.h2_midi_name,token);
+		if ( GGameType & GAME_Hexen2 ) {
+			if ( String::ICmp( keyname,"MIDI" ) == 0 ) {
+				String::Cpy( sv.h2_midi_name,token );
 				continue;
-			}
-			else if (String::ICmp(keyname,"CD") == 0)
-			{
-				sv.h2_cd_track = (byte)atol(token);
+			} else if ( String::ICmp( keyname,"CD" ) == 0 )       {
+				sv.h2_cd_track = ( byte )atol( token );
 				continue;
 			}
 		}
 
-		key = ED_FindField(keyname);
-		if (!key)
-		{
-			common->Printf("'%s' is not a field\n", keyname);
+		key = ED_FindField( keyname );
+		if ( !key ) {
+			common->Printf( "'%s' is not a field\n", keyname );
 			continue;
 		}
 
-		if (anglehack)
-		{
-			char temp[32];
-			String::Cpy(temp, token);
-			sprintf(token, "0 %s 0", temp);
+		if ( anglehack ) {
+			char temp[ 32 ];
+			String::Cpy( temp, token );
+			sprintf( token, "0 %s 0", temp );
 		}
 
-		if (!ED_ParseEpair((void*)&ent->v, key, token))
-		{
-			common->Error("ED_ParseEdict: parse error");
+		if ( !ED_ParseEpair( ( void* )&ent->v, key, token ) ) {
+			common->Error( "ED_ParseEdict: parse error" );
 		}
 	}
 
-	if (!init)
-	{
+	if ( !init ) {
 		ent->free = true;
 	}
 
@@ -894,39 +812,33 @@ const char* ED_ParseEdict(const char* data, qhedict_t* ent)
 }
 
 //	For debugging
-void ED_Count()
-{
+void ED_Count() {
 	int active = 0;
 	int models = 0;
 	int solid = 0;
 	int step = 0;
-	for (int i = 0; i < sv.qh_num_edicts; i++)
-	{
-		qhedict_t* ent = QH_EDICT_NUM(i);
-		if (ent->free)
-		{
+	for ( int i = 0; i < sv.qh_num_edicts; i++ ) {
+		qhedict_t* ent = QH_EDICT_NUM( i );
+		if ( ent->free ) {
 			continue;
 		}
 		active++;
-		if (ent->GetSolid())
-		{
+		if ( ent->GetSolid() ) {
 			solid++;
 		}
-		if (ent->GetModel())
-		{
+		if ( ent->GetModel() ) {
 			models++;
 		}
-		if (ent->GetMoveType() == QHMOVETYPE_STEP)
-		{
+		if ( ent->GetMoveType() == QHMOVETYPE_STEP ) {
 			step++;
 		}
 	}
 
-	common->Printf("num_edicts:%3i\n", sv.qh_num_edicts);
-	common->Printf("active    :%3i\n", active);
-	common->Printf("view      :%3i\n", models);
-	common->Printf("touch     :%3i\n", solid);
-	common->Printf("step      :%3i\n", step);
+	common->Printf( "num_edicts:%3i\n", sv.qh_num_edicts );
+	common->Printf( "active    :%3i\n", active );
+	common->Printf( "view      :%3i\n", models );
+	common->Printf( "touch     :%3i\n", solid );
+	common->Printf( "step      :%3i\n", step );
 }
 
 //	Either finds a free edict, or allocates a new one.
@@ -934,70 +846,59 @@ void ED_Count()
 // can cause the client to think the entity morphed into something else
 // instead of being removed and recreated, which can cause interpolated
 // angles and bad trails.
-qhedict_t* ED_Alloc()
-{
-	int i = (GGameType & (GAME_QuakeWorld | GAME_HexenWorld) ? MAX_CLIENTS_QHW : svs.qh_maxclients) +
-		(GGameType & GAME_Hexen2 ? max_temp_edicts->value : 0) + 1;
-	for (; i < sv.qh_num_edicts; i++)
-	{
-		qhedict_t* e = QH_EDICT_NUM(i);
+qhedict_t* ED_Alloc() {
+	int i = ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ? MAX_CLIENTS_QHW : svs.qh_maxclients ) +
+			( GGameType & GAME_Hexen2 ? max_temp_edicts->value : 0 ) + 1;
+	for (; i < sv.qh_num_edicts; i++ ) {
+		qhedict_t* e = QH_EDICT_NUM( i );
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500))
-		{
-			ED_ClearEdict(e);
+		if ( e->free && ( e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500 ) ) {
+			ED_ClearEdict( e );
 			return e;
 		}
 	}
 
-	if (i == MAX_EDICTS_QH)
-	{
-		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-		{
-			common->Printf("WARNING: ED_Alloc: no free edicts\n");
+	if ( i == MAX_EDICTS_QH ) {
+		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+			common->Printf( "WARNING: ED_Alloc: no free edicts\n" );
 			i--;	// step on whatever is the last edict
-			qhedict_t* e = QH_EDICT_NUM(i);
-			SVQH_UnlinkEdict(e);
+			qhedict_t* e = QH_EDICT_NUM( i );
+			SVQH_UnlinkEdict( e );
+		} else   {
+			common->Error( "ED_Alloc: no free edicts" );
 		}
-		else
-		{
-			common->Error("ED_Alloc: no free edicts");
-		}
-	}
-	else
-	{
+	} else   {
 		sv.qh_num_edicts++;
 	}
-	qhedict_t* e = QH_EDICT_NUM(i);
-	ED_ClearEdict(e);
+	qhedict_t* e = QH_EDICT_NUM( i );
+	ED_ClearEdict( e );
 
 	return e;
 }
 
 //	Marks the edict as free
 //	FIXME: walk all entities and NULL out references to this entity
-void ED_Free(qhedict_t* ed)
-{
-	SVQH_UnlinkEdict(ed);			// unlink from world bsp
+void ED_Free( qhedict_t* ed ) {
+	SVQH_UnlinkEdict( ed );				// unlink from world bsp
 
 	ed->free = true;
-	ed->SetModel(0);
-	ed->SetTakeDamage(0);
+	ed->SetModel( 0 );
+	ed->SetTakeDamage( 0 );
 	ed->v.modelindex = 0;
-	ed->SetColorMap(0);
-	ed->SetSkin(0);
-	ed->SetFrame(0);
-	VectorCopy(vec3_origin, ed->GetOrigin());
-	ed->SetAngles(vec3_origin);
-	ed->SetNextThink(-1);
-	ed->SetSolid(0);
+	ed->SetColorMap( 0 );
+	ed->SetSkin( 0 );
+	ed->SetFrame( 0 );
+	VectorCopy( vec3_origin, ed->GetOrigin() );
+	ed->SetAngles( vec3_origin );
+	ed->SetNextThink( -1 );
+	ed->SetSolid( 0 );
 
 	ed->freetime = sv.qh_time * 0.001f;
 	ed->alloctime = -1;
 }
 
-qhedict_t* ED_Alloc_Temp()
-{
+qhedict_t* ED_Alloc_Temp() {
 	int i,j,Found;
 	qhedict_t* e,* Least;
 	float LeastTime;
@@ -1005,20 +906,16 @@ qhedict_t* ED_Alloc_Temp()
 
 	LeastTime = -1;
 	LeastSet = false;
-	for (i = (GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients) + 1,j = 0; j < max_temp_edicts->value; i++,j++)
-	{
-		e = QH_EDICT_NUM(i);
+	for ( i = ( GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients ) + 1,j = 0; j < max_temp_edicts->value; i++,j++ ) {
+		e = QH_EDICT_NUM( i );
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
-		if (e->free && (e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500))
-		{
-			ED_ClearEdict(e);
+		if ( e->free && ( e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500 ) ) {
+			ED_ClearEdict( e );
 			e->alloctime = sv.qh_time * 0.001f;
 
 			return e;
-		}
-		else if (e->alloctime < LeastTime || !LeastSet)
-		{
+		} else if ( e->alloctime < LeastTime || !LeastSet )     {
 			Least = e;
 			LeastTime = e->alloctime;
 			Found = j;
@@ -1026,8 +923,8 @@ qhedict_t* ED_Alloc_Temp()
 		}
 	}
 
-	ED_Free(Least);
-	ED_ClearEdict(Least);
+	ED_Free( Least );
+	ED_ClearEdict( Least );
 	Least->alloctime = sv.qh_time * 0.001f;
 
 	return Least;
@@ -1040,8 +937,7 @@ qhedict_t* ED_Alloc_Temp()
 // parsing textual entity definitions out of an ent file.
 //	Used for both fresh maps and savegame loads.  A fresh map would also need
 // to call ED_CallSpawnFunctions () to let the objects initialize themselves.
-void ED_LoadFromFile(const char* data)
-{
+void ED_LoadFromFile( const char* data ) {
 	qhedict_t* ent;
 	int inhibit,skip;
 	dfunction_t* func;
@@ -1051,98 +947,76 @@ void ED_LoadFromFile(const char* data)
 	*pr_globalVars.time = sv.qh_time * 0.001f;
 
 	// parse ents
-	while (1)
-	{
+	while ( 1 ) {
 		// parse the opening brace
-		char* token = String::Parse2(&data);
-		if (!data)
-		{
+		char* token = String::Parse2( &data );
+		if ( !data ) {
 			break;
 		}
-		if (token[0] != '{')
-		{
-			common->Error("ED_LoadFromFile: found %s when expecting {",token);
+		if ( token[ 0 ] != '{' ) {
+			common->Error( "ED_LoadFromFile: found %s when expecting {",token );
 		}
 
-		if (!ent)
-		{
-			ent = QH_EDICT_NUM(0);
-		}
-		else
-		{
+		if ( !ent ) {
+			ent = QH_EDICT_NUM( 0 );
+		} else   {
 			ent = ED_Alloc();
 		}
-		data = ED_ParseEdict(data, ent);
+		data = ED_ParseEdict( data, ent );
 
 		// remove things from different skill levels or deathmatch
-		if (GGameType & GAME_Hexen2)
-		{
-			if (svqh_deathmatch->value)
-			{
-				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_DEATHMATCH))
-				{
-					ED_Free(ent);
+		if ( GGameType & GAME_Hexen2 ) {
+			if ( svqh_deathmatch->value ) {
+				if ( ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_DEATHMATCH ) ) {
+					ED_Free( ent );
 					inhibit++;
 					continue;
 				}
-			}
-			else if (svqh_coop->value)
-			{
-				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_COOP))
-				{
-					ED_Free(ent);
+			} else if ( svqh_coop->value )     {
+				if ( ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_COOP ) ) {
+					ED_Free( ent );
 					inhibit++;
 					continue;
 				}
-			}
-			else
-			{	// Gotta be single player
-				if (((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_SINGLE))
-				{
-					ED_Free(ent);
+			} else   {	// Gotta be single player
+				if ( ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_SINGLE ) ) {
+					ED_Free( ent );
 					inhibit++;
 					continue;
 				}
 
-				if (!(GGameType & GAME_HexenWorld))
-				{
+				if ( !( GGameType & GAME_HexenWorld ) ) {
 					skip = 0;
 
-					switch (Cvar_VariableIntegerValue("_cl_playerclass"))
-					{
+					switch ( Cvar_VariableIntegerValue( "_cl_playerclass" ) ) {
 					case CLASS_PALADIN:
-						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_PALADIN)
-						{
+						if ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_PALADIN ) {
 							skip = 1;
 						}
 						break;
 
 					case CLASS_CLERIC:
-						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_CLERIC)
-						{
+						if ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_CLERIC ) {
 							skip = 1;
 						}
 						break;
 
 					case CLASS_DEMON:
 					case CLASS_NECROMANCER:
-						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_NECROMANCER)
-						{
+						if ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_NECROMANCER ) {
 							skip = 1;
 						}
 						break;
 
 					case CLASS_THEIF:
-						if ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_THEIF)
-						{
+						if ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_THEIF ) {
 							skip = 1;
 						}
 						break;
 					}
 
-					if (skip)
-					{
-						ED_Free(ent);
+					if ( skip ) {
+						ED_Free( ent );
 						inhibit++;
 						continue;
 					}
@@ -1150,31 +1024,24 @@ void ED_LoadFromFile(const char* data)
 			}
 
 			int current_skill = GGameType & GAME_HexenWorld ? sv.hw_current_skill : svqh_current_skill;
-			if ((current_skill == 0 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_EASY)) ||
-				(current_skill == 1 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_MEDIUM)) ||
-				(current_skill >= 2 && ((int)ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_HARD)))
-			{
-				ED_Free(ent);
+			if ( ( current_skill == 0 && ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_EASY ) ) ||
+				 ( current_skill == 1 && ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_MEDIUM ) ) ||
+				 ( current_skill >= 2 && ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_HARD ) ) ) {
+				ED_Free( ent );
 				inhibit++;
 				continue;
 			}
-		}
-		else
-		{
-			if (GGameType & GAME_QuakeWorld || svqh_deathmatch->value)
-			{
-				if (((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_DEATHMATCH))
-				{
-					ED_Free(ent);
+		} else   {
+			if ( GGameType & GAME_QuakeWorld || svqh_deathmatch->value ) {
+				if ( ( ( int )ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_DEATHMATCH ) ) {
+					ED_Free( ent );
 					inhibit++;
 					continue;
 				}
-			}
-			else if ((svqh_current_skill == 0 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_EASY)) ||
-					(svqh_current_skill == 1 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_MEDIUM)) ||
-					(svqh_current_skill >= 2 && ((int)ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_HARD)))
-			{
-				ED_Free(ent);
+			} else if ( ( svqh_current_skill == 0 && ( ( int )ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_EASY ) ) ||
+						( svqh_current_skill == 1 && ( ( int )ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_MEDIUM ) ) ||
+						( svqh_current_skill >= 2 && ( ( int )ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_HARD ) ) ) {
+				ED_Free( ent );
 				inhibit++;
 				continue;
 			}
@@ -1183,32 +1050,29 @@ void ED_LoadFromFile(const char* data)
 		//
 		// immediately call spawn function
 		//
-		if (!ent->GetClassName())
-		{
-			common->Printf("No classname for:\n");
-			ED_Print(ent);
-			ED_Free(ent);
+		if ( !ent->GetClassName() ) {
+			common->Printf( "No classname for:\n" );
+			ED_Print( ent );
+			ED_Free( ent );
 			continue;
 		}
 
 		// look for the spawn function
-		func = ED_FindFunction(PR_GetString(ent->GetClassName()));
+		func = ED_FindFunction( PR_GetString( ent->GetClassName() ) );
 
-		if (!func)
-		{
-			common->Printf("No spawn function for:\n");
-			ED_Print(ent);
-			ED_Free(ent);
+		if ( !func ) {
+			common->Printf( "No spawn function for:\n" );
+			ED_Print( ent );
+			ED_Free( ent );
 			continue;
 		}
 
-		*pr_globalVars.self = EDICT_TO_PROG(ent);
-		PR_ExecuteProgram(func - pr_functions);
-		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-		{
+		*pr_globalVars.self = EDICT_TO_PROG( ent );
+		PR_ExecuteProgram( func - pr_functions );
+		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 			SVQH_FlushSignon();
 		}
 	}
 
-	common->DPrintf("%i entities inhibited\n", inhibit);
+	common->DPrintf( "%i entities inhibited\n", inhibit );
 }

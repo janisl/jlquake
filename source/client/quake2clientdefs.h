@@ -25,8 +25,7 @@
 
 #define CMD_BACKUP_Q2       64	// allow a lot of command backups for very fast systems
 
-struct q2centity_t
-{
+struct q2centity_t {
 	q2entity_state_t baseline;	// delta from this if not from a previous frame
 	q2entity_state_t current;
 	q2entity_state_t prev;		// will always be valid, but might just be a copy of current
@@ -39,27 +38,25 @@ struct q2centity_t
 	int fly_stoptime;
 };
 
-struct q2frame_t
-{
+struct q2frame_t {
 	qboolean valid;		// cleared if delta parsing was invalid
 	int serverframe;
 	int servertime;		// server time the message is valid for (in msec)
 	int deltaframe;
-	byte areabits[BSP38MAX_MAP_AREAS / 8];		// portalarea visibility bits
+	byte areabits[ BSP38MAX_MAP_AREAS / 8 ];		// portalarea visibility bits
 	q2player_state_t playerstate;
 	int num_entities;
 	int parse_entities;	// non-masked index into cl_parse_entities array
 };
 
-struct q2clientinfo_t
-{
-	char name[MAX_QPATH];
-	char cinfo[MAX_QPATH];
+struct q2clientinfo_t {
+	char name[ MAX_QPATH ];
+	char cinfo[ MAX_QPATH ];
 	image_t* skin;
 	image_t* icon;
-	char iconname[MAX_QPATH];
+	char iconname[ MAX_QPATH ];
 	qhandle_t model;
-	qhandle_t weaponmodel[MAX_CLIENTWEAPONMODELS_Q2];
+	qhandle_t weaponmodel[ MAX_CLIENTWEAPONMODELS_Q2 ];
 };
 
 #endif

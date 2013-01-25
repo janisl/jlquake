@@ -22,12 +22,12 @@
 #include "../../../common/hexen2defs.h"
 #include "../../../common/message.h"
 
-void CLQW_WriteDemoCmd(qwusercmd_t* pcmd);
-void CLHW_WriteDemoCmd(hwusercmd_t* pcmd);
+void CLQW_WriteDemoCmd( qwusercmd_t* pcmd );
+void CLHW_WriteDemoCmd( hwusercmd_t* pcmd );
 void CLWQ_WriteServerDataToDemo();
 void CLQH_StopPlayback();
-int CLQH_GetMessage(QMsg& message);
-bool CLQHW_GetMessage(QMsg& message, netadr_t& from);
+int CLQH_GetMessage( QMsg& message );
+bool CLQHW_GetMessage( QMsg& message, netadr_t& from );
 void CLQH_Stop_f();
 void CLQH_Record_f();
 void CLQW_Record_f();

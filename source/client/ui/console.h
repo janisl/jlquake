@@ -22,11 +22,10 @@
 #define NUM_CON_TIMES   4
 #define CON_TEXTSIZE    32768
 
-struct console_t
-{
+struct console_t {
 	bool initialized;
 
-	short text[CON_TEXTSIZE];
+	short text[ CON_TEXTSIZE ];
 	int current;			// line where next message will be printed
 	int x;					// offset in current line for next print
 	int display;			// bottom of console displays this line
@@ -40,7 +39,7 @@ struct console_t
 	float finalFrac;		// 0.0 to 1.0 lines of console to display
 	float desiredFrac;		// ydnar: for variable console heights
 
-	int times[NUM_CON_TIMES];		// cls.realtime time the line was generated
+	int times[ NUM_CON_TIMES ];			// cls.realtime time the line was generated
 	// for transparent notify lines
 	vec4_t color;
 
@@ -53,10 +52,10 @@ void Con_ClearNotify();
 void Con_ClearTyping();
 void Con_DrawFullBackground();
 void Con_DrawConsole();
-void Con_KeyEvent(int key);
-void Con_CharEvent(int key);
-void Con_MessageKeyEvent(int key);
-void Con_MessageCharEvent(int key);
+void Con_KeyEvent( int key );
+void Con_CharEvent( int key );
+void Con_MessageKeyEvent( int key );
+void Con_MessageCharEvent( int key );
 void Con_RunConsole();
 void Con_ToggleConsole_f();
 void Con_Init();

@@ -17,13 +17,11 @@
 #include "../qcommon.h"
 #include "local.h"
 
-void VM_Compile(vm_t* vm, vmHeader_t* header)
-{
+void VM_Compile( vm_t* vm, vmHeader_t* header ) {
 	vm->compiled = false;
-	VM_PrepareInterpreter(vm, header);
+	VM_PrepareInterpreter( vm, header );
 }
 
-qintptr VM_CallCompiled(vm_t* vm, int* args)
-{
+qintptr VM_CallCompiled( vm_t* vm, int* args ) {
 	return 0;
 }

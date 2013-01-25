@@ -21,10 +21,10 @@
 
 #include <X11/Xlib.h>
 
-#define KEY_MASK    (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK  (ButtonPressMask | ButtonReleaseMask | \
-					 PointerMotionMask | ButtonMotionMask)
-#define X_MASK      (KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask)
+#define KEY_MASK    ( KeyPressMask | KeyReleaseMask )
+#define MOUSE_MASK  ( ButtonPressMask | ButtonReleaseMask |	\
+					  PointerMotionMask | ButtonMotionMask )
+#define X_MASK      ( KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask )
 
 extern Display* dpy;
 extern Window win;

@@ -18,14 +18,12 @@
 #include "../ui/ui.h"
 #include "../../common/Common.h"
 
-void CL_ParseCenterPrint(QMsg& message)
-{
-	SCR_CenterPrint(message.ReadString2());
+void CL_ParseCenterPrint( QMsg& message ) {
+	SCR_CenterPrint( message.ReadString2() );
 }
 
-void CL_ParseStuffText(QMsg& message)
-{
+void CL_ParseStuffText( QMsg& message ) {
 	const char* s = message.ReadString2();
-	common->DPrintf("stufftext: %s\n", s);
-	Cbuf_AddText(s);
+	common->DPrintf( "stufftext: %s\n", s );
+	Cbuf_AddText( s );
 }

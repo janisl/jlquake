@@ -20,24 +20,21 @@
 // this random generator can have its effects duplicated on the client
 // side by passing the randomseed over the network, as opposed to sending
 // all the generated values
-class idHexen2EffectsRandom
-{
+class idHexen2EffectsRandom {
 public:
 	unsigned int seed;
 
-	void SetSeed(unsigned int seed);
+	void SetSeed( unsigned int seed );
 	float SeedRand();
 };
 
-inline void idHexen2EffectsRandom::SetSeed(unsigned int seed)
-{
+inline void idHexen2EffectsRandom::SetSeed( unsigned int seed ) {
 	this->seed = seed;
 }
 
-inline float idHexen2EffectsRandom::SeedRand()
-{
-	seed = (seed * 877 + 573) % 9968;
-	return (float)seed / 9968;
+inline float idHexen2EffectsRandom::SeedRand() {
+	seed = ( seed * 877 + 573 ) % 9968;
+	return ( float )seed / 9968;
 }
 
 #endif

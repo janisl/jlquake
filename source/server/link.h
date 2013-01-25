@@ -21,8 +21,7 @@
 
 //!!!!! Used by Quake 2 game DLLs, do not change.
 // link_t is only used for entity area links now
-struct link_t
-{
+struct link_t {
 	link_t* prev;
 	link_t* next;
 };
@@ -30,10 +29,10 @@ struct link_t
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
 // FIXME: remove this mess!
-#define STRUCT_FROM_LINK(l,t,m) ((t*)((byte*)l - (qintptr) & (((t*)0)->m)))
+#define STRUCT_FROM_LINK( l,t,m ) ( ( t* )( ( byte* )l - ( qintptr ) & ( ( ( t* )0 )->m ) ) )
 
-void ClearLink(link_t* l);
-void RemoveLink(link_t* l);
-void InsertLinkBefore(link_t* l, link_t* before);
+void ClearLink( link_t* l );
+void RemoveLink( link_t* l );
+void InsertLinkBefore( link_t* l, link_t* before );
 
 #endif

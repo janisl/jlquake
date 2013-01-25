@@ -43,7 +43,7 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static unsigned short crctable[256] =
+static unsigned short crctable[ 256 ] =
 {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
 	0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -87,8 +87,7 @@ static unsigned short crctable[256] =
 //
 //==========================================================================
 
-void CRC_Init(unsigned short* crcvalue)
-{
+void CRC_Init( unsigned short* crcvalue ) {
 	*crcvalue = CRC_INIT_VALUE;
 }
 
@@ -98,9 +97,8 @@ void CRC_Init(unsigned short* crcvalue)
 //
 //==========================================================================
 
-void CRC_ProcessByte(unsigned short* crcvalue, byte data)
-{
-	*crcvalue = (*crcvalue << 8) ^ crctable[(*crcvalue >> 8) ^ data];
+void CRC_ProcessByte( unsigned short* crcvalue, byte data ) {
+	*crcvalue = ( *crcvalue << 8 ) ^ crctable[ ( *crcvalue >> 8 ) ^ data ];
 }
 
 //==========================================================================
@@ -109,8 +107,7 @@ void CRC_ProcessByte(unsigned short* crcvalue, byte data)
 //
 //==========================================================================
 
-unsigned short CRC_Value(unsigned short crcvalue)
-{
+unsigned short CRC_Value( unsigned short crcvalue ) {
 	return crcvalue ^ CRC_XOR_VALUE;
 }
 
@@ -120,16 +117,14 @@ unsigned short CRC_Value(unsigned short crcvalue)
 //
 //==========================================================================
 
-unsigned short CRC_Block(const byte* start, int count)
-{
+unsigned short CRC_Block( const byte* start, int count ) {
 	unsigned short crc;
 
-	CRC_Init(&crc);
-	while (count--)
-	{
-		crc = (crc << 8) ^ crctable[(crc >> 8) ^ *start++];
+	CRC_Init( &crc );
+	while ( count-- ) {
+		crc = ( crc << 8 ) ^ crctable[ ( crc >> 8 ) ^ *start++ ];
 	}
-	return CRC_Value(crc);
+	return CRC_Value( crc );
 }
 
 //==========================================================================
@@ -138,10 +133,8 @@ unsigned short CRC_Block(const byte* start, int count)
 //
 //==========================================================================
 
-void CRC_ContinueProcessString(unsigned short* crc, char* data, int length)
-{
-	for (int i = 0; i < length; i++)
-	{
-		*crc = (*crc << 8) ^ crctable[(*crc >> 8) ^ data[i]];
+void CRC_ContinueProcessString( unsigned short* crc, char* data, int length ) {
+	for ( int i = 0; i < length; i++ ) {
+		*crc = ( *crc << 8 ) ^ crctable[ ( *crc >> 8 ) ^ data[ i ] ];
 	}
 }

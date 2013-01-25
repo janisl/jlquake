@@ -21,27 +21,25 @@
 #include "progs_file.h"
 #include "edict.h"
 
-#define G_FLOAT(o) (pr_globals[o])
-#define G_INT(o) (*(int*)&pr_globals[o])
-#define G_EDICT(o) ((qhedict_t*)((byte*)sv.qh_edicts + *(int*)&pr_globals[o]))
-#define G_EDICTNUM(o) QH_NUM_FOR_EDICT(G_EDICT(o))
-#define G_VECTOR(o) (&pr_globals[o])
-#define G_STRING(o) (PR_GetString(*(string_t*)&pr_globals[o]))
-#define G_FUNCTION(o) (*(func_t*)&pr_globals[o])
+#define G_FLOAT( o ) ( pr_globals[ o ] )
+#define G_INT( o ) ( *( int* )&pr_globals[ o ] )
+#define G_EDICT( o ) ( ( qhedict_t* )( ( byte* )sv.qh_edicts + *( int* )&pr_globals[ o ] ) )
+#define G_EDICTNUM( o ) QH_NUM_FOR_EDICT( G_EDICT( o ) )
+#define G_VECTOR( o ) ( &pr_globals[ o ] )
+#define G_STRING( o ) ( PR_GetString( *( string_t* )&pr_globals[ o ] ) )
+#define G_FUNCTION( o ) ( *( func_t* )&pr_globals[ o ] )
 
-#define E_FLOAT(e,o) (((float*)&e->v)[o])
-#define E_INT(e,o) (*(int*)&((float*)&e->v)[o])
-#define E_VECTOR(e,o) (&((float*)&e->v)[o])
-#define E_STRING(e,o) (PR_GetString(*(string_t*)&((float*)&e->v)[o]))
+#define E_FLOAT( e,o ) ( ( ( float* )&e->v )[ o ] )
+#define E_INT( e,o ) ( *( int* )&( ( float* )&e->v )[ o ] )
+#define E_VECTOR( e,o ) ( &( ( float* )&e->v )[ o ] )
+#define E_STRING( e,o ) ( PR_GetString( *( string_t* )&( ( float* )&e->v )[ o ] ) )
 
-struct prstack_t
-{
+struct prstack_t {
 	int s;
 	dfunction_t* f;
 };
 
-struct progGlobalVars_t
-{
+struct progGlobalVars_t {
 	//	All games
 	int* self;
 	int* other;
@@ -124,7 +122,7 @@ struct progGlobalVars_t
 	const func_t* SmitePlayer;
 };
 
-typedef void (*builtin_t)();
+typedef void ( *builtin_t )();
 
 extern dprograms_t* progs;
 extern dfunction_t* pr_functions;
@@ -143,35 +141,35 @@ extern bool pr_trace;
 extern dfunction_t* pr_xfunction;
 extern int pr_argc;
 
-int PR_SetString(const char* string);
-const char* PR_GetString(int number);
+int PR_SetString( const char* string );
+const char* PR_GetString( int number );
 // returns a copy of the string allocated from the server's string heap
-const char* ED_NewString(const char* string);
+const char* ED_NewString( const char* string );
 
-ddef_t* ED_FieldAtOfs(int offset);
-ddef_t* ED_FindField(const char* name);
-ddef_t* ED_FindGlobal(const char* name);
-dfunction_t* ED_FindFunction(const char* name);
-dfunction_t* ED_FindFunctioni(const char* name);
+ddef_t* ED_FieldAtOfs( int offset );
+ddef_t* ED_FindField( const char* name );
+ddef_t* ED_FindGlobal( const char* name );
+dfunction_t* ED_FindFunction( const char* name );
+dfunction_t* ED_FindFunctioni( const char* name );
 
-const char* PR_ValueString(etype_t type, const eval_t* val);
-const char* PR_UglyValueString(etype_t type, const eval_t* val);
-const char* PR_GlobalString(int ofs);
-const char* PR_GlobalStringNoContents(int ofs);
+const char* PR_ValueString( etype_t type, const eval_t* val );
+const char* PR_UglyValueString( etype_t type, const eval_t* val );
+const char* PR_GlobalString( int ofs );
+const char* PR_GlobalStringNoContents( int ofs );
 
-void ED_WriteGlobals(fileHandle_t f);
-bool ED_ParseEpair(void* base, const ddef_t* key, const char* s);
-const char* ED_ParseGlobals(const char* data);
+void ED_WriteGlobals( fileHandle_t f );
+bool ED_ParseEpair( void* base, const ddef_t* key, const char* s );
+const char* ED_ParseGlobals( const char* data );
 void PR_InitGlobals();
 void PR_LoadProgs();
 void PR_Init();
 void PR_UnloadProgs();
 
-void PR_RunError(const char* error, ...)  id_attribute((format(printf, 1, 2)));
-void PR_ExecuteProgram(func_t fnum);
+void PR_RunError( const char* error, ... )  id_attribute( ( format( printf, 1, 2 ) ) );
+void PR_ExecuteProgram( func_t fnum );
 void PR_Profile_f();
 
-const char* PF_VarString(int first);
+const char* PF_VarString( int first );
 void PF_Fixme();
 void PF_error();
 void PF_makevectors();

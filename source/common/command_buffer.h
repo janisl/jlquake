@@ -43,15 +43,15 @@ enum
 void Cbuf_Init();
 // allocates an initial text buffer that will grow as needed
 
-void Cbuf_AddText(const char* Text);
+void Cbuf_AddText( const char* Text );
 // Adds command text at the end of the buffer, does NOT add a final \n
 
-void Cbuf_InsertText(const char* Text);
+void Cbuf_InsertText( const char* Text );
 // when a command wants to issue other commands immediately, the text is
 // inserted at the beginning of the buffer, before any remaining unexecuted
 // commands.
 
-void Cbuf_ExecuteText(int ExecWhen, const char* Text);
+void Cbuf_ExecuteText( int ExecWhen, const char* Text );
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
 
 void Cbuf_Execute();
@@ -72,41 +72,41 @@ void Cbuf_InsertFromDefer();
 //
 //==========================================================================
 
-typedef void (*xcommand_t)(void);
+typedef void ( *xcommand_t )( void );
 
-void Cmd_AddCommand(const char* CmdName, xcommand_t Function);
+void Cmd_AddCommand( const char* CmdName, xcommand_t Function );
 // called by the init functions of other parts of the program to
 // register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory
 // if function is NULL, the command will be forwarded to the server
 // as a clc_clientCommand instead of executed locally
 
-void Cmd_RemoveCommand(const char* CmdName);
+void Cmd_RemoveCommand( const char* CmdName );
 
 int Cmd_Argc();
-char* Cmd_Argv(int Arg);
-void Cmd_ArgvBuffer(int Arg, char* Buffer, int BufferLength);
+char* Cmd_Argv( int Arg );
+void Cmd_ArgvBuffer( int Arg, char* Buffer, int BufferLength );
 char* Cmd_ArgsUnmodified();
 char* Cmd_Args();
-char* Cmd_ArgsFrom(int Arg);
-void Cmd_ArgsBuffer(char* Buffer, int BufferLength);
+char* Cmd_ArgsFrom( int Arg );
+void Cmd_ArgsBuffer( char* Buffer, int BufferLength );
 char* Cmd_Cmd();
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
 // if arg > argc, so string operations are allways safe.
 
-void Cmd_TokenizeString(const char* Text, bool MacroExpand = false);
+void Cmd_TokenizeString( const char* Text, bool MacroExpand = false );
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
 
-char* Cmd_CompleteCommand(const char* partial);
+char* Cmd_CompleteCommand( const char* partial );
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
-void Cmd_CommandCompletion(void (* callback)(const char* s));
+void Cmd_CommandCompletion( void ( * callback )( const char* s ) );
 // callback with each valid string
 
-void Cmd_ExecuteString(const char* text);
+void Cmd_ExecuteString( const char* text );
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 
@@ -120,16 +120,15 @@ void Cmd_Init();
 
 #define MAX_EDIT_LINE   256
 
-struct field_t
-{
+struct field_t {
 	int cursor;
 	int scroll;
 	int widthInChars;
 	int maxLength;
-	char buffer[MAX_EDIT_LINE];
+	char buffer[ MAX_EDIT_LINE ];
 };
 
-void Field_Clear(field_t* Edit);
-void Field_CompleteCommand(field_t* Edit, int& acLength);
+void Field_Clear( field_t* Edit );
+void Field_CompleteCommand( field_t* Edit, int& acLength );
 
 #endif

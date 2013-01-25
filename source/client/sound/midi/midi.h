@@ -56,9 +56,9 @@
 
 
 #ifdef DEBUG
-#define DebugPrint(sz)        DPF(3, sz)
+#define DebugPrint( sz )        DPF( 3, sz )
 #else
-#define DebugPrint(sz)
+#define DebugPrint( sz )
 #endif
 
 
@@ -70,8 +70,7 @@
  * level conversion routines internal to the MSTRCONV module.  See that source
  * file for specific details.
  */
-typedef struct _ConvertInfo
-{
+typedef struct _ConvertInfo {
 	MIDIHDR mhBuffer;		// Standard Windows stream buffer header
 	DWORD dwStartOffset;		// Start offset from mhStreamBuffer.lpStart
 	DWORD dwMaxLength;			// Max length to convert on this pass
@@ -83,16 +82,16 @@ typedef struct _ConvertInfo
 
 
 
-void CALLBACK MidiProc(HMIDIIN, UINT, DWORD, DWORD, DWORD);
+void CALLBACK MidiProc( HMIDIIN, UINT, DWORD, DWORD, DWORD );
 
-void MidiErrorMessageBox(MMRESULT);
-void SetAllChannelVolumes(DWORD dwVolumePercent);
-void SetChannelVolume(DWORD dwChannel, DWORD dwVolumePercent);
+void MidiErrorMessageBox( MMRESULT );
+void SetAllChannelVolumes( DWORD dwVolumePercent );
+void SetChannelVolume( DWORD dwChannel, DWORD dwVolumePercent );
 
-BOOL StreamBufferSetup(char* Name);
+BOOL StreamBufferSetup( char* Name );
 
-BOOL    ConverterInit(LPSTR szInFile);
-void    ConverterCleanup(void);
-int ConvertToBuffer(DWORD, LPCONVERTINFO);
+BOOL    ConverterInit( LPSTR szInFile );
+void    ConverterCleanup( void );
+int ConvertToBuffer( DWORD, LPCONVERTINFO );
 
 #endif	/* __MSTREAM_INCLUDED__ */

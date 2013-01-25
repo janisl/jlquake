@@ -16,12 +16,10 @@
 
 #include "utils.h"
 
-float frand()
-{
-	return (rand() & 32767) * (1.0 / 32767);
+float frand() {
+	return ( rand() & 32767 ) * ( 1.0 / 32767 );
 }
 
-float crand()
-{
-	return (rand() & 32767) * (2.0 / 32767) - 1;
+float crand() {
+	return ( rand() & 32767 ) * ( 2.0 / 32767 ) - 1;
 }

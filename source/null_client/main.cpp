@@ -19,216 +19,165 @@
 #include "../common/command_buffer.h"
 #include "../client/public.h"
 
-void S_ClearSoundBuffer(bool killStreaming)
-{
+void S_ClearSoundBuffer( bool killStreaming ) {
 }
 
-int CLH2_GetLightStyleValue(int style)
-{
+int CLH2_GetLightStyleValue( int style ) {
 	return 0;
 }
 
-void CL_ClearDrift()
-{
+void CL_ClearDrift() {
 }
 
-int CL_GetKeyCatchers()
-{
+int CL_GetKeyCatchers() {
 	return 0;
 }
 
-void CLQH_StopDemoLoop()
-{
+void CLQH_StopDemoLoop() {
 }
 
-void CL_ClearKeyCatchers()
-{
+void CL_ClearKeyCatchers() {
 }
 
-void CLQH_GetSpawnParams()
-{
+void CLQH_GetSpawnParams() {
 }
 
-bool CL_IsDemoPlaying()
-{
+bool CL_IsDemoPlaying() {
 	return false;
 }
 
-int CLQH_GetIntermission()
-{
+int CLQH_GetIntermission() {
 	return 0;
 }
 
-void SCR_DebugGraph(float value, int color)
-{
+void SCR_DebugGraph( float value, int color ) {
 }
 
-void CL_CvarChanged(Cvar* var)
-{
+void CL_CvarChanged( Cvar* var ) {
 }
 
-const char* CL_TranslateStringBuf(const char* string)
-{
+const char* CL_TranslateStringBuf( const char* string ) {
 	return string;
 }
 
-void Key_WriteBindings(fileHandle_t f)
-{
+void Key_WriteBindings( fileHandle_t f ) {
 }
 
-static void Key_Bind_Null_f()
-{
+static void Key_Bind_Null_f() {
 }
 
-void CL_InitKeyCommands()
-{
-	if (GGameType & GAME_Quake2)
-	{
-		Cmd_AddCommand("bind", Key_Bind_Null_f);
+void CL_InitKeyCommands() {
+	if ( GGameType & GAME_Quake2 ) {
+		Cmd_AddCommand( "bind", Key_Bind_Null_f );
 	}
 }
 
-bool CLT3_GameCommand()
-{
+bool CLT3_GameCommand() {
 	return false;
 }
 
-bool CL_GetTag(int clientNum, const char* tagname, orientation_t* _or)
-{
+bool CL_GetTag( int clientNum, const char* tagname, orientation_t* _or ) {
 	return false;
 }
 
-bool UIT3_GameCommand()
-{
+bool UIT3_GameCommand() {
 	return false;
 }
 
-void CL_ForwardKnownCommandToServer()
-{
+void CL_ForwardKnownCommandToServer() {
 }
 
-void CL_ForwardCommandToServer()
-{
+void CL_ForwardCommandToServer() {
 }
 
-void Con_ConsolePrint(const char* txt)
-{
+void Con_ConsolePrint( const char* txt ) {
 }
 
-void CLT3_ReadCDKey(const char* gameName)
-{
+void CLT3_ReadCDKey( const char* gameName ) {
 }
 
-void CLT3_AppendCDKey(const char* gameName)
-{
+void CLT3_AppendCDKey( const char* gameName ) {
 }
 
-void CLT3_WriteCDKey()
-{
+void CLT3_WriteCDKey() {
 }
 
-void SCRQH_BeginLoadingPlaque()
-{
+void SCRQH_BeginLoadingPlaque() {
 }
 
-void SCRQ2_BeginLoadingPlaque(bool Clear)
-{
+void SCRQ2_BeginLoadingPlaque( bool Clear ) {
 }
 
-void SCR_EndLoadingPlaque()
-{
+void SCR_EndLoadingPlaque() {
 }
 
-void CL_KeyEvent(int key, bool down, unsigned time)
-{
+void CL_KeyEvent( int key, bool down, unsigned time ) {
 }
 
-void CL_CharEvent(int key)
-{
+void CL_CharEvent( int key ) {
 }
 
-void CL_MouseEvent(int dx, int dy)
-{
+void CL_MouseEvent( int dx, int dy ) {
 }
 
-void CL_JoystickEvent(int axis, int value)
-{
+void CL_JoystickEvent( int axis, int value ) {
 }
 
-void Sys_SendKeyEvents()
-{
+void Sys_SendKeyEvents() {
 }
 
-void CL_StartHunkUsers()
-{
+void CL_StartHunkUsers() {
 }
 
-void CLT3_ShutdownAll()
-{
+void CLT3_ShutdownAll() {
 }
 
-void CLT3_FlushMemory()
-{
+void CLT3_FlushMemory() {
 }
 
-void CL_Disconnect(bool showMainMenu)
-{
+void CL_Disconnect( bool showMainMenu ) {
 }
 
-void CLQH_EstablishConnection(const char* name)
-{
+void CLQH_EstablishConnection( const char* name ) {
 }
 
-void CLQ2_Drop()
-{
+void CLQ2_Drop() {
 }
 
-void CLT3_MapLoading()
-{
+void CLT3_MapLoading() {
 }
 
-void CLT3_PacketEvent(netadr_t from, QMsg* msg)
-{
+void CLT3_PacketEvent( netadr_t from, QMsg* msg ) {
 }
 
-void IN_Frame()
-{
+void IN_Frame() {
 }
 
-void CL_Init()
-{
+void CL_Init() {
 }
 
-void CL_Shutdown()
-{
+void CL_Shutdown() {
 }
 
-void CL_Frame(int msec)
-{
+void CL_Frame( int msec ) {
 }
 
-bool CL_WWWBadChecksum(const char* pakname)
-{
+bool CL_WWWBadChecksum( const char* pakname ) {
 	return false;
 }
 
-void CL_ShutdownOnSignal()
-{
+void CL_ShutdownOnSignal() {
 }
 
-void CL_ShutdownOnWindowsError()
-{
+void CL_ShutdownOnWindowsError() {
 }
 
-void CLQH_OnEndGame()
-{
+void CLQH_OnEndGame() {
 }
 
-bool CL_IsTimeDemo()
-{
+bool CL_IsTimeDemo() {
 	return false;
 }
 
-void CLWS_EndgameMenu()
-{
+void CLWS_EndgameMenu() {
 }

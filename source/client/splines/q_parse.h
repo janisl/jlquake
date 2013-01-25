@@ -18,7 +18,7 @@
 #define __Q_PARSE_H
 
 // this just controls the comment printing, it doesn't actually load a file
-void Com_BeginParseSession(const char* filename);
+void Com_BeginParseSession( const char* filename );
 void Com_EndParseSession();
 
 // Will never return NULL, just empty strings.
@@ -26,18 +26,18 @@ void Com_EndParseSession();
 // ParseOnLine will return empty if there isn't another token on this line
 
 // this funny typedef just means a moving pointer into a const char * buffer
-const char* Com_Parse(const char** data_p);
-const char* Com_ParseOnLine(const char** data_p);
+const char* Com_Parse( const char** data_p );
+const char* Com_ParseOnLine( const char** data_p );
 
 void Com_UngetToken();
 
-void Com_MatchToken(const char** buf_p, const char* match, bool warning = false);
+void Com_MatchToken( const char** buf_p, const char* match, bool warning = false );
 
-void Com_ScriptError(const char* msg, ...);
-void Com_ScriptWarning(const char* msg, ...);
+void Com_ScriptError( const char* msg, ... );
+void Com_ScriptWarning( const char* msg, ... );
 
-float Com_ParseFloat(const char** buf_p);
+float Com_ParseFloat( const char** buf_p );
 
-void Com_Parse1DMatrix(const char** buf_p, int x, float* m);
+void Com_Parse1DMatrix( const char** buf_p, int x, float* m );
 
 #endif

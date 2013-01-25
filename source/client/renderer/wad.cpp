@@ -25,22 +25,20 @@
 
 // TYPES -------------------------------------------------------------------
 
-struct wadinfo_t
-{
-	char identification[4];				// should be WAD2 or 2DAW
+struct wadinfo_t {
+	char identification[ 4 ];				// should be WAD2 or 2DAW
 	int numlumps;
 	int infotableofs;
 };
 
-struct lumpinfo_t
-{
+struct lumpinfo_t {
 	int filepos;
 	int disksize;
 	int size;							// uncompressed
 	char type;
 	char compression;
 	char pad1, pad2;
-	char name[16];						// must be null terminated
+	char name[ 16 ];						// must be null terminated
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -71,27 +69,22 @@ static idList<byte>  wad_base;
 //
 //==========================================================================
 
-static void CleanupName(const char* in, char* out)
-{
+static void CleanupName( const char* in, char* out ) {
 	int i;
-	for (i = 0; i < 16; i++)
-	{
-		int c = in[i];
-		if (!c)
-		{
+	for ( i = 0; i < 16; i++ ) {
+		int c = in[ i ];
+		if ( !c ) {
 			break;
 		}
 
-		if (c >= 'A' && c <= 'Z')
-		{
-			c += ('a' - 'A');
+		if ( c >= 'A' && c <= 'Z' ) {
+			c += ( 'a' - 'A' );
 		}
-		out[i] = c;
+		out[ i ] = c;
 	}
 
-	for (; i < 16; i++)
-	{
-		out[i] = 0;
+	for (; i < 16; i++ ) {
+		out[ i ] = 0;
 	}
 }
 
@@ -101,33 +94,29 @@ static void CleanupName(const char* in, char* out)
 //
 //==========================================================================
 
-void R_LoadWadFile()
-{
-	if (FS_ReadFile("gfx.wad", wad_base) <= 0)
-	{
-		common->FatalError("W_LoadWadFile: couldn't load gfx.wad");
+void R_LoadWadFile() {
+	if ( FS_ReadFile( "gfx.wad", wad_base ) <= 0 ) {
+		common->FatalError( "W_LoadWadFile: couldn't load gfx.wad" );
 	}
 
-	wadinfo_t* header = (wadinfo_t*)wad_base.Ptr();
+	wadinfo_t* header = ( wadinfo_t* )wad_base.Ptr();
 
-	if (header->identification[0] != 'W' ||
-		header->identification[1] != 'A' ||
-		header->identification[2] != 'D' ||
-		header->identification[3] != '2')
-	{
-		common->FatalError("Wad file gfx.wad doesn't have WAD2 id\n");
+	if ( header->identification[ 0 ] != 'W' ||
+		 header->identification[ 1 ] != 'A' ||
+		 header->identification[ 2 ] != 'D' ||
+		 header->identification[ 3 ] != '2' ) {
+		common->FatalError( "Wad file gfx.wad doesn't have WAD2 id\n" );
 	}
 
-	wad_numlumps = LittleLong(header->numlumps);
-	int infotableofs = LittleLong(header->infotableofs);
-	wad_lumps = (lumpinfo_t*)&wad_base[infotableofs];
+	wad_numlumps = LittleLong( header->numlumps );
+	int infotableofs = LittleLong( header->infotableofs );
+	wad_lumps = ( lumpinfo_t* )&wad_base[ infotableofs ];
 
 	lumpinfo_t* lump_p = wad_lumps;
-	for (int i = 0; i < wad_numlumps; i++, lump_p++)
-	{
-		lump_p->filepos = LittleLong(lump_p->filepos);
-		lump_p->size = LittleLong(lump_p->size);
-		CleanupName(lump_p->name, lump_p->name);
+	for ( int i = 0; i < wad_numlumps; i++, lump_p++ ) {
+		lump_p->filepos = LittleLong( lump_p->filepos );
+		lump_p->size = LittleLong( lump_p->size );
+		CleanupName( lump_p->name, lump_p->name );
 	}
 }
 
@@ -137,21 +126,18 @@ void R_LoadWadFile()
 //
 //==========================================================================
 
-void* R_GetWadLumpByName(const char* name)
-{
-	char clean[16];
-	CleanupName(name, clean);
+void* R_GetWadLumpByName( const char* name ) {
+	char clean[ 16 ];
+	CleanupName( name, clean );
 
 	lumpinfo_t* lump_p = wad_lumps;
-	for (int i = 0; i < wad_numlumps; i++, lump_p++)
-	{
-		if (!String::Cmp(clean, lump_p->name))
-		{
-			return &wad_base[lump_p->filepos];
+	for ( int i = 0; i < wad_numlumps; i++, lump_p++ ) {
+		if ( !String::Cmp( clean, lump_p->name ) ) {
+			return &wad_base[ lump_p->filepos ];
 		}
 	}
 
-	common->Error("R_GetWadLumpByName: %s not found", name);
+	common->Error( "R_GetWadLumpByName: %s not found", name );
 	return NULL;
 }
 
@@ -161,16 +147,15 @@ void* R_GetWadLumpByName(const char* name)
 //
 //==========================================================================
 
-static image_t* R_PicFromWad(const char* name, GLenum WrapClampMode)
-{
-	byte* qpic = (byte*)R_GetWadLumpByName(name);
+static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
+	byte* qpic = ( byte* )R_GetWadLumpByName( name );
 
 	int width;
 	int height;
 	byte* pic;
-	R_LoadPICMem(qpic, &pic, &width, &height);
+	R_LoadPICMem( qpic, &pic, &width, &height );
 
-	image_t* image = R_CreateImage(va("gfx.wad:%s", name), pic, width, height, false, false, WrapClampMode, true);
+	image_t* image = R_CreateImage( va( "gfx.wad:%s", name ), pic, width, height, false, false, WrapClampMode, true );
 
 	delete[] pic;
 
@@ -183,9 +168,8 @@ static image_t* R_PicFromWad(const char* name, GLenum WrapClampMode)
 //
 //==========================================================================
 
-image_t* R_PicFromWad(const char* name)
-{
-	return R_PicFromWad(name, GL_CLAMP);
+image_t* R_PicFromWad( const char* name ) {
+	return R_PicFromWad( name, GL_CLAMP );
 }
 
 //==========================================================================
@@ -194,7 +178,6 @@ image_t* R_PicFromWad(const char* name)
 //
 //==========================================================================
 
-image_t* R_PicFromWadRepeat(const char* name)
-{
-	return R_PicFromWad(name, GL_REPEAT);
+image_t* R_PicFromWadRepeat( const char* name ) {
+	return R_PicFromWad( name, GL_REPEAT );
 }

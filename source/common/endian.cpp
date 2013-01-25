@@ -38,12 +38,12 @@
 
 bool GBigEndian;
 
-qint16 (* LittleShort)(qint16);
-qint16 (* BigShort)(qint16);
-qint32 (* LittleLong)(qint32);
-qint32 (* BigLong)(qint32);
-float (* LittleFloat)(float);
-float (* BigFloat)(float);
+qint16 ( * LittleShort )( qint16 );
+qint16 ( * BigShort )( qint16 );
+qint32 ( * LittleLong )( qint32 );
+qint32 ( * BigLong )( qint32 );
+float ( * LittleFloat )( float );
+float ( * BigFloat )( float );
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -55,10 +55,9 @@ float (* BigFloat)(float);
 //
 //==========================================================================
 
-static qint16 ShortSwap(qint16 x)
-{
-	return ((quint16)x >> 8) |
-		   ((quint16)x << 8);
+static qint16 ShortSwap( qint16 x ) {
+	return ( ( quint16 )x >> 8 ) |
+		   ( ( quint16 )x << 8 );
 }
 
 //==========================================================================
@@ -67,8 +66,7 @@ static qint16 ShortSwap(qint16 x)
 //
 //==========================================================================
 
-static qint16 ShortNoSwap(qint16 x)
-{
+static qint16 ShortNoSwap( qint16 x ) {
 	return x;
 }
 
@@ -78,12 +76,11 @@ static qint16 ShortNoSwap(qint16 x)
 //
 //==========================================================================
 
-static qint32 LongSwap(qint32 x)
-{
-	return ((quint32)x >> 24) |
-		   (((quint32)x >> 8) & 0xff00) |
-		   (((quint32)x << 8) & 0xff0000) |
-		   ((quint32)x << 24);
+static qint32 LongSwap( qint32 x ) {
+	return ( ( quint32 )x >> 24 ) |
+		   ( ( ( quint32 )x >> 8 ) & 0xff00 ) |
+		   ( ( ( quint32 )x << 8 ) & 0xff0000 ) |
+		   ( ( quint32 )x << 24 );
 }
 
 //==========================================================================
@@ -92,8 +89,7 @@ static qint32 LongSwap(qint32 x)
 //
 //==========================================================================
 
-static qint32 LongNoSwap(qint32 x)
-{
+static qint32 LongNoSwap( qint32 x ) {
 	return x;
 }
 
@@ -103,11 +99,10 @@ static qint32 LongNoSwap(qint32 x)
 //
 //==========================================================================
 
-static float FloatSwap(float x)
-{
+static float FloatSwap( float x ) {
 	union { float f; qint32 l; } a;
 	a.f = x;
-	a.l = LongSwap(a.l);
+	a.l = LongSwap( a.l );
 	return a.f;
 }
 
@@ -117,8 +112,7 @@ static float FloatSwap(float x)
 //
 //==========================================================================
 
-static float FloatNoSwap(float x)
-{
+static float FloatNoSwap( float x ) {
 	return x;
 }
 
@@ -128,13 +122,11 @@ static float FloatNoSwap(float x)
 //
 //==========================================================================
 
-void Com_InitByteOrder()
-{
-	quint8 swaptest[2] = {1, 0};
+void Com_InitByteOrder() {
+	quint8 swaptest[ 2 ] = {1, 0};
 
 	// set the byte swapping variables in a portable manner
-	if (*(qint16*)swaptest == 1)
-	{
+	if ( *( qint16* )swaptest == 1 ) {
 		GBigEndian = false;
 		BigShort = ShortSwap;
 		LittleShort = ShortNoSwap;
@@ -142,9 +134,7 @@ void Com_InitByteOrder()
 		LittleLong = LongNoSwap;
 		BigFloat = FloatSwap;
 		LittleFloat = FloatNoSwap;
-	}
-	else
-	{
+	} else   {
 		GBigEndian = true;
 		BigShort = ShortNoSwap;
 		LittleShort = ShortSwap;

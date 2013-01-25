@@ -24,7 +24,7 @@ enum dlStatus_t
 	DL_FAILED
 };
 
-bool DL_BeginDownload(const char* localName, const char* remoteName, int debug);
+bool DL_BeginDownload( const char* localName, const char* remoteName, int debug );
 dlStatus_t DL_DownloadLoop();
 void DL_Shutdown();
 

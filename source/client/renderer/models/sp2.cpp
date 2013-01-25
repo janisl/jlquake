@@ -44,36 +44,32 @@
 //
 //==========================================================================
 
-void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen)
-{
-	dsprite2_t* sprin = (dsprite2_t*)buffer;
-	dsprite2_t* sprout = (dsprite2_t*)Mem_Alloc(modfilelen);
+void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
+	dsprite2_t* sprin = ( dsprite2_t* )buffer;
+	dsprite2_t* sprout = ( dsprite2_t* )Mem_Alloc( modfilelen );
 
-	sprout->ident = LittleLong(sprin->ident);
-	sprout->version = LittleLong(sprin->version);
-	sprout->numframes = LittleLong(sprin->numframes);
+	sprout->ident = LittleLong( sprin->ident );
+	sprout->version = LittleLong( sprin->version );
+	sprout->numframes = LittleLong( sprin->numframes );
 
-	if (sprout->version != SPRITE2_VERSION)
-	{
-		common->Error("%s has wrong version number (%i should be %i)",
-				mod->name, sprout->version, SPRITE2_VERSION);
+	if ( sprout->version != SPRITE2_VERSION ) {
+		common->Error( "%s has wrong version number (%i should be %i)",
+			mod->name, sprout->version, SPRITE2_VERSION );
 	}
 
-	if (sprout->numframes > MAX_MD2_SKINS)
-	{
-		common->Error("%s has too many frames (%i > %i)",
-				mod->name, sprout->numframes, MAX_MD2_SKINS);
+	if ( sprout->numframes > MAX_MD2_SKINS ) {
+		common->Error( "%s has too many frames (%i > %i)",
+			mod->name, sprout->numframes, MAX_MD2_SKINS );
 	}
 
 	// byte swap everything
-	for (int i = 0; i < sprout->numframes; i++)
-	{
-		sprout->frames[i].width = LittleLong(sprin->frames[i].width);
-		sprout->frames[i].height = LittleLong(sprin->frames[i].height);
-		sprout->frames[i].origin_x = LittleLong(sprin->frames[i].origin_x);
-		sprout->frames[i].origin_y = LittleLong(sprin->frames[i].origin_y);
-		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SP2_SKINNAME);
-		mod->q2_skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
+	for ( int i = 0; i < sprout->numframes; i++ ) {
+		sprout->frames[ i ].width = LittleLong( sprin->frames[ i ].width );
+		sprout->frames[ i ].height = LittleLong( sprin->frames[ i ].height );
+		sprout->frames[ i ].origin_x = LittleLong( sprin->frames[ i ].origin_x );
+		sprout->frames[ i ].origin_y = LittleLong( sprin->frames[ i ].origin_y );
+		Com_Memcpy( sprout->frames[ i ].name, sprin->frames[ i ].name, MAX_SP2_SKINNAME );
+		mod->q2_skins[ i ] = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
 	}
 
 	mod->q2_extradata = sprout;
@@ -87,9 +83,8 @@ void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen)
 //
 //==========================================================================
 
-void Mod_FreeSprite2Model(model_t* mod)
-{
-	Mem_Free(mod->q2_extradata);
+void Mod_FreeSprite2Model( model_t* mod ) {
+	Mem_Free( mod->q2_extradata );
 }
 
 //==========================================================================
@@ -98,10 +93,8 @@ void Mod_FreeSprite2Model(model_t* mod)
 //
 //==========================================================================
 
-void R_DrawSp2Model(trRefEntity_t* e)
-{
-	if ((tr.currentEntity->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
-	{
+void R_DrawSp2Model( trRefEntity_t* e ) {
+	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
 
@@ -110,67 +103,62 @@ void R_DrawSp2Model(trRefEntity_t* e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	dsprite2_t* psprite = (dsprite2_t*)tr.currentModel->q2_extradata;
+	dsprite2_t* psprite = ( dsprite2_t* )tr.currentModel->q2_extradata;
 
 	e->e.frame %= psprite->numframes;
 
-	dsp2_frame_t* frame = &psprite->frames[e->e.frame];
+	dsp2_frame_t* frame = &psprite->frames[ e->e.frame ];
 
-	float* up = tr.viewParms.orient.axis[2];
-	float* left = tr.viewParms.orient.axis[1];
+	float* up = tr.viewParms.orient.axis[ 2 ];
+	float* left = tr.viewParms.orient.axis[ 1 ];
 
 	float alpha = 1.0F;
-	if (e->e.renderfx & RF_TRANSLUCENT)
-	{
-		alpha = e->e.shaderRGBA[3] / 255.0;
+	if ( e->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = e->e.shaderRGBA[ 3 ] / 255.0;
 	}
 
-	if (alpha != 1.0F)
-	{
-		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	if ( alpha != 1.0F ) {
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	} else   {
+		GL_State( GLS_DEFAULT | GLS_ATEST_GE_80 );
 	}
 
-	qglColor4f(1, 1, 1, alpha);
+	qglColor4f( 1, 1, 1, alpha );
 
-	GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
+	GL_Bind( tr.currentModel->q2_skins[ e->e.frame ] );
 
-	GL_TexEnv(GL_MODULATE);
+	GL_TexEnv( GL_MODULATE );
 
-	qglBegin(GL_QUADS);
+	qglBegin( GL_QUADS );
 
-	qglTexCoord2f(0, 1);
-	VectorMA(e->e.origin, -frame->origin_y, up, point);
-	VectorMA(point, frame->origin_x, left, point);
-	qglVertex3fv(point);
+	qglTexCoord2f( 0, 1 );
+	VectorMA( e->e.origin, -frame->origin_y, up, point );
+	VectorMA( point, frame->origin_x, left, point );
+	qglVertex3fv( point );
 
-	qglTexCoord2f(0, 0);
-	VectorMA(e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA(point, frame->origin_x, left, point);
-	qglVertex3fv(point);
+	qglTexCoord2f( 0, 0 );
+	VectorMA( e->e.origin, frame->height - frame->origin_y, up, point );
+	VectorMA( point, frame->origin_x, left, point );
+	qglVertex3fv( point );
 
-	qglTexCoord2f(1, 0);
-	VectorMA(e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA(point, -(frame->width - frame->origin_x), left, point);
-	qglVertex3fv(point);
+	qglTexCoord2f( 1, 0 );
+	VectorMA( e->e.origin, frame->height - frame->origin_y, up, point );
+	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
+	qglVertex3fv( point );
 
-	qglTexCoord2f(1, 1);
-	VectorMA(e->e.origin, -frame->origin_y, up, point);
-	VectorMA(point, -(frame->width - frame->origin_x), left, point);
-	qglVertex3fv(point);
+	qglTexCoord2f( 1, 1 );
+	VectorMA( e->e.origin, -frame->origin_y, up, point );
+	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
+	qglVertex3fv( point );
 
 	qglEnd();
 
-	GL_State(GLS_DEFAULT);
-	GL_TexEnv(GL_REPLACE);
+	GL_State( GLS_DEFAULT );
+	GL_TexEnv( GL_REPLACE );
 
-	if (alpha != 1.0F)
-	{
-		GL_State(GLS_DEFAULT);
+	if ( alpha != 1.0F ) {
+		GL_State( GLS_DEFAULT );
 	}
 
-	qglColor4f(1, 1, 1, 1);
+	qglColor4f( 1, 1, 1, 1 );
 }

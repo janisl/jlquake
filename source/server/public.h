@@ -35,28 +35,28 @@ extern Cvar* allow_download_sounds;
 extern Cvar* allow_download_maps;
 
 bool SV_IsServerActive();
-void SV_CvarChanged(Cvar* var);
+void SV_CvarChanged( Cvar* var );
 int SVQH_GetMaxClients();
 int SVQH_GetMaxClientsLimit();
 void SV_Init();
-void SV_Shutdown(const char* finalMessage);
-void SV_Frame(int msec);
+void SV_Shutdown( const char* finalMessage );
+void SV_Frame( int msec );
 int SVQH_GetNumConnectedClients();
-void SVQH_SetRealTime(int time);
+void SVQH_SetRealTime( int time );
 
 void SVQH_ShutdownNetwork();
-void SVH2_RemoveGIPFiles(const char* path);
+void SVH2_RemoveGIPFiles( const char* path );
 
-void PR_SetPlayerClassGlobal(float newClass);
+void PR_SetPlayerClassGlobal( float newClass );
 
 bool SVT3_GameCommand();
-void SVT3_PacketEvent(netadr_t from, QMsg* msg);
-void BotDrawDebugPolygons(void (* drawPoly)(int color, int numPoints, float* points), int value);
+void SVT3_PacketEvent( netadr_t from, QMsg* msg );
+void BotDrawDebugPolygons( void ( * drawPoly )( int color, int numPoints, float* points ), int value );
 
 // RF, this is only used when running a local server
-void SVWS_SendMoveSpeedsToGame(int entnum, char* text);
-int SVWS_GetModelInfo(int clientNum, char* modelName, animModelInfo_t** modelInfo);
-void SVWM_SendMoveSpeedsToGame(int entnum, char* text);
+void SVWS_SendMoveSpeedsToGame( int entnum, char* text );
+int SVWS_GetModelInfo( int clientNum, char* modelName, animModelInfo_t** modelInfo );
+void SVWM_SendMoveSpeedsToGame( int entnum, char* text );
 
 bool SVET_GameIsSinglePlayer();
 

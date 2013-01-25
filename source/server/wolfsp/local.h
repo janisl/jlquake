@@ -23,22 +23,22 @@
 //
 //	Game
 //
-wssharedEntity_t* SVWS_GentityNum(int num);
-wsplayerState_t* SVWS_GameClientNum(int num);
-q3svEntity_t* SVWS_SvEntityForGentity(const wssharedEntity_t* gEnt);
-void SVWS_ClientThink(client_t* cl, wsusercmd_t* cmd);
-bool SVWS_BotVisibleFromPos(vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos);
-bool SVWS_BotCheckAttackAtPos(int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld);
-void SVWS_BotFrame(int time);
-qintptr SVWS_GameSystemCalls(qintptr* args);
-void SVWS_GameClientDisconnect(client_t* drop);
-void SVWS_GameInit(int serverTime, int randomSeed, bool restart);
-void SVWS_GameShutdown(bool restart);
+wssharedEntity_t* SVWS_GentityNum( int num );
+wsplayerState_t* SVWS_GameClientNum( int num );
+q3svEntity_t* SVWS_SvEntityForGentity( const wssharedEntity_t* gEnt );
+void SVWS_ClientThink( client_t* cl, wsusercmd_t* cmd );
+bool SVWS_BotVisibleFromPos( vec3_t srcpos, int srcnum, vec3_t destpos, int destnum, bool updateVisPos );
+bool SVWS_BotCheckAttackAtPos( int entnum, int enemy, vec3_t pos, bool ducking, bool allowHitWorld );
+void SVWS_BotFrame( int time );
+qintptr SVWS_GameSystemCalls( qintptr* args );
+void SVWS_GameClientDisconnect( client_t* drop );
+void SVWS_GameInit( int serverTime, int randomSeed, bool restart );
+void SVWS_GameShutdown( bool restart );
 bool SVWS_GameConsoleCommand();
-void SVWS_GameClientBegin(int clientNum);
-void SVWS_GameClientUserInfoChanged(int clientNum);
-const char* SVWS_GameClientConnect(int clientNum, bool firstTime, bool isBot);
-void SVWS_GameClientCommand(int clientNum);
-void SVWS_GameRunFrame(int time);
+void SVWS_GameClientBegin( int clientNum );
+void SVWS_GameClientUserInfoChanged( int clientNum );
+const char* SVWS_GameClientConnect( int clientNum, bool firstTime, bool isBot );
+void SVWS_GameClientCommand( int clientNum );
+void SVWS_GameRunFrame( int time );
 
 #endif

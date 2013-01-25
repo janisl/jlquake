@@ -29,133 +29,105 @@ int prh2_info_string_count = 0;
 
 char* h2_puzzle_strings;
 
-static void ComH2_LoadPuzzleStrings()
-{
-	FS_ReadFile("puzzles.txt", (void**)&h2_puzzle_strings);
+static void ComH2_LoadPuzzleStrings() {
+	FS_ReadFile( "puzzles.txt", ( void** )&h2_puzzle_strings );
 }
 
-static void ComH2_LoadGlobalStrings()
-{
-	if (!FS_ReadFile("strings.txt", (void**)&prh2_global_strings))
-	{
-		common->FatalError("ComH2_LoadGlobalStrings: couldn't load strings.txt");
+static void ComH2_LoadGlobalStrings() {
+	if ( !FS_ReadFile( "strings.txt", ( void** )&prh2_global_strings ) ) {
+		common->FatalError( "ComH2_LoadGlobalStrings: couldn't load strings.txt" );
 	}
 
 	char NewLineChar = -1;
 
 	int count = 0;
-	for (int i = 0; prh2_global_strings[i] != 0; i++)
-	{
-		if (prh2_global_strings[i] == 13 || prh2_global_strings[i] == 10)
-		{
-			if (NewLineChar == prh2_global_strings[i] || NewLineChar == -1)
-			{
-				NewLineChar = prh2_global_strings[i];
+	for ( int i = 0; prh2_global_strings[ i ] != 0; i++ ) {
+		if ( prh2_global_strings[ i ] == 13 || prh2_global_strings[ i ] == 10 ) {
+			if ( NewLineChar == prh2_global_strings[ i ] || NewLineChar == -1 ) {
+				NewLineChar = prh2_global_strings[ i ];
 				count++;
 			}
 		}
 	}
 
-	if (!count)
-	{
-		common->FatalError("ComH2_LoadGlobalStrings: no string lines found");
+	if ( !count ) {
+		common->FatalError( "ComH2_LoadGlobalStrings: no string lines found" );
 	}
 
-	prh2_string_index = (int*)Mem_Alloc((count + 1) * 4);
+	prh2_string_index = ( int* )Mem_Alloc( ( count + 1 ) * 4 );
 
 	count = 0;
 	int start = 0;
-	for (int i = 0; prh2_global_strings[i] != 0; i++)
-	{
-		if (prh2_global_strings[i] == 13 || prh2_global_strings[i] == 10)
-		{
-			if (NewLineChar == prh2_global_strings[i])
-			{
-				prh2_string_index[count] = start;
+	for ( int i = 0; prh2_global_strings[ i ] != 0; i++ ) {
+		if ( prh2_global_strings[ i ] == 13 || prh2_global_strings[ i ] == 10 ) {
+			if ( NewLineChar == prh2_global_strings[ i ] ) {
+				prh2_string_index[ count ] = start;
 				start = i + 1;
 				count++;
-			}
-			else
-			{
+			} else   {
 				start++;
 			}
 
-			prh2_global_strings[i] = 0;
-		}
-		else if (GGameType & GAME_HexenWorld)
-		{
+			prh2_global_strings[ i ] = 0;
+		} else if ( GGameType & GAME_HexenWorld )     {
 			//for indexed prints, translate '^' to a newline
-			if (prh2_global_strings[i] == '^')
-			{
-				prh2_global_strings[i] = '\n';
+			if ( prh2_global_strings[ i ] == '^' ) {
+				prh2_global_strings[ i ] = '\n';
 			}
 		}
 	}
 
 	prh2_string_count = count;
-	common->Printf("Read in %d string lines\n", count);
+	common->Printf( "Read in %d string lines\n", count );
 }
 
-static void ComH2_LoadInfoStrings()
-{
-	if (!FS_ReadFile("infolist.txt", (void**)&prh2_global_info_strings))
-	{
-		common->FatalError("ComH2_LoadInfoStrings: couldn't load infolist.txt");
+static void ComH2_LoadInfoStrings() {
+	if ( !FS_ReadFile( "infolist.txt", ( void** )&prh2_global_info_strings ) ) {
+		common->FatalError( "ComH2_LoadInfoStrings: couldn't load infolist.txt" );
 	}
 
 	char NewLineChar = -1;
 
-	int count= 0;
-	for (int i = 0; prh2_global_info_strings[i] != 0; i++)
-	{
-		if (prh2_global_info_strings[i] == 13 || prh2_global_info_strings[i] == 10)
-		{
-			if (NewLineChar == prh2_global_info_strings[i] || NewLineChar == -1)
-			{
-				NewLineChar = prh2_global_info_strings[i];
+	int count = 0;
+	for ( int i = 0; prh2_global_info_strings[ i ] != 0; i++ ) {
+		if ( prh2_global_info_strings[ i ] == 13 || prh2_global_info_strings[ i ] == 10 ) {
+			if ( NewLineChar == prh2_global_info_strings[ i ] || NewLineChar == -1 ) {
+				NewLineChar = prh2_global_info_strings[ i ];
 				count++;
 			}
 		}
 	}
 
-	if (!count)
-	{
-		common->FatalError("ComH2_LoadInfoStrings: no string lines found");
+	if ( !count ) {
+		common->FatalError( "ComH2_LoadInfoStrings: no string lines found" );
 	}
 
-	prh2_info_string_index = (int*)Mem_Alloc((count + 1) * 4);
+	prh2_info_string_index = ( int* )Mem_Alloc( ( count + 1 ) * 4 );
 
 	int start = 0;
 	count = 0;
-	for (int i = 0; prh2_global_info_strings[i] != 0; i++)
-	{
-		if (prh2_global_info_strings[i] == 13 || prh2_global_info_strings[i] == 10)
-		{
-			if (NewLineChar == prh2_global_info_strings[i])
-			{
-				prh2_info_string_index[count] = start;
+	for ( int i = 0; prh2_global_info_strings[ i ] != 0; i++ ) {
+		if ( prh2_global_info_strings[ i ] == 13 || prh2_global_info_strings[ i ] == 10 ) {
+			if ( NewLineChar == prh2_global_info_strings[ i ] ) {
+				prh2_info_string_index[ count ] = start;
 				start = i + 1;
 				count++;
-			}
-			else
-			{
+			} else   {
 				start++;
 			}
 
-			prh2_global_info_strings[i] = 0;
+			prh2_global_info_strings[ i ] = 0;
 		}
 	}
 
 	prh2_info_string_count = count;
-	common->Printf("Read in %d objectives\n",count);
+	common->Printf( "Read in %d objectives\n",count );
 }
 
-void ComH2_LoadStrings()
-{
+void ComH2_LoadStrings() {
 	ComH2_LoadGlobalStrings();
 	ComH2_LoadPuzzleStrings();
-	if (!(GGameType & GAME_HexenWorld) && GGameType & GAME_H2Portals)
-	{
+	if ( !( GGameType & GAME_HexenWorld ) && GGameType & GAME_H2Portals ) {
 		ComH2_LoadInfoStrings();
 	}
 }

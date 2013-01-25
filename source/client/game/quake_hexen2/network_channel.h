@@ -27,7 +27,7 @@ extern bool slistLocal;
 void NET_Slist_f();
 void NET_Poll();
 // called by client to connect to a host.  Returns -1 if not able to
-bool NET_Connect(const char* host, netchan_t* chan);
+bool NET_Connect( const char* host, netchan_t* chan );
 void CLQH_ShutdownNetwork();
 
 #endif

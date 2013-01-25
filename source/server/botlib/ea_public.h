@@ -49,8 +49,7 @@
 #define ETACTION_PRONE          16384
 
 //the bot input, will be converted to an usercmd_t
-struct bot_input_t
-{
+struct bot_input_t {
 	float thinktime;		//time since last output (in seconds)
 	vec3_t dir;				//movement direction
 	float speed;			//speed in the range [0, 400]
@@ -60,35 +59,35 @@ struct bot_input_t
 };
 
 //regular elementary actions
-void EA_Gesture(int client);
-void EA_SelectWeapon(int client, int weapon);
-void EA_Attack(int client);
-void EA_Talk(int client);
-void EA_Use(int client);
-void EA_Respawn(int client);
-void EA_Jump(int client);
-void EA_DelayedJump(int client);
-void EA_Crouch(int client);
-void EA_Walk(int client);
-void EA_MoveUp(int client);
-void EA_MoveDown(int client);
-void EA_MoveForward(int client);
-void EA_MoveBack(int client);
-void EA_MoveLeft(int client);
-void EA_MoveRight(int client);
-void EA_Reload(int client);
-void EA_Prone(int client);
-void EA_Action(int client, int action);
-void EA_Move(int client, const vec3_t dir, float speed);
-void EA_View(int client, vec3_t viewangles);
-void EA_GetInput(int client, float thinktime, bot_input_t* input);
-void EA_ResetInputQ3(int client);
-void EA_ResetInputWolf(int client, bot_input_t* init);
+void EA_Gesture( int client );
+void EA_SelectWeapon( int client, int weapon );
+void EA_Attack( int client );
+void EA_Talk( int client );
+void EA_Use( int client );
+void EA_Respawn( int client );
+void EA_Jump( int client );
+void EA_DelayedJump( int client );
+void EA_Crouch( int client );
+void EA_Walk( int client );
+void EA_MoveUp( int client );
+void EA_MoveDown( int client );
+void EA_MoveForward( int client );
+void EA_MoveBack( int client );
+void EA_MoveLeft( int client );
+void EA_MoveRight( int client );
+void EA_Reload( int client );
+void EA_Prone( int client );
+void EA_Action( int client, int action );
+void EA_Move( int client, const vec3_t dir, float speed );
+void EA_View( int client, vec3_t viewangles );
+void EA_GetInput( int client, float thinktime, bot_input_t* input );
+void EA_ResetInputQ3( int client );
+void EA_ResetInputWolf( int client, bot_input_t* init );
 //ClientCommand elementary actions
-void EA_Say(int client, const char* str);
-void EA_SayTeam(int client, const char* str);
-void EA_UseItem(int client, const char* it);
-void EA_DropItem(int client, const char* it);
-void EA_UseInv(int client, const char* inv);
-void EA_DropInv(int client, const char* inv);
-void EA_Command(int client, const char* command);
+void EA_Say( int client, const char* str );
+void EA_SayTeam( int client, const char* str );
+void EA_UseItem( int client, const char* it );
+void EA_DropItem( int client, const char* it );
+void EA_UseInv( int client, const char* inv );
+void EA_DropInv( int client, const char* inv );
+void EA_Command( int client, const char* command );

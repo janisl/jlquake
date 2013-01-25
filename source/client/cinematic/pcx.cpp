@@ -45,10 +45,8 @@
 //
 //==========================================================================
 
-QCinematicPcx::~QCinematicPcx()
-{
-	if (OutputFrame)
-	{
+QCinematicPcx::~QCinematicPcx() {
+	if ( OutputFrame ) {
 		delete[] OutputFrame;
 		OutputFrame = NULL;
 	}
@@ -60,25 +58,22 @@ QCinematicPcx::~QCinematicPcx()
 //
 //==========================================================================
 
-bool QCinematicPcx::Open(const char* FileName)
-{
-	String::Cpy(Name, FileName);
+bool QCinematicPcx::Open( const char* FileName ) {
+	String::Cpy( Name, FileName );
 	byte* pic;
 	byte* palette;
-	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
-	if (!pic)
-	{
-		common->Printf("%s not found.\n", Name);
+	R_LoadPCX( FileName, &pic, &palette, &Width, &Height );
+	if ( !pic ) {
+		common->Printf( "%s not found.\n", Name );
 		return false;
 	}
 
-	OutputFrame = new byte[Width * Height * 4];
-	for (int i = 0; i < Width * Height; i++)
-	{
-		OutputFrame[i * 4 + 0] = palette[pic[i] * 3 + 0];
-		OutputFrame[i * 4 + 1] = palette[pic[i] * 3 + 1];
-		OutputFrame[i * 4 + 2] = palette[pic[i] * 3 + 2];
-		OutputFrame[i * 4 + 3] = 255;
+	OutputFrame = new byte[ Width * Height * 4 ];
+	for ( int i = 0; i < Width * Height; i++ ) {
+		OutputFrame[ i * 4 + 0 ] = palette[ pic[ i ] * 3 + 0 ];
+		OutputFrame[ i * 4 + 1 ] = palette[ pic[ i ] * 3 + 1 ];
+		OutputFrame[ i * 4 + 2 ] = palette[ pic[ i ] * 3 + 2 ];
+		OutputFrame[ i * 4 + 3 ] = 255;
 	}
 
 	delete[] pic;
@@ -92,8 +87,7 @@ bool QCinematicPcx::Open(const char* FileName)
 //
 //==========================================================================
 
-bool QCinematicPcx::Update(int)
-{
+bool QCinematicPcx::Update( int ) {
 	return true;
 }
 
@@ -103,8 +97,7 @@ bool QCinematicPcx::Update(int)
 //
 //==========================================================================
 
-int QCinematicPcx::GetCinematicTime() const
-{
+int QCinematicPcx::GetCinematicTime() const {
 	return 0;
 }
 
@@ -114,6 +107,5 @@ int QCinematicPcx::GetCinematicTime() const
 //
 //==========================================================================
 
-void QCinematicPcx::Reset()
-{
+void QCinematicPcx::Reset() {
 }

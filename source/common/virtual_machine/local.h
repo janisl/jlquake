@@ -106,26 +106,24 @@ enum opcode_t
 	OP_CVFI
 };
 
-struct vmSymbol_t
-{
+struct vmSymbol_t {
 	vmSymbol_t* next;
 	int symValue;
 	int profileCount;
-	char symName[1];		// variable sized
+	char symName[ 1 ];			// variable sized
 };
 
-struct vm_t
-{
+struct vm_t {
 	int programStack;		// the vm may be recursively entered
-	qintptr (* systemCall)(qintptr* parms);
+	qintptr ( * systemCall )( qintptr* parms );
 
 	//------------------------------------
 
-	char name[MAX_QPATH];
+	char name[ MAX_QPATH ];
 
 	// for dynamic linked modules
 	void* dllHandle;
-	qintptr (* entryPoint)(int callNum, ...);
+	qintptr ( * entryPoint )( int callNum, ... );
 
 	// for interpreted modules
 	bool currentlyInterpreting;
@@ -153,12 +151,12 @@ struct vm_t
 extern int vm_debugLevel;
 extern vm_t* currentVM;
 
-const char* VM_ValueToSymbol(vm_t* vm, int value);
-vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);
-void VM_LogSyscalls(qintptr* args);
+const char* VM_ValueToSymbol( vm_t* vm, int value );
+vmSymbol_t* VM_ValueToFunctionSymbol( vm_t* vm, int value );
+void VM_LogSyscalls( qintptr* args );
 
-void VM_PrepareInterpreter(vm_t* vm, vmHeader_t* header);
-qintptr VM_CallInterpreted(vm_t* vm, int* args);
+void VM_PrepareInterpreter( vm_t* vm, vmHeader_t* header );
+qintptr VM_CallInterpreted( vm_t* vm, int* args );
 
-void VM_Compile(vm_t* vm, vmHeader_t* header);
-qintptr VM_CallCompiled(vm_t* vm, int* args);
+void VM_Compile( vm_t* vm, vmHeader_t* header );
+qintptr VM_CallCompiled( vm_t* vm, int* args );

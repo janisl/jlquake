@@ -62,12 +62,12 @@ qboolean initialized = false;
 qboolean enabled = true;
 qboolean playLooping = false;
 float cdvolume;
-byte remap[100];
+byte remap[ 100 ];
 byte playTrack;
 byte maxTrack;
 
 int cdfile = -1;
-static char cd_dev_old[64] = "/dev/cdrom";
+static char cd_dev_old[ 64 ] = "/dev/cdrom";
 
 Cvar* cd_volume;
 Cvar* cd_nocd;
@@ -81,16 +81,13 @@ Cvar* cd_dev;
 //
 //==========================================================================
 
-void CDAudio_Eject()
-{
-	if (cdfile == -1 || !enabled)
-	{
+void CDAudio_Eject() {
+	if ( cdfile == -1 || !enabled ) {
 		return;	// no cd init'd
 	}
 
-	if (ioctl(cdfile, CDROMEJECT) == -1)
-	{
-		common->DPrintf("ioctl cdromeject failed\n");
+	if ( ioctl( cdfile, CDROMEJECT ) == -1 ) {
+		common->DPrintf( "ioctl cdromeject failed\n" );
 	}
 }
 
@@ -101,16 +98,13 @@ void CDAudio_Eject()
 //
 //==========================================================================
 
-void CDAudio_CloseDoor()
-{
-	if (cdfile == -1 || !enabled)
-	{
+void CDAudio_CloseDoor() {
+	if ( cdfile == -1 || !enabled ) {
 		return;	// no cd init'd
 	}
 
-	if (ioctl(cdfile, CDROMCLOSETRAY) == -1)
-	{
-		common->DPrintf("ioctl cdromclosetray failed\n");
+	if ( ioctl( cdfile, CDROMCLOSETRAY ) == -1 ) {
+		common->DPrintf( "ioctl cdromclosetray failed\n" );
 	}
 }
 
@@ -120,21 +114,18 @@ void CDAudio_CloseDoor()
 //
 //==========================================================================
 
-int CDAudio_GetAudioDiskInfo()
-{
+int CDAudio_GetAudioDiskInfo() {
 	struct cdrom_tochdr tochdr;
 
 	cdValid = false;
 
-	if (ioctl(cdfile, CDROMREADTOCHDR, &tochdr) == -1)
-	{
-		common->DPrintf("ioctl cdromreadtochdr failed\n");
+	if ( ioctl( cdfile, CDROMREADTOCHDR, &tochdr ) == -1 ) {
+		common->DPrintf( "ioctl cdromreadtochdr failed\n" );
 		return -1;
 	}
 
-	if (tochdr.cdth_trk0 < 1)
-	{
-		common->DPrintf("CDAudio: no music tracks\n");
+	if ( tochdr.cdth_trk0 < 1 ) {
+		common->DPrintf( "CDAudio: no music tracks\n" );
 		return -1;
 	}
 
@@ -150,51 +141,42 @@ int CDAudio_GetAudioDiskInfo()
 //
 //==========================================================================
 
-void CDAudio_Play(int track, qboolean looping)
-{
+void CDAudio_Play( int track, qboolean looping ) {
 	struct cdrom_tocentry entry;
 	struct cdrom_ti ti;
 
-	if (cdfile == -1 || !enabled)
-	{
+	if ( cdfile == -1 || !enabled ) {
 		return;
 	}
 
-	if (!cdValid)
-	{
+	if ( !cdValid ) {
 		CDAudio_GetAudioDiskInfo();
-		if (!cdValid)
-		{
+		if ( !cdValid ) {
 			return;
 		}
 	}
 
-	track = remap[track];
+	track = remap[ track ];
 
-	if (track < 1 || track > maxTrack)
-	{
-		common->DPrintf("CDAudio: Bad track number %u.\n", track);
+	if ( track < 1 || track > maxTrack ) {
+		common->DPrintf( "CDAudio: Bad track number %u.\n", track );
 		return;
 	}
 
 	// don't try to play a non-audio track
 	entry.cdte_track = track;
 	entry.cdte_format = CDROM_MSF;
-	if (ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
-	{
-		common->DPrintf("ioctl cdromreadtocentry failed\n");
+	if ( ioctl( cdfile, CDROMREADTOCENTRY, &entry ) == -1 ) {
+		common->DPrintf( "ioctl cdromreadtocentry failed\n" );
 		return;
 	}
-	if (entry.cdte_ctrl == CDROM_DATA_TRACK)
-	{
-		common->Printf("CDAudio: track %i is not audio\n", track);
+	if ( entry.cdte_ctrl == CDROM_DATA_TRACK ) {
+		common->Printf( "CDAudio: track %i is not audio\n", track );
 		return;
 	}
 
-	if (playing)
-	{
-		if (playTrack == track)
-		{
+	if ( playing ) {
+		if ( playTrack == track ) {
 			return;
 		}
 		CDAudio_Stop();
@@ -205,32 +187,25 @@ void CDAudio_Play(int track, qboolean looping)
 	ti.cdti_ind0 = 1;
 	ti.cdti_ind1 = 99;
 
-	if (ioctl(cdfile, CDROMPLAYTRKIND, &ti) == -1)
-	{
-		common->DPrintf("ioctl cdromplaytrkind failed\n");
+	if ( ioctl( cdfile, CDROMPLAYTRKIND, &ti ) == -1 ) {
+		common->DPrintf( "ioctl cdromplaytrkind failed\n" );
 		return;
 	}
 
-	if (ioctl(cdfile, CDROMRESUME) == -1)
-	{
-		common->DPrintf("ioctl cdromresume failed\n");
+	if ( ioctl( cdfile, CDROMRESUME ) == -1 ) {
+		common->DPrintf( "ioctl cdromresume failed\n" );
 	}
 
 	playLooping = looping;
 	playTrack = track;
 	playing = true;
 
-	if (GGameType & GAME_QuakeHexen)
-	{
-		if (cdvolume == 0.0)
-		{
+	if ( GGameType & GAME_QuakeHexen ) {
+		if ( cdvolume == 0.0 ) {
 			CDAudio_Pause();
 		}
-	}
-	else
-	{
-		if (cd_volume->value == 0.0)
-		{
+	} else   {
+		if ( cd_volume->value == 0.0 ) {
 			CDAudio_Pause();
 		}
 	}
@@ -242,21 +217,17 @@ void CDAudio_Play(int track, qboolean looping)
 //
 //==========================================================================
 
-void CDAudio_Stop()
-{
-	if (cdfile == -1 || !enabled)
-	{
+void CDAudio_Stop() {
+	if ( cdfile == -1 || !enabled ) {
 		return;
 	}
 
-	if (!playing)
-	{
+	if ( !playing ) {
 		return;
 	}
 
-	if (ioctl(cdfile, CDROMSTOP) == -1)
-	{
-		common->DPrintf("ioctl cdromstop failed (%d)\n", errno);
+	if ( ioctl( cdfile, CDROMSTOP ) == -1 ) {
+		common->DPrintf( "ioctl cdromstop failed (%d)\n", errno );
 	}
 
 	wasPlaying = false;
@@ -269,21 +240,17 @@ void CDAudio_Stop()
 //
 //==========================================================================
 
-void CDAudio_Pause()
-{
-	if (cdfile == -1 || !enabled)
-	{
+void CDAudio_Pause() {
+	if ( cdfile == -1 || !enabled ) {
 		return;
 	}
 
-	if (!playing)
-	{
+	if ( !playing ) {
 		return;
 	}
 
-	if (ioctl(cdfile, CDROMPAUSE) == -1)
-	{
-		common->DPrintf("ioctl cdrompause failed\n");
+	if ( ioctl( cdfile, CDROMPAUSE ) == -1 ) {
+		common->DPrintf( "ioctl cdrompause failed\n" );
 	}
 
 	wasPlaying = playing;
@@ -296,26 +263,21 @@ void CDAudio_Pause()
 //
 //==========================================================================
 
-void CDAudio_Resume()
-{
-	if (cdfile == -1 || !enabled)
-	{
+void CDAudio_Resume() {
+	if ( cdfile == -1 || !enabled ) {
 		return;
 	}
 
-	if (!cdValid)
-	{
+	if ( !cdValid ) {
 		return;
 	}
 
-	if (!wasPlaying)
-	{
+	if ( !wasPlaying ) {
 		return;
 	}
 
-	if (ioctl(cdfile, CDROMRESUME) == -1)
-	{
-		common->DPrintf("ioctl cdromresume failed\n");
+	if ( ioctl( cdfile, CDROMRESUME ) == -1 ) {
+		common->DPrintf( "ioctl cdromresume failed\n" );
 	}
 	playing = true;
 }
@@ -326,121 +288,98 @@ void CDAudio_Resume()
 //
 //==========================================================================
 
-void CD_f()
-{
+void CD_f() {
 	char* command;
 	int ret;
 	int n;
 
-	if (Cmd_Argc() < 2)
-	{
+	if ( Cmd_Argc() < 2 ) {
 		return;
 	}
 
-	command = Cmd_Argv(1);
+	command = Cmd_Argv( 1 );
 
-	if (String::ICmp(command, "on") == 0)
-	{
+	if ( String::ICmp( command, "on" ) == 0 ) {
 		enabled = true;
 		return;
 	}
 
-	if (String::ICmp(command, "off") == 0)
-	{
-		if (playing)
-		{
+	if ( String::ICmp( command, "off" ) == 0 ) {
+		if ( playing ) {
 			CDAudio_Stop();
 		}
 		enabled = false;
 		return;
 	}
 
-	if (String::ICmp(command, "reset") == 0)
-	{
+	if ( String::ICmp( command, "reset" ) == 0 ) {
 		enabled = true;
-		if (playing)
-		{
+		if ( playing ) {
 			CDAudio_Stop();
 		}
-		for (n = 0; n < 100; n++)
-		{
-			remap[n] = n;
+		for ( n = 0; n < 100; n++ ) {
+			remap[ n ] = n;
 		}
 		CDAudio_GetAudioDiskInfo();
 		return;
 	}
 
-	if (String::ICmp(command, "remap") == 0)
-	{
+	if ( String::ICmp( command, "remap" ) == 0 ) {
 		ret = Cmd_Argc() - 2;
-		if (ret <= 0)
-		{
-			for (n = 1; n < 100; n++)
-			{
-				if (remap[n] != n)
-				{
-					common->Printf("  %u -> %u\n", n, remap[n]);
+		if ( ret <= 0 ) {
+			for ( n = 1; n < 100; n++ ) {
+				if ( remap[ n ] != n ) {
+					common->Printf( "  %u -> %u\n", n, remap[ n ] );
 				}
 			}
 			return;
 		}
-		for (n = 1; n <= ret; n++)
-		{
-			remap[n] = String::Atoi(Cmd_Argv(n + 1));
+		for ( n = 1; n <= ret; n++ ) {
+			remap[ n ] = String::Atoi( Cmd_Argv( n + 1 ) );
 		}
 		return;
 	}
 
-	if (String::ICmp(command, "close") == 0)
-	{
+	if ( String::ICmp( command, "close" ) == 0 ) {
 		CDAudio_CloseDoor();
 		return;
 	}
 
-	if (!cdValid)
-	{
+	if ( !cdValid ) {
 		CDAudio_GetAudioDiskInfo();
-		if (!cdValid)
-		{
-			common->Printf("No CD in player.\n");
+		if ( !cdValid ) {
+			common->Printf( "No CD in player.\n" );
 			return;
 		}
 	}
 
-	if (String::ICmp(command, "play") == 0)
-	{
-		CDAudio_Play(String::Atoi(Cmd_Argv(2)), false);
+	if ( String::ICmp( command, "play" ) == 0 ) {
+		CDAudio_Play( String::Atoi( Cmd_Argv( 2 ) ), false );
 		return;
 	}
 
-	if (String::ICmp(command, "loop") == 0)
-	{
-		CDAudio_Play(String::Atoi(Cmd_Argv(2)), true);
+	if ( String::ICmp( command, "loop" ) == 0 ) {
+		CDAudio_Play( String::Atoi( Cmd_Argv( 2 ) ), true );
 		return;
 	}
 
-	if (String::ICmp(command, "stop") == 0)
-	{
+	if ( String::ICmp( command, "stop" ) == 0 ) {
 		CDAudio_Stop();
 		return;
 	}
 
-	if (String::ICmp(command, "pause") == 0)
-	{
+	if ( String::ICmp( command, "pause" ) == 0 ) {
 		CDAudio_Pause();
 		return;
 	}
 
-	if (String::ICmp(command, "resume") == 0)
-	{
+	if ( String::ICmp( command, "resume" ) == 0 ) {
 		CDAudio_Resume();
 		return;
 	}
 
-	if (String::ICmp(command, "eject") == 0)
-	{
-		if (playing)
-		{
+	if ( String::ICmp( command, "eject" ) == 0 ) {
+		if ( playing ) {
 			CDAudio_Stop();
 		}
 		CDAudio_Eject();
@@ -448,18 +387,14 @@ void CD_f()
 		return;
 	}
 
-	if (String::ICmp(command, "info") == 0)
-	{
-		common->Printf("%u tracks\n", maxTrack);
-		if (playing)
-		{
-			common->Printf("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+	if ( String::ICmp( command, "info" ) == 0 ) {
+		common->Printf( "%u tracks\n", maxTrack );
+		if ( playing ) {
+			common->Printf( "Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack );
+		} else if ( wasPlaying )     {
+			common->Printf( "Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack );
 		}
-		else if (wasPlaying)
-		{
-			common->Printf("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
-		}
-		common->Printf("Volume is %f\n", cdvolume);
+		common->Printf( "Volume is %f\n", cdvolume );
 		return;
 	}
 }
@@ -470,70 +405,53 @@ void CD_f()
 //
 //==========================================================================
 
-void CDAudio_Update()
-{
+void CDAudio_Update() {
 	struct cdrom_subchnl subchnl;
 	static time_t lastchk;
 
-	if (cdfile == -1 || !enabled)
-	{
+	if ( cdfile == -1 || !enabled ) {
 		return;
 	}
 
-	if (GGameType & GAME_QuakeHexen)
-	{
-		if (bgmvolume->value != cdvolume)
-		{
-			if (cdvolume)
-			{
-				Cvar_SetValue("bgmvolume", 0.0);
+	if ( GGameType & GAME_QuakeHexen ) {
+		if ( bgmvolume->value != cdvolume ) {
+			if ( cdvolume ) {
+				Cvar_SetValue( "bgmvolume", 0.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Pause();
-			}
-			else
-			{
-				Cvar_SetValue("bgmvolume", 1.0);
+			} else   {
+				Cvar_SetValue( "bgmvolume", 1.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Resume();
 			}
 		}
-	}
-	else
-	{
-		if (cd_volume && cd_volume->value != cdvolume)
-		{
-			if (cdvolume)
-			{
-				Cvar_SetValueLatched("cd_volume", 0.0);
+	} else   {
+		if ( cd_volume && cd_volume->value != cdvolume ) {
+			if ( cdvolume ) {
+				Cvar_SetValueLatched( "cd_volume", 0.0 );
 				cdvolume = cd_volume->value;
 				CDAudio_Pause();
-			}
-			else
-			{
-				Cvar_SetValueLatched("cd_volume", 1.0);
+			} else   {
+				Cvar_SetValueLatched( "cd_volume", 1.0 );
 				cdvolume = cd_volume->value;
 				CDAudio_Resume();
 			}
 		}
 	}
 
-	if (playing && lastchk < time(NULL))
-	{
-		lastchk = time(NULL) + 2;	//two seconds between chks
+	if ( playing && lastchk < time( NULL ) ) {
+		lastchk = time( NULL ) + 2;		//two seconds between chks
 		subchnl.cdsc_format = CDROM_MSF;
-		if (ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1)
-		{
-			common->DPrintf("ioctl cdromsubchnl failed\n");
+		if ( ioctl( cdfile, CDROMSUBCHNL, &subchnl ) == -1 ) {
+			common->DPrintf( "ioctl cdromsubchnl failed\n" );
 			playing = false;
 			return;
 		}
-		if (subchnl.cdsc_audiostatus != CDROM_AUDIO_PLAY &&
-			subchnl.cdsc_audiostatus != CDROM_AUDIO_PAUSED)
-		{
+		if ( subchnl.cdsc_audiostatus != CDROM_AUDIO_PLAY &&
+			 subchnl.cdsc_audiostatus != CDROM_AUDIO_PAUSED ) {
 			playing = false;
-			if (playLooping)
-			{
-				CDAudio_Play(playTrack, true);
+			if ( playLooping ) {
+				CDAudio_Play( playTrack, true );
 			}
 		}
 	}
@@ -545,75 +463,63 @@ void CDAudio_Update()
 //
 //==========================================================================
 
-int CDAudio_Init()
-{
+int CDAudio_Init() {
 	int i;
 
-	if (GGameType & GAME_QuakeHexen)
-	{
-		if (COM_CheckParm("-nocdaudio"))
-		{
+	if ( GGameType & GAME_QuakeHexen ) {
+		if ( COM_CheckParm( "-nocdaudio" ) ) {
 			return -1;
 		}
 
-		if ((i = COM_CheckParm("-cddev")) != 0 && i < COM_Argc() - 1)
-		{
-			String::NCpy(cd_dev_old, COM_Argv(i + 1), sizeof(cd_dev_old));
-			cd_dev_old[sizeof(cd_dev_old) - 1] = 0;
+		if ( ( i = COM_CheckParm( "-cddev" ) ) != 0 && i < COM_Argc() - 1 ) {
+			String::NCpy( cd_dev_old, COM_Argv( i + 1 ), sizeof ( cd_dev_old ) );
+			cd_dev_old[ sizeof ( cd_dev_old ) - 1 ] = 0;
 		}
 
-		cdfile = open(cd_dev_old, O_RDONLY);
-		if (cdfile == -1)
-		{
-			common->Printf("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev_old, errno);
+		cdfile = open( cd_dev_old, O_RDONLY );
+		if ( cdfile == -1 ) {
+			common->Printf( "CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev_old, errno );
 			cdfile = -1;
 			return -1;
 		}
-	}
-	else
-	{
-		Cvar* cv = Cvar_Get("nocdaudio", "0", CVAR_INIT);
-		if (cv->value)
-		{
+	} else   {
+		Cvar* cv = Cvar_Get( "nocdaudio", "0", CVAR_INIT );
+		if ( cv->value ) {
 			return -1;
 		}
 
-		cd_nocd = Cvar_Get("cd_nocd", "0", CVAR_ARCHIVE);
-		if (cd_nocd->value)
-		{
+		cd_nocd = Cvar_Get( "cd_nocd", "0", CVAR_ARCHIVE );
+		if ( cd_nocd->value ) {
 			return -1;
 		}
 
-		cd_volume = Cvar_Get("cd_volume", "1", CVAR_ARCHIVE);
+		cd_volume = Cvar_Get( "cd_volume", "1", CVAR_ARCHIVE );
 
-		cd_dev = Cvar_Get("cd_dev", "/dev/cdrom", CVAR_ARCHIVE);
+		cd_dev = Cvar_Get( "cd_dev", "/dev/cdrom", CVAR_ARCHIVE );
 
-		cdfile = open(cd_dev->string, O_RDONLY);
+		cdfile = open( cd_dev->string, O_RDONLY );
 
-		if (cdfile == -1)
-		{
-			common->Printf("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev->string, errno);
+		if ( cdfile == -1 ) {
+			common->Printf( "CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev->string, errno );
 			cdfile = -1;
 			return -1;
 		}
 	}
 
-	for (i = 0; i < 100; i++)
-	{
-		remap[i] = i;
+	for ( i = 0; i < 100; i++ ) {
+		remap[ i ] = i;
 	}
 	initialized = true;
 	enabled = true;
 
-	if (CDAudio_GetAudioDiskInfo())
-	{
-		common->Printf("CDAudio_Init: No CD in player.\n");
+	if ( CDAudio_GetAudioDiskInfo() ) {
+		common->Printf( "CDAudio_Init: No CD in player.\n" );
 		cdValid = false;
 	}
 
-	Cmd_AddCommand("cd", CD_f);
+	Cmd_AddCommand( "cd", CD_f );
 
-	common->Printf("CD Audio Initialized\n");
+	common->Printf( "CD Audio Initialized\n" );
 
 	return 0;
 }
@@ -624,14 +530,12 @@ int CDAudio_Init()
 //
 //==========================================================================
 
-void CDAudio_Shutdown()
-{
-	if (!initialized)
-	{
+void CDAudio_Shutdown() {
+	if ( !initialized ) {
 		return;
 	}
 	CDAudio_Stop();
-	close(cdfile);
+	close( cdfile );
 	cdfile = -1;
 }
 
@@ -641,14 +545,10 @@ void CDAudio_Shutdown()
 //
 //==========================================================================
 
-void CDAudio_Activate(qboolean active)
-{
-	if (active)
-	{
+void CDAudio_Activate( qboolean active ) {
+	if ( active ) {
 		CDAudio_Resume();
-	}
-	else
-	{
+	} else   {
 		CDAudio_Pause();
 	}
 }

@@ -19,17 +19,17 @@
 
 #include "../tech3/local.h"
 
-bool CLWM_GetTag(int clientNum, const char* tagname, orientation_t* _or);
+bool CLWM_GetTag( int clientNum, const char* tagname, orientation_t* _or );
 bool CLWM_CheckCenterView();
-qintptr CLWM_CgameSystemCalls(qintptr* args);
+qintptr CLWM_CgameSystemCalls( qintptr* args );
 
 int UIWM_GetActiveMenu();
-bool UIWM_ConsoleCommand(int realTime);
-void UIWM_DrawConnectScreen(bool overlay);
+bool UIWM_ConsoleCommand( int realTime );
+void UIWM_DrawConnectScreen( bool overlay );
 bool UIWM_HasUniqueCDKey();
-bool UIWM_CheckExecKey(int key);
-void UIWM_KeyDownEvent(int key);
+bool UIWM_CheckExecKey( int key );
+void UIWM_KeyDownEvent( int key );
 void UIWM_Init();
-qintptr CLWM_UISystemCalls(qintptr* args);
+qintptr CLWM_UISystemCalls( qintptr* args );
 
 #endif

@@ -28,9 +28,9 @@ extern int autocam;
 
 void CL_InitCam();
 void Cam_Reset();
-void Cam_Track(in_usercmd_t* cmd);
-void Cam_FinishMove(const in_usercmd_t* cmd);
+void Cam_Track( in_usercmd_t* cmd );
+void Cam_FinishMove( const in_usercmd_t* cmd );
 bool Cam_DrawViewModel();
-bool Cam_DrawPlayer(int playernum);
+bool Cam_DrawPlayer( int playernum );
 
 #endif

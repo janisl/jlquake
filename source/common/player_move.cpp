@@ -19,16 +19,13 @@
 #define STOP_EPSILON    0.1
 
 //	Slide off of the impacting object
-void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce)
-{
-	float backoff = DotProduct(in, normal) * overbounce;
-	for (int i = 0; i < 3; i++)
-	{
-		float change = normal[i] * backoff;
-		out[i] = in[i] - change;
-		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
-		{
-			out[i] = 0;
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce ) {
+	float backoff = DotProduct( in, normal ) * overbounce;
+	for ( int i = 0; i < 3; i++ ) {
+		float change = normal[ i ] * backoff;
+		out[ i ] = in[ i ] - change;
+		if ( out[ i ] > -STOP_EPSILON && out[ i ] < STOP_EPSILON ) {
+			out[ i ] = 0;
 		}
 	}
 }

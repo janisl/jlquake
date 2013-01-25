@@ -50,20 +50,19 @@
 #define GLS_DEFAULT         GLS_DEPTHMASK_TRUE
 
 // the renderer front end should never modify glstate_t
-struct glstate_t
-{
-	int currenttextures[2];
+struct glstate_t {
+	int currenttextures[ 2 ];
 	int currenttmu;
 	bool finishCalled;
-	GLenum texEnv[2];
+	GLenum texEnv[ 2 ];
 	int faceCulling;
 	unsigned long glStateBits;
 };
 
-void GL_Bind(image_t* Image);
-void GL_SelectTexture(int Unit);
-void GL_TexEnv(GLenum Value);
-void GL_State(unsigned long StateVector);
-void GL_Cull(int cullType);
+void GL_Bind( image_t* Image );
+void GL_SelectTexture( int Unit );
+void GL_TexEnv( GLenum Value );
+void GL_State( unsigned long StateVector );
+void GL_Cull( int cullType );
 
 extern glstate_t glState;			// outside of TR since it shouldn't be cleared during ref re-init

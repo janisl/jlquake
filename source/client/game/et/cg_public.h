@@ -26,19 +26,18 @@
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
-struct etsnapshot_t
-{
+struct etsnapshot_t {
 	int snapFlags;						// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
 
 	int serverTime;					// server time the message is valid for (in msec)
 
-	byte areamask[MAX_MAP_AREA_BYTES];					// portalarea visibility bits
+	byte areamask[ MAX_MAP_AREA_BYTES ];					// portalarea visibility bits
 
 	etplayerState_t ps;							// complete information about the current player at this time
 
 	int numEntities;						// all of the entities that need to be presented
-	etentityState_t entities[MAX_ENTITIES_IN_SNAPSHOT_ET];	// at the time of this snapshot
+	etentityState_t entities[ MAX_ENTITIES_IN_SNAPSHOT_ET ];	// at the time of this snapshot
 
 	int numServerCommands;					// text based server commands to execute when this
 	int serverCommandSequence;				// snapshot becomes current

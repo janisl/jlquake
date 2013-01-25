@@ -20,99 +20,81 @@
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 
-static void PFQ1_makestatic()
-{
-	qhedict_t* ent = G_EDICT(OFS_PARM0);
+static void PFQ1_makestatic() {
+	qhedict_t* ent = G_EDICT( OFS_PARM0 );
 
-	sv.qh_signon.WriteByte(q1svc_spawnstatic);
+	sv.qh_signon.WriteByte( q1svc_spawnstatic );
 
-	sv.qh_signon.WriteByte(SVQH_ModelIndex(PR_GetString(ent->GetModel())));
+	sv.qh_signon.WriteByte( SVQH_ModelIndex( PR_GetString( ent->GetModel() ) ) );
 
-	sv.qh_signon.WriteByte(ent->GetFrame());
-	sv.qh_signon.WriteByte(ent->GetColorMap());
-	sv.qh_signon.WriteByte(ent->GetSkin());
-	for (int i = 0; i < 3; i++)
-	{
-		sv.qh_signon.WriteCoord(ent->GetOrigin()[i]);
-		sv.qh_signon.WriteAngle(ent->GetAngles()[i]);
+	sv.qh_signon.WriteByte( ent->GetFrame() );
+	sv.qh_signon.WriteByte( ent->GetColorMap() );
+	sv.qh_signon.WriteByte( ent->GetSkin() );
+	for ( int i = 0; i < 3; i++ ) {
+		sv.qh_signon.WriteCoord( ent->GetOrigin()[ i ] );
+		sv.qh_signon.WriteAngle( ent->GetAngles()[ i ] );
 	}
 
 	// throw the entity away now
-	ED_Free(ent);
+	ED_Free( ent );
 }
 
-static void PFQ1_changelevel()
-{
+static void PFQ1_changelevel() {
 	// make sure we don't issue two changelevels
-	if (svs.qh_changelevel_issued)
-	{
+	if ( svs.qh_changelevel_issued ) {
 		return;
 	}
 	svs.qh_changelevel_issued = true;
 
-	const char* s = G_STRING(OFS_PARM0);
-	Cbuf_AddText(va("changelevel %s\n",s));
+	const char* s = G_STRING( OFS_PARM0 );
+	Cbuf_AddText( va( "changelevel %s\n",s ) );
 }
 
-static void PFQW_changelevel()
-{
+static void PFQW_changelevel() {
 	static int last_spawncount;
 
 	// make sure we don't issue two changelevels
-	if (svs.spawncount == last_spawncount)
-	{
+	if ( svs.spawncount == last_spawncount ) {
 		return;
 	}
 	last_spawncount = svs.spawncount;
 
-	const char* s = G_STRING(OFS_PARM0);
-	Cbuf_AddText(va("map %s\n",s));
+	const char* s = G_STRING( OFS_PARM0 );
+	Cbuf_AddText( va( "map %s\n",s ) );
 }
 
-static void PFQW_infokey()
-{
+static void PFQW_infokey() {
 	qhedict_t* e;
 	int e1;
 	const char* value;
 	const char* key;
-	static char ov[256];
+	static char ov[ 256 ];
 
-	e = G_EDICT(OFS_PARM0);
-	e1 = QH_NUM_FOR_EDICT(e);
-	key = G_STRING(OFS_PARM1);
+	e = G_EDICT( OFS_PARM0 );
+	e1 = QH_NUM_FOR_EDICT( e );
+	key = G_STRING( OFS_PARM1 );
 
-	if (e1 == 0)
-	{
-		if ((value = Info_ValueForKey(svs.qh_info, key)) == NULL ||
-			!*value)
-		{
-			value = Info_ValueForKey(qhw_localinfo, key);
+	if ( e1 == 0 ) {
+		if ( ( value = Info_ValueForKey( svs.qh_info, key ) ) == NULL ||
+			 !*value ) {
+			value = Info_ValueForKey( qhw_localinfo, key );
 		}
-	}
-	else if (e1 <= MAX_CLIENTS_QHW)
-	{
-		if (!String::Cmp(key, "ip"))
-		{
-			String::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1 - 1].netchan.remoteAddress));
+	} else if ( e1 <= MAX_CLIENTS_QHW )     {
+		if ( !String::Cmp( key, "ip" ) ) {
+			String::Cpy( ov, SOCK_BaseAdrToString( svs.clients[ e1 - 1 ].netchan.remoteAddress ) );
 			value = ov;
-		}
-		else if (!String::Cmp(key, "ping"))
-		{
-			int ping = SVQH_CalcPing(&svs.clients[e1 - 1]);
-			sprintf(ov, "%d", ping);
+		} else if ( !String::Cmp( key, "ping" ) )       {
+			int ping = SVQH_CalcPing( &svs.clients[ e1 - 1 ] );
+			sprintf( ov, "%d", ping );
 			value = ov;
+		} else   {
+			value = Info_ValueForKey( svs.clients[ e1 - 1 ].userinfo, key );
 		}
-		else
-		{
-			value = Info_ValueForKey(svs.clients[e1 - 1].userinfo, key);
-		}
-	}
-	else
-	{
+	} else   {
 		value = "";
 	}
 
-	RETURN_STRING(value);
+	RETURN_STRING( value );
 }
 
 static builtin_t prq1_builtin[] =
@@ -120,7 +102,7 @@ static builtin_t prq1_builtin[] =
 	PF_Fixme,
 	PF_makevectors,	// void(entity e)	makevectors         = #1;
 	PF_setorigin,	// void(entity e, vector o) setorigin	= #2;
-	PFQ1_setmodel,// void(entity e, string m) setmodel	= #3;
+	PFQ1_setmodel,	// void(entity e, string m) setmodel	= #3;
 	PF_setsize,	// void(entity e, vector min, vector max) setsize = #4;
 	PF_Fixme,	// void(entity e, vector min, vector max) setabssize = #5;
 	PF_break,	// void() break						= #6;
@@ -149,7 +131,7 @@ static builtin_t prq1_builtin[] =
 	PF_traceon,
 	PF_traceoff,
 	PF_eprint,	// void(entity e) debug print an entire entity
-	PFQ1_walkmove,// float(float yaw, float dist) walkmove
+	PFQ1_walkmove,	// float(float yaw, float dist) walkmove
 	PF_Fixme,	// float(float yaw, float dist) walkmove
 	PF_droptofloor,
 	PFQ1_lightstyle,
@@ -206,10 +188,9 @@ static builtin_t prq1_builtin[] =
 	PF_setspawnparms
 };
 
-void PRQ1_InitBuiltins()
-{
+void PRQ1_InitBuiltins() {
 	pr_builtins = prq1_builtin;
-	pr_numbuiltins = sizeof(prq1_builtin) / sizeof(prq1_builtin[0]);
+	pr_numbuiltins = sizeof ( prq1_builtin ) / sizeof ( prq1_builtin[ 0 ] );
 }
 
 static builtin_t prqw_builtin[] =
@@ -217,7 +198,7 @@ static builtin_t prqw_builtin[] =
 	PF_Fixme,
 	PF_makevectors,	// void(entity e)	makevectors         = #1;
 	PF_setorigin,	// void(entity e, vector o) setorigin	= #2;
-	PFQW_setmodel,// void(entity e, string m) setmodel	= #3;
+	PFQW_setmodel,	// void(entity e, string m) setmodel	= #3;
 	PF_setsize,	// void(entity e, vector min, vector max) setsize = #4;
 	PF_Fixme,	// void(entity e, vector min, vector max) setabssize = #5;
 	PF_break,	// void() break						= #6;
@@ -246,7 +227,7 @@ static builtin_t prqw_builtin[] =
 	PF_traceon,
 	PF_traceoff,
 	PF_eprint,	// void(entity e) debug print an entire entity
-	PFQ1_walkmove,// float(float yaw, float dist) walkmove
+	PFQ1_walkmove,	// float(float yaw, float dist) walkmove
 	PF_Fixme,	// float(float yaw, float dist) walkmove
 	PF_droptofloor,
 	PFQW_lightstyle,
@@ -309,8 +290,7 @@ static builtin_t prqw_builtin[] =
 	PF_multicast
 };
 
-void PRQW_InitBuiltins()
-{
+void PRQW_InitBuiltins() {
 	pr_builtins = prqw_builtin;
-	pr_numbuiltins = sizeof(prqw_builtin) / sizeof(prqw_builtin[0]);
+	pr_numbuiltins = sizeof ( prqw_builtin ) / sizeof ( prqw_builtin[ 0 ] );
 }

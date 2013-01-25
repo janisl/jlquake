@@ -53,16 +53,16 @@
 #define ETTFL_TEAM_AXIS_DISGUISED   0x10000000	//travel through axis+DISGUISED areas
 #define ETTFL_TEAM_ALLIES_DISGUISED 0x02000000	//travel through allies+DISGUISED areas
 
-#define ETTFL_TEAM_FLAGS    (ETTFL_TEAM_AXIS | ETTFL_TEAM_ALLIES | ETTFL_TEAM_AXIS_DISGUISED | ETTFL_TEAM_ALLIES_DISGUISED)
+#define ETTFL_TEAM_FLAGS    ( ETTFL_TEAM_AXIS | ETTFL_TEAM_ALLIES | ETTFL_TEAM_AXIS_DISGUISED | ETTFL_TEAM_ALLIES_DISGUISED )
 
 //default travel flags
 //----(SA)	modified since slime is no longer deadly
-#define WOLFTFL_DEFAULT (TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP |	\
-	TFL_JUMP | TFL_LADDER | \
-	TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP |	\
-	TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
-	TFL_WATER | TFL_SLIME | \
-	TFL_FUNCBOB)
+#define WOLFTFL_DEFAULT ( TFL_WALK | TFL_CROUCH | TFL_BARRIERJUMP |	 \
+						  TFL_JUMP | TFL_LADDER | \
+						  TFL_WALKOFFLEDGE | TFL_SWIM | TFL_WATERJUMP |	  \
+						  TFL_TELEPORT | TFL_ELEVATOR | TFL_AIR | \
+						  TFL_WATER | TFL_SLIME | \
+						  TFL_FUNCBOB )
 
 enum
 {
@@ -72,7 +72,7 @@ enum
 	Q3SOLID_BSP			// bsp clip, touch on edge
 };
 
-#define BLOCKINGFLAG_MOVER  (~0x7fffffff)
+#define BLOCKINGFLAG_MOVER  ( ~0x7fffffff )
 
 // route prediction stop events
 #define RSE_NONE                0
@@ -105,8 +105,7 @@ enum
 #define ETSE_STUCK              4096
 
 //entity info
-struct aas_entityinfo_t
-{
+struct aas_entityinfo_t {
 	int valid;				// true if updated this frame
 	int type;				// entity type
 	int flags;				// entity flags
@@ -133,8 +132,7 @@ struct aas_entityinfo_t
 };
 
 // area info
-struct aas_areainfo_t
-{
+struct aas_areainfo_t {
 	int contents;
 	int flags;
 	int presencetype;
@@ -145,8 +143,7 @@ struct aas_areainfo_t
 };
 
 //a trace is returned when a box is swept through the AAS world
-struct aas_trace_t
-{
+struct aas_trace_t {
 	qboolean startsolid;	// if true, the initial point was in a solid area
 	float fraction;			// time completed, 1.0 = didn't hit anything
 	vec3_t endpos;			// final position
@@ -157,17 +154,15 @@ struct aas_trace_t
 };
 
 //bsp_trace_t hit surface
-struct bsp_surface_t
-{
-	char name[16];
+struct bsp_surface_t {
+	char name[ 16 ];
 	int flags;
 	int value;
 };
 
 //remove the bsp_trace_t structure definition l8r on
 //a trace is returned when a box is swept through the world
-struct bsp_trace_t
-{
+struct bsp_trace_t {
 	qboolean allsolid;			// if true, plane is not valid
 	qboolean startsolid;		// if true, the initial point was in a solid area
 	float fraction;				// time completed, 1.0 = didn't hit anything
@@ -181,8 +176,7 @@ struct bsp_trace_t
 };
 
 //entity state
-struct bot_entitystate_t
-{
+struct bot_entitystate_t {
 	int type;				// entity type
 	int flags;				// entity flags
 	vec3_t origin;			// origin of the entity
@@ -203,8 +197,7 @@ struct bot_entitystate_t
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 };
 
-struct aas_predictroute_t
-{
+struct aas_predictroute_t {
 	vec3_t endpos;			//position at the end of movement prediction
 	int endarea;			//area at end of movement prediction
 	int stopevent;			//event that made the prediction stop
@@ -214,8 +207,7 @@ struct aas_predictroute_t
 	int time;				//time predicted ahead (in hundreth of a sec)
 };
 
-struct aas_altroutegoal_t
-{
+struct aas_altroutegoal_t {
 	vec3_t origin;
 	int areanum;
 	unsigned short starttraveltime;
@@ -223,8 +215,7 @@ struct aas_altroutegoal_t
 	unsigned short extratraveltime;
 };
 
-struct aas_clientmove_q3_t
-{
+struct aas_clientmove_q3_t {
 	vec3_t endpos;			//position at the end of movement prediction
 	int endarea;			//area at end of movement prediction
 	vec3_t velocity;		//velocity at the end of movement prediction
@@ -236,8 +227,7 @@ struct aas_clientmove_q3_t
 	int frames;				//number of frames predicted ahead
 };
 
-struct aas_clientmove_rtcw_t
-{
+struct aas_clientmove_rtcw_t {
 	vec3_t endpos;			//position at the end of movement prediction
 	vec3_t velocity;		//velocity at the end of movement prediction
 	aas_trace_t trace;		//last trace
@@ -248,8 +238,7 @@ struct aas_clientmove_rtcw_t
 	int frames;				//number of frames predicted ahead
 };
 
-struct aas_clientmove_et_t
-{
+struct aas_clientmove_et_t {
 	vec3_t endpos;			//position at the end of movement prediction
 	vec3_t velocity;		//velocity at the end of movement prediction
 	bsp_trace_t trace;		//last trace
@@ -261,93 +250,93 @@ struct aas_clientmove_et_t
 };
 
 //handle to the next bsp entity
-int AAS_NextBSPEntity(int ent);
+int AAS_NextBSPEntity( int ent );
 //return the value of the BSP epair key
-bool AAS_ValueForBSPEpairKey(int ent, const char* key, char* value, int size);
+bool AAS_ValueForBSPEpairKey( int ent, const char* key, char* value, int size );
 //get a vector for the BSP epair key
-bool AAS_VectorForBSPEpairKey(int ent, const char* key, vec3_t v);
+bool AAS_VectorForBSPEpairKey( int ent, const char* key, vec3_t v );
 //get a float for the BSP epair key
-bool AAS_FloatForBSPEpairKey(int ent, const char* key, float* value);
+bool AAS_FloatForBSPEpairKey( int ent, const char* key, float* value );
 //get an integer for the BSP epair key
-bool AAS_IntForBSPEpairKey(int ent, const char* key, int* value);
+bool AAS_IntForBSPEpairKey( int ent, const char* key, int* value );
 //returns the contents at the given point
-int AAS_PointContents(const vec3_t point);
+int AAS_PointContents( const vec3_t point );
 
 //returns the info of the given entity
-void AAS_EntityInfo(int entnum, aas_entityinfo_t* info);
-void AAS_SetAASBlockingEntity(const vec3_t absmin, const vec3_t absmax, int blocking);
+void AAS_EntityInfo( int entnum, aas_entityinfo_t* info );
+void AAS_SetAASBlockingEntity( const vec3_t absmin, const vec3_t absmax, int blocking );
 
 //returns true if AAS is initialized
 bool AAS_Initialized();
 //returns the current time
 float AAS_Time();
-void AAS_SetCurrentWorld(int index);
+void AAS_SetCurrentWorld( int index );
 
 //returns true if swimming at the given origin
-bool AAS_Swimming(const vec3_t origin);
+bool AAS_Swimming( const vec3_t origin );
 //movement prediction
-bool AAS_PredictClientMovementQ3(aas_clientmove_q3_t* move,
+bool AAS_PredictClientMovementQ3( aas_clientmove_q3_t* move,
 	int entnum, const vec3_t origin,
 	int presencetype, bool onground,
 	const vec3_t velocity, const vec3_t cmdmove,
 	int cmdframes,
 	int maxframes, float frametime,
-	int stopevent, int stopareanum, bool visualize);
-bool AAS_PredictClientMovementWolf(aas_clientmove_rtcw_t* move,
+	int stopevent, int stopareanum, bool visualize );
+bool AAS_PredictClientMovementWolf( aas_clientmove_rtcw_t* move,
 	int entnum, const vec3_t origin,
 	int presencetype, bool onground,
 	const vec3_t velocity, const vec3_t cmdmove,
 	int cmdframes,
 	int maxframes, float frametime,
-	int stopevent, int stopareanum, bool visualize);
-bool AAS_PredictClientMovementET(aas_clientmove_et_t* move,
+	int stopevent, int stopareanum, bool visualize );
+bool AAS_PredictClientMovementET( aas_clientmove_et_t* move,
 	int entnum, const vec3_t origin,
 	int presencetype, bool onground,
 	const vec3_t velocity, const vec3_t cmdmove,
 	int cmdframes,
 	int maxframes, float frametime,
-	int stopevent, int stopareanum, bool visualize);
+	int stopevent, int stopareanum, bool visualize );
 
 //returns true if the are has reachabilities to other areas
-int AAS_AreaReachability(int areanum);
+int AAS_AreaReachability( int areanum );
 //returns true if the area has one or more ladder faces
-int AAS_AreaLadder(int areanum);
+int AAS_AreaLadder( int areanum );
 
 //enable or disable an area for routing
-int AAS_EnableRoutingArea(int areanum, int enable);
+int AAS_EnableRoutingArea( int areanum, int enable );
 //returns the travel time from the area to the goal area using the given travel flags
-int AAS_AreaTravelTimeToGoalArea(int areanum, const vec3_t origin, int goalareanum, int travelflags);
+int AAS_AreaTravelTimeToGoalArea( int areanum, const vec3_t origin, int goalareanum, int travelflags );
 //predict a route up to a stop event
-bool AAS_PredictRoute(aas_predictroute_t* route, int areanum, const vec3_t origin,
+bool AAS_PredictRoute( aas_predictroute_t* route, int areanum, const vec3_t origin,
 	int goalareanum, int travelflags, int maxareas, int maxtime,
-	int stopevent, int stopcontents, int stoptfl, int stopareanum);
-int AAS_ListAreasInRange(const vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas);
-int AAS_AvoidDangerArea(const vec3_t srcpos, int srcarea, const vec3_t dangerpos, int dangerarea,
-	float range, int travelflags);
-int AAS_Retreat(const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos, int srcarea,
-	const vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags);
-int AAS_NearestHideArea(int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum,
-	int travelflags, float maxdist, const vec3_t distpos);
-bool AAS_RT_GetHidePos(vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos);
-int AAS_FindAttackSpotWithinRange(int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos);
-bool AAS_GetRouteFirstVisPos(const vec3_t srcpos, const vec3_t destpos, int travelflags, vec3_t retpos);
+	int stopevent, int stopcontents, int stoptfl, int stopareanum );
+int AAS_ListAreasInRange( const vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas );
+int AAS_AvoidDangerArea( const vec3_t srcpos, int srcarea, const vec3_t dangerpos, int dangerarea,
+	float range, int travelflags );
+int AAS_Retreat( const int* dangerSpots, int dangerSpotCount, const vec3_t srcpos, int srcarea,
+	const vec3_t dangerpos, int dangerarea, float range, float dangerRange, int travelflags );
+int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum, vec3_t enemyorigin, int enemyareanum,
+	int travelflags, float maxdist, const vec3_t distpos );
+bool AAS_RT_GetHidePos( vec3_t srcpos, int srcnum, int srcarea, vec3_t destpos, int destnum, int destarea, vec3_t returnPos );
+int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float rangedist, int travelflags, float* outpos );
+bool AAS_GetRouteFirstVisPos( const vec3_t srcpos, const vec3_t destpos, int travelflags, vec3_t retpos );
 
-int AAS_AlternativeRouteGoalsQ3(const vec3_t start, int startareanum,
+int AAS_AlternativeRouteGoalsQ3( const vec3_t start, int startareanum,
 	const vec3_t goal, int goalareanum, int travelflags,
-	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int type);
-int AAS_AlternativeRouteGoalsET(const vec3_t start, const vec3_t goal, int travelflags,
-	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int color);
+	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int type );
+int AAS_AlternativeRouteGoalsET( const vec3_t start, const vec3_t goal, int travelflags,
+	aas_altroutegoal_t* altroutegoals, int maxaltroutegoals, int color );
 
 //returns the mins and maxs of the bounding box for the given presence type
-void AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);
+void AAS_PresenceTypeBoundingBox( int presencetype, vec3_t mins, vec3_t maxs );
 //returns the area the point is in
-int AAS_PointAreaNum(const vec3_t point);
-int AAS_PointReachabilityAreaIndex(const vec3_t point);
+int AAS_PointAreaNum( const vec3_t point );
+int AAS_PointReachabilityAreaIndex( const vec3_t point );
 //stores the areas the trace went through and returns the number of passed areas
-int AAS_TraceAreas(const vec3_t start, const vec3_t end, int* areas, vec3_t* points, int maxareas);
+int AAS_TraceAreas( const vec3_t start, const vec3_t end, int* areas, vec3_t* points, int maxareas );
 //returns the areas the bounding box is in
-int AAS_BBoxAreas(const vec3_t absmins, const vec3_t absmaxs, int* areas, int maxareas);
+int AAS_BBoxAreas( const vec3_t absmins, const vec3_t absmaxs, int* areas, int maxareas );
 //return area information
-int AAS_AreaInfo(int areanum, aas_areainfo_t* info);
-void AAS_AreaCenter(int areanum, vec3_t center);
-bool AAS_AreaWaypoint(int areanum, vec3_t center);
+int AAS_AreaInfo( int areanum, aas_areainfo_t* info );
+void AAS_AreaCenter( int areanum, vec3_t center );
+bool AAS_AreaWaypoint( int areanum, vec3_t center );

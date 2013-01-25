@@ -18,7 +18,7 @@
 #define _BSP38FILE_H
 
 // little-endian "IBSP"
-#define BSP38_HEADER    (('P' << 24) + ('S' << 16) + ('B' << 8) + 'I')
+#define BSP38_HEADER    ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' )
 
 #define BSP38_VERSION   38
 
@@ -75,70 +75,61 @@
 #define BSP38DVIS_PVS   0
 #define BSP38DVIS_PHS   1
 
-struct bsp38_lump_t
-{
+struct bsp38_lump_t {
 	qint32 fileofs;
 	qint32 filelen;
 };
 
-struct bsp38_dheader_t
-{
+struct bsp38_dheader_t {
 	qint32 ident;
 	qint32 version;
-	bsp38_lump_t lumps[BSP38HEADER_LUMPS];
+	bsp38_lump_t lumps[ BSP38HEADER_LUMPS ];
 };
 
-struct bsp38_dmodel_t
-{
-	float mins[3];
-	float maxs[3];
-	float origin[3];			// for sounds or lights
+struct bsp38_dmodel_t {
+	float mins[ 3 ];
+	float maxs[ 3 ];
+	float origin[ 3 ];				// for sounds or lights
 	qint32 headnode;
 	qint32 firstface;			// submodels just draw faces
 	qint32 numfaces;			// without walking the bsp tree
 };
 
-struct bsp38_dvertex_t
-{
-	float point[3];
+struct bsp38_dvertex_t {
+	float point[ 3 ];
 };
 
 // planes (x&~1) and (x&~1)+1 are always opposites
-struct bsp38_dplane_t
-{
-	float normal[3];
+struct bsp38_dplane_t {
+	float normal[ 3 ];
 	float dist;
 	qint32 type;			// PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 };
 
-struct bsp38_dnode_t
-{
+struct bsp38_dnode_t {
 	qint32 planenum;
-	qint32 children[2];			// negative numbers are -(leafs+1), not nodes
-	qint16 mins[3];				// for frustom culling
-	qint16 maxs[3];
+	qint32 children[ 2 ];			// negative numbers are -(leafs+1), not nodes
+	qint16 mins[ 3 ];				// for frustom culling
+	qint16 maxs[ 3 ];
 	quint16 firstface;
 	quint16 numfaces;		// counting both sides
 };
 
-struct bsp38_texinfo_t
-{
-	float vecs[2][4];			// [s/t][xyz offset]
+struct bsp38_texinfo_t {
+	float vecs[ 2 ][ 4 ];			// [s/t][xyz offset]
 	qint32 flags;				// miptex flags + overrides
 	qint32 value;				// light emission, etc
-	char texture[32];			// texture name (textures/*.wal)
+	char texture[ 32 ];				// texture name (textures/*.wal)
 	qint32 nexttexinfo;			// for animations, -1 = end of chain
 };
 
 // note that edge 0 is never used, because negative edge nums are used for
 // counterclockwise use of the edge in a face
-struct bsp38_dedge_t
-{
-	quint16 v[2];			// vertex numbers
+struct bsp38_dedge_t {
+	quint16 v[ 2 ];				// vertex numbers
 };
 
-struct bsp38_dface_t
-{
+struct bsp38_dface_t {
 	quint16 planenum;
 	qint16 side;
 
@@ -147,19 +138,18 @@ struct bsp38_dface_t
 	qint16 texinfo;
 
 	// lighting info
-	quint8 styles[BSP38_MAXLIGHTMAPS];
+	quint8 styles[ BSP38_MAXLIGHTMAPS ];
 	qint32 lightofs;			// start of [numstyles*surfsize] samples
 };
 
-struct bsp38_dleaf_t
-{
+struct bsp38_dleaf_t {
 	qint32 contents;				// OR of all brushes (not needed?)
 
 	qint16 cluster;
 	qint16 area;
 
-	qint16 mins[3];					// for frustum culling
-	qint16 maxs[3];
+	qint16 mins[ 3 ];					// for frustum culling
+	qint16 maxs[ 3 ];
 
 	quint16 firstleafface;
 	quint16 numleaffaces;
@@ -168,14 +158,12 @@ struct bsp38_dleaf_t
 	quint16 numleafbrushes;
 };
 
-struct bsp38_dbrushside_t
-{
+struct bsp38_dbrushside_t {
 	quint16 planenum;			// facing out of the leaf
 	qint16 texinfo;
 };
 
-struct bsp38_dbrush_t
-{
+struct bsp38_dbrush_t {
 	qint32 firstside;
 	qint32 numsides;
 	qint32 contents;
@@ -184,23 +172,20 @@ struct bsp38_dbrush_t
 // the visibility lump consists of a header with a count, then
 // byte offsets for the PVS and PHS of each cluster, then the raw
 // compressed bit vectors
-struct bsp38_dvis_t
-{
+struct bsp38_dvis_t {
 	qint32 numclusters;
-	qint32 bitofs[8][2];		// bitofs[numclusters][2]
+	qint32 bitofs[ 8 ][ 2 ];		// bitofs[numclusters][2]
 };
 
 // each area has a list of portals that lead into other areas
 // when portals are closed, other areas may not be visible or
 // hearable even if the vis info says that it should be
-struct bsp38_dareaportal_t
-{
+struct bsp38_dareaportal_t {
 	qint32 portalnum;
 	qint32 otherarea;
 };
 
-struct bsp38_darea_t
-{
+struct bsp38_darea_t {
 	qint32 numareaportals;
 	qint32 firstareaportal;
 };

@@ -22,16 +22,14 @@ Cvar* clh2_playerclass;
 Cvar* clhw_teamcolor;
 Cvar* clhw_talksounds;
 
-void CLH2_ClearState()
-{
+void CLH2_ClearState() {
 	// clear other arrays
-	Com_Memset(h2cl_entities, 0, sizeof(h2cl_entities));
-	Com_Memset(clh2_baselines, 0, sizeof(clh2_baselines));
+	Com_Memset( h2cl_entities, 0, sizeof ( h2cl_entities ) );
+	Com_Memset( clh2_baselines, 0, sizeof ( clh2_baselines ) );
 	CLH2_ClearTEnts();
 	CLH2_ClearEffects();
 
-	if (!(GGameType & GAME_HexenWorld))
-	{
+	if ( !( GGameType & GAME_HexenWorld ) ) {
 		cl.h2_current_frame = cl.h2_current_sequence = 99;
 		cl.h2_reference_frame = cl.h2_last_sequence = 199;
 		cl.h2_need_build = 2;

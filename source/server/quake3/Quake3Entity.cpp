@@ -17,253 +17,202 @@
 #include "../tech3/local.h"
 #include "local.h"
 
-bool idQuake3Entity::GetEFlagViewingCamera() const
-{
+bool idQuake3Entity::GetEFlagViewingCamera() const {
 	return false;
 }
 
-bool idQuake3Entity::GetEFlagDead() const
-{
+bool idQuake3Entity::GetEFlagDead() const {
 	return false;
 }
 
-void idQuake3Entity::SetEFlagNoDraw()
-{
+void idQuake3Entity::SetEFlagNoDraw() {
 }
 
-int idQuake3Entity::GetModelIndex() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.modelindex;
+int idQuake3Entity::GetModelIndex() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->s.modelindex;
 }
 
-void idQuake3Entity::SetModelIndex(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.modelindex = value;
+void idQuake3Entity::SetModelIndex( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->s.modelindex = value;
 }
 
-int idQuake3Entity::GetSolid() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.solid;
+int idQuake3Entity::GetSolid() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->s.solid;
 }
 
-void idQuake3Entity::SetSolid(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.solid = value;
+void idQuake3Entity::SetSolid( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->s.solid = value;
 }
 
-int idQuake3Entity::GetGeneric1() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->s.generic1;
+int idQuake3Entity::GetGeneric1() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->s.generic1;
 }
 
-void idQuake3Entity::SetGeneric1(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->s.generic1 = value;
+void idQuake3Entity::SetGeneric1( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->s.generic1 = value;
 }
 
-bool idQuake3Entity::GetLinked() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.linked;
+bool idQuake3Entity::GetLinked() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.linked;
 }
 
-void idQuake3Entity::SetLinked(bool value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.linked = value;
+void idQuake3Entity::SetLinked( bool value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.linked = value;
 }
 
-void idQuake3Entity::IncLinkCount()
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.linkcount++;
+void idQuake3Entity::IncLinkCount() {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.linkcount++;
 }
 
-int idQuake3Entity::GetSvFlags() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags;
+int idQuake3Entity::GetSvFlags() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags;
 }
 
-void idQuake3Entity::SetSvFlags(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags = value;
+void idQuake3Entity::SetSvFlags( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags = value;
 }
 
-bool idQuake3Entity::GetSvFlagCapsule() const
-{
-	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CAPSULE);
+bool idQuake3Entity::GetSvFlagCapsule() const {
+	return !!( reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags & Q3SVF_CAPSULE );
 }
 
-bool idQuake3Entity::GetSvFlagCastAI() const
-{
+bool idQuake3Entity::GetSvFlagCastAI() const {
 	return false;
 }
 
-bool idQuake3Entity::GetSvFlagNoServerInfo() const
-{
-	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_NOSERVERINFO);
+bool idQuake3Entity::GetSvFlagNoServerInfo() const {
+	return !!( reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags & Q3SVF_NOSERVERINFO );
 }
 
-bool idQuake3Entity::GetSvFlagSelfPortal() const
-{
+bool idQuake3Entity::GetSvFlagSelfPortal() const {
 	return false;
 }
 
-bool idQuake3Entity::GetSvFlagSelfPortalExclusive() const
-{
+bool idQuake3Entity::GetSvFlagSelfPortalExclusive() const {
 	return false;
 }
 
-bool idQuake3Entity::GetSvFlagSingleClient() const
-{
-	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_SINGLECLIENT);
+bool idQuake3Entity::GetSvFlagSingleClient() const {
+	return !!( reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags & Q3SVF_SINGLECLIENT );
 }
 
-bool idQuake3Entity::GetSvFlagNotSingleClient() const
-{
-	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_NOTSINGLECLIENT);
+bool idQuake3Entity::GetSvFlagNotSingleClient() const {
+	return !!( reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags & Q3SVF_NOTSINGLECLIENT );
 }
 
-bool idQuake3Entity::GetSvFlagClientMask() const
-{
-	return !!(reinterpret_cast<q3sharedEntity_t*>(gentity)->r.svFlags & Q3SVF_CLIENTMASK);
+bool idQuake3Entity::GetSvFlagClientMask() const {
+	return !!( reinterpret_cast<q3sharedEntity_t*>( gentity )->r.svFlags & Q3SVF_CLIENTMASK );
 }
 
-bool idQuake3Entity::GetSvFlagIgnoreBModelExtents() const
-{
+bool idQuake3Entity::GetSvFlagIgnoreBModelExtents() const {
 	return false;
 }
 
-bool idQuake3Entity::GetSvFlagVisDummy() const
-{
+bool idQuake3Entity::GetSvFlagVisDummy() const {
 	return false;
 }
 
-bool idQuake3Entity::GetSvFlagVisDummyMultiple() const
-{
+bool idQuake3Entity::GetSvFlagVisDummyMultiple() const {
 	return false;
 }
 
-int idQuake3Entity::GetSingleClient() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.singleClient;
+int idQuake3Entity::GetSingleClient() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.singleClient;
 }
 
-void idQuake3Entity::SetSingleClient(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.singleClient = value;
+void idQuake3Entity::SetSingleClient( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.singleClient = value;
 }
 
-bool idQuake3Entity::GetBModel() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.bmodel;
+bool idQuake3Entity::GetBModel() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.bmodel;
 }
 
-void idQuake3Entity::SetBModel(bool value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.bmodel = value;
+void idQuake3Entity::SetBModel( bool value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.bmodel = value;
 }
 
-const float* idQuake3Entity::GetMins() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.mins;
+const float* idQuake3Entity::GetMins() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.mins;
 }
 
-void idQuake3Entity::SetMins(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.mins);
+void idQuake3Entity::SetMins( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.mins );
 }
 
-const float* idQuake3Entity::GetMaxs() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.maxs;
+const float* idQuake3Entity::GetMaxs() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.maxs;
 }
 
-void idQuake3Entity::SetMaxs(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.maxs);
+void idQuake3Entity::SetMaxs( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.maxs );
 }
 
-int idQuake3Entity::GetContents() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.contents;
+int idQuake3Entity::GetContents() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.contents;
 }
 
-void idQuake3Entity::SetContents(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.contents = value;
+void idQuake3Entity::SetContents( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.contents = value;
 }
 
-float* idQuake3Entity::GetAbsMin()
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.absmin;
+float* idQuake3Entity::GetAbsMin() {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.absmin;
 }
 
-void idQuake3Entity::SetAbsMin(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.absmin);
+void idQuake3Entity::SetAbsMin( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.absmin );
 }
 
-float* idQuake3Entity::GetAbsMax()
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.absmax;
+float* idQuake3Entity::GetAbsMax() {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.absmax;
 }
 
-void idQuake3Entity::SetAbsMax(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.absmax);
+void idQuake3Entity::SetAbsMax( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.absmax );
 }
 
-const float* idQuake3Entity::GetCurrentOrigin() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.currentOrigin;
+const float* idQuake3Entity::GetCurrentOrigin() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.currentOrigin;
 }
 
-void idQuake3Entity::SetCurrentOrigin(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.currentOrigin);
+void idQuake3Entity::SetCurrentOrigin( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.currentOrigin );
 }
 
-const float* idQuake3Entity::GetCurrentAngles() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.currentAngles;
+const float* idQuake3Entity::GetCurrentAngles() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.currentAngles;
 }
 
-void idQuake3Entity::SetCurrentAngles(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3sharedEntity_t*>(gentity)->r.currentAngles);
+void idQuake3Entity::SetCurrentAngles( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3sharedEntity_t*>( gentity )->r.currentAngles );
 }
 
-int idQuake3Entity::GetOwnerNum() const
-{
-	return reinterpret_cast<q3sharedEntity_t*>(gentity)->r.ownerNum;
+int idQuake3Entity::GetOwnerNum() const {
+	return reinterpret_cast<q3sharedEntity_t*>( gentity )->r.ownerNum;
 }
 
-void idQuake3Entity::SetOwnerNum(int value)
-{
-	reinterpret_cast<q3sharedEntity_t*>(gentity)->r.ownerNum = value;
+void idQuake3Entity::SetOwnerNum( int value ) {
+	reinterpret_cast<q3sharedEntity_t*>( gentity )->r.ownerNum = value;
 }
 
-int idQuake3Entity::GetEventTime() const
-{
+int idQuake3Entity::GetEventTime() const {
 	return 0;
 }
 
-void idQuake3Entity::SetEventTime(int value)
-{
+void idQuake3Entity::SetEventTime( int value ) {
 }
 
-bool idQuake3Entity::GetSnapshotCallback() const
-{
+bool idQuake3Entity::GetSnapshotCallback() const {
 	return false;
 }
 
-void idQuake3Entity::SetSnapshotCallback(bool value)
-{
+void idQuake3Entity::SetSnapshotCallback( bool value ) {
 }
 
-void idQuake3Entity::SetTempBoxModelContents(clipHandle_t) const
-{
+void idQuake3Entity::SetTempBoxModelContents( clipHandle_t ) const {
 }
 
-bool idQuake3Entity::IsETypeProp() const
-{
+bool idQuake3Entity::IsETypeProp() const {
 	return false;
 }

@@ -30,14 +30,13 @@
 #define BIGGEST_MAX_CONFIGSTRINGS_T3   2048
 
 // wsusercmd_t is sent to the server each client frame
-struct wsusercmd_t
-{
+struct wsusercmd_t {
 	int serverTime;
 	byte buttons;
 	byte wbuttons;
 	byte weapon;
 	byte holdable;			//----(SA)	added
-	int angles[3];
+	int angles[ 3 ];
 
 
 	signed char forwardmove, rightmove, upmove;
@@ -47,14 +46,13 @@ struct wsusercmd_t
 };
 
 // wmusercmd_t is sent to the server each client frame
-struct wmusercmd_t
-{
+struct wmusercmd_t {
 	int serverTime;
 	byte buttons;
 	byte wbuttons;
 	byte weapon;
 	byte holdable;			//----(SA)	added
-	int angles[3];
+	int angles[ 3 ];
 
 	signed char forwardmove, rightmove, upmove;
 	signed char wolfkick;		// RF, we should move this over to a wbutton, this is a huge waste of bandwidth
@@ -64,14 +62,13 @@ struct wmusercmd_t
 };
 
 // etusercmd_t is sent to the server each client frame
-struct etusercmd_t
-{
+struct etusercmd_t {
 	int serverTime;
 	byte buttons;
 	byte wbuttons;
 	byte weapon;
 	byte flags;
-	int angles[3];
+	int angles[ 3 ];
 
 	signed char forwardmove, rightmove, upmove;
 	byte doubleTap;				// Arnout: only 3 bits used
@@ -104,8 +101,7 @@ struct etusercmd_t
 // from it.
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-struct wsplayerState_t
-{
+struct wsplayerState_t {
 	int commandTime;			// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;				// for view bobbing and footstep generation
@@ -126,8 +122,8 @@ struct wsplayerState_t
 	float leanf;				// amount of 'lean' when player is looking around corner //----(SA)	added
 
 	int speed;
-	int delta_angles[3];			// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+	int delta_angles[ 3 ];				// add to command angles to get view direction
+										// changed by spawns, rotating objects, and teleporters
 
 	int groundEntityNum;		// Q3ENTITYNUM_NONE = in air
 
@@ -147,8 +143,8 @@ struct wsplayerState_t
 	int eFlags;					// copied to entityState_t->eFlags
 
 	int eventSequence;			// pmove generated events
-	int events[MAX_EVENTS_WS];
-	int eventParms[MAX_EVENTS_WS];
+	int events[ MAX_EVENTS_WS ];
+	int eventParms[ MAX_EVENTS_WS ];
 	int oldEventSequence;			// so we can see which events have been added since we last converted to entityState_t
 
 	int externalEvent;			// events set on player from another source
@@ -173,14 +169,14 @@ struct wsplayerState_t
 	int damagePitch;
 	int damageCount;
 
-	int stats[MAX_STATS_Q3];
-	int persistant[MAX_PERSISTANT_Q3];			// stats that aren't cleared on death
-	int powerups[MAX_POWERUPS_Q3];			// level.time that the powerup runs out
-	int ammo[MAX_WEAPONS_WS];				// total amount of ammo
-	int ammoclip[MAX_WEAPONS_WS];			// ammo in clip
-	int holdable[MAX_HOLDABLE_WS];
+	int stats[ MAX_STATS_Q3 ];
+	int persistant[ MAX_PERSISTANT_Q3 ];			// stats that aren't cleared on death
+	int powerups[ MAX_POWERUPS_Q3 ];			// level.time that the powerup runs out
+	int ammo[ MAX_WEAPONS_WS ];					// total amount of ammo
+	int ammoclip[ MAX_WEAPONS_WS ];				// ammo in clip
+	int holdable[ MAX_HOLDABLE_WS ];
 	int holding;						// the current item in holdable[] that is selected (held)
-	int weapons[MAX_WEAPONS_WS / (sizeof(int) * 8)];		// 64 bits for weapons held
+	int weapons[ MAX_WEAPONS_WS / ( sizeof ( int ) * 8 ) ];			// 64 bits for weapons held
 
 	// Ridah, allow for individual bounding boxes
 	vec3_t mins, maxs;
@@ -249,7 +245,7 @@ struct wsplayerState_t
 
 	int leanStopDebounceTime;
 
-	int weapHeat[MAX_WEAPONS_WS];			// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
+	int weapHeat[ MAX_WEAPONS_WS ];				// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
 	int curWeapHeat;					// value for the currently selected weapon (for transmission to client)
 
 	int venomTime;
@@ -276,8 +272,7 @@ struct wsplayerState_t
 // from it.
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-struct wmplayerState_t
-{
+struct wmplayerState_t {
 	int commandTime;			// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;				// for view bobbing and footstep generation
@@ -298,8 +293,8 @@ struct wmplayerState_t
 	float leanf;				// amount of 'lean' when player is looking around corner //----(SA)	added
 
 	int speed;
-	int delta_angles[3];			// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+	int delta_angles[ 3 ];				// add to command angles to get view direction
+										// changed by spawns, rotating objects, and teleporters
 
 	int groundEntityNum;		// Q3ENTITYNUM_NONE = in air
 
@@ -319,8 +314,8 @@ struct wmplayerState_t
 	int eFlags;					// copied to entityState_t->eFlags
 
 	int eventSequence;			// pmove generated events
-	int events[MAX_EVENTS_WM];
-	int eventParms[MAX_EVENTS_WM];
+	int events[ MAX_EVENTS_WM ];
+	int eventParms[ MAX_EVENTS_WM ];
 	int oldEventSequence;			// so we can see which events have been added since we last converted to entityState_t
 
 	int externalEvent;			// events set on player from another source
@@ -345,14 +340,14 @@ struct wmplayerState_t
 	int damagePitch;
 	int damageCount;
 
-	int stats[MAX_STATS_Q3];
-	int persistant[MAX_PERSISTANT_Q3];			// stats that aren't cleared on death
-	int powerups[MAX_POWERUPS_Q3];			// level.time that the powerup runs out
-	int ammo[MAX_WEAPONS_WM];				// total amount of ammo
-	int ammoclip[MAX_WEAPONS_WM];			// ammo in clip
-	int holdable[16];
+	int stats[ MAX_STATS_Q3 ];
+	int persistant[ MAX_PERSISTANT_Q3 ];			// stats that aren't cleared on death
+	int powerups[ MAX_POWERUPS_Q3 ];			// level.time that the powerup runs out
+	int ammo[ MAX_WEAPONS_WM ];					// total amount of ammo
+	int ammoclip[ MAX_WEAPONS_WM ];				// ammo in clip
+	int holdable[ 16 ];
 	int holding;						// the current item in holdable[] that is selected (held)
-	int weapons[MAX_WEAPONS_WM / (sizeof(int) * 8)];		// 64 bits for weapons held
+	int weapons[ MAX_WEAPONS_WM / ( sizeof ( int ) * 8 ) ];			// 64 bits for weapons held
 
 	// Ridah, allow for individual bounding boxes
 	vec3_t mins, maxs;
@@ -425,7 +420,7 @@ struct wmplayerState_t
 
 	// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
 	// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-	int weapHeat[MAX_WEAPONS_WM];			// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
+	int weapHeat[ MAX_WEAPONS_WM ];				// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
 	int curWeapHeat;					// value for the currently selected weapon (for transmission to client)
 
 	int venomTime;			//----(SA)	added
@@ -449,8 +444,7 @@ struct wmplayerState_t
 // from it.
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-struct etplayerState_t
-{
+struct etplayerState_t {
 	int commandTime;			// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;				// for view bobbing and footstep generation
@@ -471,8 +465,8 @@ struct etplayerState_t
 	float leanf;				// amount of 'lean' when player is looking around corner //----(SA)	added
 
 	int speed;
-	int delta_angles[3];			// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+	int delta_angles[ 3 ];				// add to command angles to get view direction
+										// changed by spawns, rotating objects, and teleporters
 
 	int groundEntityNum;		// Q3ENTITYNUM_NONE = in air
 
@@ -492,8 +486,8 @@ struct etplayerState_t
 	int eFlags;					// copied to entityState_t->eFlags
 
 	int eventSequence;			// pmove generated events
-	int events[MAX_EVENTS_ET];
-	int eventParms[MAX_EVENTS_ET];
+	int events[ MAX_EVENTS_ET ];
+	int eventParms[ MAX_EVENTS_ET ];
 	int oldEventSequence;			// so we can see which events have been added since we last converted to entityState_t
 
 	int externalEvent;			// events set on player from another source
@@ -518,14 +512,14 @@ struct etplayerState_t
 	int damagePitch;
 	int damageCount;
 
-	int stats[MAX_STATS_Q3];
-	int persistant[MAX_PERSISTANT_Q3];			// stats that aren't cleared on death
-	int powerups[MAX_POWERUPS_Q3];			// level.time that the powerup runs out
-	int ammo[MAX_WEAPONS_ET];				// total amount of ammo
-	int ammoclip[MAX_WEAPONS_ET];			// ammo in clip
-	int holdable[16];
+	int stats[ MAX_STATS_Q3 ];
+	int persistant[ MAX_PERSISTANT_Q3 ];			// stats that aren't cleared on death
+	int powerups[ MAX_POWERUPS_Q3 ];			// level.time that the powerup runs out
+	int ammo[ MAX_WEAPONS_ET ];					// total amount of ammo
+	int ammoclip[ MAX_WEAPONS_ET ];				// ammo in clip
+	int holdable[ 16 ];
 	int holding;						// the current item in holdable[] that is selected (held)
-	int weapons[MAX_WEAPONS_ET / (sizeof(int) * 8)];		// 64 bits for weapons held
+	int weapons[ MAX_WEAPONS_ET / ( sizeof ( int ) * 8 ) ];			// 64 bits for weapons held
 
 	// Ridah, allow for individual bounding boxes
 	vec3_t mins, maxs;
@@ -591,7 +585,7 @@ struct etplayerState_t
 
 	// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
 	// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-	int weapHeat[MAX_WEAPONS_ET];			// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
+	int weapHeat[ MAX_WEAPONS_ET ];				// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
 	int curWeapHeat;					// value for the currently selected weapon (for transmission to client)		// Arnout : DOES get send over the network
 	int identifyClient;					// NERVE - SMF
 	int identifyClientHealth;
@@ -608,8 +602,7 @@ struct etplayerState_t
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
 
-struct wsentityState_t
-{
+struct wsentityState_t {
 	int number;				// entity index
 	int eType;				// entityType_t
 	int eFlags;
@@ -647,8 +640,8 @@ struct wsentityState_t
 	int eventParm;
 
 	int eventSequence;		// pmove generated events
-	int events[MAX_EVENTS_WS];
-	int eventParms[MAX_EVENTS_WS];
+	int events[ MAX_EVENTS_WS ];
+	int eventParms[ MAX_EVENTS_WS ];
 
 	// for players
 	int powerups;			// bit flags
@@ -682,8 +675,7 @@ struct wsentityState_t
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
 
-struct wmentityState_t
-{
+struct wmentityState_t {
 	int number;				// entity index
 	int eType;				// entityType_t
 	int eFlags;
@@ -721,8 +713,8 @@ struct wmentityState_t
 	int eventParm;
 
 	int eventSequence;		// pmove generated events
-	int events[MAX_EVENTS_WM];
-	int eventParms[MAX_EVENTS_WM];
+	int events[ MAX_EVENTS_WM ];
+	int eventParms[ MAX_EVENTS_WM ];
 
 	// for players
 	int powerups;			// bit flags
@@ -747,8 +739,7 @@ struct wmentityState_t
 	int animMovetype;		// clients can't derive movetype of other clients for anim scripting system
 };
 
-struct etentityState_t
-{
+struct etentityState_t {
 	int number;						// entity index
 	int eType;				// entityType_t
 	int eFlags;
@@ -786,8 +777,8 @@ struct etentityState_t
 	int eventParm;
 
 	int eventSequence;		// pmove generated events
-	int events[MAX_EVENTS_ET];
-	int eventParms[MAX_EVENTS_ET];
+	int events[ MAX_EVENTS_ET ];
+	int eventParms[ MAX_EVENTS_ET ];
 
 	// for players
 	int powerups;			// bit flags	// Arnout: used to store entState_t for non-player entities (so we know to draw them translucent clientsided)
@@ -819,10 +810,10 @@ struct etentityState_t
 #define BIGGEST_MAX_RELIABLE_COMMANDS   256	// bigger!
 
 // in_usercmd_t->button bits
-#define WOLFBUTTON_ACTIVATE     BIT(6)
-#define WOLFBUTTON_ANY          BIT(7)		// any key whatsoever
-#define WOLFBUTTON_LEANLEFT     BIT(12)
-#define WOLFBUTTON_LEANRIGHT    BIT(13)
+#define WOLFBUTTON_ACTIVATE     BIT( 6 )
+#define WOLFBUTTON_ANY          BIT( 7 )		// any key whatsoever
+#define WOLFBUTTON_LEANLEFT     BIT( 12 )
+#define WOLFBUTTON_LEANRIGHT    BIT( 13 )
 
 #define MAX_BINARY_MESSAGE_ET  32768	// max length of binary message
 
@@ -873,8 +864,7 @@ enum
 	ETMESSAGE_WAITING_OVERFLOW,	// packet too large with message
 };
 
-struct etgameInfo_t
-{
+struct etgameInfo_t {
 	qboolean spEnabled;
 	int spGameTypes;
 	int defaultSPGameType;

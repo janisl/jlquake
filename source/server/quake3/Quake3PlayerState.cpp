@@ -17,56 +17,45 @@
 #include "../tech3/local.h"
 #include "local.h"
 
-float idQuake3PlayerState::GetLeanf() const
-{
+float idQuake3PlayerState::GetLeanf() const {
 	return 0;
 }
 
-void idQuake3PlayerState::SetLeanf(float value)
-{
+void idQuake3PlayerState::SetLeanf( float value ) {
 }
 
-int idQuake3PlayerState::GetClientNum() const
-{
-	return reinterpret_cast<q3playerState_t*>(ps)->clientNum;
+int idQuake3PlayerState::GetClientNum() const {
+	return reinterpret_cast<q3playerState_t*>( ps )->clientNum;
 }
 
-void idQuake3PlayerState::SetClientNum(int value)
-{
-	reinterpret_cast<q3playerState_t*>(ps)->clientNum = value;
+void idQuake3PlayerState::SetClientNum( int value ) {
+	reinterpret_cast<q3playerState_t*>( ps )->clientNum = value;
 }
 
-const float* idQuake3PlayerState::GetViewAngles() const
-{
-	return reinterpret_cast<q3playerState_t*>(ps)->viewangles;
+const float* idQuake3PlayerState::GetViewAngles() const {
+	return reinterpret_cast<q3playerState_t*>( ps )->viewangles;
 }
 
-void idQuake3PlayerState::SetViewAngles(const vec3_t value)
-{
-	VectorCopy(value, reinterpret_cast<q3playerState_t*>(ps)->viewangles);
+void idQuake3PlayerState::SetViewAngles( const vec3_t value ) {
+	VectorCopy( value, reinterpret_cast<q3playerState_t*>( ps )->viewangles );
 }
 
-int idQuake3PlayerState::GetViewHeight() const
-{
-	return reinterpret_cast<q3playerState_t*>(ps)->viewheight;
+int idQuake3PlayerState::GetViewHeight() const {
+	return reinterpret_cast<q3playerState_t*>( ps )->viewheight;
 }
 
-void idQuake3PlayerState::SetViewHeight(int value)
-{
-	reinterpret_cast<q3playerState_t*>(ps)->viewheight = value;
+void idQuake3PlayerState::SetViewHeight( int value ) {
+	reinterpret_cast<q3playerState_t*>( ps )->viewheight = value;
 }
 
-int idQuake3PlayerState::GetPersistantScore() const
-{
-	return reinterpret_cast<q3playerState_t*>(ps)->persistant[Q3PERS_SCORE];
+int idQuake3PlayerState::GetPersistantScore() const {
+	return reinterpret_cast<q3playerState_t*>( ps )->persistant[ Q3PERS_SCORE ];
 }
 
-int idQuake3PlayerState::GetPing() const
-{
-	return reinterpret_cast<q3playerState_t*>(ps)->ping;
+int idQuake3PlayerState::GetPing() const {
+	return reinterpret_cast<q3playerState_t*>( ps )->ping;
 }
 
-void idQuake3PlayerState::SetPing(int value)
-{
-	reinterpret_cast<q3playerState_t*>(ps)->ping = value;
+void idQuake3PlayerState::SetPing( int value ) {
+	reinterpret_cast<q3playerState_t*>( ps )->ping = value;
 }

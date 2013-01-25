@@ -24,7 +24,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define LL(x) x = LittleLong(x)
+#define LL( x ) x = LittleLong( x )
 
 // TYPES -------------------------------------------------------------------
 
@@ -48,184 +48,159 @@
 //
 //==========================================================================
 
-static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* mod_name)
-{
-	md3Header_t* pinmodel = (md3Header_t*)buffer;
+static bool R_LoadMd3Lod( model_t* mod, int lod, const void* buffer, const char* mod_name ) {
+	md3Header_t* pinmodel = ( md3Header_t* )buffer;
 
-	int version = LittleLong(pinmodel->version);
-	if (version != MD3_VERSION)
-	{
-		common->Printf(S_COLOR_YELLOW "R_LoadMD3: %s has wrong version (%i should be %i)\n",
-			mod_name, version, MD3_VERSION);
+	int version = LittleLong( pinmodel->version );
+	if ( version != MD3_VERSION ) {
+		common->Printf( S_COLOR_YELLOW "R_LoadMD3: %s has wrong version (%i should be %i)\n",
+			mod_name, version, MD3_VERSION );
 		return false;
 	}
 
 	mod->type = MOD_MESH3;
-	int size = LittleLong(pinmodel->ofsEnd);
+	int size = LittleLong( pinmodel->ofsEnd );
 	mod->q3_dataSize += size;
-	mod->q3_md3[lod] = (md3Header_t*)Mem_Alloc(size);
+	mod->q3_md3[ lod ] = ( md3Header_t* )Mem_Alloc( size );
 
-	Com_Memcpy(mod->q3_md3[lod], buffer, LittleLong(pinmodel->ofsEnd));
+	Com_Memcpy( mod->q3_md3[ lod ], buffer, LittleLong( pinmodel->ofsEnd ) );
 
-	LL(mod->q3_md3[lod]->ident);
-	LL(mod->q3_md3[lod]->version);
-	LL(mod->q3_md3[lod]->numFrames);
-	LL(mod->q3_md3[lod]->numTags);
-	LL(mod->q3_md3[lod]->numSurfaces);
-	LL(mod->q3_md3[lod]->ofsFrames);
-	LL(mod->q3_md3[lod]->ofsTags);
-	LL(mod->q3_md3[lod]->ofsSurfaces);
-	LL(mod->q3_md3[lod]->ofsEnd);
+	LL( mod->q3_md3[ lod ]->ident );
+	LL( mod->q3_md3[ lod ]->version );
+	LL( mod->q3_md3[ lod ]->numFrames );
+	LL( mod->q3_md3[ lod ]->numTags );
+	LL( mod->q3_md3[ lod ]->numSurfaces );
+	LL( mod->q3_md3[ lod ]->ofsFrames );
+	LL( mod->q3_md3[ lod ]->ofsTags );
+	LL( mod->q3_md3[ lod ]->ofsSurfaces );
+	LL( mod->q3_md3[ lod ]->ofsEnd );
 
-	if (mod->q3_md3[lod]->numFrames < 1)
-	{
-		common->Printf(S_COLOR_YELLOW "R_LoadMD3: %s has no frames\n", mod_name);
+	if ( mod->q3_md3[ lod ]->numFrames < 1 ) {
+		common->Printf( S_COLOR_YELLOW "R_LoadMD3: %s has no frames\n", mod_name );
 		return false;
 	}
 
 	bool fixRadius = false;
-	if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) &&
-		(strstr(mod->name,"sherman") || strstr(mod->name, "mg42")))
-	{
+	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) &&
+		 ( strstr( mod->name,"sherman" ) || strstr( mod->name, "mg42" ) ) ) {
 		fixRadius = true;
 	}
 
 	// swap all the frames
-	md3Frame_t* frame = (md3Frame_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsFrames);
-	for (int i = 0; i < mod->q3_md3[lod]->numFrames; i++, frame++)
-	{
-		frame->radius = LittleFloat(frame->radius);
-		if (fixRadius)
-		{
+	md3Frame_t* frame = ( md3Frame_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsFrames );
+	for ( int i = 0; i < mod->q3_md3[ lod ]->numFrames; i++, frame++ ) {
+		frame->radius = LittleFloat( frame->radius );
+		if ( fixRadius ) {
 			frame->radius = 256;
-			for (int j = 0; j < 3; j++)
-			{
-				frame->bounds[0][j] = 128;
-				frame->bounds[1][j] = -128;
-				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			for ( int j = 0; j < 3; j++ ) {
+				frame->bounds[ 0 ][ j ] = 128;
+				frame->bounds[ 1 ][ j ] = -128;
+				frame->localOrigin[ j ] = LittleFloat( frame->localOrigin[ j ] );
 			}
 		}
 		// Hack for Bug using plugin generated model
-		else if (GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET) && frame->radius == 1)
-		{
+		else if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) && frame->radius == 1 ) {
 			frame->radius = 256;
-			for (int j = 0; j < 3; j++)
-			{
-				frame->bounds[0][j] = 128;
-				frame->bounds[1][j] = -128;
-				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+			for ( int j = 0; j < 3; j++ ) {
+				frame->bounds[ 0 ][ j ] = 128;
+				frame->bounds[ 1 ][ j ] = -128;
+				frame->localOrigin[ j ] = LittleFloat( frame->localOrigin[ j ] );
 			}
-		}
-		else
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				frame->bounds[0][j] = LittleFloat(frame->bounds[0][j]);
-				frame->bounds[1][j] = LittleFloat(frame->bounds[1][j]);
-				frame->localOrigin[j] = LittleFloat(frame->localOrigin[j]);
+		} else   {
+			for ( int j = 0; j < 3; j++ ) {
+				frame->bounds[ 0 ][ j ] = LittleFloat( frame->bounds[ 0 ][ j ] );
+				frame->bounds[ 1 ][ j ] = LittleFloat( frame->bounds[ 1 ][ j ] );
+				frame->localOrigin[ j ] = LittleFloat( frame->localOrigin[ j ] );
 			}
 		}
 	}
 
 	// swap all the tags
-	md3Tag_t* tag = (md3Tag_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsTags);
-	for (int i = 0; i < mod->q3_md3[lod]->numTags * mod->q3_md3[lod]->numFrames; i++, tag++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			tag->origin[j] = LittleFloat(tag->origin[j]);
-			tag->axis[0][j] = LittleFloat(tag->axis[0][j]);
-			tag->axis[1][j] = LittleFloat(tag->axis[1][j]);
-			tag->axis[2][j] = LittleFloat(tag->axis[2][j]);
+	md3Tag_t* tag = ( md3Tag_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsTags );
+	for ( int i = 0; i < mod->q3_md3[ lod ]->numTags * mod->q3_md3[ lod ]->numFrames; i++, tag++ ) {
+		for ( int j = 0; j < 3; j++ ) {
+			tag->origin[ j ] = LittleFloat( tag->origin[ j ] );
+			tag->axis[ 0 ][ j ] = LittleFloat( tag->axis[ 0 ][ j ] );
+			tag->axis[ 1 ][ j ] = LittleFloat( tag->axis[ 1 ][ j ] );
+			tag->axis[ 2 ][ j ] = LittleFloat( tag->axis[ 2 ][ j ] );
 		}
 	}
 
 	// swap all the surfaces
-	md3Surface_t* surf = (md3Surface_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces);
-	for (int i = 0; i < mod->q3_md3[lod]->numSurfaces; i++)
-	{
-		LL(surf->ident);
-		LL(surf->flags);
-		LL(surf->numFrames);
-		LL(surf->numShaders);
-		LL(surf->numTriangles);
-		LL(surf->ofsTriangles);
-		LL(surf->numVerts);
-		LL(surf->ofsShaders);
-		LL(surf->ofsSt);
-		LL(surf->ofsXyzNormals);
-		LL(surf->ofsEnd);
+	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsSurfaces );
+	for ( int i = 0; i < mod->q3_md3[ lod ]->numSurfaces; i++ ) {
+		LL( surf->ident );
+		LL( surf->flags );
+		LL( surf->numFrames );
+		LL( surf->numShaders );
+		LL( surf->numTriangles );
+		LL( surf->ofsTriangles );
+		LL( surf->numVerts );
+		LL( surf->ofsShaders );
+		LL( surf->ofsSt );
+		LL( surf->ofsXyzNormals );
+		LL( surf->ofsEnd );
 
-		if (surf->numVerts > SHADER_MAX_VERTEXES)
-		{
-			common->Error("R_LoadMD3: %s has more than %i verts on a surface (%i)",
-					mod_name, SHADER_MAX_VERTEXES, surf->numVerts);
+		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
+			common->Error( "R_LoadMD3: %s has more than %i verts on a surface (%i)",
+				mod_name, SHADER_MAX_VERTEXES, surf->numVerts );
 		}
-		if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
-		{
-			common->Error("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
-					mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles);
+		if ( surf->numTriangles * 3 > SHADER_MAX_INDEXES ) {
+			common->Error( "R_LoadMD3: %s has more than %i triangles on a surface (%i)",
+				mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles );
 		}
 
 		// change to surface identifier
 		surf->ident = SF_MD3;
 
 		// lowercase the surface name so skin compares are faster
-		String::ToLower(surf->name);
+		String::ToLower( surf->name );
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		int Len = String::Length(surf->name);
-		if (Len > 2 && surf->name[Len - 2] == '_')
-		{
-			surf->name[Len - 2] = 0;
+		int Len = String::Length( surf->name );
+		if ( Len > 2 && surf->name[ Len - 2 ] == '_' ) {
+			surf->name[ Len - 2 ] = 0;
 		}
 
 		// register the shaders
-		md3Shader_t* shader = (md3Shader_t*)((byte*)surf + surf->ofsShaders);
-		for (int j = 0; j < surf->numShaders; j++, shader++)
-		{
-			shader_t* sh = R_FindShader(shader->name, LIGHTMAP_NONE, true);
-			if (sh->defaultShader)
-			{
+		md3Shader_t* shader = ( md3Shader_t* )( ( byte* )surf + surf->ofsShaders );
+		for ( int j = 0; j < surf->numShaders; j++, shader++ ) {
+			shader_t* sh = R_FindShader( shader->name, LIGHTMAP_NONE, true );
+			if ( sh->defaultShader ) {
 				shader->shaderIndex = 0;
-			}
-			else
-			{
+			} else   {
 				shader->shaderIndex = sh->index;
 			}
 		}
 
 		// swap all the triangles
-		md3Triangle_t* tri = (md3Triangle_t*)((byte*)surf + surf->ofsTriangles);
-		for (int j = 0; j < surf->numTriangles; j++, tri++)
-		{
-			LL(tri->indexes[0]);
-			LL(tri->indexes[1]);
-			LL(tri->indexes[2]);
+		md3Triangle_t* tri = ( md3Triangle_t* )( ( byte* )surf + surf->ofsTriangles );
+		for ( int j = 0; j < surf->numTriangles; j++, tri++ ) {
+			LL( tri->indexes[ 0 ] );
+			LL( tri->indexes[ 1 ] );
+			LL( tri->indexes[ 2 ] );
 		}
 
 		// swap all the ST
-		md3St_t* st = (md3St_t*)((byte*)surf + surf->ofsSt);
-		for (int j = 0; j < surf->numVerts; j++, st++)
-		{
-			st->st[0] = LittleFloat(st->st[0]);
-			st->st[1] = LittleFloat(st->st[1]);
+		md3St_t* st = ( md3St_t* )( ( byte* )surf + surf->ofsSt );
+		for ( int j = 0; j < surf->numVerts; j++, st++ ) {
+			st->st[ 0 ] = LittleFloat( st->st[ 0 ] );
+			st->st[ 1 ] = LittleFloat( st->st[ 1 ] );
 		}
 
 		// swap all the XyzNormals
-		md3XyzNormal_t* xyz = (md3XyzNormal_t*)((byte*)surf + surf->ofsXyzNormals);
-		for (int j = 0; j < surf->numVerts * surf->numFrames; j++, xyz++)
-		{
-			xyz->xyz[0] = LittleShort(xyz->xyz[0]);
-			xyz->xyz[1] = LittleShort(xyz->xyz[1]);
-			xyz->xyz[2] = LittleShort(xyz->xyz[2]);
+		md3XyzNormal_t* xyz = ( md3XyzNormal_t* )( ( byte* )surf + surf->ofsXyzNormals );
+		for ( int j = 0; j < surf->numVerts * surf->numFrames; j++, xyz++ ) {
+			xyz->xyz[ 0 ] = LittleShort( xyz->xyz[ 0 ] );
+			xyz->xyz[ 1 ] = LittleShort( xyz->xyz[ 1 ] );
+			xyz->xyz[ 2 ] = LittleShort( xyz->xyz[ 2 ] );
 
-			xyz->normal = LittleShort(xyz->normal);
+			xyz->normal = LittleShort( xyz->normal );
 		}
 
 		// find the next surface
-		surf = (md3Surface_t*)((byte*)surf + surf->ofsEnd);
+		surf = ( md3Surface_t* )( ( byte* )surf + surf->ofsEnd );
 	}
 
 	return true;
@@ -237,8 +212,7 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 //
 //==========================================================================
 
-bool R_LoadMd3(model_t* mod, void* buffer)
-{
+bool R_LoadMd3( model_t* mod, void* buffer ) {
 	mod->q3_numLods = 0;
 
 	//
@@ -247,62 +221,48 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 	int numLoaded = 0;
 
 	int lod = MD3_MAX_LODS - 1;
-	for (; lod >= 0; lod--)
-	{
-		char filename[1024];
+	for (; lod >= 0; lod-- ) {
+		char filename[ 1024 ];
 
-		String::Cpy(filename, mod->name);
+		String::Cpy( filename, mod->name );
 
 		void* buf;
-		if (lod == 0)
-		{
+		if ( lod == 0 ) {
 			buf = buffer;
-		}
-		else
-		{
-			char namebuf[80];
+		} else   {
+			char namebuf[ 80 ];
 
-			if (String::RChr(filename, '.'))
-			{
-				*String::RChr(filename, '.') = 0;
+			if ( String::RChr( filename, '.' ) ) {
+				*String::RChr( filename, '.' ) = 0;
 			}
-			sprintf(namebuf, "_%d.md3", lod);
-			String::Cat(filename, sizeof(filename), namebuf);
+			sprintf( namebuf, "_%d.md3", lod );
+			String::Cat( filename, sizeof ( filename ), namebuf );
 
-			FS_ReadFile(filename, (void**)&buf);
-			if (!buf)
-			{
+			FS_ReadFile( filename, ( void** )&buf );
+			if ( !buf ) {
 				continue;
 			}
 		}
 
-		int ident = LittleLong(*(unsigned*)buf);
-		if (ident != MD3_IDENT)
-		{
-			common->Printf(S_COLOR_YELLOW "R_LoadMd3: unknown fileid for %s\n", filename);
+		int ident = LittleLong( *( unsigned* )buf );
+		if ( ident != MD3_IDENT ) {
+			common->Printf( S_COLOR_YELLOW "R_LoadMd3: unknown fileid for %s\n", filename );
 			return false;
 		}
 
-		bool loaded = R_LoadMd3Lod(mod, lod, buf, filename);
+		bool loaded = R_LoadMd3Lod( mod, lod, buf, filename );
 
-		if (lod != 0)
-		{
-			FS_FreeFile(buf);
+		if ( lod != 0 ) {
+			FS_FreeFile( buf );
 		}
 
-		if (!loaded)
-		{
-			if (lod == 0)
-			{
+		if ( !loaded ) {
+			if ( lod == 0 ) {
 				return false;
-			}
-			else
-			{
+			} else   {
 				break;
 			}
-		}
-		else
-		{
+		} else   {
 			mod->q3_numLods++;
 			numLoaded++;
 			// if we have a valid model and are biased
@@ -314,17 +274,15 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 		}
 	}
 
-	if (!numLoaded)
-	{
+	if ( !numLoaded ) {
 		return false;
 	}
 
 	// duplicate into higher lod spots that weren't
 	// loaded, in case the user changes r_lodbias on the fly
-	for (lod--; lod >= 0; lod--)
-	{
+	for ( lod--; lod >= 0; lod-- ) {
 		mod->q3_numLods++;
-		mod->q3_md3[lod] = mod->q3_md3[lod + 1];
+		mod->q3_md3[ lod ] = mod->q3_md3[ lod + 1 ];
 	}
 
 	return true;
@@ -336,40 +294,31 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 //
 //==========================================================================
 
-void R_FreeMd3(model_t* mod)
-{
-	Mem_Free(mod->q3_md3[0]);
-	for (int lod = 1; lod < MD3_MAX_LODS; lod++)
-	{
-		if (mod->q3_md3[lod] != mod->q3_md3[lod - 1])
-		{
-			Mem_Free(mod->q3_md3[lod]);
+void R_FreeMd3( model_t* mod ) {
+	Mem_Free( mod->q3_md3[ 0 ] );
+	for ( int lod = 1; lod < MD3_MAX_LODS; lod++ ) {
+		if ( mod->q3_md3[ lod ] != mod->q3_md3[ lod - 1 ] ) {
+			Mem_Free( mod->q3_md3[ lod ] );
 		}
 	}
 }
 
-void R_RegisterMd3Shaders(model_t* mod, int lod)
-{
+void R_RegisterMd3Shaders( model_t* mod, int lod ) {
 	// swap all the surfaces
-	md3Surface_t* surf = (md3Surface_t*)((byte*)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces);
-	for (int i = 0; i < mod->q3_md3[lod]->numSurfaces; i++)
-	{
+	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsSurfaces );
+	for ( int i = 0; i < mod->q3_md3[ lod ]->numSurfaces; i++ ) {
 		// register the shaders
-		md3Shader_t* shader = (md3Shader_t*)((byte*)surf + surf->ofsShaders);
-		for (int j = 0; j < surf->numShaders; j++, shader++)
-		{
-			shader_t* sh = R_FindShader(shader->name, LIGHTMAP_NONE, true);
-			if (sh->defaultShader)
-			{
+		md3Shader_t* shader = ( md3Shader_t* )( ( byte* )surf + surf->ofsShaders );
+		for ( int j = 0; j < surf->numShaders; j++, shader++ ) {
+			shader_t* sh = R_FindShader( shader->name, LIGHTMAP_NONE, true );
+			if ( sh->defaultShader ) {
 				shader->shaderIndex = 0;
-			}
-			else
-			{
+			} else   {
 				shader->shaderIndex = sh->index;
 			}
 		}
 		// find the next surface
-		surf = (md3Surface_t*)((byte*)surf + surf->ofsEnd);
+		surf = ( md3Surface_t* )( ( byte* )surf + surf->ofsEnd );
 	}
 }
 
@@ -379,47 +328,44 @@ void R_RegisterMd3Shaders(model_t* mod, int lod)
 //
 //==========================================================================
 
-static float ProjectRadius(float r, vec3_t location)
-{
-	float c = DotProduct(tr.viewParms.orient.axis[0], tr.viewParms.orient.origin);
-	float dist = DotProduct(tr.viewParms.orient.axis[0], location) - c;
+static float ProjectRadius( float r, vec3_t location ) {
+	float c = DotProduct( tr.viewParms.orient.axis[ 0 ], tr.viewParms.orient.origin );
+	float dist = DotProduct( tr.viewParms.orient.axis[ 0 ], location ) - c;
 
-	if (dist <= 0)
-	{
+	if ( dist <= 0 ) {
 		return 0;
 	}
 
 	vec3_t p;
-	p[0] = 0;
-	p[1] = idMath::Fabs(r);
-	p[2] = -dist;
+	p[ 0 ] = 0;
+	p[ 1 ] = idMath::Fabs( r );
+	p[ 2 ] = -dist;
 
-	float projected[4];
-	projected[0] = p[0] * tr.viewParms.projectionMatrix[0] +
-				   p[1] * tr.viewParms.projectionMatrix[4] +
-				   p[2] * tr.viewParms.projectionMatrix[8] +
-				   tr.viewParms.projectionMatrix[12];
+	float projected[ 4 ];
+	projected[ 0 ] = p[ 0 ] * tr.viewParms.projectionMatrix[ 0 ] +
+					 p[ 1 ] * tr.viewParms.projectionMatrix[ 4 ] +
+					 p[ 2 ] * tr.viewParms.projectionMatrix[ 8 ] +
+					 tr.viewParms.projectionMatrix[ 12 ];
 
-	projected[1] = p[0] * tr.viewParms.projectionMatrix[1] +
-				   p[1] * tr.viewParms.projectionMatrix[5] +
-				   p[2] * tr.viewParms.projectionMatrix[9] +
-				   tr.viewParms.projectionMatrix[13];
+	projected[ 1 ] = p[ 0 ] * tr.viewParms.projectionMatrix[ 1 ] +
+					 p[ 1 ] * tr.viewParms.projectionMatrix[ 5 ] +
+					 p[ 2 ] * tr.viewParms.projectionMatrix[ 9 ] +
+					 tr.viewParms.projectionMatrix[ 13 ];
 
-	projected[2] = p[0] * tr.viewParms.projectionMatrix[2] +
-				   p[1] * tr.viewParms.projectionMatrix[6] +
-				   p[2] * tr.viewParms.projectionMatrix[10] +
-				   tr.viewParms.projectionMatrix[14];
+	projected[ 2 ] = p[ 0 ] * tr.viewParms.projectionMatrix[ 2 ] +
+					 p[ 1 ] * tr.viewParms.projectionMatrix[ 6 ] +
+					 p[ 2 ] * tr.viewParms.projectionMatrix[ 10 ] +
+					 tr.viewParms.projectionMatrix[ 14 ];
 
-	projected[3] = p[0] * tr.viewParms.projectionMatrix[3] +
-				   p[1] * tr.viewParms.projectionMatrix[7] +
-				   p[2] * tr.viewParms.projectionMatrix[11] +
-				   tr.viewParms.projectionMatrix[15];
+	projected[ 3 ] = p[ 0 ] * tr.viewParms.projectionMatrix[ 3 ] +
+					 p[ 1 ] * tr.viewParms.projectionMatrix[ 7 ] +
+					 p[ 2 ] * tr.viewParms.projectionMatrix[ 11 ] +
+					 tr.viewParms.projectionMatrix[ 15 ];
 
 
-	float pr = projected[1] / projected[3];
+	float pr = projected[ 1 ] / projected[ 3 ];
 
-	if (pr > 1.0f)
-	{
+	if ( pr > 1.0f ) {
 		pr = 1.0f;
 	}
 
@@ -432,19 +378,15 @@ static float ProjectRadius(float r, vec3_t location)
 //
 //==========================================================================
 
-static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
-{
+static int R_CullModel( md3Header_t* header, trRefEntity_t* ent ) {
 	// compute frame pointers
-	md3Frame_t* newFrame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.frame;
-	md3Frame_t* oldFrame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.oldframe;
+	md3Frame_t* newFrame = ( md3Frame_t* )( ( byte* )header + header->ofsFrames ) + ent->e.frame;
+	md3Frame_t* oldFrame = ( md3Frame_t* )( ( byte* )header + header->ofsFrames ) + ent->e.oldframe;
 
 	// cull bounding sphere ONLY if this is not an upscaled entity
-	if (!ent->e.nonNormalizedAxes)
-	{
-		if (ent->e.frame == ent->e.oldframe)
-		{
-			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius))
-			{
+	if ( !ent->e.nonNormalizedAxes ) {
+		if ( ent->e.frame == ent->e.oldframe ) {
+			switch ( R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius ) ) {
 			case CULL_OUT:
 				tr.pc.c_sphere_cull_md3_out++;
 				return CULL_OUT;
@@ -457,34 +399,23 @@ static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 				tr.pc.c_sphere_cull_md3_clip++;
 				break;
 			}
-		}
-		else
-		{
-			int sphereCull = R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius);
+		} else   {
+			int sphereCull = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
 			int sphereCullB;
-			if (newFrame == oldFrame)
-			{
+			if ( newFrame == oldFrame ) {
 				sphereCullB = sphereCull;
-			}
-			else
-			{
-				sphereCullB = R_CullLocalPointAndRadius(oldFrame->localOrigin, oldFrame->radius);
+			} else   {
+				sphereCullB = R_CullLocalPointAndRadius( oldFrame->localOrigin, oldFrame->radius );
 			}
 
-			if (sphereCull == sphereCullB)
-			{
-				if (sphereCull == CULL_OUT)
-				{
+			if ( sphereCull == sphereCullB ) {
+				if ( sphereCull == CULL_OUT ) {
 					tr.pc.c_sphere_cull_md3_out++;
 					return CULL_OUT;
-				}
-				else if (sphereCull == CULL_IN)
-				{
+				} else if ( sphereCull == CULL_IN )     {
 					tr.pc.c_sphere_cull_md3_in++;
 					return CULL_IN;
-				}
-				else
-				{
+				} else   {
 					tr.pc.c_sphere_cull_md3_clip++;
 				}
 			}
@@ -492,15 +423,13 @@ static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 	}
 
 	// calculate a bounding box in the current coordinate system
-	vec3_t bounds[2];
-	for (int i = 0; i < 3; i++)
-	{
-		bounds[0][i] = oldFrame->bounds[0][i] < newFrame->bounds[0][i] ? oldFrame->bounds[0][i] : newFrame->bounds[0][i];
-		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
+	vec3_t bounds[ 2 ];
+	for ( int i = 0; i < 3; i++ ) {
+		bounds[ 0 ][ i ] = oldFrame->bounds[ 0 ][ i ] < newFrame->bounds[ 0 ][ i ] ? oldFrame->bounds[ 0 ][ i ] : newFrame->bounds[ 0 ][ i ];
+		bounds[ 1 ][ i ] = oldFrame->bounds[ 1 ][ i ] > newFrame->bounds[ 1 ][ i ] ? oldFrame->bounds[ 1 ][ i ] : newFrame->bounds[ 1 ][ i ];
 	}
 
-	switch (R_CullLocalBox(bounds))
-	{
+	switch ( R_CullLocalBox( bounds ) ) {
 	case CULL_IN:
 		tr.pc.c_box_cull_md3_in++;
 		return CULL_IN;
@@ -522,69 +451,55 @@ static int R_CullModel(md3Header_t* header, trRefEntity_t* ent)
 //
 //==========================================================================
 
-static int R_ComputeLOD(trRefEntity_t* ent)
-{
+static int R_ComputeLOD( trRefEntity_t* ent ) {
 	int lod;
-	if (tr.currentModel->q3_numLods < 2)
-	{
+	if ( tr.currentModel->q3_numLods < 2 ) {
 		// model has only 1 LOD level, skip computations and bias
 		lod = 0;
-	}
-	else
-	{
+	} else   {
 		// multiple LODs exist, so compute projected bounding sphere
 		// and use that as a criteria for selecting LOD
 
 		// RF, checked for a forced lowest LOD
-		if (ent->e.reFlags & REFLAG_FORCE_LOD)
-		{
+		if ( ent->e.reFlags & REFLAG_FORCE_LOD ) {
 			return tr.currentModel->q3_numLods - 1;
 		}
 
-		md3Frame_t* frame = (md3Frame_t*)(((byte*)tr.currentModel->q3_md3[0]) + tr.currentModel->q3_md3[0]->ofsFrames);
+		md3Frame_t* frame = ( md3Frame_t* )( ( ( byte* )tr.currentModel->q3_md3[ 0 ] ) + tr.currentModel->q3_md3[ 0 ]->ofsFrames );
 
 		frame += ent->e.frame;
 
-		float radius = RadiusFromBounds(frame->bounds[0], frame->bounds[1]);
+		float radius = RadiusFromBounds( frame->bounds[ 0 ], frame->bounds[ 1 ] );
 
-		float projectedRadius = ProjectRadius(radius, ent->e.origin);
+		float projectedRadius = ProjectRadius( radius, ent->e.origin );
 		float flod;
-		if (projectedRadius != 0)
-		{
+		if ( projectedRadius != 0 ) {
 			float lodscale = r_lodscale->value;
-			if (lodscale > 20)
-			{
+			if ( lodscale > 20 ) {
 				lodscale = 20;
 			}
 			flod = 1.0f - projectedRadius * lodscale;
-		}
-		else
-		{
+		} else   {
 			// object intersects near view plane, e.g. view weapon
 			flod = 0;
 		}
 
 		flod *= tr.currentModel->q3_numLods;
-		lod = idMath::FtoiFast(flod);
+		lod = idMath::FtoiFast( flod );
 
-		if (lod < 0)
-		{
+		if ( lod < 0 ) {
 			lod = 0;
-		}
-		else if (lod >= tr.currentModel->q3_numLods)
-		{
+		} else if ( lod >= tr.currentModel->q3_numLods )     {
 			lod = tr.currentModel->q3_numLods - 1;
 		}
 	}
 
 	lod += r_lodbias->integer;
 
-	if (lod >= tr.currentModel->q3_numLods)
-	{
+	if ( lod >= tr.currentModel->q3_numLods ) {
 		lod = tr.currentModel->q3_numLods - 1;
 	}
-	if (lod < 0)
-	{
+	if ( lod < 0 ) {
 		lod = 0;
 	}
 
@@ -597,34 +512,27 @@ static int R_ComputeLOD(trRefEntity_t* ent)
 //
 //==========================================================================
 
-static int R_ComputeFogNum(md3Header_t* header, trRefEntity_t* ent)
-{
-	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
-	{
+static int R_ComputeFogNum( md3Header_t* header, trRefEntity_t* ent ) {
+	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
 		return 0;
 	}
 
 	// FIXME: non-normalized axis issues
-	md3Frame_t* md3Frame = (md3Frame_t*)((byte*)header + header->ofsFrames) + ent->e.frame;
+	md3Frame_t* md3Frame = ( md3Frame_t* )( ( byte* )header + header->ofsFrames ) + ent->e.frame;
 	vec3_t localOrigin;
-	VectorAdd(ent->e.origin, md3Frame->localOrigin, localOrigin);
-	for (int i = 1; i < tr.world->numfogs; i++)
-	{
-		mbrush46_fog_t* fog = &tr.world->fogs[i];
+	VectorAdd( ent->e.origin, md3Frame->localOrigin, localOrigin );
+	for ( int i = 1; i < tr.world->numfogs; i++ ) {
+		mbrush46_fog_t* fog = &tr.world->fogs[ i ];
 		int j;
-		for (j = 0; j < 3; j++)
-		{
-			if (localOrigin[j] - md3Frame->radius >= fog->bounds[1][j])
-			{
+		for ( j = 0; j < 3; j++ ) {
+			if ( localOrigin[ j ] - md3Frame->radius >= fog->bounds[ 1 ][ j ] ) {
 				break;
 			}
-			if (localOrigin[j] + md3Frame->radius <= fog->bounds[0][j])
-			{
+			if ( localOrigin[ j ] + md3Frame->radius <= fog->bounds[ 0 ][ j ] ) {
 				break;
 			}
 		}
-		if (j == 3)
-		{
+		if ( j == 3 ) {
 			return i;
 		}
 	}
@@ -638,21 +546,19 @@ static int R_ComputeFogNum(md3Header_t* header, trRefEntity_t* ent)
 //
 //==========================================================================
 
-void R_AddMD3Surfaces(trRefEntity_t* ent)
-{
+void R_AddMD3Surfaces( trRefEntity_t* ent ) {
 	// don't add third_person objects if not in a portal
-	bool personalModel = (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal;
+	bool personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
-	if (ent->e.renderfx & RF_WRAP_FRAMES)
-	{
-		ent->e.frame %= tr.currentModel->q3_md3[0]->numFrames;
-		ent->e.oldframe %= tr.currentModel->q3_md3[0]->numFrames;
+	if ( ent->e.renderfx & RF_WRAP_FRAMES ) {
+		ent->e.frame %= tr.currentModel->q3_md3[ 0 ]->numFrames;
+		ent->e.oldframe %= tr.currentModel->q3_md3[ 0 ]->numFrames;
 	}
 
 	//
 	// compute LOD
 	//
-	int lod = ent->e.renderfx & RF_FORCENOLOD ? 0 : R_ComputeLOD(ent);
+	int lod = ent->e.renderfx & RF_FORCENOLOD ? 0 : R_ComputeLOD( ent );
 
 	//
 	// Validate the frames so there is no chance of a crash.
@@ -660,166 +566,138 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	//
-	if ((ent->e.frame >= tr.currentModel->q3_md3[lod]->numFrames) ||
-		(ent->e.frame < 0) ||
-		(ent->e.oldframe >= tr.currentModel->q3_md3[lod]->numFrames) ||
-		(ent->e.oldframe < 0))
-	{
-		common->DPrintf(S_COLOR_RED "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
-			ent->e.oldframe, ent->e.frame, tr.currentModel->name);
+	if ( ( ent->e.frame >= tr.currentModel->q3_md3[ lod ]->numFrames ) ||
+		 ( ent->e.frame < 0 ) ||
+		 ( ent->e.oldframe >= tr.currentModel->q3_md3[ lod ]->numFrames ) ||
+		 ( ent->e.oldframe < 0 ) ) {
+		common->DPrintf( S_COLOR_RED "R_AddMD3Surfaces: no such frame %d to %d for '%s'\n",
+			ent->e.oldframe, ent->e.frame, tr.currentModel->name );
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
 	}
 
-	md3Header_t* header = tr.currentModel->q3_md3[lod];
+	md3Header_t* header = tr.currentModel->q3_md3[ lod ];
 
 	//
 	// cull the entire model if merged bounding box of both frames
 	// is outside the view frustum.
 	//
-	int cull = R_CullModel(header, ent);
-	if (cull == CULL_OUT)
-	{
+	int cull = R_CullModel( header, ent );
+	if ( cull == CULL_OUT ) {
 		return;
 	}
 
 	//
 	// set up lighting now that we know we aren't culled
 	//
-	if (!personalModel || r_shadows->integer > 1)
-	{
-		R_SetupEntityLighting(&tr.refdef, ent);
+	if ( !personalModel || r_shadows->integer > 1 ) {
+		R_SetupEntityLighting( &tr.refdef, ent );
 	}
 
 	//
 	// see if we are in a fog volume
 	//
-	int fogNum = R_ComputeFogNum(header, ent);
+	int fogNum = R_ComputeFogNum( header, ent );
 
 	//
 	// draw all surfaces
 	//
-	md3Surface_t* surface = (md3Surface_t*)((byte*)header + header->ofsSurfaces);
-	for (int i = 0; i < header->numSurfaces; i++)
-	{
+	md3Surface_t* surface = ( md3Surface_t* )( ( byte* )header + header->ofsSurfaces );
+	for ( int i = 0; i < header->numSurfaces; i++ ) {
 		//	blink will change to be an overlay rather than replacing the head texture.
 		// think of it like batman's mask.  the polygons that have eye texture are duplicated
 		// and the 'lids' rendered with polygonoffset shader parm over the top of the open eyes.  this gives
 		// minimal overdraw/alpha blending/texture use without breaking the model and causing seams
-		if (GGameType & GAME_WolfSP && !String::ICmp(surface->name, "h_blink"))
-		{
-			if (!(ent->e.renderfx & RF_BLINK))
-			{
-				surface = (md3Surface_t*)((byte*)surface + surface->ofsEnd);
+		if ( GGameType & GAME_WolfSP && !String::ICmp( surface->name, "h_blink" ) ) {
+			if ( !( ent->e.renderfx & RF_BLINK ) ) {
+				surface = ( md3Surface_t* )( ( byte* )surface + surface->ofsEnd );
 				continue;
 			}
 		}
 
 		shader_t* shader;
-		if (ent->e.customShader)
-		{
-			shader = R_GetShaderByHandle(ent->e.customShader);
-		}
-		else if (ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins)
-		{
-			skin_t* skin = R_GetSkinByHandle(ent->e.customSkin);
+		if ( ent->e.customShader ) {
+			shader = R_GetShaderByHandle( ent->e.customShader );
+		} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )     {
+			skin_t* skin = R_GetSkinByHandle( ent->e.customSkin );
 
 			// match the surface name to something in the skin file
 			shader = tr.defaultShader;
 
 			//----(SA)	added blink
-			if (GGameType & (GAME_WolfMP | GAME_ET) && ent->e.renderfx & RF_BLINK)
-			{
-				const char* s = va("%s_b", surface->name);	// append '_b' for 'blink'
-				int hash = Com_HashKey(s, String::Length(s));
-				for (int j = 0; j < skin->numSurfaces; j++)
-				{
-					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
-					{
+			if ( GGameType & ( GAME_WolfMP | GAME_ET ) && ent->e.renderfx & RF_BLINK ) {
+				const char* s = va( "%s_b", surface->name );	// append '_b' for 'blink'
+				int hash = Com_HashKey( s, String::Length( s ) );
+				for ( int j = 0; j < skin->numSurfaces; j++ ) {
+					if ( GGameType & GAME_ET && hash != skin->surfaces[ j ]->hash ) {
 						continue;
 					}
-					if (!String::Cmp(skin->surfaces[j]->name, s))
-					{
-						shader = skin->surfaces[j]->shader;
+					if ( !String::Cmp( skin->surfaces[ j ]->name, s ) ) {
+						shader = skin->surfaces[ j ]->shader;
 						break;
 					}
 				}
 			}
 
-			if (shader == tr.defaultShader)
-			{
+			if ( shader == tr.defaultShader ) {
 				// blink reference in skin was not found
-				int hash = Com_HashKey(surface->name, sizeof(surface->name));
-				for (int j = 0; j < skin->numSurfaces; j++)
-				{
+				int hash = Com_HashKey( surface->name, sizeof ( surface->name ) );
+				for ( int j = 0; j < skin->numSurfaces; j++ ) {
 					// the names have both been lowercased
-					if (GGameType & GAME_ET && hash != skin->surfaces[j]->hash)
-					{
+					if ( GGameType & GAME_ET && hash != skin->surfaces[ j ]->hash ) {
 						continue;
 					}
-					if (!String::Cmp(skin->surfaces[j]->name, surface->name))
-					{
-						shader = skin->surfaces[j]->shader;
+					if ( !String::Cmp( skin->surfaces[ j ]->name, surface->name ) ) {
+						shader = skin->surfaces[ j ]->shader;
 						break;
 					}
 				}
 			}
 
-			if (shader == tr.defaultShader)
-			{
-				common->DPrintf(S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name);
+			if ( shader == tr.defaultShader ) {
+				common->DPrintf( S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name );
+			} else if ( shader->defaultShader )     {
+				common->DPrintf( S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
 			}
-			else if (shader->defaultShader)
-			{
-				common->DPrintf(S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name);
-			}
-		}
-		else if (surface->numShaders <= 0)
-		{
+		} else if ( surface->numShaders <= 0 )     {
 			shader = tr.defaultShader;
-		}
-		else
-		{
-			md3Shader_t* md3Shader = (md3Shader_t*)((byte*)surface + surface->ofsShaders);
+		} else   {
+			md3Shader_t* md3Shader = ( md3Shader_t* )( ( byte* )surface + surface->ofsShaders );
 			md3Shader += ent->e.skinNum % surface->numShaders;
-			shader = tr.shaders[md3Shader->shaderIndex];
+			shader = tr.shaders[ md3Shader->shaderIndex ];
 		}
 
 		// we will add shadows even if the main object isn't visible in the view
 
 		// stencil shadows can't do personal models unless I polyhedron clip
-		if (!personalModel &&
-			r_shadows->integer == 2 &&
-			fogNum == 0 &&
-			!(ent->e.renderfx & (RF_NOSHADOW | RF_DEPTHHACK)) &&
-			shader->sort == SS_OPAQUE)
-		{
-			R_AddDrawSurf((surfaceType_t*)surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
+		if ( !personalModel &&
+			 r_shadows->integer == 2 &&
+			 fogNum == 0 &&
+			 !( ent->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) ) &&
+			 shader->sort == SS_OPAQUE ) {
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess );
 		}
 
 		// projection shadows work fine with personal models
-		if (!(GGameType & GAME_WolfSP) &&
-			r_shadows->integer == 3 &&
-			fogNum == 0 &&
-			(ent->e.renderfx & RF_SHADOW_PLANE) &&
-			shader->sort == SS_OPAQUE)
-		{
-			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess);
+		if ( !( GGameType & GAME_WolfSP ) &&
+			 r_shadows->integer == 3 &&
+			 fogNum == 0 &&
+			 ( ent->e.renderfx & RF_SHADOW_PLANE ) &&
+			 shader->sort == SS_OPAQUE ) {
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess );
 		}
 
 		// for testing polygon shadows (on /all/ models)
-		if (GGameType & (GAME_WolfMP | GAME_ET) && r_shadows->integer == 4)
-		{
-			R_AddDrawSurf((surfaceType_t*)surface, tr.projectionShadowShader, 0, 0, 0, 0);
+		if ( GGameType & ( GAME_WolfMP | GAME_ET ) && r_shadows->integer == 4 ) {
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, 0, 0, 0 );
 		}
 
 		// don't add third_person objects if not viewing through a portal
-		if (!personalModel)
-		{
-			R_AddDrawSurf((surfaceType_t*)surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess);
+		if ( !personalModel ) {
+			R_AddDrawSurf( ( surfaceType_t* )surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess );
 		}
 
-		surface = (md3Surface_t*)((byte*)surface + surface->ofsEnd);
+		surface = ( md3Surface_t* )( ( byte* )surface + surface->ofsEnd );
 	}
 }
 
@@ -832,12 +710,10 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 //
 //==========================================================================
 
-static void VectorArrayNormalize(vec4_t* normals, unsigned int count)
-{
+static void VectorArrayNormalize( vec4_t* normals, unsigned int count ) {
 	// given the input, it's safe to call VectorNormalizeFast
-	while (count--)
-	{
-		VectorNormalizeFast(normals[0]);
+	while ( count-- ) {
+		VectorNormalizeFast( normals[ 0 ] );
 		normals++;
 	}
 }
@@ -848,111 +724,101 @@ static void VectorArrayNormalize(vec4_t* normals, unsigned int count)
 //
 //==========================================================================
 
-static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
-{
-	float* outXyz = tess.xyz[tess.numVertexes];
-	float* outNormal = tess.normal[tess.numVertexes];
+static void LerpMeshVertexes( md3Surface_t* surf, float backlerp ) {
+	float* outXyz = tess.xyz[ tess.numVertexes ];
+	float* outNormal = tess.normal[ tess.numVertexes ];
 
-	short* newXyz = (short*)((byte*)surf + surf->ofsXyzNormals) +
-					(backEnd.currentEntity->e.frame * surf->numVerts * 4);
+	short* newXyz = ( short* )( ( byte* )surf + surf->ofsXyzNormals ) +
+					( backEnd.currentEntity->e.frame * surf->numVerts * 4 );
 	short* newNormals = newXyz + 3;
 
-	float newXyzScale = MD3_XYZ_SCALE * (1.0 - backlerp);
+	float newXyzScale = MD3_XYZ_SCALE * ( 1.0 - backlerp );
 	float newNormalScale = 1.0 - backlerp;
 
 	int numVerts = surf->numVerts;
 
-	if (backlerp == 0)
-	{
+	if ( backlerp == 0 ) {
 		//
 		// just copy the vertexes
 		//
-		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			 newXyz += 4, newNormals += 4,
-			 outXyz += 4, outNormal += 4)
-		{
-			outXyz[0] = newXyz[0] * newXyzScale;
-			outXyz[1] = newXyz[1] * newXyzScale;
-			outXyz[2] = newXyz[2] * newXyzScale;
+		for ( int vertNum = 0; vertNum < numVerts; vertNum++,
+			  newXyz += 4, newNormals += 4,
+			  outXyz += 4, outNormal += 4 ) {
+			outXyz[ 0 ] = newXyz[ 0 ] * newXyzScale;
+			outXyz[ 1 ] = newXyz[ 1 ] * newXyzScale;
+			outXyz[ 2 ] = newXyz[ 2 ] * newXyzScale;
 
-			unsigned lat = (newNormals[0] >> 8) & 0xff;
-			unsigned lng = (newNormals[0] & 0xff);
-			lat *= (FUNCTABLE_SIZE / 256);
-			lng *= (FUNCTABLE_SIZE / 256);
+			unsigned lat = ( newNormals[ 0 ] >> 8 ) & 0xff;
+			unsigned lng = ( newNormals[ 0 ] & 0xff );
+			lat *= ( FUNCTABLE_SIZE / 256 );
+			lng *= ( FUNCTABLE_SIZE / 256 );
 
 			// decode X as cos( lat ) * sin( long )
 			// decode Y as sin( lat ) * sin( long )
 			// decode Z as cos( long )
 
-			outNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-			outNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-			outNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+			outNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
+			outNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
+			outNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 		}
-	}
-	else
-	{
+	} else   {
 		//
 		// interpolate and copy the vertex and normal
 		//
-		short* oldXyz = (short*)((byte*)surf + surf->ofsXyzNormals) +
-						(backEnd.currentEntity->e.oldframe * surf->numVerts * 4);
+		short* oldXyz = ( short* )( ( byte* )surf + surf->ofsXyzNormals ) +
+						( backEnd.currentEntity->e.oldframe * surf->numVerts * 4 );
 		short* oldNormals = oldXyz + 3;
 
 		float oldXyzScale = MD3_XYZ_SCALE * backlerp;
 		float oldNormalScale = backlerp;
 
-		for (int vertNum = 0; vertNum < numVerts; vertNum++,
-			 oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
-			 outXyz += 4, outNormal += 4)
-		{
+		for ( int vertNum = 0; vertNum < numVerts; vertNum++,
+			  oldXyz += 4, newXyz += 4, oldNormals += 4, newNormals += 4,
+			  outXyz += 4, outNormal += 4 ) {
 			// interpolate the xyz
-			outXyz[0] = oldXyz[0] * oldXyzScale + newXyz[0] * newXyzScale;
-			outXyz[1] = oldXyz[1] * oldXyzScale + newXyz[1] * newXyzScale;
-			outXyz[2] = oldXyz[2] * oldXyzScale + newXyz[2] * newXyzScale;
+			outXyz[ 0 ] = oldXyz[ 0 ] * oldXyzScale + newXyz[ 0 ] * newXyzScale;
+			outXyz[ 1 ] = oldXyz[ 1 ] * oldXyzScale + newXyz[ 1 ] * newXyzScale;
+			outXyz[ 2 ] = oldXyz[ 2 ] * oldXyzScale + newXyz[ 2 ] * newXyzScale;
 
 			// FIXME: interpolate lat/long instead?
-			if (GGameType & GAME_ET)
-			{
+			if ( GGameType & GAME_ET ) {
 				// ydnar: ok :)
-				unsigned lat = idMath::FtoiFast((((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
-					(((oldNormals[0] >> 8) & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
-				unsigned lng = idMath::FtoiFast(((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * newNormalScale) +
-					((oldNormals[0] & 0xFF) * (FUNCTABLE_SIZE / 256) * oldNormalScale));
+				unsigned lat = idMath::FtoiFast( ( ( ( oldNormals[ 0 ] >> 8 ) & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
+					( ( ( oldNormals[ 0 ] >> 8 ) & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * oldNormalScale ) );
+				unsigned lng = idMath::FtoiFast( ( ( oldNormals[ 0 ] & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * newNormalScale ) +
+					( ( oldNormals[ 0 ] & 0xFF ) * ( FUNCTABLE_SIZE / 256 ) * oldNormalScale ) );
 
-				outNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-				outNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-				outNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
-			}
-			else
-			{
-				unsigned lat = (newNormals[0] >> 8) & 0xff;
-				unsigned lng = (newNormals[0] & 0xff);
-				lat *= (FUNCTABLE_SIZE / 256);
-				lng *= (FUNCTABLE_SIZE / 256);
+				outNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
+				outNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
+				outNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
+			} else   {
+				unsigned lat = ( newNormals[ 0 ] >> 8 ) & 0xff;
+				unsigned lng = ( newNormals[ 0 ] & 0xff );
+				lat *= ( FUNCTABLE_SIZE / 256 );
+				lng *= ( FUNCTABLE_SIZE / 256 );
 				vec3_t uncompressedNewNormal;
-				uncompressedNewNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-				uncompressedNewNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-				uncompressedNewNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+				uncompressedNewNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
+				uncompressedNewNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
+				uncompressedNewNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 
-				lat = (oldNormals[0] >> 8) & 0xff;
-				lng = (oldNormals[0] & 0xff);
-				lat *= (FUNCTABLE_SIZE / 256);
-				lng *= (FUNCTABLE_SIZE / 256);
+				lat = ( oldNormals[ 0 ] >> 8 ) & 0xff;
+				lng = ( oldNormals[ 0 ] & 0xff );
+				lat *= ( FUNCTABLE_SIZE / 256 );
+				lng *= ( FUNCTABLE_SIZE / 256 );
 
 				vec3_t uncompressedOldNormal;
-				uncompressedOldNormal[0] = tr.sinTable[(lat + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK] * tr.sinTable[lng];
-				uncompressedOldNormal[1] = tr.sinTable[lat] * tr.sinTable[lng];
-				uncompressedOldNormal[2] = tr.sinTable[(lng + (FUNCTABLE_SIZE / 4)) & FUNCTABLE_MASK];
+				uncompressedOldNormal[ 0 ] = tr.sinTable[ ( lat + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ] * tr.sinTable[ lng ];
+				uncompressedOldNormal[ 1 ] = tr.sinTable[ lat ] * tr.sinTable[ lng ];
+				uncompressedOldNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 
-				outNormal[0] = uncompressedOldNormal[0] * oldNormalScale + uncompressedNewNormal[0] * newNormalScale;
-				outNormal[1] = uncompressedOldNormal[1] * oldNormalScale + uncompressedNewNormal[1] * newNormalScale;
-				outNormal[2] = uncompressedOldNormal[2] * oldNormalScale + uncompressedNewNormal[2] * newNormalScale;
+				outNormal[ 0 ] = uncompressedOldNormal[ 0 ] * oldNormalScale + uncompressedNewNormal[ 0 ] * newNormalScale;
+				outNormal[ 1 ] = uncompressedOldNormal[ 1 ] * oldNormalScale + uncompressedNewNormal[ 1 ] * newNormalScale;
+				outNormal[ 2 ] = uncompressedOldNormal[ 2 ] * oldNormalScale + uncompressedNewNormal[ 2 ] * newNormalScale;
 			}
 		}
 		// ydnar: unecessary because of lat/lng lerping
-		if (!(GGameType & GAME_ET))
-		{
-			VectorArrayNormalize((vec4_t*)tess.normal[tess.numVertexes], numVerts);
+		if ( !( GGameType & GAME_ET ) ) {
+			VectorArrayNormalize( ( vec4_t* )tess.normal[ tess.numVertexes ], numVerts );
 		}
 	}
 }
@@ -963,48 +829,40 @@ static void LerpMeshVertexes(md3Surface_t* surf, float backlerp)
 //
 //==========================================================================
 
-void RB_SurfaceMesh(md3Surface_t* surface)
-{
+void RB_SurfaceMesh( md3Surface_t* surface ) {
 	// RF, check for REFLAG_HANDONLY
-	if (backEnd.currentEntity->e.reFlags & REFLAG_ONLYHAND)
-	{
-		if (!strstr(surface->name, "hand"))
-		{
+	if ( backEnd.currentEntity->e.reFlags & REFLAG_ONLYHAND ) {
+		if ( !strstr( surface->name, "hand" ) ) {
 			return;
 		}
 	}
 
 	float backlerp;
-	if (backEnd.currentEntity->e.oldframe == backEnd.currentEntity->e.frame)
-	{
+	if ( backEnd.currentEntity->e.oldframe == backEnd.currentEntity->e.frame ) {
 		backlerp = 0;
-	}
-	else
-	{
+	} else   {
 		backlerp = backEnd.currentEntity->e.backlerp;
 	}
 
-	RB_CHECKOVERFLOW(surface->numVerts, surface->numTriangles * 3);
+	RB_CHECKOVERFLOW( surface->numVerts, surface->numTriangles * 3 );
 
-	LerpMeshVertexes(surface, backlerp);
+	LerpMeshVertexes( surface, backlerp );
 
-	int* triangles = (int*)((byte*)surface + surface->ofsTriangles);
+	int* triangles = ( int* )( ( byte* )surface + surface->ofsTriangles );
 	int indexes = surface->numTriangles * 3;
 	int Bob = tess.numIndexes;
 	int Doug = tess.numVertexes;
-	for (int j = 0; j < indexes; j++)
-	{
-		tess.indexes[Bob + j] = Doug + triangles[j];
+	for ( int j = 0; j < indexes; j++ ) {
+		tess.indexes[ Bob + j ] = Doug + triangles[ j ];
 	}
 	tess.numIndexes += indexes;
 
-	float* texCoords = (float*)((byte*)surface + surface->ofsSt);
+	float* texCoords = ( float* )( ( byte* )surface + surface->ofsSt );
 
 	int numVerts = surface->numVerts;
-	for (int j = 0; j < numVerts; j++)
-	{
-		tess.texCoords[Doug + j][0][0] = texCoords[j * 2 + 0];
-		tess.texCoords[Doug + j][0][1] = texCoords[j * 2 + 1];
+	for ( int j = 0; j < numVerts; j++ ) {
+		tess.texCoords[ Doug + j ][ 0 ][ 0 ] = texCoords[ j * 2 + 0 ];
+		tess.texCoords[ Doug + j ][ 0 ][ 1 ] = texCoords[ j * 2 + 1 ];
 		// FIXME: fill in lightmapST for completeness?
 	}
 

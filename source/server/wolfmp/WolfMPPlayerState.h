@@ -14,66 +14,65 @@
 //**
 //**************************************************************************
 
-class idWolfMPPlayerState : public idPlayerState3
-{
+class idWolfMPPlayerState : public idPlayerState3 {
 public:
 /*
-	int weaponDelay;			// for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
-	int grenadeTimeLeft;			// for delayed grenade throwing.  this is set to a #define for grenade
-									// lifetime when the attack button goes down, then when attack is released
-									// this is the amount of time left before the grenade goes off (or if it
-									// gets to 0 while in players hand, it explodes)
+    int weaponDelay;			// for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
+    int grenadeTimeLeft;			// for delayed grenade throwing.  this is set to a #define for grenade
+                                    // lifetime when the attack button goes down, then when attack is released
+                                    // this is the amount of time left before the grenade goes off (or if it
+                                    // gets to 0 while in players hand, it explodes)
 
 
-	int gravity;
-	*/
+    int gravity;
+    */
 	virtual float GetLeanf() const;
-	virtual void SetLeanf(float value);
+	virtual void SetLeanf( float value );
 /*
-	int speed;
-	int delta_angles[3];			// add to command angles to get view direction
-									// changed by spawns, rotating objects, and teleporters
+    int speed;
+    int delta_angles[3];			// add to command angles to get view direction
+                                    // changed by spawns, rotating objects, and teleporters
 
-	int groundEntityNum;		// Q3ENTITYNUM_NONE = in air
+    int groundEntityNum;		// Q3ENTITYNUM_NONE = in air
 
-	int legsTimer;				// don't change low priority animations until this runs out
-	int legsAnim;				// mask off ANIM_TOGGLEBIT
+    int legsTimer;				// don't change low priority animations until this runs out
+    int legsAnim;				// mask off ANIM_TOGGLEBIT
 
-	int torsoTimer;				// don't change low priority animations until this runs out
-	int torsoAnim;				// mask off ANIM_TOGGLEBIT
+    int torsoTimer;				// don't change low priority animations until this runs out
+    int torsoAnim;				// mask off ANIM_TOGGLEBIT
 
-	int movementDir;			// a number 0 to 7 that represents the reletive angle
-								// of movement to the view angle (axial and diagonals)
-								// when at rest, the value will remain unchanged
-								// used to twist the legs during strafing
+    int movementDir;			// a number 0 to 7 that represents the reletive angle
+                                // of movement to the view angle (axial and diagonals)
+                                // when at rest, the value will remain unchanged
+                                // used to twist the legs during strafing
 
 
 
-	int eFlags;					// copied to entityState_t->eFlags
+    int eFlags;					// copied to entityState_t->eFlags
 
-	int eventSequence;			// pmove generated events
-	int events[MAX_EVENTS_WM];
-	int eventParms[MAX_EVENTS_WM];
-	int oldEventSequence;			// so we can see which events have been added since we last converted to entityState_t
+    int eventSequence;			// pmove generated events
+    int events[MAX_EVENTS_WM];
+    int eventParms[MAX_EVENTS_WM];
+    int oldEventSequence;			// so we can see which events have been added since we last converted to entityState_t
 
-	int externalEvent;			// events set on player from another source
-	int externalEventParm;
-	int externalEventTime;
+    int externalEvent;			// events set on player from another source
+    int externalEventParm;
+    int externalEventTime;
 */
 	virtual int GetClientNum() const;
-	virtual void SetClientNum(int value);
+	virtual void SetClientNum( int value );
 /*
-	// weapon info
-	int weapon;					// copied to entityState_t->weapon
-	int weaponstate;
+    // weapon info
+    int weapon;					// copied to entityState_t->weapon
+    int weaponstate;
 
-	// item info
-	int item;
+    // item info
+    int item;
 */
 	virtual const float* GetViewAngles() const;
-	virtual void SetViewAngles(const vec3_t value);
+	virtual void SetViewAngles( const vec3_t value );
 	virtual int GetViewHeight() const;
-	virtual void SetViewHeight(int value);
+	virtual void SetViewHeight( int value );
 	/*
 	// damage feedback
 	int damageEvent;			// when it changes, latch the other parms
@@ -123,47 +122,47 @@ public:
 	int serverCursorHintVal;			// a value (0-255) associated with the above
 
 	q3trace_t serverCursorHintTrace;		// not communicated over net, but used to store the current server-side cursorhint trace
-*/
+	*/
 	virtual int GetPing() const;
-	virtual void SetPing(int value);
+	virtual void SetPing( int value );
 /*
-	int pmove_framecount;			// FIXME: don't transmit over the network
-	int entityEventSequence;
+    int pmove_framecount;			// FIXME: don't transmit over the network
+    int entityEventSequence;
 
-	int sprintTime;
-	int sprintExertTime;
+    int sprintTime;
+    int sprintExertTime;
 
-	// JPW NERVE -- value for all multiplayer classes with regenerating "class weapons" -- ie LT artillery, medic medpack, engineer build points, etc
-	int classWeaponTime;
-	int jumpTime;			// used in MP to prevent jump accel
-	// jpw
+    // JPW NERVE -- value for all multiplayer classes with regenerating "class weapons" -- ie LT artillery, medic medpack, engineer build points, etc
+    int classWeaponTime;
+    int jumpTime;			// used in MP to prevent jump accel
+    // jpw
 
-	int weapAnimTimer;				// don't change low priority animations until this runs out		//----(SA)	added
-	int weapAnim;				// mask off ANIM_TOGGLEBIT										//----(SA)	added
+    int weapAnimTimer;				// don't change low priority animations until this runs out		//----(SA)	added
+    int weapAnim;				// mask off ANIM_TOGGLEBIT										//----(SA)	added
 
-	qboolean releasedFire;
+    qboolean releasedFire;
 
-	float aimSpreadScaleFloat;			// (SA) the server-side aimspreadscale that lets it track finer changes but still only
-										// transmit the 8bit int to the client
-	int aimSpreadScale;			// 0 - 255 increases with angular movement
-	int lastFireTime;			// used by server to hold last firing frame briefly when randomly releasing trigger (AI)
+    float aimSpreadScaleFloat;			// (SA) the server-side aimspreadscale that lets it track finer changes but still only
+                                        // transmit the 8bit int to the client
+    int aimSpreadScale;			// 0 - 255 increases with angular movement
+    int lastFireTime;			// used by server to hold last firing frame briefly when randomly releasing trigger (AI)
 
-	int quickGrenTime;
+    int quickGrenTime;
 
-	int leanStopDebounceTime;
+    int leanStopDebounceTime;
 
 //----(SA)	added
 
-	// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
-	// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-	int weapHeat[MAX_WEAPONS_WM];			// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
-	int curWeapHeat;					// value for the currently selected weapon (for transmission to client)
+    // seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
+    // I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
+    int weapHeat[MAX_WEAPONS_WM];			// some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
+    int curWeapHeat;					// value for the currently selected weapon (for transmission to client)
 
-	int venomTime;			//----(SA)	added
+    int venomTime;			//----(SA)	added
 //----(SA)	end
 
-	int aiState;
+    int aiState;
 
-	int identifyClient;					// NERVE - SMF
+    int identifyClient;					// NERVE - SMF
 */
 };

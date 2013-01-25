@@ -80,7 +80,7 @@ static pthread_cond_t renderCommandsEvent = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t renderCompletedEvent = PTHREAD_COND_INITIALIZER;
 #endif
 
-static void (* glimpRenderThread)();
+static void ( * glimpRenderThread )();
 
 static volatile void* smpData = NULL;
 #ifndef WOLF_SMP
@@ -100,40 +100,34 @@ static volatile bool smpDataReady;
 //
 //==========================================================================
 
-static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
-{
-	static char buf[1024];
-	XGetErrorText(dpy, ev->error_code, buf, 1024);
-	common->Printf("X Error of failed request: %s\n", buf);
-	common->Printf("  Major opcode of failed request: %d\n", ev->request_code);
-	common->Printf("  Minor opcode of failed request: %d\n", ev->minor_code);
-	common->Printf("  Serial number of failed request: %lu\n", ev->serial);
+static int qXErrorHandler( Display* dpy, XErrorEvent* ev ) {
+	static char buf[ 1024 ];
+	XGetErrorText( dpy, ev->error_code, buf, 1024 );
+	common->Printf( "X Error of failed request: %s\n", buf );
+	common->Printf( "  Major opcode of failed request: %d\n", ev->request_code );
+	common->Printf( "  Minor opcode of failed request: %d\n", ev->minor_code );
+	common->Printf( "  Serial number of failed request: %lu\n", ev->serial );
 	return 0;
 }
 
-static void GLW_GenDefaultLists()
-{
+static void GLW_GenDefaultLists() {
 	// keep going, we'll probably just leak some stuff
-	if (fontbase_init)
-	{
-		common->DPrintf("ERROR: GLW_GenDefaultLists: font base is already marked initialized\n");
+	if ( fontbase_init ) {
+		common->DPrintf( "ERROR: GLW_GenDefaultLists: font base is already marked initialized\n" );
 	}
 
-	XFontStruct* fontInfo = XLoadQueryFont(dpy, "-*-helvetica-medium-r-normal-*-12-*-*-*-p-*-*-*");
-	if (fontInfo == NULL)
-	{
+	XFontStruct* fontInfo = XLoadQueryFont( dpy, "-*-helvetica-medium-r-normal-*-12-*-*-*-p-*-*-*" );
+	if ( fontInfo == NULL ) {
 		// try to load other fonts
-		fontInfo = XLoadQueryFont(dpy, "-*-helvetica-*-*-*-*-*-*-*-*-*-*-*-*");
+		fontInfo = XLoadQueryFont( dpy, "-*-helvetica-*-*-*-*-*-*-*-*-*-*-*-*" );
 
 		// any font will do !
-		if (fontInfo == NULL)
-		{
-			fontInfo = XLoadQueryFont(dpy, "-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+		if ( fontInfo == NULL ) {
+			fontInfo = XLoadQueryFont( dpy, "-*-*-*-*-*-*-*-*-*-*-*-*-*-*" );
 		}
 
-		if (fontInfo == NULL)
-		{
-			common->Printf("ERROR: couldn't create font (XLoadQueryFont)\n");
+		if ( fontInfo == NULL ) {
+			common->Printf( "ERROR: couldn't create font (XLoadQueryFont)\n" );
 			return;
 		}
 	}
@@ -144,10 +138,9 @@ static void GLW_GenDefaultLists()
 	unsigned int lastrow = fontInfo->max_byte1;
 	//	How many chars in the charset
 	int maxchars = 256 * lastrow + last;
-	gl_NormalFontBase = glGenLists(maxchars + 1);
-	if (gl_NormalFontBase == 0)
-	{
-		common->Printf("ERROR: couldn't create font (glGenLists)\n");
+	gl_NormalFontBase = glGenLists( maxchars + 1 );
+	if ( gl_NormalFontBase == 0 ) {
+		common->Printf( "ERROR: couldn't create font (glGenLists)\n" );
 		return;
 	}
 
@@ -155,10 +148,9 @@ static void GLW_GenDefaultLists()
 	int firstbitmap = 256 * firstrow + first;
 
 	//	for each row of chars, call glXUseXFont to build the bitmaps.
-	for (int i = firstrow; i <= (int)lastrow; i++)
-	{
+	for ( int i = firstrow; i <= ( int )lastrow; i++ ) {
 		// http://www.atomised.org/docs/XFree86-4.2.1/lib_2GL_2glx_2glxcmds_8c-source.html#l00373
-		glXUseXFont(fontInfo->fid, firstbitmap, last - first + 1, gl_NormalFontBase + firstbitmap);
+		glXUseXFont( fontInfo->fid, firstbitmap, last - first + 1, gl_NormalFontBase + firstbitmap );
 		firstbitmap += 256;
 	}
 
@@ -171,174 +163,141 @@ static void GLW_GenDefaultLists()
 //
 //==========================================================================
 
-rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
-{
-	if (!XInitThreads())
-	{
-		common->Printf("...XInitThreads() failed, disabling r_smp\n");
-		Cvar_Set("r_smp", "0");
+rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
+	if ( !XInitThreads() ) {
+		common->Printf( "...XInitThreads() failed, disabling r_smp\n" );
+		Cvar_Set( "r_smp", "0" );
 	}
 
 	// set up our custom error handler for X failures
-	XSetErrorHandler(&qXErrorHandler);
+	XSetErrorHandler( &qXErrorHandler );
 
-	if (fullscreen && in_nograb->value)
-	{
-		common->Printf("Fullscreen not allowed with in_nograb 1\n");
-		Cvar_Set("r_fullscreen", "0");
+	if ( fullscreen && in_nograb->value ) {
+		common->Printf( "Fullscreen not allowed with in_nograb 1\n" );
+		Cvar_Set( "r_fullscreen", "0" );
 		r_fullscreen->modified = false;
 		fullscreen = false;
 	}
 
-	common->Printf("...setting mode %d:", mode);
+	common->Printf( "...setting mode %d:", mode );
 
-	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
-	{
-		common->Printf(" invalid mode\n");
+	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) ) {
+		common->Printf( " invalid mode\n" );
 		return RSERR_INVALID_MODE;
 	}
-	common->Printf(" %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
+	common->Printf( " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
 
 	// open the display
-	if (!(dpy = XOpenDisplay(NULL)))
-	{
-		fprintf(stderr, "Error couldn't open the X display\n");
+	if ( !( dpy = XOpenDisplay( NULL ) ) ) {
+		fprintf( stderr, "Error couldn't open the X display\n" );
 		return RSERR_INVALID_MODE;
 	}
 
-	scrnum = DefaultScreen(dpy);
-	Window root = RootWindow(dpy, scrnum);
+	scrnum = DefaultScreen( dpy );
+	Window root = RootWindow( dpy, scrnum );
 
 	// Get video mode list
-	if (!XF86VidModeQueryVersion(dpy, &vidmode_MajorVersion, &vidmode_MinorVersion))
-	{
+	if ( !XF86VidModeQueryVersion( dpy, &vidmode_MajorVersion, &vidmode_MinorVersion ) ) {
 		vidmode_ext = false;
-	}
-	else
-	{
-		common->Printf("Using XFree86-VidModeExtension Version %d.%d\n", vidmode_MajorVersion, vidmode_MinorVersion);
+	} else   {
+		common->Printf( "Using XFree86-VidModeExtension Version %d.%d\n", vidmode_MajorVersion, vidmode_MinorVersion );
 		vidmode_ext = true;
 	}
 
 	// Check for DGA
 	int dga_MajorVersion = 0;
 	int dga_MinorVersion = 0;
-	if (in_dgamouse->value)
-	{
-		if (!XF86DGAQueryVersion(dpy, &dga_MajorVersion, &dga_MinorVersion))
-		{
+	if ( in_dgamouse->value ) {
+		if ( !XF86DGAQueryVersion( dpy, &dga_MajorVersion, &dga_MinorVersion ) ) {
 			// unable to query, probalby not supported
-			common->Printf("Failed to detect XF86DGA Mouse\n");
-			Cvar_Set("in_dgamouse", "0");
-		}
-		else
-		{
-			common->Printf("XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion);
+			common->Printf( "Failed to detect XF86DGA Mouse\n" );
+			Cvar_Set( "in_dgamouse", "0" );
+		} else   {
+			common->Printf( "XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion );
 		}
 	}
 
 	int actualWidth = glConfig.vidWidth;
 	int actualHeight = glConfig.vidHeight;
 
-	if (vidmode_ext)
-	{
+	if ( vidmode_ext ) {
 		int best_fit, best_dist, dist, x, y;
 
-		XF86VidModeGetAllModeLines(dpy, scrnum, &num_vidmodes, &vidmodes);
+		XF86VidModeGetAllModeLines( dpy, scrnum, &num_vidmodes, &vidmodes );
 
 		// Are we going fullscreen?  If so, let's change video mode
-		if (fullscreen)
-		{
+		if ( fullscreen ) {
 			best_dist = 9999999;
 			best_fit = -1;
 
-			for (int i = 0; i < num_vidmodes; i++)
-			{
-				if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
-					glConfig.vidHeight > vidmodes[i]->vdisplay)
-				{
+			for ( int i = 0; i < num_vidmodes; i++ ) {
+				if ( glConfig.vidWidth > vidmodes[ i ]->hdisplay ||
+					 glConfig.vidHeight > vidmodes[ i ]->vdisplay ) {
 					continue;
 				}
 
-				x = glConfig.vidWidth - vidmodes[i]->hdisplay;
-				y = glConfig.vidHeight - vidmodes[i]->vdisplay;
-				dist = (x * x) + (y * y);
-				if (dist < best_dist)
-				{
+				x = glConfig.vidWidth - vidmodes[ i ]->hdisplay;
+				y = glConfig.vidHeight - vidmodes[ i ]->vdisplay;
+				dist = ( x * x ) + ( y * y );
+				if ( dist < best_dist ) {
 					best_dist = dist;
 					best_fit = i;
 				}
 			}
 
-			if (best_fit != -1)
-			{
-				actualWidth = vidmodes[best_fit]->hdisplay;
-				actualHeight = vidmodes[best_fit]->vdisplay;
+			if ( best_fit != -1 ) {
+				actualWidth = vidmodes[ best_fit ]->hdisplay;
+				actualHeight = vidmodes[ best_fit ]->vdisplay;
 
 				// change to the mode
-				XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
+				XF86VidModeSwitchToMode( dpy, scrnum, vidmodes[ best_fit ] );
 				vidmode_active = true;
 
 				// Move the viewport to top left
-				XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
+				XF86VidModeSetViewPort( dpy, scrnum, 0, 0 );
 
-				common->Printf("XFree86-VidModeExtension Activated at %dx%d\n",
-					actualWidth, actualHeight);
-			}
-			else
-			{
+				common->Printf( "XFree86-VidModeExtension Activated at %dx%d\n",
+					actualWidth, actualHeight );
+			} else   {
 				fullscreen = 0;
-				common->Printf("XFree86-VidModeExtension: No acceptable modes found\n");
+				common->Printf( "XFree86-VidModeExtension: No acceptable modes found\n" );
 			}
-		}
-		else
-		{
-			common->Printf("XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
+		} else   {
+			common->Printf( "XFree86-VidModeExtension:  Ignored on non-fullscreen\n" );
 		}
 	}
 
-	if (!colorbits)
-	{
+	if ( !colorbits ) {
 		colorbits = !r_colorbits->value ? 24 : r_colorbits->value;
 	}
 	int depthbits = !r_depthbits->value ? 24 : r_depthbits->value;
 	int stencilbits = r_stencilbits->value;
 
 	XVisualInfo* visinfo = NULL;
-	for (int i = 0; i < 16; i++)
-	{
+	for ( int i = 0; i < 16; i++ ) {
 		// 0 - default
 		// 1 - minus colorbits
 		// 2 - minus depthbits
 		// 3 - minus stencil
-		if ((i % 4) == 0 && i)
-		{
+		if ( ( i % 4 ) == 0 && i ) {
 			// one pass, reduce
-			switch (i / 4)
-			{
+			switch ( i / 4 ) {
 			case 2:
-				if (colorbits == 24)
-				{
+				if ( colorbits == 24 ) {
 					colorbits = 16;
 				}
 				break;
 			case 1:
-				if (depthbits == 24)
-				{
+				if ( depthbits == 24 ) {
 					depthbits = 16;
-				}
-				else if (depthbits == 16)
-				{
+				} else if ( depthbits == 16 )     {
 					depthbits = 8;
 				}
 				break;
 			case 3:
-				if (stencilbits == 24)
-				{
+				if ( stencilbits == 24 ) {
 					stencilbits = 16;
-				}
-				else if (stencilbits == 16)
-				{
+				} else if ( stencilbits == 16 )     {
 					stencilbits = 8;
 				}
 				break;
@@ -349,41 +308,29 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		int tdepthbits = depthbits;
 		int tstencilbits = stencilbits;
 
-		if ((i % 4) == 3)
-		{
+		if ( ( i % 4 ) == 3 ) {
 			// reduce colorbits
-			if (tcolorbits == 24)
-			{
+			if ( tcolorbits == 24 ) {
 				tcolorbits = 16;
 			}
 		}
 
-		if ((i % 4) == 2)
-		{
+		if ( ( i % 4 ) == 2 ) {
 			// reduce depthbits
-			if (tdepthbits == 24)
-			{
+			if ( tdepthbits == 24 ) {
 				tdepthbits = 16;
-			}
-			else if (tdepthbits == 16)
-			{
+			} else if ( tdepthbits == 16 )     {
 				tdepthbits = 8;
 			}
 		}
 
-		if ((i % 4) == 1)
-		{
+		if ( ( i % 4 ) == 1 ) {
 			// reduce stencilbits
-			if (tstencilbits == 24)
-			{
+			if ( tstencilbits == 24 ) {
 				tstencilbits = 16;
-			}
-			else if (tstencilbits == 16)
-			{
+			} else if ( tstencilbits == 16 )     {
 				tstencilbits = 8;
-			}
-			else
-			{
+			} else   {
 				tstencilbits = 0;
 			}
 		}
@@ -410,32 +357,28 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			ATTR_STENCIL_IDX = 11
 		};
 
-		if (tcolorbits == 24)
-		{
-			attrib[ATTR_RED_IDX] = 8;
-			attrib[ATTR_GREEN_IDX] = 8;
-			attrib[ATTR_BLUE_IDX] = 8;
-		}
-		else
-		{
+		if ( tcolorbits == 24 ) {
+			attrib[ ATTR_RED_IDX ] = 8;
+			attrib[ ATTR_GREEN_IDX ] = 8;
+			attrib[ ATTR_BLUE_IDX ] = 8;
+		} else   {
 			// must be 16 bit
-			attrib[ATTR_RED_IDX] = 4;
-			attrib[ATTR_GREEN_IDX] = 4;
-			attrib[ATTR_BLUE_IDX] = 4;
+			attrib[ ATTR_RED_IDX ] = 4;
+			attrib[ ATTR_GREEN_IDX ] = 4;
+			attrib[ ATTR_BLUE_IDX ] = 4;
 		}
 
-		attrib[ATTR_DEPTH_IDX] = tdepthbits;// default to 24 depth
-		attrib[ATTR_STENCIL_IDX] = tstencilbits;
+		attrib[ ATTR_DEPTH_IDX ] = tdepthbits;	// default to 24 depth
+		attrib[ ATTR_STENCIL_IDX ] = tstencilbits;
 
-		visinfo = glXChooseVisual(dpy, scrnum, attrib);
-		if (!visinfo)
-		{
+		visinfo = glXChooseVisual( dpy, scrnum, attrib );
+		if ( !visinfo ) {
 			continue;
 		}
 
-		common->Printf("Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
-			attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
-			attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX]);
+		common->Printf( "Using %d/%d/%d Color bits, %d depth, %d stencil display.\n",
+			attrib[ ATTR_RED_IDX ], attrib[ ATTR_GREEN_IDX ], attrib[ ATTR_BLUE_IDX ],
+			attrib[ ATTR_DEPTH_IDX ], attrib[ ATTR_STENCIL_IDX ] );
 
 		glConfig.colorBits = tcolorbits;
 		glConfig.depthBits = tdepthbits;
@@ -443,38 +386,34 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		break;
 	}
 
-	if (!visinfo)
-	{
-		common->Printf("Couldn't get a visual\n");
+	if ( !visinfo ) {
+		common->Printf( "Couldn't get a visual\n" );
 		return RSERR_INVALID_MODE;
 	}
 
 	//	Window attributes
 	XSetWindowAttributes attr;
 	unsigned long mask;
-	attr.background_pixel = BlackPixel(dpy, scrnum);
+	attr.background_pixel = BlackPixel( dpy, scrnum );
 	attr.border_pixel = 0;
-	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
+	attr.colormap = XCreateColormap( dpy, root, visinfo->visual, AllocNone );
 	attr.event_mask = X_MASK;
-	if (vidmode_active)
-	{
+	if ( vidmode_active ) {
 		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore |
 			   CWEventMask | CWOverrideRedirect;
 		attr.override_redirect = True;
 		attr.backing_store = NotUseful;
 		attr.save_under = False;
-	}
-	else
-	{
+	} else   {
 		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 	}
 
-	win = XCreateWindow(dpy, root, 0, 0,
+	win = XCreateWindow( dpy, root, 0, 0,
 		actualWidth, actualHeight,
 		0, visinfo->depth, InputOutput,
-		visinfo->visual, mask, &attr);
+		visinfo->visual, mask, &attr );
 
-	XStoreName(dpy, win, R_GetTitleForWindow());
+	XStoreName( dpy, win, R_GetTitleForWindow() );
 
 	/* GH: Don't let the window be resized */
 	XSizeHints sizehints;
@@ -482,13 +421,12 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	sizehints.min_width = sizehints.max_width = actualWidth;
 	sizehints.min_height = sizehints.max_height = actualHeight;
 
-	XSetWMNormalHints(dpy, win, &sizehints);
+	XSetWMNormalHints( dpy, win, &sizehints );
 
-	XMapWindow(dpy, win);
+	XMapWindow( dpy, win );
 
-	if (vidmode_active)
-	{
-		XMoveWindow(dpy, win, 0, 0);
+	if ( vidmode_active ) {
+		XMoveWindow( dpy, win, 0, 0 );
 		//XRaiseWindow(dpy, win);
 		//XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
 		//XFlush(dpy);
@@ -497,56 +435,48 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	}
 
 	//	hook to window close
-	wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
-	wm_delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-	XSetWMProtocols(dpy, win, &wm_delete_window, 1);
+	wm_protocols = XInternAtom( dpy, "WM_PROTOCOLS", False );
+	wm_delete_window = XInternAtom( dpy, "WM_DELETE_WINDOW", False );
+	XSetWMProtocols( dpy, win, &wm_delete_window, 1 );
 
-	XFlush(dpy);
+	XFlush( dpy );
 
-	XSync(dpy, False);	// bk001130 - from cvs1.17 (mkv)
-	ctx = glXCreateContext(dpy, visinfo, NULL, True);
-	XSync(dpy, False);	// bk001130 - from cvs1.17 (mkv)
+	XSync( dpy, False );	// bk001130 - from cvs1.17 (mkv)
+	ctx = glXCreateContext( dpy, visinfo, NULL, True );
+	XSync( dpy, False );	// bk001130 - from cvs1.17 (mkv)
 
 	/* GH: Free the visinfo after we're done with it */
-	XFree(visinfo);
+	XFree( visinfo );
 
-	glXMakeCurrent(dpy, win, ctx);
+	glXMakeCurrent( dpy, win, ctx );
 
 	glConfig.deviceSupportsGamma = false;
-	if (vidmode_ext)
-	{
-		if (vidmode_MajorVersion < GAMMA_MINMAJOR ||
-			(vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR))
-		{
-			common->Printf("XF86 Gamma extension not supported in this version\n");
-		}
-		else
-		{
-			XF86VidModeGetGamma(dpy, scrnum, &vidmode_InitialGamma);
-			common->Printf("XF86 Gamma extension initialized\n");
+	if ( vidmode_ext ) {
+		if ( vidmode_MajorVersion < GAMMA_MINMAJOR ||
+			 ( vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR ) ) {
+			common->Printf( "XF86 Gamma extension not supported in this version\n" );
+		} else   {
+			XF86VidModeGetGamma( dpy, scrnum, &vidmode_InitialGamma );
+			common->Printf( "XF86 Gamma extension initialized\n" );
 			glConfig.deviceSupportsGamma = true;
 		}
 	}
 
 	//	Check for software GL implementation.
-	const char* glstring = (char*)glGetString(GL_RENDERER);
-	if (!String::ICmp(glstring, "Mesa X11") ||
-		!String::ICmp(glstring, "Mesa GLX Indirect"))
-	{
-		if (!r_allowSoftwareGL->integer)
-		{
-			common->Printf("\n\n***********************************************************\n");
-			common->Printf(" You are using software Mesa (no hardware acceleration)!\n");
-			common->Printf(" If this is intentional, add\n");
-			common->Printf("       \"+set r_allowSoftwareGL 1\"\n");
-			common->Printf(" to the command line when starting the game.\n");
-			common->Printf("***********************************************************\n");
+	const char* glstring = ( char* )glGetString( GL_RENDERER );
+	if ( !String::ICmp( glstring, "Mesa X11" ) ||
+		 !String::ICmp( glstring, "Mesa GLX Indirect" ) ) {
+		if ( !r_allowSoftwareGL->integer ) {
+			common->Printf( "\n\n***********************************************************\n" );
+			common->Printf( " You are using software Mesa (no hardware acceleration)!\n" );
+			common->Printf( " If this is intentional, add\n" );
+			common->Printf( "       \"+set r_allowSoftwareGL 1\"\n" );
+			common->Printf( " to the command line when starting the game.\n" );
+			common->Printf( "***********************************************************\n" );
 			GLimp_Shutdown();
 			return RSERR_INVALID_MODE;
-		}
-		else
-		{
-			common->Printf("...using software Mesa (r_allowSoftwareGL==1).\n");
+		} else   {
+			common->Printf( "...using software Mesa (r_allowSoftwareGL==1).\n" );
 		}
 	}
 
@@ -555,14 +485,12 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	return RSERR_OK;
 }
 
-static void GLW_DeleteDefaultLists()
-{
-	if (!fontbase_init)
-	{
-		common->DPrintf("ERROR: GLW_DeleteDefaultLists: no font list initialized\n");
+static void GLW_DeleteDefaultLists() {
+	if ( !fontbase_init ) {
+		common->DPrintf( "ERROR: GLW_DeleteDefaultLists: no font list initialized\n" );
 		return;
 	}
-	glDeleteLists(gl_NormalFontBase, 256);
+	glDeleteLists( gl_NormalFontBase, 256 );
 	fontbase_init = false;
 }
 
@@ -576,47 +504,40 @@ static void GLW_DeleteDefaultLists()
 //
 //==========================================================================
 
-void GLimp_Shutdown()
-{
+void GLimp_Shutdown() {
 	IN_DeactivateMouse();
-	if (dpy)
-	{
+	if ( dpy ) {
 		GLW_DeleteDefaultLists();
 
-		if (ctx)
-		{
-			glXDestroyContext(dpy, ctx);
+		if ( ctx ) {
+			glXDestroyContext( dpy, ctx );
 		}
-		if (win)
-		{
-			XDestroyWindow(dpy, win);
+		if ( win ) {
+			XDestroyWindow( dpy, win );
 		}
-		if (vidmode_active)
-		{
-			XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[0]);
+		if ( vidmode_active ) {
+			XF86VidModeSwitchToMode( dpy, scrnum, vidmodes[ 0 ] );
 		}
-		if (glConfig.deviceSupportsGamma)
-		{
-			XF86VidModeSetGamma(dpy, scrnum, &vidmode_InitialGamma);
+		if ( glConfig.deviceSupportsGamma ) {
+			XF86VidModeSetGamma( dpy, scrnum, &vidmode_InitialGamma );
 		}
 		// NOTE TTimo opening/closing the display should be necessary only once per run
 		//   but it seems QGL_Shutdown gets called in a lot of occasion
 		//   in some cases, this XCloseDisplay is known to raise some X errors
 		//   ( https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=33 )
-		XCloseDisplay(dpy);
+		XCloseDisplay( dpy );
 	}
 	vidmode_active = false;
 	dpy = NULL;
 	win = 0;
 	ctx = NULL;
 
-	Com_Memset(&glConfig, 0, sizeof(glConfig));
-	Com_Memset(&glState, 0, sizeof(glState));
+	Com_Memset( &glConfig, 0, sizeof ( glConfig ) );
+	Com_Memset( &glState, 0, sizeof ( glState ) );
 }
 
-const char* GLimp_GetSystemExtensionsString()
-{
-	return glXQueryExtensionsString(dpy, scrnum);
+const char* GLimp_GetSystemExtensionsString() {
+	return glXQueryExtensionsString( dpy, scrnum );
 }
 
 //==========================================================================
@@ -625,9 +546,8 @@ const char* GLimp_GetSystemExtensionsString()
 //
 //==========================================================================
 
-void* GLimp_GetProcAddress(const char* Name)
-{
-	return (void*)glXGetProcAddress((const GLubyte*)Name);
+void* GLimp_GetProcAddress( const char* Name ) {
+	return ( void* )glXGetProcAddress( ( const GLubyte* )Name );
 }
 
 //==========================================================================
@@ -638,10 +558,8 @@ void* GLimp_GetProcAddress(const char* Name)
 //
 //==========================================================================
 
-void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256])
-{
-	if (!glConfig.deviceSupportsGamma)
-	{
+void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] ) {
+	if ( !glConfig.deviceSupportsGamma ) {
 		return;
 	}
 
@@ -652,7 +570,7 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	gamma.red = g;
 	gamma.green = g;
 	gamma.blue = g;
-	XF86VidModeSetGamma(dpy, scrnum, &gamma);
+	XF86VidModeSetGamma( dpy, scrnum, &gamma );
 }
 
 //==========================================================================
@@ -661,9 +579,8 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 //
 //==========================================================================
 
-void GLimp_SwapBuffers()
-{
-	glXSwapBuffers(dpy, win);
+void GLimp_SwapBuffers() {
+	glXSwapBuffers( dpy, win );
 }
 
 //**************************************************************************
@@ -678,15 +595,14 @@ void GLimp_SwapBuffers()
 //
 //==========================================================================
 
-static void* GLimp_RenderThreadWrapper(void* arg)
-{
-	common->Printf("Render thread starting\n");
+static void* GLimp_RenderThreadWrapper( void* arg ) {
+	common->Printf( "Render thread starting\n" );
 
 	glimpRenderThread();
 
-	glXMakeCurrent(dpy, None, NULL);
+	glXMakeCurrent( dpy, None, NULL );
 
-	common->Printf("Render thread terminating\n");
+	common->Printf( "Render thread terminating\n" );
 
 	return arg;
 }
@@ -697,34 +613,31 @@ static void* GLimp_RenderThreadWrapper(void* arg)
 //
 //==========================================================================
 
-bool GLimp_SpawnRenderThread(void (* function)())
-{
+bool GLimp_SpawnRenderThread( void ( * function )() ) {
 #ifdef WOLF_SMP
-	sem_init(&renderCommandsEvent, 0, 0);
-	sem_init(&renderCompletedEvent, 0, 0);
-	sem_init(&renderActiveEvent, 0, 0);
+	sem_init( &renderCommandsEvent, 0, 0 );
+	sem_init( &renderCompletedEvent, 0, 0 );
+	sem_init( &renderActiveEvent, 0, 0 );
 #else
-	pthread_mutex_init(&smpMutex, NULL);
+	pthread_mutex_init( &smpMutex, NULL );
 
-	pthread_cond_init(&renderCommandsEvent, NULL);
-	pthread_cond_init(&renderCompletedEvent, NULL);
+	pthread_cond_init( &renderCommandsEvent, NULL );
+	pthread_cond_init( &renderCompletedEvent, NULL );
 #endif
 
 	glimpRenderThread = function;
 
 	pthread_t renderThread;
-	int ret = pthread_create(&renderThread, NULL, GLimp_RenderThreadWrapper, NULL);
-	if (ret)
-	{
-		common->Printf("pthread_create returned %d: %s", ret, strerror(ret));
+	int ret = pthread_create( &renderThread, NULL, GLimp_RenderThreadWrapper, NULL );
+	if ( ret ) {
+		common->Printf( "pthread_create returned %d: %s", ret, strerror( ret ) );
 		return false;
 	}
 
 #ifndef WOLF_SMP
-	ret = pthread_detach(renderThread);
-	if (ret)
-	{
-		common->Printf("pthread_detach returned %d: %s", ret, strerror(ret));
+	ret = pthread_detach( renderThread );
+	if ( ret ) {
+		common->Printf( "pthread_detach returned %d: %s", ret, strerror( ret ) );
 	}
 #endif
 
@@ -737,38 +650,36 @@ bool GLimp_SpawnRenderThread(void (* function)())
 //
 //==========================================================================
 
-void* GLimp_RendererSleep()
-{
+void* GLimp_RendererSleep() {
 #ifdef WOLF_SMP
 	// after this, the front end can exit GLimp_FrontEndSleep
-	sem_post(&renderCompletedEvent);
+	sem_post( &renderCompletedEvent );
 
-	sem_wait(&renderCommandsEvent);
+	sem_wait( &renderCommandsEvent );
 
-	void* data = (void*)smpData;
+	void* data = ( void* )smpData;
 
 	// after this, the main thread can exit GLimp_WakeRenderer
-	sem_post(&renderActiveEvent);
+	sem_post( &renderActiveEvent );
 #else
-	glXMakeCurrent(dpy, None, NULL);
+	glXMakeCurrent( dpy, None, NULL );
 
-	pthread_mutex_lock(&smpMutex);
+	pthread_mutex_lock( &smpMutex );
 
 	smpData = NULL;
 	smpDataReady = false;
 
 	// after this, the front end can exit GLimp_FrontEndSleep
-	pthread_cond_signal(&renderCompletedEvent);
+	pthread_cond_signal( &renderCompletedEvent );
 
-	while (!smpDataReady)
-	{
-		pthread_cond_wait(&renderCommandsEvent, &smpMutex);
+	while ( !smpDataReady ) {
+		pthread_cond_wait( &renderCommandsEvent, &smpMutex );
 	}
 
-	void* data = (void*)smpData;
-	pthread_mutex_unlock(&smpMutex);
+	void* data = ( void* )smpData;
+	pthread_mutex_unlock( &smpMutex );
 
-	glXMakeCurrent(dpy, win, ctx);
+	glXMakeCurrent( dpy, win, ctx );
 #endif
 
 	return data;
@@ -780,19 +691,17 @@ void* GLimp_RendererSleep()
 //
 //==========================================================================
 
-void GLimp_FrontEndSleep()
-{
+void GLimp_FrontEndSleep() {
 #ifdef WOLF_SMP
-	sem_wait(&renderCompletedEvent);
+	sem_wait( &renderCompletedEvent );
 #else
-	pthread_mutex_lock(&smpMutex);
-	while (smpData)
-	{
-		pthread_cond_wait(&renderCompletedEvent, &smpMutex);
+	pthread_mutex_lock( &smpMutex );
+	while ( smpData ) {
+		pthread_cond_wait( &renderCompletedEvent, &smpMutex );
 	}
-	pthread_mutex_unlock(&smpMutex);
+	pthread_mutex_unlock( &smpMutex );
 
-	glXMakeCurrent(dpy, win, ctx);
+	glXMakeCurrent( dpy, win, ctx );
 #endif
 }
 
@@ -802,25 +711,24 @@ void GLimp_FrontEndSleep()
 //
 //==========================================================================
 
-void GLimp_WakeRenderer(void* data)
-{
+void GLimp_WakeRenderer( void* data ) {
 #ifdef WOLF_SMP
 	smpData = data;
 
 	// after this, the renderer can continue through GLimp_RendererSleep
-	sem_post(&renderCommandsEvent);
+	sem_post( &renderCommandsEvent );
 
-	sem_wait(&renderActiveEvent);
+	sem_wait( &renderActiveEvent );
 #else
-	glXMakeCurrent(dpy, None, NULL);
+	glXMakeCurrent( dpy, None, NULL );
 
-	pthread_mutex_lock(&smpMutex);
-	assert(smpData == NULL);
+	pthread_mutex_lock( &smpMutex );
+	assert( smpData == NULL );
 	smpData = data;
 	smpDataReady = true;
 
 	// after this, the renderer can continue through GLimp_RendererSleep
-	pthread_cond_signal(&renderCommandsEvent);
-	pthread_mutex_unlock(&smpMutex);
+	pthread_cond_signal( &renderCommandsEvent );
+	pthread_mutex_unlock( &smpMutex );
 #endif
 }

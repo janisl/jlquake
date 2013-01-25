@@ -18,25 +18,22 @@
 //**
 //**************************************************************************
 
-#define MDC_IDENT           (('C' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MDC_IDENT           ( ( 'C' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MDC_VERSION         2
 
-#define MDC_TAG_ANGLE_SCALE (360.0 / 32700.0)
+#define MDC_TAG_ANGLE_SCALE ( 360.0 / 32700.0 )
 
-struct mdcXyzCompressed_t
-{
+struct mdcXyzCompressed_t {
 	unsigned int ofsVec;					// offset direction from the last base frame
 };
 
-struct mdcTagName_t
-{
-	char name[MAX_QPATH];			// tag name
+struct mdcTagName_t {
+	char name[ MAX_QPATH ];				// tag name
 };
 
-struct mdcTag_t
-{
-	short xyz[3];
-	short angles[3];
+struct mdcTag_t {
+	short xyz[ 3 ];
+	short angles[ 3 ];
 };
 
 /*
@@ -52,11 +49,10 @@ struct mdcTag_t
 ** frameBaseFrames	sizeof( short ) * numFrames
 ** frameCompFrames	sizeof( short ) * numFrames (-1 if frame is a baseFrame)
 */
-struct mdcSurface_t
-{
+struct mdcSurface_t {
 	int ident;					//
 
-	char name[MAX_QPATH];		// polyset name
+	char name[ MAX_QPATH ];			// polyset name
 
 	int flags;
 	int numCompFrames;			// all surfaces in a model should have the same
@@ -79,12 +75,11 @@ struct mdcSurface_t
 	int ofsEnd;					// next surface follows
 };
 
-struct mdcHeader_t
-{
+struct mdcHeader_t {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH];			// model name
+	char name[ MAX_QPATH ];				// model name
 
 	int flags;
 

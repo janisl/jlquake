@@ -175,31 +175,28 @@ enum
 
 enum
 {
-	DEF_SAVEGLOBAL = (1 << 15),
+	DEF_SAVEGLOBAL = ( 1 << 15 ),
 
 	MAX_PARMS = 8,
 
 	PROG_VERSION = 6,
 };
 
-struct dstatement_t
-{
+struct dstatement_t {
 	quint16 op;
 	qint16 a;
 	qint16 b;
 	qint16 c;
 };
 
-struct ddef_t
-{
+struct ddef_t {
 	quint16 type;		// if DEF_SAVEGLOBGAL bit is set
 						// the variable needs to be saved in savegames
 	quint16 ofs;
 	qint32 s_name;
 };
 
-struct dfunction_t
-{
+struct dfunction_t {
 	qint32 first_statement;	// negative numbers are builtins
 	qint32 parm_start;
 	qint32 locals;				// total ints of parms + locals
@@ -210,11 +207,10 @@ struct dfunction_t
 	qint32 s_file;			// source file defined in
 
 	qint32 numparms;
-	quint8 parm_size[MAX_PARMS];
+	quint8 parm_size[ MAX_PARMS ];
 };
 
-struct dprograms_t
-{
+struct dprograms_t {
 	qint32 version;
 	qint32 crc;				// check of header file
 
@@ -239,10 +235,10 @@ struct dprograms_t
 	qint32 entityfields;
 };
 
-#define Q1PROGHEADER_CRC	5927
-#define QWPROGHEADER_CRC	54730
-#define H2MPPROGHEADER_CRC	26905
-#define H2PROGHEADER_CRC	38488
-#define HWPROGHEADER_CRC	25203
+#define Q1PROGHEADER_CRC    5927
+#define QWPROGHEADER_CRC    54730
+#define H2MPPROGHEADER_CRC  26905
+#define H2PROGHEADER_CRC    38488
+#define HWPROGHEADER_CRC    25203
 
 #pragma pack(pop)

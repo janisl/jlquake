@@ -56,63 +56,54 @@
 #define BSP29_MAX_MAP_HULLS_Q1  4
 #define BSP29_MAX_MAP_HULLS_H2  8
 
-struct bsp29_lump_t
-{
+struct bsp29_lump_t {
 	qint32 fileofs;
 	qint32 filelen;
 };
 
-struct bsp29_dheader_t
-{
+struct bsp29_dheader_t {
 	qint32 version;
-	bsp29_lump_t lumps[BSP29_HEADER_LUMPS];
+	bsp29_lump_t lumps[ BSP29_HEADER_LUMPS ];
 };
 
-struct bsp29_dplane_t
-{
-	float normal[3];
+struct bsp29_dplane_t {
+	float normal[ 3 ];
 	float dist;
 	qint32 type;			// PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 };
 
-struct bsp29_dmiptexlump_t
-{
+struct bsp29_dmiptexlump_t {
 	qint32 nummiptex;
-	qint32 dataofs[4];			// [nummiptex]
+	qint32 dataofs[ 4 ];			// [nummiptex]
 };
 
-struct bsp29_miptex_t
-{
-	char name[16];
+struct bsp29_miptex_t {
+	char name[ 16 ];
 	quint32 width;
 	quint32 height;
-	quint32 offsets[BSP29_MIPLEVELS];			// four mip maps stored
+	quint32 offsets[ BSP29_MIPLEVELS ];				// four mip maps stored
 };
 
-struct bsp29_dvertex_t
-{
-	float point[3];
+struct bsp29_dvertex_t {
+	float point[ 3 ];
 };
 
-struct bsp29_dnode_t
-{
+struct bsp29_dnode_t {
 	qint32 planenum;
-	qint16 children[2];			// negative numbers are -(leafs+1), not nodes
-	qint16 mins[3];				// for sphere culling
-	qint16 maxs[3];
+	qint16 children[ 2 ];			// negative numbers are -(leafs+1), not nodes
+	qint16 mins[ 3 ];				// for sphere culling
+	qint16 maxs[ 3 ];
 	quint16 firstface;
 	quint16 numfaces;		// counting both sides
 };
 
-struct bsp29_texinfo_t
-{
-	float vecs[2][4];			// [s/t][xyz offset]
+struct bsp29_texinfo_t {
+	float vecs[ 2 ][ 4 ];			// [s/t][xyz offset]
 	qint32 miptex;
 	qint32 flags;
 };
 
-struct bsp29_dface_t
-{
+struct bsp29_dface_t {
 	qint16 planenum;
 	qint16 side;
 
@@ -121,56 +112,51 @@ struct bsp29_dface_t
 	qint16 texinfo;
 
 	// lighting info
-	quint8 styles[BSP29_MAXLIGHTMAPS];
+	quint8 styles[ BSP29_MAXLIGHTMAPS ];
 	qint32 lightofs;			// start of [numstyles*surfsize] samples
 };
 
-struct bsp29_dclipnode_t
-{
+struct bsp29_dclipnode_t {
 	qint32 planenum;
-	qint16 children[2];			// negative numbers are contents
+	qint16 children[ 2 ];			// negative numbers are contents
 };
 
 // leaf 0 is the generic CONTENTS_SOLID leaf, used for all solid areas
 // all other leafs need visibility info
-struct bsp29_dleaf_t
-{
+struct bsp29_dleaf_t {
 	qint32 contents;
 	qint32 visofs;					// -1 = no visibility info
 
-	qint16 mins[3];					// for frustum culling
-	qint16 maxs[3];
+	qint16 mins[ 3 ];					// for frustum culling
+	qint16 maxs[ 3 ];
 
 	quint16 firstmarksurface;
 	quint16 nummarksurfaces;
 
-	quint8 ambient_level[BSP29_NUM_AMBIENTS];
+	quint8 ambient_level[ BSP29_NUM_AMBIENTS ];
 };
 
 // note that edge 0 is never used, because negative edge nums are used for
 // counterclockwise use of the edge in a face
-struct bsp29_dedge_t
-{
-	quint16 v[2];			// vertex numbers
+struct bsp29_dedge_t {
+	quint16 v[ 2 ];				// vertex numbers
 };
 
-struct bsp29_dmodel_q1_t
-{
-	float mins[3];
-	float maxs[3];
-	float origin[3];
-	qint32 headnode[BSP29_MAX_MAP_HULLS_Q1];
+struct bsp29_dmodel_q1_t {
+	float mins[ 3 ];
+	float maxs[ 3 ];
+	float origin[ 3 ];
+	qint32 headnode[ BSP29_MAX_MAP_HULLS_Q1 ];
 	qint32 visleafs;			// not including the solid leaf 0
 	qint32 firstface;
 	qint32 numfaces;
 };
 
-struct bsp29_dmodel_h2_t
-{
-	float mins[3];
-	float maxs[3];
-	float origin[3];
-	qint32 headnode[BSP29_MAX_MAP_HULLS_H2];
+struct bsp29_dmodel_h2_t {
+	float mins[ 3 ];
+	float maxs[ 3 ];
+	float origin[ 3 ];
+	qint32 headnode[ BSP29_MAX_MAP_HULLS_H2 ];
 	qint32 visleafs;			// not including the solid leaf 0
 	qint32 firstface;
 	qint32 numfaces;

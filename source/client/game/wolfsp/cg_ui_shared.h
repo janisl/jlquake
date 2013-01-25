@@ -18,10 +18,9 @@
 #define _WOLFSP_CG_UI_SHARED_H
 
 //	Overlaps with RF_WRAP_FRAMES
-#define WSRF_BLINK            (1 << 9)		// eyes in 'blink' state
+#define WSRF_BLINK            ( 1 << 9 )		// eyes in 'blink' state
 
-struct wsrefEntity_t
-{
+struct wsrefEntity_t {
 	refEntityType_t reType;
 	int renderfx;
 
@@ -31,17 +30,17 @@ struct wsrefEntity_t
 	vec3_t lightingOrigin;			// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
 	float shadowPlane;				// projection shadows go here, stencils go slightly lower
 
-	vec3_t axis[3];					// rotation vectors
-	vec3_t torsoAxis[3];			// rotation vectors for torso section of skeletal animation
+	vec3_t axis[ 3 ];					// rotation vectors
+	vec3_t torsoAxis[ 3 ];				// rotation vectors for torso section of skeletal animation
 	qboolean nonNormalizedAxes;		// axis are not normalized, i.e. they have scale
-	float origin[3];				// also used as MODEL_BEAM's "from"
+	float origin[ 3 ];					// also used as MODEL_BEAM's "from"
 	int frame;						// also used as MODEL_BEAM's diameter
 	int torsoFrame;					// skeletal torso can have frame independant of legs frame
 
 	vec3_t scale;		//----(SA)	added
 
 	// previous data for frame interpolation
-	float oldorigin[3];				// also used as MODEL_BEAM's "to"
+	float oldorigin[ 3 ];				// also used as MODEL_BEAM's "to"
 	int oldframe;
 	int oldTorsoFrame;
 	float backlerp;					// 0.0 = current, 1.0 = old
@@ -53,8 +52,8 @@ struct wsrefEntity_t
 	qhandle_t customShader;			// use one image for the entire thing
 
 	// misc
-	byte shaderRGBA[4];				// colors used by rgbgen entity shaders
-	float shaderTexCoord[2];		// texture coordinates used by tcMod entity modifiers
+	byte shaderRGBA[ 4 ];				// colors used by rgbgen entity shaders
+	float shaderTexCoord[ 2 ];			// texture coordinates used by tcMod entity modifiers
 	float shaderTime;				// subtracted from refdef time to control effect start times
 
 	// extra sprite information
@@ -74,13 +73,12 @@ struct wsrefEntity_t
 	int entityNum;					// currentState.number, so we can attach rendering effects to specific entities (Zombie)
 };
 
-struct wsglfog_t
-{
+struct wsglfog_t {
 	int mode;					// GL_LINEAR, GL_EXP
 	int hint;					// GL_DONT_CARE
 	int startTime;				// in ms
 	int finishTime;				// in ms
-	float color[4];
+	float color[ 4 ];
 	float start;				// near
 	float end;					// far
 	qboolean useEndForClip;		// use the 'far' value for the far clipping plane
@@ -95,32 +93,30 @@ struct wsglfog_t
 //	Overlaps with RDF_UNDERWATER
 #define WSRDF_DRAWSKYBOX    16
 
-struct wsrefdef_t
-{
+struct wsrefdef_t {
 	int x, y, width, height;
 	float fov_x, fov_y;
 	vec3_t vieworg;
-	vec3_t viewaxis[3];				// transformation matrix
+	vec3_t viewaxis[ 3 ];				// transformation matrix
 
 	int time;			// time in milliseconds for shader effects and other time dependent rendering issues
 	int rdflags;					// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
-	byte areamask[MAX_MAP_AREA_BYTES];
+	byte areamask[ MAX_MAP_AREA_BYTES ];
 
 	// text messages for deform text shaders
-	char text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+	char text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
 
 	//	added (needed to pass fog infos into the portal sky scene)
 	wsglfog_t glfog;
 };
 
-struct wsglconfig_t
-{
-	char renderer_string[MAX_STRING_CHARS];
-	char vendor_string[MAX_STRING_CHARS];
-	char version_string[MAX_STRING_CHARS];
-	char extensions_string[4 * MAX_STRING_CHARS];						// this is actually too short for many current cards/drivers  // (SA) doubled from 2x to 4x MAX_STRING_CHARS
+struct wsglconfig_t {
+	char renderer_string[ MAX_STRING_CHARS ];
+	char vendor_string[ MAX_STRING_CHARS ];
+	char version_string[ MAX_STRING_CHARS ];
+	char extensions_string[ 4 * MAX_STRING_CHARS ];							// this is actually too short for many current cards/drivers  // (SA) doubled from 2x to 4x MAX_STRING_CHARS
 
 	int maxTextureSize;								// queried from GL
 	int maxActiveTextures;							// multitexture ability
@@ -164,10 +160,10 @@ struct wsglconfig_t
 	qboolean textureFilterAnisotropicAvailable;					//DAJ
 };
 
-void CLWS_GetGlconfig(wsglconfig_t* config);
-void CLWS_AddRefEntityToScene(const wsrefEntity_t* ent);
-void CLWS_RenderScene(const wsrefdef_t* refdef);
-int CLWS_LerpTag(orientation_t* tag,  const wsrefEntity_t* refent, const char* tagName, int startIndex);
-void CLWS_InGamePopup(char* menu);
+void CLWS_GetGlconfig( wsglconfig_t* config );
+void CLWS_AddRefEntityToScene( const wsrefEntity_t* ent );
+void CLWS_RenderScene( const wsrefdef_t* refdef );
+int CLWS_LerpTag( orientation_t* tag,  const wsrefEntity_t* refent, const char* tagName, int startIndex );
+void CLWS_InGamePopup( char* menu );
 
 #endif

@@ -21,37 +21,33 @@
 #ifndef _MD4FILE_H
 #define _MD4FILE_H
 
-#define MD4_IDENT           (('4' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MD4_IDENT           ( ( '4' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MD4_VERSION         1
 
 #define MD4_MAX_BONES       128
 
-struct md4Weight_t
-{
+struct md4Weight_t {
 	int boneIndex;				// these are indexes into the boneReferences,
 	float boneWeight;			// not the global per-frame bone list
 	vec3_t offset;
 };
 
-struct md4Vertex_t
-{
+struct md4Vertex_t {
 	vec3_t normal;
 	vec2_t texCoords;
 	int numWeights;
-	md4Weight_t weights[1];		// variable sized
+	md4Weight_t weights[ 1 ];		// variable sized
 };
 
-struct md4Triangle_t
-{
-	int indexes[3];
+struct md4Triangle_t {
+	int indexes[ 3 ];
 };
 
-struct md4Surface_t
-{
+struct md4Surface_t {
 	int ident;
 
-	char name[MAX_QPATH];			// polyset name
-	char shader[MAX_QPATH];
+	char name[ MAX_QPATH ];				// polyset name
+	char shader[ MAX_QPATH ];
 	int shaderIndex;				// for in-game use
 
 	int ofsHeader;					// this will be a negative number
@@ -73,32 +69,28 @@ struct md4Surface_t
 	int ofsEnd;						// next surface follows
 };
 
-struct md4Bone_t
-{
-	float matrix[3][4];
+struct md4Bone_t {
+	float matrix[ 3 ][ 4 ];
 };
 
-struct md4Frame_t
-{
-	vec3_t bounds[2];				// bounds of all surfaces of all LOD's for this frame
+struct md4Frame_t {
+	vec3_t bounds[ 2 ];					// bounds of all surfaces of all LOD's for this frame
 	vec3_t localOrigin;				// midpoint of bounds, used for sphere cull
 	float radius;					// dist from localOrigin to corner
-	md4Bone_t bones[1];				// [numBones]
+	md4Bone_t bones[ 1 ];				// [numBones]
 };
 
-struct md4LOD_t
-{
+struct md4LOD_t {
 	int numSurfaces;
 	int ofsSurfaces;				// first surface, others follow
 	int ofsEnd;						// next lod follows
 };
 
-struct md4Header_t
-{
+struct md4Header_t {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH];			// model name
+	char name[ MAX_QPATH ];				// model name
 
 	// frames and bones are shared by all levels of detail
 	int numFrames;

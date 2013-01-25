@@ -32,212 +32,181 @@ botlib_globals_t botlibglobals;
 //true if the library is setup
 static bool botlibsetup = false;
 
-void BotImport_Print(int type, const char* fmt, ...)
-{
-	char str[2048];
+void BotImport_Print( int type, const char* fmt, ... ) {
+	char str[ 2048 ];
 	va_list ap;
 
-	va_start(ap, fmt);
-	Q_vsnprintf(str, sizeof(str), fmt, ap);
-	va_end(ap);
+	va_start( ap, fmt );
+	Q_vsnprintf( str, sizeof ( str ), fmt, ap );
+	va_end( ap );
 
-	switch (type)
-	{
+	switch ( type ) {
 	case PRT_MESSAGE:
-		common->Printf("%s", str);
+		common->Printf( "%s", str );
 		break;
 
 	case PRT_WARNING:
-		common->Printf(S_COLOR_YELLOW "Warning: %s", str);
+		common->Printf( S_COLOR_YELLOW "Warning: %s", str );
 		break;
 
 	case PRT_ERROR:
-		common->Printf(S_COLOR_RED "Error: %s", str);
+		common->Printf( S_COLOR_RED "Error: %s", str );
 		break;
 
 	case PRT_FATAL:
-		common->Printf(S_COLOR_RED "Fatal: %s", str);
+		common->Printf( S_COLOR_RED "Fatal: %s", str );
 		break;
 
 	case PRT_EXIT:
-		common->Error(S_COLOR_RED "Exit: %s", str);
+		common->Error( S_COLOR_RED "Exit: %s", str );
 		break;
 
 	default:
-		common->Printf("unknown print type\n");
+		common->Printf( "unknown print type\n" );
 		break;
 	}
 }
 
-int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points)
-{
-	if (!debugpolygons)
-	{
+int BotImport_DebugPolygonCreate( int color, int numPoints, const vec3_t* points ) {
+	if ( !debugpolygons ) {
 		return 0;
 	}
 
 	int i;
-	for (i = 1; i < bot_maxdebugpolys; i++)
-	{
-		if (!debugpolygons[i].inuse)
-		{
+	for ( i = 1; i < bot_maxdebugpolys; i++ ) {
+		if ( !debugpolygons[ i ].inuse ) {
 			break;
 		}
 	}
-	if (i >= bot_maxdebugpolys)
-	{
+	if ( i >= bot_maxdebugpolys ) {
 		return 0;
 	}
-	bot_debugpoly_t* poly = &debugpolygons[i];
+	bot_debugpoly_t* poly = &debugpolygons[ i ];
 	poly->inuse = true;
 	poly->color = color;
 	poly->numPoints = numPoints;
-	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
+	Com_Memcpy( poly->points, points, numPoints * sizeof ( vec3_t ) );
 
 	return i;
 }
 
-void BotImport_DebugPolygonDelete(int id)
-{
-	if (!debugpolygons)
-	{
+void BotImport_DebugPolygonDelete( int id ) {
+	if ( !debugpolygons ) {
 		return;
 	}
-	debugpolygons[id].inuse = false;
+	debugpolygons[ id ].inuse = false;
 }
 
-int BotImport_DebugLineCreate()
-{
-	vec3_t points[1];
-	return BotImport_DebugPolygonCreate(0, 0, points);
+int BotImport_DebugLineCreate() {
+	vec3_t points[ 1 ];
+	return BotImport_DebugPolygonCreate( 0, 0, points );
 }
 
-void BotImport_DebugLineDelete(int line)
-{
-	BotImport_DebugPolygonDelete(line);
+void BotImport_DebugLineDelete( int line ) {
+	BotImport_DebugPolygonDelete( line );
 }
 
-static void BotImport_DebugPolygonShow(int id, int color, int numPoints, const vec3_t* points)
-{
+static void BotImport_DebugPolygonShow( int id, int color, int numPoints, const vec3_t* points ) {
 	bot_debugpoly_t* poly;
 
-	if (!debugpolygons)
-	{
+	if ( !debugpolygons ) {
 		return;
 	}
-	poly = &debugpolygons[id];
+	poly = &debugpolygons[ id ];
 	poly->inuse = true;
 	poly->color = color;
 	poly->numPoints = numPoints;
-	Com_Memcpy(poly->points, points, numPoints * sizeof(vec3_t));
+	Com_Memcpy( poly->points, points, numPoints * sizeof ( vec3_t ) );
 }
 
-void BotImport_DebugLineShow(int line, const vec3_t start, const vec3_t end, int color)
-{
-	vec3_t points[4], dir, cross, up = {0, 0, 1};
+void BotImport_DebugLineShow( int line, const vec3_t start, const vec3_t end, int color ) {
+	vec3_t points[ 4 ], dir, cross, up = {0, 0, 1};
 	float dot;
 
-	VectorCopy(start, points[0]);
-	VectorCopy(start, points[1]);
+	VectorCopy( start, points[ 0 ] );
+	VectorCopy( start, points[ 1 ] );
 	//points[1][2] -= 2;
-	VectorCopy(end, points[2]);
+	VectorCopy( end, points[ 2 ] );
 	//points[2][2] -= 2;
-	VectorCopy(end, points[3]);
+	VectorCopy( end, points[ 3 ] );
 
 
-	VectorSubtract(end, start, dir);
-	VectorNormalize(dir);
-	dot = DotProduct(dir, up);
-	if (dot > 0.99 || dot < -0.99)
-	{
-		VectorSet(cross, 1, 0, 0);
-	}
-	else
-	{
-		CrossProduct(dir, up, cross);
+	VectorSubtract( end, start, dir );
+	VectorNormalize( dir );
+	dot = DotProduct( dir, up );
+	if ( dot > 0.99 || dot < -0.99 ) {
+		VectorSet( cross, 1, 0, 0 );
+	} else   {
+		CrossProduct( dir, up, cross );
 	}
 
-	VectorNormalize(cross);
+	VectorNormalize( cross );
 
-	VectorMA(points[0], 2, cross, points[0]);
-	VectorMA(points[1], -2, cross, points[1]);
-	VectorMA(points[2], -2, cross, points[2]);
-	VectorMA(points[3], 2, cross, points[3]);
+	VectorMA( points[ 0 ], 2, cross, points[ 0 ] );
+	VectorMA( points[ 1 ], -2, cross, points[ 1 ] );
+	VectorMA( points[ 2 ], -2, cross, points[ 2 ] );
+	VectorMA( points[ 3 ], 2, cross, points[ 3 ] );
 
-	BotImport_DebugPolygonShow(line, color, 4, points);
+	BotImport_DebugPolygonShow( line, color, 4, points );
 }
 
-static bool ValidEntityNumber(int num, const char* str)
-{
-	if (num < 0 || num > botlibglobals.maxentities)
-	{
-		BotImport_Print(PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
-			str, num, botlibglobals.maxentities);
+static bool ValidEntityNumber( int num, const char* str ) {
+	if ( num < 0 || num > botlibglobals.maxentities ) {
+		BotImport_Print( PRT_ERROR, "%s: invalid entity number %d, [0, %d]\n",
+			str, num, botlibglobals.maxentities );
 		return false;
 	}
 	return true;
 }
 
-static bool IsBotLibSetup(const char* str)
-{
-	if (!botlibglobals.botlibsetup)
-	{
-		BotImport_Print(PRT_ERROR, "%s: bot library used before being setup\n", str);
+static bool IsBotLibSetup( const char* str ) {
+	if ( !botlibglobals.botlibsetup ) {
+		BotImport_Print( PRT_ERROR, "%s: bot library used before being setup\n", str );
 		return false;
 	}
 	return true;
 }
 
-int BotLibSetup(bool singleplayer)
-{
-	bot_developer = LibVarGetValue("bot_developer");
-	Com_Memset(&botlibglobals, 0, sizeof(botlibglobals));
-	Log_Open("botlib.log");
+int BotLibSetup( bool singleplayer ) {
+	bot_developer = LibVarGetValue( "bot_developer" );
+	Com_Memset( &botlibglobals, 0, sizeof ( botlibglobals ) );
+	Log_Open( "botlib.log" );
 
-	BotImport_Print(PRT_MESSAGE, "------- BotLib Initialization -------\n");
+	BotImport_Print( PRT_MESSAGE, "------- BotLib Initialization -------\n" );
 
-	botlibglobals.maxclients = (int)LibVarValue("maxclients", "128");
-	botlibglobals.maxentities = (int)LibVarValue("maxentities", GGameType & GAME_WolfSP ? "2048" : "1024");
+	botlibglobals.maxclients = ( int )LibVarValue( "maxclients", "128" );
+	botlibglobals.maxentities = ( int )LibVarValue( "maxentities", GGameType & GAME_WolfSP ? "2048" : "1024" );
 
 	int errnum = AAS_Setup();			//be_aas_main.c
-	if (errnum != BLERR_NOERROR)
-	{
+	if ( errnum != BLERR_NOERROR ) {
 		return errnum;
 	}
 	errnum = EA_Setup();			//be_ea.c
-	if (errnum != BLERR_NOERROR)
-	{
+	if ( errnum != BLERR_NOERROR ) {
 		return errnum;
 	}
-	if (!(GGameType & (GAME_WolfSP | GAME_WolfMP)))
-	{
+	if ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP ) ) ) {
 		errnum = BotSetupWeaponAI();	//be_ai_weap.c
-		if (errnum != BLERR_NOERROR)
-		{
+		if ( errnum != BLERR_NOERROR ) {
 			return errnum;
 		}
-		errnum = BotSetupGoalAI(singleplayer);		//be_ai_goal.c
-		if (errnum != BLERR_NOERROR)
-		{
+		errnum = BotSetupGoalAI( singleplayer );		//be_ai_goal.c
+		if ( errnum != BLERR_NOERROR ) {
 			return errnum;
 		}
 		errnum = BotSetupChatAI();		//be_ai_chat.c
-		if (errnum != BLERR_NOERROR)
-		{
+		if ( errnum != BLERR_NOERROR ) {
 			return errnum;
 		}
 	}
-	if (!(GGameType & GAME_WolfMP))
-	{
+	if ( !( GGameType & GAME_WolfMP ) ) {
 		errnum = BotSetupMoveAI();		//be_ai_move.c
-		if (errnum != BLERR_NOERROR)
-		{
+		if ( errnum != BLERR_NOERROR ) {
 			return errnum;
 		}
 	}
 
-	if (GGameType & GAME_ET)
-	{
+	if ( GGameType & GAME_ET ) {
 		PC_RemoveAllGlobalDefines();
 	}
 
@@ -247,10 +216,8 @@ int BotLibSetup(bool singleplayer)
 	return BLERR_NOERROR;
 }
 
-int BotLibShutdown()
-{
-	if (!IsBotLibSetup("BotLibShutdown"))
-	{
+int BotLibShutdown() {
+	if ( !IsBotLibSetup( "BotLibShutdown" ) ) {
 		return BLERR_LIBRARYNOTSETUP;
 	}
 
@@ -280,73 +247,62 @@ int BotLibShutdown()
 	return BLERR_NOERROR;
 }
 
-int BotLibStartFrame(float time)
-{
-	if (!IsBotLibSetup("BotStartFrame"))
-	{
+int BotLibStartFrame( float time ) {
+	if ( !IsBotLibSetup( "BotStartFrame" ) ) {
 		return BLERR_LIBRARYNOTSETUP;
 	}
-	return AAS_StartFrame(time);
+	return AAS_StartFrame( time );
 }
 
-int BotLibLoadMap(const char* mapname)
-{
+int BotLibLoadMap( const char* mapname ) {
 #ifdef DEBUG
 	int starttime = Sys_Milliseconds();
 #endif
-	if (!IsBotLibSetup("BotLoadMap"))
-	{
+	if ( !IsBotLibSetup( "BotLoadMap" ) ) {
 		return BLERR_LIBRARYNOTSETUP;
 	}
 
 	// if the mapname is NULL, then this is a restart
-	if (GGameType & GAME_ET && !mapname)
-	{
+	if ( GGameType & GAME_ET && !mapname ) {
 		// don't init the heap if no aas loaded, causes "SV_Bot_HunkAlloc: Alloc with marks already set"
-		if (aasworld->loaded)
-		{
+		if ( aasworld->loaded ) {
 			AAS_InitAASLinkHeap();
 			AAS_EnableAllAreas();
 		}
 		aasworld->numframes = 0;
-		memset(aasworld->arealinkedentities, 0, aasworld->numareas * sizeof(aas_link_t*));
-		memset(aasworld->entities, 0, aasworld->maxentities * sizeof(aas_entity_t));
+		memset( aasworld->arealinkedentities, 0, aasworld->numareas * sizeof ( aas_link_t* ) );
+		memset( aasworld->entities, 0, aasworld->maxentities * sizeof ( aas_entity_t ) );
 		return BLERR_NOERROR;
 	}
 
-	BotImport_Print(PRT_MESSAGE, "------------ Map Loading ------------\n");
+	BotImport_Print( PRT_MESSAGE, "------------ Map Loading ------------\n" );
 	//startup AAS for the current map, model and sound index
-	int errnum = AAS_LoadMap(mapname);
-	if (errnum != BLERR_NOERROR)
-	{
+	int errnum = AAS_LoadMap( mapname );
+	if ( errnum != BLERR_NOERROR ) {
 		return errnum;
 	}
 	//initialize the items in the level
 	BotInitLevelItems();
 	BotSetBrushModelTypes();
 
-	BotImport_Print(PRT_MESSAGE, "-------------------------------------\n");
+	BotImport_Print( PRT_MESSAGE, "-------------------------------------\n" );
 #ifdef DEBUG
-	BotImport_Print(PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime);
+	BotImport_Print( PRT_MESSAGE, "map loaded in %d msec\n", Sys_Milliseconds() - starttime );
 #endif
 	return BLERR_NOERROR;
 }
 
-int BotLibUpdateEntity(int ent, bot_entitystate_t* state)
-{
-	if (!IsBotLibSetup("BotUpdateEntity"))
-	{
+int BotLibUpdateEntity( int ent, bot_entitystate_t* state ) {
+	if ( !IsBotLibSetup( "BotUpdateEntity" ) ) {
 		return BLERR_LIBRARYNOTSETUP;
 	}
-	if (!ValidEntityNumber(ent, "BotUpdateEntity"))
-	{
+	if ( !ValidEntityNumber( ent, "BotUpdateEntity" ) ) {
 		return GGameType & GAME_Quake3 ? Q3BLERR_INVALIDENTITYNUMBER : WOLFBLERR_INVALIDENTITYNUMBER;
 	}
 
-	return AAS_UpdateEntity(ent, state);
+	return AAS_UpdateEntity( ent, state );
 }
 
-void BotClientCommand(int client, const char* command)
-{
-	SV_ExecuteClientCommand(&svs.clients[client], command, true, false);
+void BotClientCommand( int client, const char* command ) {
+	SV_ExecuteClientCommand( &svs.clients[ client ], command, true, false );
 }

@@ -63,197 +63,161 @@ static int RATES[] =
 //
 //==========================================================================
 
-bool SNDDMA_Init()
-{
-	snddevice = Cvar_Get("s_alsaDevice", "default", CVAR_ARCHIVE);
+bool SNDDMA_Init() {
+	snddevice = Cvar_Get( "s_alsaDevice", "default", CVAR_ARCHIVE );
 
-	int err = snd_pcm_open(&pcm_handle, snddevice->string,
-		SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot open device %s (%s)\n",
-			snddevice->string, snd_strerror(err));
+	int err = snd_pcm_open( &pcm_handle, snddevice->string,
+		SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot open device %s (%s)\n",
+			snddevice->string, snd_strerror( err ) );
 		return false;
 	}
 
-	err = snd_pcm_hw_params_malloc(&hw_params);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot allocate hw params (%s)\n", snd_strerror(err));
+	err = snd_pcm_hw_params_malloc( &hw_params );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot allocate hw params (%s)\n", snd_strerror( err ) );
 		return false;
 	}
 
-	err = snd_pcm_hw_params_any(pcm_handle, hw_params);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot init hw params(%s)\n", snd_strerror(err));
-		snd_pcm_hw_params_free(hw_params);
+	err = snd_pcm_hw_params_any( pcm_handle, hw_params );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot init hw params(%s)\n", snd_strerror( err ) );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
 	}
 
-	err = snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot set access(%s)\n", snd_strerror(err));
-		snd_pcm_hw_params_free(hw_params);
+	err = snd_pcm_hw_params_set_access( pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot set access(%s)\n", snd_strerror( err ) );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
 	}
 
 	dma.samplebits = s_bits->integer;
-	if (dma.samplebits != 8)
-	{
+	if ( dma.samplebits != 8 ) {
 		//try 16 by default
 		dma.samplebits = 16;	//ensure this is set for other calculations
-		err = snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16);
-		if (err < 0)
-		{
-			common->Printf("ALSA: 16 bit not supported, trying 8\n");
+		err = snd_pcm_hw_params_set_format( pcm_handle, hw_params, SND_PCM_FORMAT_S16 );
+		if ( err < 0 ) {
+			common->Printf( "ALSA: 16 bit not supported, trying 8\n" );
 			dma.samplebits = 8;
 		}
 	}
-	if (dma.samplebits == 8)
-	{
+	if ( dma.samplebits == 8 ) {
 		//or 8 if specifically asked to
-		err = snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_U8);
-		if (err < 0)
-		{
-			common->Printf("ALSA: cannot set format(%s)\n", snd_strerror(err));
-			snd_pcm_hw_params_free(hw_params);
+		err = snd_pcm_hw_params_set_format( pcm_handle, hw_params, SND_PCM_FORMAT_U8 );
+		if ( err < 0 ) {
+			common->Printf( "ALSA: cannot set format(%s)\n", snd_strerror( err ) );
+			snd_pcm_hw_params_free( hw_params );
 			return false;
 		}
 	}
 
-	if (s_khz->integer == 44)
-	{
+	if ( s_khz->integer == 44 ) {
 		dma.speed = 44100;
-	}
-	else if (s_khz->integer == 22)
-	{
+	} else if ( s_khz->integer == 22 )     {
 		dma.speed = 22050;
-	}
-	else if (s_khz->integer == 11)
-	{
+	} else if ( s_khz->integer == 11 )     {
 		dma.speed = 11025;
-	}
-	else
-	{
+	} else   {
 		dma.speed = 0;
 	}
 
-	if (dma.speed)
-	{
+	if ( dma.speed ) {
 		//try specified rate
 		unsigned int r = dma.speed;
 		int dir;
-		err = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &r, &dir);
-		if (err < 0)
-		{
-			common->Printf("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
+		err = snd_pcm_hw_params_set_rate_near( pcm_handle, hw_params, &r, &dir );
+		if ( err < 0 ) {
+			common->Printf( "ALSA: cannot set rate %d(%s)\n", r, snd_strerror( err ) );
 			dma.speed = 0;
-		}
-		else
-		{
+		} else   {
 			//rate succeeded, but is perhaps slightly different
-			if (dir != 0 && dma.speed != (int)r)
-			{
-				common->Printf("ALSA: rate %d not supported, using %d\n", dma.speed, r);
+			if ( dir != 0 && dma.speed != ( int )r ) {
+				common->Printf( "ALSA: rate %d not supported, using %d\n", dma.speed, r );
 			}
 			dma.speed = r;
 		}
 	}
-	if (!dma.speed)
-	{
+	if ( !dma.speed ) {
 		//or all available ones
-		for (int i = 0; i < (int)(sizeof(RATES) / sizeof(int)); i++)
-		{
-			unsigned int r = RATES[i];
+		for ( int i = 0; i < ( int )( sizeof ( RATES ) / sizeof ( int ) ); i++ ) {
+			unsigned int r = RATES[ i ];
 			int dir = 0;
-			err = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &r, &dir);
-			if (err < 0)
-			{
-				common->Printf("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
-			}
-			else
-			{
+			err = snd_pcm_hw_params_set_rate_near( pcm_handle, hw_params, &r, &dir );
+			if ( err < 0 ) {
+				common->Printf( "ALSA: cannot set rate %d(%s)\n", r, snd_strerror( err ) );
+			} else   {
 				//rate succeeded, but is perhaps slightly different
 				dma.speed = r;
-				if (dir != 0)
-				{
-					common->Printf("ALSA: rate %d not supported, using %d\n", RATES[i], r);
+				if ( dir != 0 ) {
+					common->Printf( "ALSA: rate %d not supported, using %d\n", RATES[ i ], r );
 				}
 				break;
 			}
 		}
 	}
-	if (!dma.speed)
-	{
+	if ( !dma.speed ) {
 		//failed
-		common->Printf("ALSA: cannot set rate\n");
-		snd_pcm_hw_params_free(hw_params);
+		common->Printf( "ALSA: cannot set rate\n" );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
 	}
 
 	dma.channels = s_channels_cv->integer;
-	if (dma.channels < 1 || dma.channels > 2)
-	{
+	if ( dma.channels < 1 || dma.channels > 2 ) {
 		dma.channels = 2;	//ensure either stereo or mono
 	}
 
-	err = snd_pcm_hw_params_set_channels(pcm_handle, hw_params, dma.channels);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot set channels %d(%s)\n",
-			s_channels_cv->integer, snd_strerror(err));
-		snd_pcm_hw_params_free(hw_params);
+	err = snd_pcm_hw_params_set_channels( pcm_handle, hw_params, dma.channels );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot set channels %d(%s)\n",
+			s_channels_cv->integer, snd_strerror( err ) );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
 	}
 
 	snd_pcm_uframes_t p = BUFFER_SAMPLES / dma.channels;
-	err = snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &p);
-	if (err < 0)
-	{
-		common->Printf("ALSA: Unable to set buffer size %i: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
+	err = snd_pcm_hw_params_set_buffer_size_near( pcm_handle, hw_params, &p );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: Unable to set buffer size %i: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror( err ) );
 		//return false;
 	}
 
 	int dir;
-	err = snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &p, &dir);
-	if (err < 0)
-	{
-		common->Printf("ALSA: cannot set period size (%s)\n", snd_strerror(err));
-		snd_pcm_hw_params_free(hw_params);
+	err = snd_pcm_hw_params_set_period_size_near( pcm_handle, hw_params, &p, &dir );
+	if ( err < 0 ) {
+		common->Printf( "ALSA: cannot set period size (%s)\n", snd_strerror( err ) );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
-	}
-	else
-	{
+	} else   {
 		//rate succeeded, but is perhaps slightly different
-		if (dir != 0)
-		{
-			common->Printf("ALSA: period %d not supported, using %lu\n", (BUFFER_SAMPLES / dma.channels), p);
+		if ( dir != 0 ) {
+			common->Printf( "ALSA: period %d not supported, using %lu\n", ( BUFFER_SAMPLES / dma.channels ), p );
 		}
 	}
 
-	err = snd_pcm_hw_params(pcm_handle, hw_params);
-	if (err < 0)
-	{
+	err = snd_pcm_hw_params( pcm_handle, hw_params );
+	if ( err < 0 ) {
 		//set params
-		common->Printf("ALSA: cannot set params(%s)\n", snd_strerror(err));
-		snd_pcm_hw_params_free(hw_params);
+		common->Printf( "ALSA: cannot set params(%s)\n", snd_strerror( err ) );
+		snd_pcm_hw_params_free( hw_params );
 		return false;
 	}
 
 	sample_bytes = dma.samplebits / 8;
 	buffer_bytes = BUFFER_SAMPLES * sample_bytes;
 
-	dma.buffer = new byte[buffer_bytes];	//allocate pcm frame buffer
-	Com_Memset(dma.buffer, 0, buffer_bytes);
+	dma.buffer = new byte[ buffer_bytes ];		//allocate pcm frame buffer
+	Com_Memset( dma.buffer, 0, buffer_bytes );
 
 	dma.samplepos = 0;
 
 	dma.samples = BUFFER_SAMPLES;
 	dma.submission_chunk = p * dma.channels;
 
-	snd_pcm_prepare(pcm_handle);
+	snd_pcm_prepare( pcm_handle );
 
 	return true;
 }
@@ -266,12 +230,10 @@ bool SNDDMA_Init()
 //
 //==========================================================================
 
-void SNDDMA_Shutdown()
-{
-	if (dma.buffer)
-	{
-		snd_pcm_drop(pcm_handle);
-		snd_pcm_close(pcm_handle);
+void SNDDMA_Shutdown() {
+	if ( dma.buffer ) {
+		snd_pcm_drop( pcm_handle );
+		snd_pcm_close( pcm_handle );
 		delete[] dma.buffer;
 		dma.buffer = NULL;
 	}
@@ -285,11 +247,9 @@ void SNDDMA_Shutdown()
 //
 //==========================================================================
 
-int SNDDMA_GetDMAPos()
-{
-	if (!dma.buffer)
-	{
-		common->Printf("Sound not inizialized\n");
+int SNDDMA_GetDMAPos() {
+	if ( !dma.buffer ) {
+		common->Printf( "Sound not inizialized\n" );
 		return 0;
 	}
 
@@ -308,8 +268,7 @@ int SNDDMA_GetDMAPos()
 //
 //==========================================================================
 
-void SNDDMA_BeginPainting()
-{
+void SNDDMA_BeginPainting() {
 }
 
 //==========================================================================
@@ -320,48 +279,39 @@ void SNDDMA_BeginPainting()
 //
 //==========================================================================
 
-void SNDDMA_Submit()
-{
-	if (!dma.buffer)
-	{
+void SNDDMA_Submit() {
+	if ( !dma.buffer ) {
 		return;
 	}
 
 	int Submitted = 0;
-	do
-	{
+	do {
 		int s = dma.samplepos * sample_bytes;
-		void* start = &dma.buffer[s];
+		void* start = &dma.buffer[ s ];
 
 		int frames = dma.submission_chunk / dma.channels;
-		if (dma.samplepos + frames * dma.channels > dma.samples)
-		{
-			frames = (dma.samples - dma.samplepos) / dma.channels;
+		if ( dma.samplepos + frames * dma.channels > dma.samples ) {
+			frames = ( dma.samples - dma.samplepos ) / dma.channels;
 		}
-		if (Submitted + frames >= dma.samples / dma.channels)
-		{
+		if ( Submitted + frames >= dma.samples / dma.channels ) {
 			frames = dma.samples / dma.channels - Submitted - 1;
 		}
 
-		int w = snd_pcm_writei(pcm_handle, start, frames);
-		if (w == -EAGAIN)
-		{
+		int w = snd_pcm_writei( pcm_handle, start, frames );
+		if ( w == -EAGAIN ) {
 			break;
 		}
-		if (w < 0)
-		{
+		if ( w < 0 ) {
 			//write to card
-			snd_pcm_prepare(pcm_handle);	//xrun occured
+			snd_pcm_prepare( pcm_handle );		//xrun occured
 			return;
 		}
 
 		dma.samplepos += w * dma.channels;	//mark progress
 
-		if (dma.samplepos >= dma.samples)
-		{
+		if ( dma.samplepos >= dma.samples ) {
 			dma.samplepos = 0;	//wrap buffer
 		}
 		Submitted += w;
-	}
-	while (Submitted < (dma.samples / dma.channels) - 1);
+	} while ( Submitted < ( dma.samples / dma.channels ) - 1 );
 }

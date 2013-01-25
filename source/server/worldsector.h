@@ -24,17 +24,16 @@
 #define AREA_DEPTH  4
 #define AREA_NODES  32
 
-struct worldSector_t
-{
+struct worldSector_t {
 	int axis;			// -1 = leaf node
 	float dist;
-	worldSector_t* children[2];
+	worldSector_t* children[ 2 ];
 	link_t trigger_edicts;
 	link_t solid_edicts;
 	q3svEntity_t* entities;
 };
 
-extern worldSector_t sv_worldSectors[AREA_NODES];
+extern worldSector_t sv_worldSectors[ AREA_NODES ];
 
 // called after the world model has been loaded, before linking any entities
 void SV_ClearWorld();

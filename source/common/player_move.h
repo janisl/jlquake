@@ -28,8 +28,7 @@
 
 #define QHMAX_PHYSENTS  64
 
-struct movevars_t
-{
+struct movevars_t {
 	float gravity;
 	float stopspeed;
 	float maxspeed;
@@ -42,8 +41,7 @@ struct movevars_t
 	float entgravity;
 };
 
-struct qhphysent_t
-{
+struct qhphysent_t {
 	vec3_t origin;
 	clipHandle_t model;		// only for bsp models
 	vec3_t mins, maxs;	// only for non-bsp models
@@ -51,18 +49,16 @@ struct qhphysent_t
 	int info;		// for client or server to identify
 };
 
-struct qhpmove_usercmd_t
-{
+struct qhpmove_usercmd_t {
 	byte msec;
 	vec3_t angles;
 	short forwardmove, sidemove, upmove;
 	byte buttons;
 	byte impulse;
 
-	void Set(const qwusercmd_t& cmd)
-	{
+	void Set( const qwusercmd_t& cmd ) {
 		msec = cmd.msec;
-		VectorCopy(cmd.angles, angles);
+		VectorCopy( cmd.angles, angles );
 		forwardmove = cmd.forwardmove;
 		sidemove = cmd.sidemove;
 		upmove = cmd.upmove;
@@ -70,10 +66,9 @@ struct qhpmove_usercmd_t
 		impulse = cmd.impulse;
 	}
 
-	void Set(const hwusercmd_t& cmd)
-	{
+	void Set( const hwusercmd_t& cmd ) {
 		msec = cmd.msec;
-		VectorCopy(cmd.angles, angles);
+		VectorCopy( cmd.angles, angles );
 		forwardmove = cmd.forwardmove;
 		sidemove = cmd.sidemove;
 		upmove = cmd.upmove;
@@ -82,8 +77,7 @@ struct qhpmove_usercmd_t
 	}
 };
 
-struct qhplayermove_t
-{
+struct qhplayermove_t {
 	int sequence;	// just for debugging prints
 
 	// player state
@@ -101,14 +95,14 @@ struct qhplayermove_t
 
 	// world state
 	int numphysent;
-	qhphysent_t physents[QHMAX_PHYSENTS];	// 0 should be the world
+	qhphysent_t physents[ QHMAX_PHYSENTS ];		// 0 should be the world
 
 	// input
 	qhpmove_usercmd_t cmd;
 
 	// results
 	int numtouch;
-	int touchindex[QHMAX_PHYSENTS];
+	int touchindex[ QHMAX_PHYSENTS ];
 
 	int onground;
 	int waterlevel;
@@ -117,8 +111,7 @@ struct qhplayermove_t
 
 #define Q2MAXTOUCH    32
 
-struct q2pmove_t
-{
+struct q2pmove_t {
 	// state (in / out)
 	q2pmove_state_t s;
 
@@ -128,7 +121,7 @@ struct q2pmove_t
 
 	// results (out)
 	int numtouch;
-	struct q2edict_t* touchents[Q2MAXTOUCH];
+	struct q2edict_t* touchents[ Q2MAXTOUCH ];
 
 	vec3_t viewangles;				// clamped
 	float viewheight;
@@ -140,8 +133,8 @@ struct q2pmove_t
 	int waterlevel;
 
 	// callbacks to test the world
-	q2trace_t (* trace)(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end);
-	int (* pointcontents)(const vec3_t point);
+	q2trace_t ( * trace )( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end );
+	int ( * pointcontents )( const vec3_t point );
 };
 
 extern movevars_t movevars;
@@ -152,15 +145,15 @@ extern vec3_t pmqh_player_maxs;
 
 extern vec3_t pmqh_player_maxs_crouch;
 
-void PM_ClipVelocity(const vec3_t in, const vec3_t normal, vec3_t out, float overbounce);
+void PM_ClipVelocity( const vec3_t in, const vec3_t normal, vec3_t out, float overbounce );
 
 void PMQH_Init();
-q1trace_t PMQH_TestPlayerMove(const vec3_t start, const vec3_t stop);
-bool PMQH_TestPlayerPosition(const vec3_t point);
+q1trace_t PMQH_TestPlayerMove( const vec3_t start, const vec3_t stop );
+bool PMQH_TestPlayerPosition( const vec3_t point );
 void PMQH_PlayerMove();
 
 extern float pmq2_airaccelerate;
 
-void PMQ2_Pmove(q2pmove_t* pmove);
+void PMQ2_Pmove( q2pmove_t* pmove );
 
 #endif

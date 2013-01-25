@@ -68,14 +68,12 @@ FIXME: the statics don't get a reinit between fs_game changes
 //
 //==========================================================================
 
-static void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Extension)
-{
-	if (lastNumber < 0 || lastNumber > 9999)
-	{
-		String::Sprintf(fileName, MAX_OSPATH, "screenshots/shot9999.%s", Extension);
+static void R_ScreenshotFilename( int lastNumber, char* fileName, const char* Extension ) {
+	if ( lastNumber < 0 || lastNumber > 9999 ) {
+		String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.%s", Extension );
 		return;
 	}
-	String::Sprintf(fileName, MAX_OSPATH, "screenshots/shot%04i.%s", lastNumber, Extension);
+	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.%s", lastNumber, Extension );
 }
 
 //==========================================================================
@@ -84,15 +82,12 @@ static void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Ext
 //
 //==========================================================================
 
-static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const char* Extension)
-{
+static bool R_FindAvailableScreenshotFilename( int& lastNumber, char* fileName, const char* Extension ) {
 	// scan for a free number
-	for (; lastNumber <= 9999; lastNumber++)
-	{
-		R_ScreenshotFilename(lastNumber, fileName, Extension);
+	for (; lastNumber <= 9999; lastNumber++ ) {
+		R_ScreenshotFilename( lastNumber, fileName, Extension );
 
-		if (!FS_FileExists(fileName))
-		{
+		if ( !FS_FileExists( fileName ) ) {
 			//	Next time start scanning here.
 			lastNumber++;
 
@@ -100,7 +95,7 @@ static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, c
 		}
 	}
 
-	common->Printf("ScreenShot: Couldn't create a file\n");
+	common->Printf( "ScreenShot: Couldn't create a file\n" );
 	return false;
 }
 
@@ -110,13 +105,11 @@ static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, c
 //
 //==========================================================================
 
-static void R_TakeScreenshot(int x, int y, int width, int height, const char* name, bool jpeg)
-{
-	static char fileName[MAX_OSPATH];	// bad things if two screenshots per frame?
+static void R_TakeScreenshot( int x, int y, int width, int height, const char* name, bool jpeg ) {
+	static char fileName[ MAX_OSPATH ];		// bad things if two screenshots per frame?
 
-	screenshotCommand_t* cmd = (screenshotCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
-	if (!cmd)
-	{
+	screenshotCommand_t* cmd = ( screenshotCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
+	if ( !cmd ) {
 		return;
 	}
 	cmd->commandId = RC_SCREENSHOT;
@@ -125,7 +118,7 @@ static void R_TakeScreenshot(int x, int y, int width, int height, const char* na
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
-	String::NCpyZ(fileName, name, sizeof(fileName));
+	String::NCpyZ( fileName, name, sizeof ( fileName ) );
 	cmd->fileName = fileName;
 	cmd->jpeg = jpeg;
 }
@@ -136,26 +129,21 @@ static void R_TakeScreenshot(int x, int y, int width, int height, const char* na
 //
 //==========================================================================
 
-static void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg)
-{
-	byte* buffer = new byte[width * height * 3];
+static void RB_TakeScreenshot( int x, int y, int width, int height, const char* fileName, bool IsJpeg ) {
+	byte* buffer = new byte[ width * height * 3 ];
 
-	qglReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer );
 
 	// gamma correct
-	if (tr.overbrightBits > 0 && glConfig.deviceSupportsGamma)
-	{
-		R_GammaCorrect(buffer, width * height * 3);
+	if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma ) {
+		R_GammaCorrect( buffer, width * height * 3 );
 	}
 
-	if (IsJpeg)
-	{
-		FS_WriteFile(fileName, buffer, 1);		// create path
-		R_SaveJPG(fileName, 95, width, height, buffer);
-	}
-	else
-	{
-		R_SaveTGA(fileName, buffer, width, height, false);
+	if ( IsJpeg ) {
+		FS_WriteFile( fileName, buffer, 1 );		// create path
+		R_SaveJPG( fileName, 95, width, height, buffer );
+	} else   {
+		R_SaveTGA( fileName, buffer, width, height, false );
 	}
 
 	delete[] buffer;
@@ -167,13 +155,12 @@ static void RB_TakeScreenshot(int x, int y, int width, int height, const char* f
 //
 //==========================================================================
 
-const void* RB_TakeScreenshotCmd(const void* data)
-{
-	const screenshotCommand_t* cmd = (const screenshotCommand_t*)data;
+const void* RB_TakeScreenshotCmd( const void* data ) {
+	const screenshotCommand_t* cmd = ( const screenshotCommand_t* )data;
 
-	RB_TakeScreenshot(cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName, cmd->jpeg);
+	RB_TakeScreenshot( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName, cmd->jpeg );
 
-	return (const void*)(cmd + 1);
+	return ( const void* )( cmd + 1 );
 }
 
 //==========================================================================
@@ -185,56 +172,50 @@ const void* RB_TakeScreenshotCmd(const void* data)
 //
 //==========================================================================
 
-static void R_LevelShot()
-{
-	char checkname[MAX_OSPATH];
-	String::Sprintf(checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName);
+static void R_LevelShot() {
+	char checkname[ MAX_OSPATH ];
+	String::Sprintf( checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName );
 
-	byte* source = new byte[glConfig.vidWidth * glConfig.vidHeight * 3];
+	byte* source = new byte[ glConfig.vidWidth * glConfig.vidHeight * 3 ];
 
-	byte* buffer = new byte[128 * 128 * 3];
+	byte* buffer = new byte[ 128 * 128 * 3 ];
 
-	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source);
+	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source );
 
 	// resample from source
 	float xScale = glConfig.vidWidth / 512.0f;
 	float yScale = glConfig.vidHeight / 384.0f;
-	for (int y = 0; y < 128; y++)
-	{
-		for (int x = 0; x < 128; x++)
-		{
+	for ( int y = 0; y < 128; y++ ) {
+		for ( int x = 0; x < 128; x++ ) {
 			int r = 0;
 			int g = 0;
 			int b = 0;
-			for (int yy = 0; yy < 3; yy++)
-			{
-				for (int xx = 0; xx < 4; xx++)
-				{
-					byte* src = source + 3 * (glConfig.vidWidth * (int)((y * 3 + yy) * yScale) + (int)((x * 4 + xx) * xScale));
-					r += src[0];
-					g += src[1];
-					b += src[2];
+			for ( int yy = 0; yy < 3; yy++ ) {
+				for ( int xx = 0; xx < 4; xx++ ) {
+					byte* src = source + 3 * ( glConfig.vidWidth * ( int )( ( y * 3 + yy ) * yScale ) + ( int )( ( x * 4 + xx ) * xScale ) );
+					r += src[ 0 ];
+					g += src[ 1 ];
+					b += src[ 2 ];
 				}
 			}
-			byte* dst = buffer + 3 * (y * 128 + x);
-			dst[0] = r / 12;
-			dst[1] = g / 12;
-			dst[2] = b / 12;
+			byte* dst = buffer + 3 * ( y * 128 + x );
+			dst[ 0 ] = r / 12;
+			dst[ 1 ] = g / 12;
+			dst[ 2 ] = b / 12;
 		}
 	}
 
 	// gamma correct
-	if (tr.overbrightBits > 0 && glConfig.deviceSupportsGamma)
-	{
-		R_GammaCorrect(buffer, 128 * 128 * 3);
+	if ( tr.overbrightBits > 0 && glConfig.deviceSupportsGamma ) {
+		R_GammaCorrect( buffer, 128 * 128 * 3 );
 	}
 
-	R_SaveTGA(checkname, buffer, 128, 128, false);
+	R_SaveTGA( checkname, buffer, 128, 128, false );
 
 	delete[] buffer;
 	delete[] source;
 
-	common->Printf("Wrote %s\n", checkname);
+	common->Printf( "Wrote %s\n", checkname );
 }
 
 //==========================================================================
@@ -250,48 +231,38 @@ static void R_LevelShot()
 //
 //==========================================================================
 
-void R_ScreenShot_f()
-{
+void R_ScreenShot_f() {
 	// if we have saved a previous screenshot, don't scan
 	// again, because recording demo avis can involve
 	// thousands of shots
 	static int lastNumber = 0;
 
-	if (!String::Cmp(Cmd_Argv(1), "levelshot"))
-	{
+	if ( !String::Cmp( Cmd_Argv( 1 ), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	bool silent = !String::Cmp(Cmd_Argv(1), "silent");
+	bool silent = !String::Cmp( Cmd_Argv( 1 ), "silent" );
 
-	char checkname[MAX_OSPATH];
-	if (Cmd_Argc() == 2 && !silent)
-	{
+	char checkname[ MAX_OSPATH ];
+	if ( Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
-		String::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv(1));
-	}
-	else
-	{
+		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv( 1 ) );
+	} else   {
 		// scan for a free filename
-		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "tga"))
-		{
+		if ( !R_FindAvailableScreenshotFilename( lastNumber, checkname, "tga" ) ) {
 			return;
 		}
 	}
 
-	if (GGameType & GAME_Tech3)
-	{
-		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false);
-	}
-	else
-	{
-		RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false);
+	if ( GGameType & GAME_Tech3 ) {
+		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false );
+	} else   {
+		RB_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false );
 	}
 
-	if (!silent)
-	{
-		common->Printf("Wrote %s\n", checkname);
+	if ( !silent ) {
+		common->Printf( "Wrote %s\n", checkname );
 	}
 }
 
@@ -301,48 +272,38 @@ void R_ScreenShot_f()
 //
 //==========================================================================
 
-void R_ScreenShotJPEG_f()
-{
+void R_ScreenShotJPEG_f() {
 	// if we have saved a previous screenshot, don't scan
 	// again, because recording demo avis can involve
 	// thousands of shots
 	static int lastNumber = 0;
 
-	if (!String::Cmp(Cmd_Argv(1), "levelshot"))
-	{
+	if ( !String::Cmp( Cmd_Argv( 1 ), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	bool silent = !String::Cmp(Cmd_Argv(1), "silent");
+	bool silent = !String::Cmp( Cmd_Argv( 1 ), "silent" );
 
-	char checkname[MAX_OSPATH];
-	if (Cmd_Argc() == 2 && !silent)
-	{
+	char checkname[ MAX_OSPATH ];
+	if ( Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
-		String::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv(1));
-	}
-	else
-	{
+		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv( 1 ) );
+	} else   {
 		// scan for a free filename
-		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
-		{
+		if ( !R_FindAvailableScreenshotFilename( lastNumber, checkname, "jpg" ) ) {
 			return;
 		}
 	}
 
-	if (GGameType & GAME_Tech3)
-	{
-		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true);
-	}
-	else
-	{
-		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true);
+	if ( GGameType & GAME_Tech3 ) {
+		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true );
+	} else   {
+		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true );
 	}
 
-	if (!silent)
-	{
-		common->Printf("Wrote %s\n", checkname);
+	if ( !silent ) {
+		common->Printf( "Wrote %s\n", checkname );
 	}
 }
 
@@ -354,19 +315,16 @@ void R_ScreenShotJPEG_f()
 //
 //==========================================================================
 
-static int MipColor(int r, int g, int b)
-{
+static int MipColor( int r, int g, int b ) {
 	int best = 0;
 	int bestdist = 256 * 256 * 3;
 
-	for (int i = 0; i < 256; i++)
-	{
-		int r1 = host_basepal[i * 3] - r;
-		int g1 = host_basepal[i * 3 + 1] - g;
-		int b1 = host_basepal[i * 3 + 2] - b;
+	for ( int i = 0; i < 256; i++ ) {
+		int r1 = host_basepal[ i * 3 ] - r;
+		int g1 = host_basepal[ i * 3 + 1 ] - g;
+		int b1 = host_basepal[ i * 3 + 2 ] - b;
 		int dist = r1 * r1 + g1 * g1 + b1 * b1;
-		if (dist < bestdist)
-		{
+		if ( dist < bestdist ) {
 			bestdist = dist;
 			best = i;
 		}
@@ -380,25 +338,19 @@ static int MipColor(int r, int g, int b)
 //
 //==========================================================================
 
-static void SCR_DrawCharToSnap(int num, byte* dest, int width)
-{
+static void SCR_DrawCharToSnap( int num, byte* dest, int width ) {
 	int row = num >> 4;
 	int col = num & 15;
-	byte* draw_chars = (byte*)R_GetWadLumpByName("conchars");
-	byte* source = draw_chars + (row << 10) + (col << 3);
+	byte* draw_chars = ( byte* )R_GetWadLumpByName( "conchars" );
+	byte* source = draw_chars + ( row << 10 ) + ( col << 3 );
 
 	int drawline = 8;
-	while (drawline--)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			if (source[x])
-			{
-				dest[x] = source[x];
-			}
-			else
-			{
-				dest[x] = 98;
+	while ( drawline-- ) {
+		for ( int x = 0; x < 8; x++ ) {
+			if ( source[ x ] ) {
+				dest[ x ] = source[ x ];
+			} else   {
+				dest[ x ] = 98;
 			}
 		}
 		source += 128;
@@ -412,13 +364,11 @@ static void SCR_DrawCharToSnap(int num, byte* dest, int width)
 //
 //==========================================================================
 
-static void SCR_DrawStringToSnap(const char* s, byte* buf, int x, int y, int width)
-{
-	byte* dest = buf + (y * width) + x;
-	const unsigned char* p = (const unsigned char*)s;
-	while (*p)
-	{
-		SCR_DrawCharToSnap(*p++, dest, width);
+static void SCR_DrawStringToSnap( const char* s, byte* buf, int x, int y, int width ) {
+	byte* dest = buf + ( y * width ) + x;
+	const unsigned char* p = ( const unsigned char* )s;
+	while ( *p ) {
+		SCR_DrawCharToSnap( *p++, dest, width );
 		dest += 8;
 	}
 }
@@ -429,47 +379,40 @@ static void SCR_DrawStringToSnap(const char* s, byte* buf, int x, int y, int wid
 //
 //==========================================================================
 
-void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, idList<byte>& buffer)
-{
-	byte* newbuf = new byte[glConfig.vidHeight * glConfig.vidWidth * 3];
+void R_CaptureRemoteScreenShot( const char* string1, const char* string2, const char* string3, idList<byte>& buffer ) {
+	byte* newbuf = new byte[ glConfig.vidHeight * glConfig.vidWidth * 3 ];
 
-	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, newbuf);
+	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, newbuf );
 
 	int w = glConfig.vidWidth < RSSHOT_WIDTH ? glConfig.vidWidth : RSSHOT_WIDTH;
 	int h = glConfig.vidHeight < RSSHOT_HEIGHT ? glConfig.vidHeight : RSSHOT_HEIGHT;
 
-	float fracw = (float)glConfig.vidWidth / (float)w;
-	float frach = (float)glConfig.vidHeight / (float)h;
+	float fracw = ( float )glConfig.vidWidth / ( float )w;
+	float frach = ( float )glConfig.vidHeight / ( float )h;
 
-	for (int y = 0; y < h; y++)
-	{
-		byte* dest = newbuf + (w * 3 * y);
+	for ( int y = 0; y < h; y++ ) {
+		byte* dest = newbuf + ( w * 3 * y );
 
-		for (int x = 0; x < w; x++)
-		{
+		for ( int x = 0; x < w; x++ ) {
 			int r = 0;
 			int g = 0;
 			int b = 0;
 
 			int dx = x * fracw;
-			int dex = (x + 1) * fracw;
-			if (dex == dx)
-			{
+			int dex = ( x + 1 ) * fracw;
+			if ( dex == dx ) {
 				dex++;	// at least one
 			}
 			int dy = y * frach;
-			int dey = (y + 1) * frach;
-			if (dey == dy)
-			{
+			int dey = ( y + 1 ) * frach;
+			if ( dey == dy ) {
 				dey++;	// at least one
 			}
 
 			int count = 0;
-			for (; dy < dey; dy++)
-			{
-				byte* src = newbuf + (glConfig.vidWidth * 3 * dy) + dx * 3;
-				for (int nx = dx; nx < dex; nx++)
-				{
+			for (; dy < dey; dy++ ) {
+				byte* src = newbuf + ( glConfig.vidWidth * 3 * dy ) + dx * 3;
+				for ( int nx = dx; nx < dex; nx++ ) {
 					r += *src++;
 					g += *src++;
 					b += *src++;
@@ -486,30 +429,28 @@ void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const c
 	}
 
 	// convert to eight bit
-	for (int y = 0; y < h; y++)
-	{
-		byte* src = newbuf + (w * 3 * y);
-		byte* dest = newbuf + (w * y);
+	for ( int y = 0; y < h; y++ ) {
+		byte* src = newbuf + ( w * 3 * y );
+		byte* dest = newbuf + ( w * y );
 
-		for (int x = 0; x < w; x++)
-		{
-			*dest++ = MipColor(src[0], src[1], src[2]);
+		for ( int x = 0; x < w; x++ ) {
+			*dest++ = MipColor( src[ 0 ], src[ 1 ], src[ 2 ] );
 			src += 3;
 		}
 	}
 
-	char st[80];
+	char st[ 80 ];
 
-	String::NCpyZ(st, string1, sizeof(st));
-	st[String::Length(st) - 1] = 0;
-	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 1, w);
+	String::NCpyZ( st, string1, sizeof ( st ) );
+	st[ String::Length( st ) - 1 ] = 0;
+	SCR_DrawStringToSnap( st, newbuf, w - String::Length( st ) * 8, h - 1, w );
 
-	String::NCpyZ(st, string2, sizeof(st));
-	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 11, w);
+	String::NCpyZ( st, string2, sizeof ( st ) );
+	SCR_DrawStringToSnap( st, newbuf, w - String::Length( st ) * 8, h - 11, w );
 
-	String::NCpyZ(st, string3, sizeof(st));
-	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 21, w);
+	String::NCpyZ( st, string3, sizeof ( st ) );
+	SCR_DrawStringToSnap( st, newbuf, w - String::Length( st ) * 8, h - 21, w );
 
-	R_SavePCXMem(buffer, newbuf, w, h, host_basepal);
+	R_SavePCXMem( buffer, newbuf, w, h, host_basepal );
 	delete[] newbuf;
 }

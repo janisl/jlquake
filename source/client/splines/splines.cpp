@@ -25,7 +25,7 @@
 // TTimo
 // handy stuff when tracking isnan problems
 #ifndef NDEBUG
-#define CHECK_NAN_VEC(v) assert(!IS_NAN(v[0]) && !IS_NAN(v[1]) && !IS_NAN(v[2]))
+#define CHECK_NAN_VEC( v ) assert( !IS_NAN( v[ 0 ] ) && !IS_NAN( v[ 1 ] ) && !IS_NAN( v[ 2 ] ) )
 #else
 #define CHECK_NAN_VEC
 #endif
@@ -37,113 +37,95 @@
 //		targets.
 #define MAX_CAMERAS 64
 
-idCameraDef camera[MAX_CAMERAS];
+idCameraDef camera[ MAX_CAMERAS ];
 
-bool loadCamera(int camNum, const char* name)
-{
-	if (camNum < 0 || camNum >= MAX_CAMERAS)
-	{
+bool loadCamera( int camNum, const char* name ) {
+	if ( camNum < 0 || camNum >= MAX_CAMERAS ) {
 		return false;
 	}
-	camera[camNum].clear();
+	camera[ camNum ].clear();
 	// TTimo static_cast confused gcc, went for C-style casting
-	return camera[camNum].load(name);
+	return camera[ camNum ].load( name );
 }
 
-bool getCameraInfo(int camNum, int time, float* origin, float* angles, float* fov)
-{
+bool getCameraInfo( int camNum, int time, float* origin, float* angles, float* fov ) {
 	idVec3 dir, org;
-	if (camNum < 0 || camNum >= MAX_CAMERAS)
-	{
+	if ( camNum < 0 || camNum >= MAX_CAMERAS ) {
 		return false;
 	}
-	org[0] = origin[0];
-	org[1] = origin[1];
-	org[2] = origin[2];
-	if (camera[camNum].getCameraInfo(time, org, dir, fov))
-	{
-		origin[0] = org[0];
-		origin[1] = org[1];
-		origin[2] = org[2];
-		angles[1] = atan2(dir[1], dir[0]) * 180 / 3.14159;
-		angles[0] = asin(dir[2]) * 180 / 3.14159;
+	org[ 0 ] = origin[ 0 ];
+	org[ 1 ] = origin[ 1 ];
+	org[ 2 ] = origin[ 2 ];
+	if ( camera[ camNum ].getCameraInfo( time, org, dir, fov ) ) {
+		origin[ 0 ] = org[ 0 ];
+		origin[ 1 ] = org[ 1 ];
+		origin[ 2 ] = org[ 2 ];
+		angles[ 1 ] = atan2( dir[ 1 ], dir[ 0 ] ) * 180 / 3.14159;
+		angles[ 0 ] = asin( dir[ 2 ] ) * 180 / 3.14159;
 		return true;
 	}
 	return false;
 }
 
-void startCamera(int camNum, int time)
-{
-	if (camNum < 0 || camNum >= MAX_CAMERAS)
-	{
+void startCamera( int camNum, int time ) {
+	if ( camNum < 0 || camNum >= MAX_CAMERAS ) {
 		return;
 	}
-	camera[camNum].startCamera(time);
+	camera[ camNum ].startCamera( time );
 }
 
-idVec3 idSplineList::zero(0,0,0);
+idVec3 idSplineList::zero( 0,0,0 );
 
-void idSplineList::buildSpline()
-{
+void idSplineList::buildSpline() {
 	//int start = Sys_Milliseconds();
 	clearSpline();
-	for (int i = 3; i < controlPoints.Num(); i++)
-	{
-		for (float tension = 0.0f; tension < 1.001f; tension += granularity)
-		{
+	for ( int i = 3; i < controlPoints.Num(); i++ ) {
+		for ( float tension = 0.0f; tension < 1.001f; tension += granularity ) {
 			float x = 0;
 			float y = 0;
 			float z = 0;
-			for (int j = 0; j < 4; j++)
-			{
-				x += controlPoints[i - (3 - j)]->x * calcSpline(j, tension);
-				y += controlPoints[i - (3 - j)]->y * calcSpline(j, tension);
-				z += controlPoints[i - (3 - j)]->z * calcSpline(j, tension);
+			for ( int j = 0; j < 4; j++ ) {
+				x += controlPoints[ i - ( 3 - j ) ]->x * calcSpline( j, tension );
+				y += controlPoints[ i - ( 3 - j ) ]->y * calcSpline( j, tension );
+				z += controlPoints[ i - ( 3 - j ) ]->z * calcSpline( j, tension );
 			}
-			splinePoints.Append(new idVec3(x, y, z));
+			splinePoints.Append( new idVec3( x, y, z ) );
 		}
 	}
 	dirty = false;
 }
 
 
-float idSplineList::totalDistance()
-{
+float idSplineList::totalDistance() {
 
 	// FIXME: save dist and return
 	//
-	if (controlPoints.Num() == 0)
-	{
+	if ( controlPoints.Num() == 0 ) {
 		return 0.0;
 	}
 
-	if (dirty)
-	{
+	if ( dirty ) {
 		buildSpline();
 	}
 
 	float dist = 0.0;
 	idVec3 temp;
 	int count = splinePoints.Num();
-	for (int i = 1; i < count; i++)
-	{
-		temp = *splinePoints[i - 1];
-		temp -= *splinePoints[i];
+	for ( int i = 1; i < count; i++ ) {
+		temp = *splinePoints[ i - 1 ];
+		temp -= *splinePoints[ i ];
 		dist += temp.Length();
 	}
 	return dist;
 }
 
-void idSplineList::initPosition(long bt, long totalTime)
-{
+void idSplineList::initPosition( long bt, long totalTime ) {
 
-	if (dirty)
-	{
+	if ( dirty ) {
 		buildSpline();
 	}
 
-	if (splinePoints.Num() == 0)
-	{
+	if ( splinePoints.Num() == 0 ) {
 		return;
 	}
 
@@ -152,227 +134,182 @@ void idSplineList::initPosition(long bt, long totalTime)
 
 	// calc distance to travel ( this will soon be broken into time segments )
 	splineTime.Clear();
-	splineTime.Append(bt);
+	splineTime.Append( bt );
 	double dist = totalDistance();
 	double distSoFar = 0.0;
 	idVec3 temp;
 	int count = splinePoints.Num();
 	//for(int i = 2; i < count - 1; i++) {
-	for (int i = 1; i < count; i++)
-	{
-		temp = *splinePoints[i - 1];
-		temp -= *splinePoints[i];
+	for ( int i = 1; i < count; i++ ) {
+		temp = *splinePoints[ i - 1 ];
+		temp -= *splinePoints[ i ];
 		distSoFar += temp.Length();
 		double percent = distSoFar / dist;
 		percent *= totalTime;
-		splineTime.Append(percent + bt);
+		splineTime.Append( percent + bt );
 	}
-	assert(splineTime.Num() == splinePoints.Num());
+	assert( splineTime.Num() == splinePoints.Num() );
 	activeSegment = 0;
 }
 
 
 
-float idSplineList::calcSpline(int step, float tension)
-{
-	switch (step)
-	{
-	case 0: return (pow(1 - tension, 3)) / 6;
-	case 1: return (3 * pow(tension, 3) - 6 * pow(tension, 2) + 4) / 6;
-	case 2: return (-3 * pow(tension, 3) + 3 * pow(tension, 2) + 3 * tension + 1) / 6;
-	case 3: return pow(tension, 3) / 6;
+float idSplineList::calcSpline( int step, float tension ) {
+	switch ( step ) {
+	case 0: return ( pow( 1 - tension, 3 ) ) / 6;
+	case 1: return ( 3 * pow( tension, 3 ) - 6 * pow( tension, 2 ) + 4 ) / 6;
+	case 2: return ( -3 * pow( tension, 3 ) + 3 * pow( tension, 2 ) + 3 * tension + 1 ) / 6;
+	case 3: return pow( tension, 3 ) / 6;
 	}
 	return 0.0;
 }
 
-const idVec3* idSplineList::getPosition(long t)
-{
+const idVec3* idSplineList::getPosition( long t ) {
 	static idVec3 interpolatedPos;
 
 	int count = splineTime.Num();
-	if (count == 0)
-	{
+	if ( count == 0 ) {
 		return &zero;
 	}
 
-	assert(splineTime.Num() == splinePoints.Num());
+	assert( splineTime.Num() == splinePoints.Num() );
 
-	while (activeSegment < count)
-	{
-		if (splineTime[activeSegment] >= t)
-		{
-			if (activeSegment > 0 && activeSegment < count - 1)
-			{
-				double timeHi = splineTime[activeSegment + 1];
-				double timeLo = splineTime[activeSegment - 1];
-				double percent = (timeHi - t) / (timeHi - timeLo);
+	while ( activeSegment < count ) {
+		if ( splineTime[ activeSegment ] >= t ) {
+			if ( activeSegment > 0 && activeSegment < count - 1 ) {
+				double timeHi = splineTime[ activeSegment + 1 ];
+				double timeLo = splineTime[ activeSegment - 1 ];
+				double percent = ( timeHi - t ) / ( timeHi - timeLo );
 				// pick two bounding points
-				idVec3 v1 = *splinePoints[activeSegment - 1];
-				idVec3 v2 = *splinePoints[activeSegment + 1];
-				v2 *= (1.0 - percent);
+				idVec3 v1 = *splinePoints[ activeSegment - 1 ];
+				idVec3 v2 = *splinePoints[ activeSegment + 1 ];
+				v2 *= ( 1.0 - percent );
 				v1 *= percent;
 				v2 += v1;
 				interpolatedPos = v2;
 				return &interpolatedPos;
 			}
-			return splinePoints[activeSegment];
-		}
-		else
-		{
+			return splinePoints[ activeSegment ];
+		} else   {
 			activeSegment++;
 		}
 	}
-	return splinePoints[count - 1];
+	return splinePoints[ count - 1 ];
 }
 
-void idSplineList::parse(const char** text)
-{
+void idSplineList::parse( const char** text ) {
 	const char* token;
 	//Com_MatchToken( text, "{" );
-	do
-	{
-		token = Com_Parse(text);
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::ICmp(token, "}"))
-		{
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::ICmp(token, "(") || !String::ICmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::ICmp( token, "(" ) || !String::ICmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "granularity") == 0)
-			{
-				granularity = String::Atof(token);
-			}
-			else if (String::ICmp(key.CStr(), "name") == 0)
-			{
+			idStr key = Com_ParseOnLine( text );
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "granularity" ) == 0 ) {
+				granularity = String::Atof( token );
+			} else if ( String::ICmp( key.CStr(), "name" ) == 0 )       {
 				name = token;
 			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::ICmp(token, "}"))
-		{
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
 		Com_UngetToken();
 		// read the control point
 		idVec3 point;
-		Com_Parse1DMatrix(text, 3, point.ToFloatPtr());
-		addPoint(point.x, point.y, point.z);
-	}
-	while (1);
+		Com_Parse1DMatrix( text, 3, point.ToFloatPtr() );
+		addPoint( point.x, point.y, point.z );
+	} while ( 1 );
 
 	//Com_UngetToken();
 	//Com_MatchToken( text, "}" );
 	dirty = true;
 }
 
-bool idCameraDef::getCameraInfo(long time, idVec3& origin, idVec3& direction, float* fv)
-{
-	char buff[1024];
+bool idCameraDef::getCameraInfo( long time, idVec3& origin, idVec3& direction, float* fv ) {
+	char buff[ 1024 ];
 
-	if ((time - startTime) / 1000 > totalTime)
-	{
+	if ( ( time - startTime ) / 1000 > totalTime ) {
 		return false;
 	}
 
 
-	for (int i = 0; i < events.Num(); i++)
-	{
-		if (time >= startTime + events[i]->getTime() && !events[i]->getTriggered())
-		{
-			events[i]->setTriggered(true);
-			if (events[i]->getType() == idCameraEvent::EVENT_TARGET)
-			{
-				setActiveTargetByName(events[i]->getParam());
-				getActiveTarget()->start(startTime + events[i]->getTime());
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_TRIGGER)
-			{
+	for ( int i = 0; i < events.Num(); i++ ) {
+		if ( time >= startTime + events[ i ]->getTime() && !events[ i ]->getTriggered() ) {
+			events[ i ]->setTriggered( true );
+			if ( events[ i ]->getType() == idCameraEvent::EVENT_TARGET ) {
+				setActiveTargetByName( events[ i ]->getParam() );
+				getActiveTarget()->start( startTime + events[ i ]->getTime() );
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_TRIGGER )       {
 				// empty!
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_FOV)
-			{
-				memset(buff, 0, sizeof(buff));
-				String::Cpy(buff, events[i]->getParam());
-				const char* param1 = strtok(buff, " \t,\0");
-				const char* param2 = strtok(NULL, " \t,\0");
-				float len = (param2) ? String::Atof(param2) : 0;
-				float newfov = (param1) ? String::Atof(param1) : 90;
-				fov.reset(fov.getFOV(time), newfov, time, len);
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_FOV )       {
+				memset( buff, 0, sizeof ( buff ) );
+				String::Cpy( buff, events[ i ]->getParam() );
+				const char* param1 = strtok( buff, " \t,\0" );
+				const char* param2 = strtok( NULL, " \t,\0" );
+				float len = ( param2 ) ? String::Atof( param2 ) : 0;
+				float newfov = ( param1 ) ? String::Atof( param1 ) : 90;
+				fov.reset( fov.getFOV( time ), newfov, time, len );
 				//*fv = fov = String::Atof(events[i]->getParam());
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_FADEIN)
-			{
-				float time = String::Atof(events[i]->getParam());
-				Cbuf_AddText(va("fade 0 0 0 0 %f", time));
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_FADEIN )       {
+				float time = String::Atof( events[ i ]->getParam() );
+				Cbuf_AddText( va( "fade 0 0 0 0 %f", time ) );
 				Cbuf_Execute();
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_FADEOUT)
-			{
-				float time = String::Atof(events[i]->getParam());
-				Cbuf_AddText(va("fade 0 0 0 255 %f", time));
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_FADEOUT )       {
+				float time = String::Atof( events[ i ]->getParam() );
+				Cbuf_AddText( va( "fade 0 0 0 255 %f", time ) );
 				Cbuf_Execute();
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_CAMERA)
-			{
-				memset(buff, 0, sizeof(buff));
-				String::Cpy(buff, events[i]->getParam());
-				const char* param1 = strtok(buff, " \t,\0");
-				const char* param2 = strtok(NULL, " \t,\0");
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_CAMERA )       {
+				memset( buff, 0, sizeof ( buff ) );
+				String::Cpy( buff, events[ i ]->getParam() );
+				const char* param1 = strtok( buff, " \t,\0" );
+				const char* param2 = strtok( NULL, " \t,\0" );
 
-				if (param2)
-				{
-					loadCamera(String::Atoi(param1), va("cameras/%s.camera", param2));
-					startCamera(time);
-				}
-				else
-				{
-					loadCamera(0, va("cameras/%s.camera", events[i]->getParam()));
-					startCamera(time);
+				if ( param2 ) {
+					loadCamera( String::Atoi( param1 ), va( "cameras/%s.camera", param2 ) );
+					startCamera( time );
+				} else   {
+					loadCamera( 0, va( "cameras/%s.camera", events[ i ]->getParam() ) );
+					startCamera( time );
 				}
 				return true;
-			}
-			else if (events[i]->getType() == idCameraEvent::EVENT_STOP)
-			{
+			} else if ( events[ i ]->getType() == idCameraEvent::EVENT_STOP )       {
 				return false;
 			}
 		}
 	}
 
-	origin = *cameraPosition->getPosition(time);
+	origin = *cameraPosition->getPosition( time );
 
-	CHECK_NAN_VEC(origin);
+	CHECK_NAN_VEC( origin );
 
-	*fv = fov.getFOV(time);
+	*fv = fov.getFOV( time );
 
 	idVec3 temp = origin;
 
 	int numTargets = targetPositions.Num();
-	if (numTargets == 0)
-	{
+	if ( numTargets == 0 ) {
 		// empty!
-	}
-	else
-	{
-		temp = *getActiveTarget()->getPosition(time);
+	} else   {
+		temp = *getActiveTarget()->getPosition( time );
 	}
 
 	temp -= origin;
@@ -385,36 +322,31 @@ bool idCameraDef::getCameraInfo(long time, idVec3& origin, idVec3& direction, fl
 #define NUM_CCELERATION_SEGS 10
 #define CELL_AMT 5
 
-void idCameraDef::buildCamera()
-{
+void idCameraDef::buildCamera() {
 	int i;
 	idList<float> waits;
 	idList<int> targets;
 
 	totalTime = baseTime;
-	cameraPosition->setTime(totalTime * 1000);
+	cameraPosition->setTime( totalTime * 1000 );
 	// we have a base time layout for the path and the target path
 	// now we need to layer on any wait or speed changes
-	for (i = 0; i < events.Num(); i++)
-	{
-		events[i]->setTriggered(false);
-		switch (events[i]->getType())
-		{
+	for ( i = 0; i < events.Num(); i++ ) {
+		events[ i ]->setTriggered( false );
+		switch ( events[ i ]->getType() ) {
 		case idCameraEvent::EVENT_TARGET: {
-			targets.Append(i);
+			targets.Append( i );
 			break;
 		}
 		case idCameraEvent::EVENT_FEATHER: {
 			long startTime = 0;
 			float speed = 0;
 			long loopTime = 10;
-			float stepGoal = cameraPosition->getBaseVelocity() / (1000 / loopTime);
-			while (startTime <= 1000)
-			{
-				cameraPosition->addVelocity(startTime, loopTime, speed);
+			float stepGoal = cameraPosition->getBaseVelocity() / ( 1000 / loopTime );
+			while ( startTime <= 1000 ) {
+				cameraPosition->addVelocity( startTime, loopTime, speed );
 				speed += stepGoal;
-				if (speed > cameraPosition->getBaseVelocity())
-				{
+				if ( speed > cameraPosition->getBaseVelocity() ) {
 					speed = cameraPosition->getBaseVelocity();
 				}
 				startTime += loopTime;
@@ -423,49 +355,44 @@ void idCameraDef::buildCamera()
 			// TTimo gcc warns: assignment to `long int' from `float'
 			// more efficient to do (long int)(totalTime) * 1000 - 1000
 			// safer to (long int)(totalTime * 1000 - 1000)
-			startTime = (long int)(totalTime * 1000 - 1000);
+			startTime = ( long int )( totalTime * 1000 - 1000 );
 			long endTime = startTime + 1000;
 			speed = cameraPosition->getBaseVelocity();
-			while (startTime < endTime)
-			{
+			while ( startTime < endTime ) {
 				speed -= stepGoal;
-				if (speed < 0)
-				{
+				if ( speed < 0 ) {
 					speed = 0;
 				}
-				cameraPosition->addVelocity(startTime, loopTime, speed);
+				cameraPosition->addVelocity( startTime, loopTime, speed );
 				startTime += loopTime;
 			}
 			break;
 
 		}
 		case idCameraEvent::EVENT_WAIT: {
-			waits.Append(String::Atof(events[i]->getParam()));
+			waits.Append( String::Atof( events[ i ]->getParam() ) );
 
 			//FIXME: this is quite hacky for Wolf E3, accel and decel needs
 			// do be parameter based etc..
-			long startTime = events[i]->getTime() - 1000;
-			if (startTime < 0)
-			{
+			long startTime = events[ i ]->getTime() - 1000;
+			if ( startTime < 0 ) {
 				startTime = 0;
 			}
 			float speed = cameraPosition->getBaseVelocity();
 			long loopTime = 10;
-			float steps = speed / ((events[i]->getTime() - startTime) / loopTime);
-			while (startTime <= events[i]->getTime() - loopTime)
-			{
-				cameraPosition->addVelocity(startTime, loopTime, speed);
+			float steps = speed / ( ( events[ i ]->getTime() - startTime ) / loopTime );
+			while ( startTime <= events[ i ]->getTime() - loopTime ) {
+				cameraPosition->addVelocity( startTime, loopTime, speed );
 				speed -= steps;
 				startTime += loopTime;
 			}
-			cameraPosition->addVelocity(events[i]->getTime(), String::Atof(events[i]->getParam()) * 1000, 0);
+			cameraPosition->addVelocity( events[ i ]->getTime(), String::Atof( events[ i ]->getParam() ) * 1000, 0 );
 
-			startTime = (long int)(events[i]->getTime() + String::Atof(events[i]->getParam()) * 1000);
+			startTime = ( long int )( events[ i ]->getTime() + String::Atof( events[ i ]->getParam() ) * 1000 );
 			long endTime = startTime + 1000;
 			speed = 0;
-			while (startTime <= endTime)
-			{
-				cameraPosition->addVelocity(startTime, loopTime, speed);
+			while ( startTime <= endTime ) {
+				cameraPosition->addVelocity( startTime, loopTime, speed );
 				speed += steps;
 				startTime += loopTime;
 			}
@@ -513,41 +440,35 @@ void idCameraDef::buildCamera()
 	}
 
 
-	for (i = 0; i < waits.Num(); i++)
-	{
-		totalTime += waits[i];
+	for ( i = 0; i < waits.Num(); i++ ) {
+		totalTime += waits[ i ];
 	}
 
 	// on a new target switch, we need to take time to this point ( since last target switch )
 	// and allocate it across the active target, then reset time to this point
 	long timeSoFar = 0;
-	long total = (long int)(totalTime * 1000);
-	for (i = 0; i < targets.Num(); i++)
-	{
+	long total = ( long int )( totalTime * 1000 );
+	for ( i = 0; i < targets.Num(); i++ ) {
 		long t;
-		if (i < targets.Num() - 1)
-		{
-			t = events[targets[i + 1]]->getTime();
-		}
-		else
-		{
+		if ( i < targets.Num() - 1 ) {
+			t = events[ targets[ i + 1 ] ]->getTime();
+		} else   {
 			t = total - timeSoFar;
 		}
 		// t is how much time to use for this target
-		setActiveTargetByName(events[targets[i]]->getParam());
-		getActiveTarget()->setTime(t);
+		setActiveTargetByName( events[ targets[ i ] ]->getParam() );
+		getActiveTarget()->setTime( t );
 		timeSoFar += t;
 	}
 
 
 }
 
-void idCameraDef::startCamera(long t)
-{
+void idCameraDef::startCamera( long t ) {
 	cameraPosition->clearVelocities();
-	cameraPosition->start(t);
+	cameraPosition->start( t );
 	buildCamera();
-	fov.reset(90, 90, t, 0);
+	fov.reset( 90, 90, t, 0 );
 	//for (int i = 0; i < targetPositions.Num(); i++) {
 	//	targetPositions[i]->
 	//}
@@ -556,182 +477,140 @@ void idCameraDef::startCamera(long t)
 }
 
 
-void idCameraDef::parse(const char** text)
-{
+void idCameraDef::parse( const char** text ) {
 
 	const char* token;
-	do
-	{
-		token = Com_Parse(text);
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::ICmp(token, "}"))
-		{
+		if ( !String::ICmp( token, "}" ) ) {
 			break;
 		}
 
-		if (String::ICmp(token, "time") == 0)
-		{
-			baseTime = Com_ParseFloat(text);
-		}
-		else if (String::ICmp(token, "camera_fixed") == 0)
-		{
+		if ( String::ICmp( token, "time" ) == 0 ) {
+			baseTime = Com_ParseFloat( text );
+		} else if ( String::ICmp( token, "camera_fixed" ) == 0 )       {
 			cameraPosition = new idFixedPosition();
-			cameraPosition->parse(text);
-		}
-		else if (String::ICmp(token, "camera_interpolated") == 0)
-		{
+			cameraPosition->parse( text );
+		} else if ( String::ICmp( token, "camera_interpolated" ) == 0 )       {
 			cameraPosition = new idInterpolatedPosition();
-			cameraPosition->parse(text);
-		}
-		else if (String::ICmp(token, "camera_spline") == 0)
-		{
+			cameraPosition->parse( text );
+		} else if ( String::ICmp( token, "camera_spline" ) == 0 )       {
 			cameraPosition = new idSplinePosition();
-			cameraPosition->parse(text);
-		}
-		else if (String::ICmp(token, "target_fixed") == 0)
-		{
+			cameraPosition->parse( text );
+		} else if ( String::ICmp( token, "target_fixed" ) == 0 )       {
 			idFixedPosition* pos = new idFixedPosition();
-			pos->parse(text);
-			targetPositions.Append(pos);
-		}
-		else if (String::ICmp(token, "target_interpolated") == 0)
-		{
+			pos->parse( text );
+			targetPositions.Append( pos );
+		} else if ( String::ICmp( token, "target_interpolated" ) == 0 )       {
 			idInterpolatedPosition* pos = new idInterpolatedPosition();
-			pos->parse(text);
-			targetPositions.Append(pos);
-		}
-		else if (String::ICmp(token, "target_spline") == 0)
-		{
+			pos->parse( text );
+			targetPositions.Append( pos );
+		} else if ( String::ICmp( token, "target_spline" ) == 0 )       {
 			idSplinePosition* pos = new idSplinePosition();
-			pos->parse(text);
-			targetPositions.Append(pos);
-		}
-		else if (String::ICmp(token, "fov") == 0)
-		{
-			fov.parse(text);
-		}
-		else if (String::ICmp(token, "event") == 0)
-		{
+			pos->parse( text );
+			targetPositions.Append( pos );
+		} else if ( String::ICmp( token, "fov" ) == 0 )       {
+			fov.parse( text );
+		} else if ( String::ICmp( token, "event" ) == 0 )       {
 			idCameraEvent* event = new idCameraEvent();
-			event->parse(text);
-			addEvent(event);
+			event->parse( text );
+			addEvent( event );
 		}
 
 
-	}
-	while (1);
+	} while ( 1 );
 
-	if (!cameraPosition)
-	{
-		common->Printf("no camera position specified\n");
+	if ( !cameraPosition ) {
+		common->Printf( "no camera position specified\n" );
 		// prevent a crash later on
 		cameraPosition = new idFixedPosition();
 	}
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 
 }
 
-bool idCameraDef::load(const char* filename)
-{
+bool idCameraDef::load( const char* filename ) {
 	char* buf;
 	const char* buf_p;
-	FS_ReadFile(filename, (void**)&buf);
-	if (!buf)
-	{
+	FS_ReadFile( filename, ( void** )&buf );
+	if ( !buf ) {
 		return false;
 	}
 
 	clear();
-	Com_BeginParseSession(filename);
+	Com_BeginParseSession( filename );
 	buf_p = buf;
-	parse(&buf_p);
+	parse( &buf_p );
 	Com_EndParseSession();
-	FS_FreeFile(buf);
+	FS_FreeFile( buf );
 
 	return true;
 }
 
-void idCameraDef::addEvent(idCameraEvent* event)
-{
-	events.Append(event);
+void idCameraDef::addEvent( idCameraEvent* event ) {
+	events.Append( event );
 }
 
-void idCameraDef::addEvent(idCameraEvent::eventType t, const char* param, long time)
-{
-	addEvent(new idCameraEvent(t, param, time));
+void idCameraDef::addEvent( idCameraEvent::eventType t, const char* param, long time ) {
+	addEvent( new idCameraEvent( t, param, time ) );
 	buildCamera();
 }
 
 
-void idCameraEvent::parse(const char** text)
-{
+void idCameraEvent::parse( const char** text ) {
 	const char* token;
-	Com_MatchToken(text, "{");
-	do
-	{
-		token = Com_Parse(text);
+	Com_MatchToken( text, "{" );
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::Cmp(token, "(") || !String::Cmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "type") == 0)
-			{
-				type = static_cast<idCameraEvent::eventType>(String::Atoi(token));
-			}
-			else if (String::ICmp(key.CStr(), "param") == 0)
-			{
+			idStr key = Com_ParseOnLine( text );
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "type" ) == 0 ) {
+				type = static_cast<idCameraEvent::eventType>( String::Atoi( token ) );
+			} else if ( String::ICmp( key.CStr(), "param" ) == 0 )       {
 				paramStr = token;
+			} else if ( String::ICmp( key.CStr(), "time" ) == 0 )       {
+				time = String::Atoi( token );
 			}
-			else if (String::ICmp(key.CStr(), "time") == 0)
-			{
-				time = String::Atoi(token);
-			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 }
 
-const idVec3* idInterpolatedPosition::getPosition(long t)
-{
+const idVec3* idInterpolatedPosition::getPosition( long t ) {
 	static idVec3 interpolatedPos;
 	float percent = 0.0;
-	float velocity = getVelocity(t);
+	float velocity = getVelocity( t );
 	float timePassed = t - lastTime;
 	lastTime = t;
 
@@ -749,17 +628,13 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 	// TTimo
 	// show_bug.cgi?id=409
 	// avoid NaN on fixed cameras
-	if (distance != 0.0)		//DAJ added to protect DBZ
-	{
-		percent = (float)(distSoFar) / distance;
+	if ( distance != 0.0 ) {		//DAJ added to protect DBZ
+		percent = ( float )( distSoFar ) / distance;
 	}
 
-	if (percent > 1.0)
-	{
+	if ( percent > 1.0 ) {
 		percent = 1.0;
-	}
-	else if (percent < 0.0)
-	{
+	} else if ( percent < 0.0 )     {
 		percent = 0.0;
 	}
 
@@ -768,7 +643,7 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 
 	idVec3 v1 = startPos;
 	idVec3 v2 = endPos;
-	v1 *= (1.0 - percent);
+	v1 *= ( 1.0 - percent );
 	v2 *= percent;
 	v1 += v2;
 	interpolatedPos = v1;
@@ -776,104 +651,76 @@ const idVec3* idInterpolatedPosition::getPosition(long t)
 }
 
 
-void idCameraFOV::parse(const char** text)
-{
+void idCameraFOV::parse( const char** text ) {
 	const char* token;
-	Com_MatchToken(text, "{");
-	do
-	{
-		token = Com_Parse(text);
+	Com_MatchToken( text, "{" );
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::Cmp(token, "(") || !String::Cmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "fov") == 0)
-			{
-				fov = String::Atof(token);
+			idStr key = Com_ParseOnLine( text );
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "fov" ) == 0 ) {
+				fov = String::Atof( token );
+			} else if ( String::ICmp( key.CStr(), "startFOV" ) == 0 )       {
+				startFOV = String::Atof( token );
+			} else if ( String::ICmp( key.CStr(), "endFOV" ) == 0 )       {
+				endFOV = String::Atof( token );
+			} else if ( String::ICmp( key.CStr(), "time" ) == 0 )       {
+				time = String::Atoi( token );
 			}
-			else if (String::ICmp(key.CStr(), "startFOV") == 0)
-			{
-				startFOV = String::Atof(token);
-			}
-			else if (String::ICmp(key.CStr(), "endFOV") == 0)
-			{
-				endFOV = String::Atof(token);
-			}
-			else if (String::ICmp(key.CStr(), "time") == 0)
-			{
-				time = String::Atoi(token);
-			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 }
 
-bool idCameraPosition::parseToken(const char* key, const char** text)
-{
-	const char* token = Com_Parse(text);
-	if (String::ICmp(key, "time") == 0)
-	{
-		time = atol(token);
+bool idCameraPosition::parseToken( const char* key, const char** text ) {
+	const char* token = Com_Parse( text );
+	if ( String::ICmp( key, "time" ) == 0 ) {
+		time = atol( token );
 		return true;
-	}
-	else if (String::ICmp(key, "type") == 0)
-	{
-		type = static_cast<idCameraPosition::positionType>(String::Atoi(token));
+	} else if ( String::ICmp( key, "type" ) == 0 )       {
+		type = static_cast<idCameraPosition::positionType>( String::Atoi( token ) );
 		return true;
-	}
-	else if (String::ICmp(key, "velocity") == 0)
-	{
-		long t = atol(token);
-		token = Com_Parse(text);
-		long d = atol(token);
-		token = Com_Parse(text);
-		float s = String::Atof(token);
-		addVelocity(t, d, s);
+	} else if ( String::ICmp( key, "velocity" ) == 0 )       {
+		long t = atol( token );
+		token = Com_Parse( text );
+		long d = atol( token );
+		token = Com_Parse( text );
+		float s = String::Atof( token );
+		addVelocity( t, d, s );
 		return true;
-	}
-	else if (String::ICmp(key, "baseVelocity") == 0)
-	{
-		baseVelocity = String::Atof(token);
+	} else if ( String::ICmp( key, "baseVelocity" ) == 0 )       {
+		baseVelocity = String::Atof( token );
 		return true;
-	}
-	else if (String::ICmp(key, "name") == 0)
-	{
+	} else if ( String::ICmp( key, "name" ) == 0 )       {
 		name = token;
 		return true;
-	}
-	else if (String::ICmp(key, "time") == 0)
-	{
-		time = String::Atoi(token);
+	} else if ( String::ICmp( key, "time" ) == 0 )       {
+		time = String::Atoi( token );
 		return true;
 	}
 	Com_UngetToken();
@@ -882,203 +729,161 @@ bool idCameraPosition::parseToken(const char* key, const char** text)
 
 
 
-void idFixedPosition::parse(const char** text)
-{
+void idFixedPosition::parse( const char** text ) {
 	const char* token;
-	Com_MatchToken(text, "{");
-	do
-	{
-		token = Com_Parse(text);
+	Com_MatchToken( text, "{" );
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::Cmp(token, "(") || !String::Cmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
+			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "pos") == 0)
-			{
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "pos" ) == 0 ) {
 				Com_UngetToken();
-				Com_Parse1DMatrix(text, 3, pos.ToFloatPtr());
-			}
-			else
-			{
+				Com_Parse1DMatrix( text, 3, pos.ToFloatPtr() );
+			} else   {
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.CStr(), text);
+				idCameraPosition::parseToken( key.CStr(), text );
 			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 }
 
-void idInterpolatedPosition::parse(const char** text)
-{
+void idInterpolatedPosition::parse( const char** text ) {
 	const char* token;
-	Com_MatchToken(text, "{");
-	do
-	{
-		token = Com_Parse(text);
+	Com_MatchToken( text, "{" );
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::Cmp(token, "(") || !String::Cmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
+			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "startPos") == 0)
-			{
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "startPos" ) == 0 ) {
 				Com_UngetToken();
-				Com_Parse1DMatrix(text, 3, startPos.ToFloatPtr());
-			}
-			else if (String::ICmp(key.CStr(), "endPos") == 0)
-			{
+				Com_Parse1DMatrix( text, 3, startPos.ToFloatPtr() );
+			} else if ( String::ICmp( key.CStr(), "endPos" ) == 0 )       {
 				Com_UngetToken();
-				Com_Parse1DMatrix(text, 3, endPos.ToFloatPtr());
-			}
-			else
-			{
+				Com_Parse1DMatrix( text, 3, endPos.ToFloatPtr() );
+			} else   {
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.CStr(), text);
+				idCameraPosition::parseToken( key.CStr(), text );
 			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 }
 
 
-void idSplinePosition::parse(const char** text)
-{
+void idSplinePosition::parse( const char** text ) {
 	const char* token;
-	Com_MatchToken(text, "{");
-	do
-	{
-		token = Com_Parse(text);
+	Com_MatchToken( text, "{" );
+	do {
+		token = Com_Parse( text );
 
-		if (!token[0])
-		{
+		if ( !token[ 0 ] ) {
 			break;
 		}
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
-		do
-		{
+		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if (!token[0] || !String::Cmp(token, "(") || !String::Cmp(token, "}"))
-			{
+			if ( !token[ 0 ] || !String::Cmp( token, "(" ) || !String::Cmp( token, "}" ) ) {
 				break;
 			}
 
 			Com_UngetToken();
-			idStr key = Com_ParseOnLine(text);
+			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse(text);
-			if (String::ICmp(key.CStr(), "target") == 0)
-			{
-				target.parse(text);
-			}
-			else
-			{
+			const char* token = Com_Parse( text );
+			if ( String::ICmp( key.CStr(), "target" ) == 0 ) {
+				target.parse( text );
+			} else   {
 				Com_UngetToken();
-				idCameraPosition::parseToken(key.CStr(), text);
+				idCameraPosition::parseToken( key.CStr(), text );
 			}
-			token = Com_Parse(text);
+			token = Com_Parse( text );
 
-		}
-		while (1);
+		} while ( 1 );
 
-		if (!String::Cmp(token, "}"))
-		{
+		if ( !String::Cmp( token, "}" ) ) {
 			break;
 		}
 
-	}
-	while (1);
+	} while ( 1 );
 
 	Com_UngetToken();
-	Com_MatchToken(text, "}");
+	Com_MatchToken( text, "}" );
 }
 
-void idCameraDef::addTarget(const char* name, idCameraPosition::positionType type)
-{
-	idCameraPosition* pos = newFromType(type);
-	if (pos)
-	{
-		pos->setName(name);
-		targetPositions.Append(pos);
+void idCameraDef::addTarget( const char* name, idCameraPosition::positionType type ) {
+	idCameraPosition* pos = newFromType( type );
+	if ( pos ) {
+		pos->setName( name );
+		targetPositions.Append( pos );
 		activeTarget = numTargets() - 1;
-		if (activeTarget == 0)
-		{
+		if ( activeTarget == 0 ) {
 			// first one
-			addEvent(idCameraEvent::EVENT_TARGET, name, 0);
+			addEvent( idCameraEvent::EVENT_TARGET, name, 0 );
 		}
 	}
 }
 
-const idVec3* idSplinePosition::getPosition(long t)
-{
+const idVec3* idSplinePosition::getPosition( long t ) {
 	static idVec3 interpolatedPos;
 
-	float velocity = getVelocity(t);
+	float velocity = getVelocity( t );
 	float timePassed = t - lastTime;
 	lastTime = t;
 
@@ -1090,7 +895,7 @@ const idVec3* idSplinePosition::getPosition(long t)
 	distSoFar += distToTravel;
 	double tempDistance = target.totalDistance();
 
-	double percent = (double)(distSoFar) / tempDistance;
+	double percent = ( double )( distSoFar ) / tempDistance;
 
 	double targetDistance = percent * tempDistance;
 	tempDistance = 0;
@@ -1102,42 +907,33 @@ const idVec3* idSplinePosition::getPosition(long t)
 	int count = target.numSegments();
 	// TTimo fixed MSVCism
 	int i;
-	for (i = 1; i < count; i++)
-	{
-		temp = *target.getSegmentPoint(i - 1);
-		temp -= *target.getSegmentPoint(i);
+	for ( i = 1; i < count; i++ ) {
+		temp = *target.getSegmentPoint( i - 1 );
+		temp -= *target.getSegmentPoint( i );
 		tempDistance += temp.Length();
-		if (i & 1)
-		{
+		if ( i & 1 ) {
 			lastDistance1 = tempDistance;
-		}
-		else
-		{
+		} else   {
 			lastDistance2 = tempDistance;
 		}
-		if (tempDistance >= targetDistance)
-		{
+		if ( tempDistance >= targetDistance ) {
 			break;
 		}
 	}
 
-	if (i >= count - 1)
-	{
-		interpolatedPos = *target.getSegmentPoint(i - 1);
-	}
-	else
-	{
-		if (lastDistance1 > lastDistance2)
-		{
+	if ( i >= count - 1 ) {
+		interpolatedPos = *target.getSegmentPoint( i - 1 );
+	} else   {
+		if ( lastDistance1 > lastDistance2 ) {
 			double d = lastDistance2;
 			lastDistance2 = lastDistance1;
 			lastDistance1 = d;
 		}
 
-		idVec3 v1 = *target.getSegmentPoint(i - 1);
-		idVec3 v2 = *target.getSegmentPoint(i);
-		double percent = (lastDistance2 - targetDistance) / (lastDistance2 - lastDistance1);
-		v2 *= (1.0 - percent);
+		idVec3 v1 = *target.getSegmentPoint( i - 1 );
+		idVec3 v2 = *target.getSegmentPoint( i );
+		double percent = ( lastDistance2 - targetDistance ) / ( lastDistance2 - lastDistance1 );
+		v2 *= ( 1.0 - percent );
 		v1 *= percent;
 		v2 += v1;
 		interpolatedPos = v2;

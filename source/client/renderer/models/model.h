@@ -37,14 +37,12 @@
 
 struct mbrush29_surface_t;
 
-struct mbrush29_vertex_t
-{
+struct mbrush29_vertex_t {
 	vec3_t position;
 };
 
-struct mbrush29_texture_t
-{
-	char name[16];
+struct mbrush29_texture_t {
+	char name[ 16 ];
 	unsigned width, height;
 	image_t* gl_texture;
 	image_t* fullBrightTexture;
@@ -53,34 +51,30 @@ struct mbrush29_texture_t
 	int anim_min, anim_max;				// time for this frame min <=time< max
 	mbrush29_texture_t* anim_next;		// in the animation sequence
 	mbrush29_texture_t* alternate_anims;	// bmodels in frmae 1 use these
-	unsigned offsets[BSP29_MIPLEVELS];			// four mip maps stored
+	unsigned offsets[ BSP29_MIPLEVELS ];			// four mip maps stored
 };
 
-struct mbrush29_edge_t
-{
-	unsigned short v[2];
+struct mbrush29_edge_t {
+	unsigned short v[ 2 ];
 	unsigned int cachededgeoffset;
 };
 
-struct mbrush29_texinfo_t
-{
-	float vecs[2][4];
+struct mbrush29_texinfo_t {
+	float vecs[ 2 ][ 4 ];
 	float mipadjust;
 	mbrush29_texture_t* texture;
 	int flags;
 };
 
-struct mbrush29_glpoly_t
-{
+struct mbrush29_glpoly_t {
 	mbrush29_glpoly_t* next;
 	mbrush29_glpoly_t* chain;
 	int numverts;
 	int flags;				// for BRUSH29_SURF_UNDERWATER
-	float verts[4][BRUSH29_VERTEXSIZE];		// variable sized (xyz s1t1 s2t2)
+	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush29_surface_t
-{
+struct mbrush29_surface_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -89,8 +83,8 @@ struct mbrush29_surface_t
 	int firstedge;			// look up in model->surfedges[], negative numbers
 	int numedges;			// are backwards edges
 
-	short texturemins[2];
-	short extents[2];
+	short texturemins[ 2 ];
+	short extents[ 2 ];
 
 	int light_s, light_t;			// gl lightmap coordinates
 
@@ -104,37 +98,35 @@ struct mbrush29_surface_t
 	int dlightbits;
 
 	int lightmaptexturenum;
-	byte styles[BSP29_MAXLIGHTMAPS];
-	int cached_light[BSP29_MAXLIGHTMAPS];			// values currently used in lightmap
+	byte styles[ BSP29_MAXLIGHTMAPS ];
+	int cached_light[ BSP29_MAXLIGHTMAPS ];				// values currently used in lightmap
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
 };
 
-struct mbrush29_node_t
-{
+struct mbrush29_node_t {
 // common with leaf
 	int contents;				// 0, to differentiate from leafs
 	int visframe;				// node needs to be traversed if current
 
-	float minmaxs[6];			// for bounding box culling
+	float minmaxs[ 6 ];				// for bounding box culling
 
 	mbrush29_node_t* parent;
 
 // node specific
 	cplane_t* plane;
-	mbrush29_node_t* children[2];
+	mbrush29_node_t* children[ 2 ];
 
 	unsigned short firstsurface;
 	unsigned short numsurfaces;
 };
 
-struct mbrush29_leaf_t
-{
+struct mbrush29_leaf_t {
 // common with node
 	int contents;				// wil be a negative contents number
 	int visframe;				// node needs to be traversed if current
 
-	float minmaxs[6];			// for bounding box culling
+	float minmaxs[ 6 ];				// for bounding box culling
 
 	mbrush29_node_t* parent;
 
@@ -144,14 +136,13 @@ struct mbrush29_leaf_t
 	mbrush29_surface_t** firstmarksurface;
 	int nummarksurfaces;
 	int key;					// BSP sequence number for leaf's contents
-	byte ambient_sound_level[BSP29_NUM_AMBIENTS];
+	byte ambient_sound_level[ BSP29_NUM_AMBIENTS ];
 };
 
-struct mbrush29_submodel_t
-{
-	float mins[3];
-	float maxs[3];
-	float origin[3];
+struct mbrush29_submodel_t {
+	float mins[ 3 ];
+	float maxs[ 3 ];
+	float origin[ 3 ];
 	qint32 headnode;
 	qint32 visleafs;			// not including the solid leaf 0
 	qint32 firstface;
@@ -171,37 +162,32 @@ struct mbrush29_submodel_t
 #define BRUSH38_SURF_DRAWTURB       0x10
 #define BRUSH38_SURF_UNDERWATER     0x80
 
-struct mbrush38_vertex_t
-{
+struct mbrush38_vertex_t {
 	vec3_t position;
 };
 
-struct mbrush38_edge_t
-{
-	unsigned short v[2];
+struct mbrush38_edge_t {
+	unsigned short v[ 2 ];
 	unsigned int cachededgeoffset;
 };
 
-struct mbrush38_texinfo_t
-{
-	float vecs[2][4];
+struct mbrush38_texinfo_t {
+	float vecs[ 2 ][ 4 ];
 	int flags;
 	int numframes;
 	mbrush38_texinfo_t* next;		// animation chain
 	image_t* image;
 };
 
-struct mbrush38_glpoly_t
-{
+struct mbrush38_glpoly_t {
 	mbrush38_glpoly_t* next;
 	mbrush38_glpoly_t* chain;
 	int numverts;
 	int flags;				// for BRUSH29_SURF_UNDERWATER (not needed anymore?)
-	float verts[4][BRUSH38_VERTEXSIZE];		// variable sized (xyz s1t1 s2t2)
+	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush38_surface_t
-{
+struct mbrush38_surface_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -210,8 +196,8 @@ struct mbrush38_surface_t
 	int firstedge;			// look up in model->surfedges[], negative numbers
 	int numedges;			// are backwards edges
 
-	short texturemins[2];
-	short extents[2];
+	short texturemins[ 2 ];
+	short extents[ 2 ];
 
 	int light_s, light_t;			// gl lightmap coordinates
 	int dlight_s, dlight_t;			// gl lightmap coordinates for dynamic lightmaps
@@ -227,36 +213,34 @@ struct mbrush38_surface_t
 	int dlightbits;
 
 	int lightmaptexturenum;
-	byte styles[BSP38_MAXLIGHTMAPS];
-	float cached_light[BSP38_MAXLIGHTMAPS];			// values currently used in lightmap
+	byte styles[ BSP38_MAXLIGHTMAPS ];
+	float cached_light[ BSP38_MAXLIGHTMAPS ];			// values currently used in lightmap
 	byte* samples;				// [numstyles*surfsize]
 };
 
-struct mbrush38_node_t
-{
+struct mbrush38_node_t {
 // common with leaf
 	int contents;				// -1, to differentiate from leafs
 	int visframe;				// node needs to be traversed if current
 
-	float minmaxs[6];			// for bounding box culling
+	float minmaxs[ 6 ];				// for bounding box culling
 
 	mbrush38_node_t* parent;
 
 // node specific
 	cplane_t* plane;
-	mbrush38_node_t* children[2];
+	mbrush38_node_t* children[ 2 ];
 
 	unsigned short firstsurface;
 	unsigned short numsurfaces;
 };
 
-struct mbrush38_leaf_t
-{
+struct mbrush38_leaf_t {
 // common with node
 	int contents;				// wil be a negative contents number
 	int visframe;				// node needs to be traversed if current
 
-	float minmaxs[6];			// for bounding box culling
+	float minmaxs[ 6 ];				// for bounding box culling
 
 	mbrush38_node_t* parent;
 
@@ -268,8 +252,7 @@ struct mbrush38_leaf_t
 	int nummarksurfaces;
 };
 
-struct mbrush38_model_t
-{
+struct mbrush38_model_t {
 	vec3_t mins, maxs;
 	vec3_t origin;			// for sounds or lights
 	float radius;
@@ -345,16 +328,14 @@ enum surfaceType_t
 	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
 };
 
-struct drawSurf_t
-{
+struct drawSurf_t {
 	unsigned sort;						// bit combination for fast compares
 	surfaceType_t* surface;				// any of surface*_t
 };
 
 // when cgame directly specifies a polygon, it becomes a srfPoly_t
 // as soon as it is called
-struct srfPoly_t
-{
+struct srfPoly_t {
 	surfaceType_t surfaceType;
 	qhandle_t hShader;
 	int fogIndex;
@@ -362,58 +343,52 @@ struct srfPoly_t
 	polyVert_t* verts;
 };
 
-struct srfPolyBuffer_t
-{
+struct srfPolyBuffer_t {
 	surfaceType_t surfaceType;
 	int fogIndex;
 	polyBuffer_t* pPolyBuffer;
 };
 
-struct srfDisplayList_t
-{
+struct srfDisplayList_t {
 	surfaceType_t surfaceType;
 	int listNum;
 };
 
-struct srfFlare_t
-{
+struct srfFlare_t {
 	surfaceType_t surfaceType;
 	vec3_t origin;
 	vec3_t normal;
 	vec3_t color;
 };
 
-struct srfDecal_t
-{
+struct srfDecal_t {
 	surfaceType_t surfaceType;
 	int numVerts;
-	polyVert_t verts[MAX_DECAL_VERTS];
+	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
 
 // ydnar: normal map drawsurfaces must match this header
-struct srfGeneric_t
-{
+struct srfGeneric_t {
 	surfaceType_t surfaceType;
 
 	// dynamic lighting information
-	int dlightBits[SMP_FRAMES];
+	int dlightBits[ SMP_FRAMES ];
 
 	// culling information
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;
 };
 
-struct srfGridMesh_t
-{
+struct srfGridMesh_t {
 	surfaceType_t surfaceType;
 
 	// dynamic lighting information
-	int dlightBits[SMP_FRAMES];
+	int dlightBits[ SMP_FRAMES ];
 
 	// culling information
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;
@@ -430,18 +405,17 @@ struct srfGridMesh_t
 	int width, height;
 	float* widthLodError;
 	float* heightLodError;
-	bsp46_drawVert_t verts[1];			// variable sized
+	bsp46_drawVert_t verts[ 1 ];			// variable sized
 };
 
-struct srfSurfaceFace_t
-{
+struct srfSurfaceFace_t {
 	surfaceType_t surfaceType;
 
 	// dynamic lighting information
-	int dlightBits[SMP_FRAMES];
+	int dlightBits[ SMP_FRAMES ];
 
 	// culling information
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;
@@ -450,20 +424,19 @@ struct srfSurfaceFace_t
 	int numPoints;
 	int numIndices;
 	int ofsIndices;
-	float points[1][BRUSH46_VERTEXSIZE];		// variable sized
+	float points[ 1 ][ BRUSH46_VERTEXSIZE ];		// variable sized
 	// there is a variable length list of indices here also
 };
 
 // misc_models in maps are turned into direct geometry by q3map
-struct srfTriangles_t
-{
+struct srfTriangles_t {
 	surfaceType_t surfaceType;
 
 	// dynamic lighting information
-	int dlightBits[SMP_FRAMES];
+	int dlightBits[ SMP_FRAMES ];
 
 	// culling information (FIXME: use this!)
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;
@@ -477,23 +450,21 @@ struct srfTriangles_t
 };
 
 // ydnar: foliage surfaces are autogenerated from models into geometry lists by q3map2
-typedef byte fcolor4ub_t[4];
+typedef byte fcolor4ub_t[ 4 ];
 
-struct foliageInstance_t
-{
+struct foliageInstance_t {
 	vec3_t origin;
 	fcolor4ub_t color;
 };
 
-struct srfFoliage_t
-{
+struct srfFoliage_t {
 	surfaceType_t surfaceType;
 
 	// dynamic lighting information
-	int dlightBits[SMP_FRAMES];
+	int dlightBits[ SMP_FRAMES ];
 
 	// culling information
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;
@@ -524,8 +495,7 @@ struct srfFoliage_t
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES     32
 
-struct mbrush46_surface_t
-{
+struct mbrush46_surface_t {
 	int viewCount;							// if == tr.viewCount, already added
 	shader_t* shader;
 	int fogIndex;
@@ -533,8 +503,7 @@ struct mbrush46_surface_t
 	surfaceType_t* data;					// any of srf*_t
 };
 
-struct mbrush46_node_t
-{
+struct mbrush46_node_t {
 	// common with leaf and node
 	int contents;							// -1 for nodes, to differentiate from leafs
 	int visframe;							// node needs to be traversed if current
@@ -544,7 +513,7 @@ struct mbrush46_node_t
 
 	// node specific
 	cplane_t* plane;
-	mbrush46_node_t* children[2];
+	mbrush46_node_t* children[ 2 ];
 
 	// leaf specific
 	int cluster;
@@ -555,19 +524,17 @@ struct mbrush46_node_t
 };
 
 // ydnar: bsp model decal surfaces
-struct mbrush46_decal_t
-{
+struct mbrush46_decal_t {
 	mbrush46_surface_t* parent;
 	shader_t* shader;
 	float fadeStartTime, fadeEndTime;
 	int fogIndex;
 	int numVerts;
-	polyVert_t verts[MAX_DECAL_VERTS];
+	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
 
-struct mbrush46_model_t
-{
-	vec3_t bounds[2];						// for culling
+struct mbrush46_model_t {
+	vec3_t bounds[ 2 ];							// for culling
 	mbrush46_surface_t* firstSurface;
 	int numSurfaces;
 
@@ -577,16 +544,15 @@ struct mbrush46_model_t
 	// ydnar: for fog volumes
 	int firstBrush;
 	int numBrushes;
-	orientation_t orientation[SMP_FRAMES];
-	bool visible[SMP_FRAMES];
-	int entityNum[SMP_FRAMES];
+	orientation_t orientation[ SMP_FRAMES ];
+	bool visible[ SMP_FRAMES ];
+	int entityNum[ SMP_FRAMES ];
 };
 
-struct mbrush46_fog_t
-{
+struct mbrush46_fog_t {
 	int modelNum;						// ydnar: bsp model the fog belongs to
 	int originalBrushNumber;
-	vec3_t bounds[2];
+	vec3_t bounds[ 2 ];
 
 	unsigned colorInt;					// in packed byte format
 	float tcScale;						// texture coordinate vector scales
@@ -595,13 +561,12 @@ struct mbrush46_fog_t
 
 	// for clipping distance in fog when outside
 	qboolean hasSurface;
-	float surface[4];
+	float surface[ 4 ];
 };
 
-struct world_t
-{
-	char name[MAX_QPATH];				// ie: maps/tim_dm2.bsp
-	char baseName[MAX_QPATH];			// ie: tim_dm2
+struct world_t {
+	char name[ MAX_QPATH ];					// ie: maps/tim_dm2.bsp
+	char baseName[ MAX_QPATH ];				// ie: tim_dm2
 
 	int numShaders;
 	bsp46_dshader_t* shaders;
@@ -627,7 +592,7 @@ struct world_t
 	vec3_t lightGridOrigin;
 	vec3_t lightGridSize;
 	vec3_t lightGridInverseSize;
-	int lightGridBounds[3];
+	int lightGridBounds[ 3 ];
 	byte* lightGridData;
 
 
@@ -665,40 +630,35 @@ struct world_t
 
 #define H2EF_FACE_VIEW      65536		// Poly Model always faces you
 
-struct mmesh1framedesc_t
-{
+struct mmesh1framedesc_t {
 	int firstpose;
 	int numposes;
 	float interval;
 	dmdl_trivertx_t bboxmin;
 	dmdl_trivertx_t bboxmax;
 	int frame;
-	char name[16];
+	char name[ 16 ];
 };
 
-struct mmesh1groupframedesc_t
-{
+struct mmesh1groupframedesc_t {
 	dmdl_trivertx_t bboxmin;
 	dmdl_trivertx_t bboxmax;
 	int frame;
 };
 
-struct mmesh1group_t
-{
+struct mmesh1group_t {
 	int numframes;
 	int intervals;
-	mmesh1groupframedesc_t frames[1];
+	mmesh1groupframedesc_t frames[ 1 ];
 };
 
-struct mmesh1triangle_t
-{
+struct mmesh1triangle_t {
 	int facesfront;
-	int vertindex[3];
-	int stindex[3];
+	int vertindex[ 3 ];
+	int stindex[ 3 ];
 };
 
-struct mesh1hdr_t
-{
+struct mesh1hdr_t {
 	int ident;
 	int version;
 	vec3_t scale;
@@ -719,9 +679,9 @@ struct mesh1hdr_t
 	int poseverts;
 	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
 	int* commands;					// gl command list with embedded s/t
-	image_t* gl_texture[MAX_MESH1_SKINS][4];
-	image_t* fullBrightTexture[MAX_MESH1_SKINS][4];
-	mmesh1framedesc_t frames[1];	// variable sized
+	image_t* gl_texture[ MAX_MESH1_SKINS ][ 4 ];
+	image_t* fullBrightTexture[ MAX_MESH1_SKINS ][ 4 ];
+	mmesh1framedesc_t frames[ 1 ];		// variable sized
 };
 
 //==============================================================================
@@ -730,35 +690,31 @@ struct mesh1hdr_t
 //
 //==============================================================================
 
-struct msprite1frame_t
-{
+struct msprite1frame_t {
 	int width;
 	int height;
 	float up, down, left, right;
 	image_t* gl_texture;
 };
 
-struct msprite1group_t
-{
+struct msprite1group_t {
 	int numframes;
 	float* intervals;
-	msprite1frame_t* frames[1];
+	msprite1frame_t* frames[ 1 ];
 };
 
-struct msprite1framedesc_t
-{
+struct msprite1framedesc_t {
 	sprite1frametype_t type;
 	msprite1frame_t* frameptr;
 };
 
-struct msprite1_t
-{
+struct msprite1_t {
 	int type;
 	int maxwidth;
 	int maxheight;
 	int numframes;
 	float beamlength;					// remove?
-	msprite1framedesc_t frames[1];
+	msprite1framedesc_t frames[ 1 ];
 };
 
 //==============================================================================
@@ -785,9 +741,8 @@ enum modtype_t
 	MOD_MDX
 };
 
-struct model_t
-{
-	char name[MAX_QPATH];
+struct model_t {
+	char name[ MAX_QPATH ];
 	modtype_t type;
 	int index;						// model = tr.models[model->index]
 
@@ -903,24 +858,24 @@ struct model_t
 	byte* brush38_lightdata;
 
 	// for alias models and skins
-	image_t* q2_skins[MAX_MD2_SKINS];
+	image_t* q2_skins[ MAX_MD2_SKINS ];
 
 	int q2_extradatasize;
 	void* q2_extradata;
 
 	int q3_dataSize;					// just for listing purposes
 	mbrush46_model_t* q3_bmodel;			// only if type == MOD_BRUSH
-	md3Header_t* q3_md3[MD3_MAX_LODS];	// only if type == MOD_MESH
+	md3Header_t* q3_md3[ MD3_MAX_LODS ];	// only if type == MOD_MESH
 	md4Header_t* q3_md4;				// only if type == MOD_MD4
 	mdsHeader_t* q3_mds;				// only if type == MOD_MDS
-	mdcHeader_t* q3_mdc[MD3_MAX_LODS];	// only if type == MOD_MDC
+	mdcHeader_t* q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC
 	mdmHeader_t* q3_mdm;				// only if type == MOD_MDM
 	mdxHeader_t* q3_mdx;				// only if type == MOD_MDX
 
 	int q3_numLods;
 
 	qhandle_t q3_shadowShader;
-	float q3_shadowParms[6];			// x, y, width, height, depth, z offset
+	float q3_shadowParms[ 6 ];				// x, y, width, height, depth, z offset
 
 	// GR - model tessellation capability flag
 	int q3_ATI_tess;
@@ -931,93 +886,93 @@ struct trRefEntity_t;
 model_t* R_AllocModel();
 void R_ModelInit();
 void R_FreeModels();
-model_t* R_GetModelByHandle(qhandle_t Index);
+model_t* R_GetModelByHandle( qhandle_t Index );
 void R_Modellist_f();
-void R_PurgeModels(int count);
+void R_PurgeModels( int count );
 void R_BackupModels();
 
-void Mod_LoadSpriteModel(model_t* mod, void* buffer);
-void Mod_FreeSpriteModel(model_t* mod);
-void R_DrawSprModel(trRefEntity_t* e);
+void Mod_LoadSpriteModel( model_t* mod, void* buffer );
+void Mod_FreeSpriteModel( model_t* mod );
+void R_DrawSprModel( trRefEntity_t* e );
 
-void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
-void Mod_FreeSprite2Model(model_t* mod);
-void R_DrawSp2Model(trRefEntity_t* e);
+void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen );
+void Mod_FreeSprite2Model( model_t* mod );
+void R_DrawSp2Model( trRefEntity_t* e );
 
-void Mod_LoadMdlModel(model_t* mod, const void* buffer);
-void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
-void Mod_FreeMdlModel(model_t* mod);
-void R_DrawMdlModel(trRefEntity_t* e);
-bool R_MdlHasHexen2Transparency(model_t* Model);
+void Mod_LoadMdlModel( model_t* mod, const void* buffer );
+void Mod_LoadMdlModelNew( model_t* mod, const void* buffer );
+void Mod_FreeMdlModel( model_t* mod );
+void R_DrawMdlModel( trRefEntity_t* e );
+bool R_MdlHasHexen2Transparency( model_t* Model );
 
-void Mod_LoadMd2Model(model_t* mod, const void* buffer);
-void Mod_FreeMd2Model(model_t* mod);
-void R_DrawMd2Model(trRefEntity_t* e);
+void Mod_LoadMd2Model( model_t* mod, const void* buffer );
+void Mod_FreeMd2Model( model_t* mod );
+void R_DrawMd2Model( trRefEntity_t* e );
 
-bool R_LoadMd3(model_t* mod, void* buffer);
-void R_FreeMd3(model_t* mod);
-void R_RegisterMd3Shaders(model_t* mod, int lod);
-void R_AddMD3Surfaces(trRefEntity_t* e);
-void RB_SurfaceMesh(md3Surface_t* surface);
+bool R_LoadMd3( model_t* mod, void* buffer );
+void R_FreeMd3( model_t* mod );
+void R_RegisterMd3Shaders( model_t* mod, int lod );
+void R_AddMD3Surfaces( trRefEntity_t* e );
+void RB_SurfaceMesh( md3Surface_t* surface );
 
-bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
-void R_FreeMd4(model_t* mod);
-void R_AddAnimSurfaces(trRefEntity_t* ent);
-void RB_SurfaceAnim(md4Surface_t* surfType);
+bool R_LoadMD4( model_t* mod, void* buffer, const char* mod_name );
+void R_FreeMd4( model_t* mod );
+void R_AddAnimSurfaces( trRefEntity_t* ent );
+void RB_SurfaceAnim( md4Surface_t* surfType );
 
-bool R_LoadMdc(model_t* mod, void* buffer);
-void R_FreeMdc(model_t* mod);
-void R_RegisterMdcShaders(model_t* mod, int lod);
-void R_AddMDCSurfaces(trRefEntity_t* ent);
-void RB_SurfaceCMesh(mdcSurface_t* surface);
+bool R_LoadMdc( model_t* mod, void* buffer );
+void R_FreeMdc( model_t* mod );
+void R_RegisterMdcShaders( model_t* mod, int lod );
+void R_AddMDCSurfaces( trRefEntity_t* ent );
+void RB_SurfaceCMesh( mdcSurface_t* surface );
 
-bool R_LoadMds(model_t* mod, const void* buffer);
-void R_FreeMds(model_t* mod);
-void R_AddMdsAnimSurfaces(trRefEntity_t* ent);
-void RB_SurfaceAnimMds(mdsSurface_t* surfType);
-int R_GetBoneTagMds(orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName);
+bool R_LoadMds( model_t* mod, const void* buffer );
+void R_FreeMds( model_t* mod );
+void R_AddMdsAnimSurfaces( trRefEntity_t* ent );
+void RB_SurfaceAnimMds( mdsSurface_t* surfType );
+int R_GetBoneTagMds( orientation_t* outTag, mdsHeader_t* mds, int startTagIndex, const refEntity_t* refent, const char* tagName );
 
-bool R_LoadMdm(model_t* mod, const void* buffer);
-void R_FreeMdm(model_t* mod);
-bool R_LoadMdx(model_t* mod, const void* buffer);
-void R_FreeMdx(model_t* mod);
-void R_MDM_AddAnimSurfaces(trRefEntity_t* ent);
-void RB_MDM_SurfaceAnim(mdmSurface_t* surfType);
-int R_MDM_GetBoneTag(orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex, const refEntity_t* refent, const char* tagName);
+bool R_LoadMdm( model_t* mod, const void* buffer );
+void R_FreeMdm( model_t* mod );
+bool R_LoadMdx( model_t* mod, const void* buffer );
+void R_FreeMdx( model_t* mod );
+void R_MDM_AddAnimSurfaces( trRefEntity_t* ent );
+void RB_MDM_SurfaceAnim( mdmSurface_t* surfType );
+int R_MDM_GetBoneTag( orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex, const refEntity_t* refent, const char* tagName );
 
 void R_InitBsp29NoTextureMip();
-void Mod_LoadBrush29Model(model_t* mod, void* buffer);
-void Mod_FreeBsp29(model_t* mod);
-byte* Mod_LeafPVS(mbrush29_leaf_t* Leaf, model_t* Model);
-mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t P, model_t* Model);
+void Mod_LoadBrush29Model( model_t* mod, void* buffer );
+void Mod_FreeBsp29( model_t* mod );
+byte* Mod_LeafPVS( mbrush29_leaf_t* Leaf, model_t* Model );
+mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t P, model_t* Model );
 
-void Mod_LoadBrush38Model(model_t* mod, void* buffer);
-void Mod_FreeBsp38(model_t* mod);
-byte* Mod_ClusterPVS(int cluster, model_t* model);
-mbrush38_leaf_t* Mod_PointInLeafQ2(float* p, model_t* model);
+void Mod_LoadBrush38Model( model_t* mod, void* buffer );
+void Mod_FreeBsp38( model_t* mod );
+byte* Mod_ClusterPVS( int cluster, model_t* model );
+mbrush38_leaf_t* Mod_PointInLeafQ2( float* p, model_t* model );
 
-float R_ProcessLightmap(byte* buf_p, int in_padding, int width, int height, byte* image);
-unsigned ColorBytes4(float r, float g, float b, float a);
-void R_LoadBrush46Model(void* buffer);
-void R_FreeBsp46(world_t* mod);
-void R_FreeBsp46Model(model_t* mod);
-const byte* R_ClusterPVS(int cluster);
-mbrush46_node_t* R_PointInLeaf(const vec3_t p);
+float R_ProcessLightmap( byte* buf_p, int in_padding, int width, int height, byte* image );
+unsigned ColorBytes4( float r, float g, float b, float a );
+void R_LoadBrush46Model( void* buffer );
+void R_FreeBsp46( world_t* mod );
+void R_FreeBsp46Model( model_t* mod );
+const byte* R_ClusterPVS( int cluster );
+mbrush46_node_t* R_PointInLeaf( const vec3_t p );
 
 //
 //	CURVE TESSELATION
 //
-srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
-	bsp46_drawVert_t Points[MAX_PATCH_SIZE * MAX_PATCH_SIZE]);
-srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
-srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
-void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
+srfGridMesh_t* R_SubdividePatchToGrid( int Width, int Height,
+	bsp46_drawVert_t Points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] );
+srfGridMesh_t* R_GridInsertColumn( srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError );
+srfGridMesh_t* R_GridInsertRow( srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError );
+void R_FreeSurfaceGridMesh( srfGridMesh_t* Grid );
 
 extern model_t* loadmodel;
-extern byte q1_player_8bit_texels[320 * 200];
-extern byte h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
+extern byte q1_player_8bit_texels[ 320 * 200 ];
+extern byte h2_player_8bit_texels[ MAX_PLAYER_CLASS ][ 620 * 245 ];
 extern mbrush29_texture_t* r_notexture_mip;
 extern world_t s_worldData;
-extern float r_avertexnormal_dots[SHADEDOT_QUANT][256];
+extern float r_avertexnormal_dots[ SHADEDOT_QUANT ][ 256 ];
 extern vec3_t shadevector;
 extern float* shadedots;

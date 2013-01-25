@@ -14,54 +14,53 @@
 //**
 //**************************************************************************
 
-class idQuake3PlayerState : public idPlayerState3
-{
+class idQuake3PlayerState : public idPlayerState3 {
 public:
 /*
-	int gravity;
-	*/
+    int gravity;
+    */
 	virtual float GetLeanf() const;
-	virtual void SetLeanf(float value);
+	virtual void SetLeanf( float value );
 /*
-	int speed;
-	int delta_angles[3];	// add to command angles to get view direction
-							// changed by spawns, rotating objects, and teleporters
+    int speed;
+    int delta_angles[3];	// add to command angles to get view direction
+                            // changed by spawns, rotating objects, and teleporters
 
-	int groundEntityNum;// Q3ENTITYNUM_NONE = in air
+    int groundEntityNum;// Q3ENTITYNUM_NONE = in air
 
-	int legsTimer;		// don't change low priority animations until this runs out
-	int legsAnim;		// mask off ANIM_TOGGLEBIT
+    int legsTimer;		// don't change low priority animations until this runs out
+    int legsAnim;		// mask off ANIM_TOGGLEBIT
 
-	int torsoTimer;		// don't change low priority animations until this runs out
-	int torsoAnim;		// mask off ANIM_TOGGLEBIT
+    int torsoTimer;		// don't change low priority animations until this runs out
+    int torsoAnim;		// mask off ANIM_TOGGLEBIT
 
-	int movementDir;	// a number 0 to 7 that represents the reletive angle
-						// of movement to the view angle (axial and diagonals)
-						// when at rest, the value will remain unchanged
-						// used to twist the legs during strafing
+    int movementDir;	// a number 0 to 7 that represents the reletive angle
+                        // of movement to the view angle (axial and diagonals)
+                        // when at rest, the value will remain unchanged
+                        // used to twist the legs during strafing
 
-	vec3_t grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
+    vec3_t grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
 
-	int eFlags;			// copied to q3entityState_t->eFlags
+    int eFlags;			// copied to q3entityState_t->eFlags
 
-	int eventSequence;	// pmove generated events
-	int events[MAX_PS_EVENTS_Q3];
-	int eventParms[MAX_PS_EVENTS_Q3];
+    int eventSequence;	// pmove generated events
+    int events[MAX_PS_EVENTS_Q3];
+    int eventParms[MAX_PS_EVENTS_Q3];
 
-	int externalEvent;	// events set on player from another source
-	int externalEventParm;
-	int externalEventTime;
+    int externalEvent;	// events set on player from another source
+    int externalEventParm;
+    int externalEventTime;
 */
 	virtual int GetClientNum() const;
-	virtual void SetClientNum(int value);
+	virtual void SetClientNum( int value );
 /*
-	int weapon;			// copied to q3entityState_t->weapon
-	int weaponstate;
+    int weapon;			// copied to q3entityState_t->weapon
+    int weaponstate;
 */
 	virtual const float* GetViewAngles() const;
-	virtual void SetViewAngles(const vec3_t value);
+	virtual void SetViewAngles( const vec3_t value );
 	virtual int GetViewHeight() const;
-	virtual void SetViewHeight(int value);
+	virtual void SetViewHeight( int value );
 	/*
 
 	// damage feedback
@@ -81,12 +80,12 @@ public:
 	int generic1;
 	int loopSound;
 	int jumppad_ent;	// jumppad entity hit this frame
-*/
+	*/
 	virtual int GetPing() const;
-	virtual void SetPing(int value);
+	virtual void SetPing( int value );
 /*
-	int pmove_framecount;	// FIXME: don't transmit over the network
-	int jumppad_frame;
-	int entityEventSequence;
+    int pmove_framecount;	// FIXME: don't transmit over the network
+    int jumppad_frame;
+    int entityEventSequence;
  */
 };

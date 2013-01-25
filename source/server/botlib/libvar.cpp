@@ -21,164 +21,129 @@
 //list with library variables
 static libvar_t* libvarlist;
 
-static float LibVarStringValue(const char* string)
-{
+static float LibVarStringValue( const char* string ) {
 	int dotfound = 0;
 	float value = 0;
-	while (*string)
-	{
-		if (*string < '0' || *string > '9')
-		{
-			if (dotfound || *string != '.')
-			{
+	while ( *string ) {
+		if ( *string < '0' || *string > '9' ) {
+			if ( dotfound || *string != '.' ) {
 				return 0;
-			}
-			else
-			{
+			} else   {
 				dotfound = 10;
 				string++;
 			}
 		}
-		if (dotfound)
-		{
-			value = value + (float)(*string - '0') / (float)dotfound;
+		if ( dotfound ) {
+			value = value + ( float )( *string - '0' ) / ( float )dotfound;
 			dotfound *= 10;
-		}
-		else
-		{
-			value = value * 10.0 + (float)(*string - '0');
+		} else   {
+			value = value * 10.0 + ( float )( *string - '0' );
 		}
 		string++;
 	}
 	return value;
 }
 
-static libvar_t* LibVarAlloc(const char* var_name)
-{
-	libvar_t* v = (libvar_t*)Mem_Alloc(sizeof(libvar_t) + String::Length(var_name) + 1);
-	Com_Memset(v, 0, sizeof(libvar_t));
-	v->name = (char*)v + sizeof(libvar_t);
-	String::Cpy(v->name, var_name);
+static libvar_t* LibVarAlloc( const char* var_name ) {
+	libvar_t* v = ( libvar_t* )Mem_Alloc( sizeof ( libvar_t ) + String::Length( var_name ) + 1 );
+	Com_Memset( v, 0, sizeof ( libvar_t ) );
+	v->name = ( char* )v + sizeof ( libvar_t );
+	String::Cpy( v->name, var_name );
 	//add the variable in the list
 	v->next = libvarlist;
 	libvarlist = v;
 	return v;
 }
 
-static void LibVarDeAlloc(libvar_t* v)
-{
-	if (v->string)
-	{
-		Mem_Free(v->string);
+static void LibVarDeAlloc( libvar_t* v ) {
+	if ( v->string ) {
+		Mem_Free( v->string );
 	}
-	Mem_Free(v);
+	Mem_Free( v );
 }
 
-void LibVarDeAllocAll()
-{
-	for (libvar_t* v = libvarlist; v; v = libvarlist)
-	{
+void LibVarDeAllocAll() {
+	for ( libvar_t* v = libvarlist; v; v = libvarlist ) {
 		libvarlist = libvarlist->next;
-		LibVarDeAlloc(v);
+		LibVarDeAlloc( v );
 	}
 	libvarlist = NULL;
 }
 
-static libvar_t* LibVarGet(const char* var_name)
-{
-	for (libvar_t* v = libvarlist; v; v = v->next)
-	{
-		if (!String::ICmp(v->name, var_name))
-		{
+static libvar_t* LibVarGet( const char* var_name ) {
+	for ( libvar_t* v = libvarlist; v; v = v->next ) {
+		if ( !String::ICmp( v->name, var_name ) ) {
 			return v;
 		}
 	}
 	return NULL;
 }
 
-const char* LibVarGetString(const char* var_name)
-{
-	libvar_t* v = LibVarGet(var_name);
-	if (v)
-	{
+const char* LibVarGetString( const char* var_name ) {
+	libvar_t* v = LibVarGet( var_name );
+	if ( v ) {
 		return v->string;
-	}
-	else
-	{
+	} else   {
 		return "";
 	}
 }
 
-float LibVarGetValue(const char* var_name)
-{
-	libvar_t* v = LibVarGet(var_name);
-	if (v)
-	{
+float LibVarGetValue( const char* var_name ) {
+	libvar_t* v = LibVarGet( var_name );
+	if ( v ) {
 		return v->value;
-	}
-	else
-	{
+	} else   {
 		return 0;
 	}
 }
 
-libvar_t* LibVar(const char* var_name, const char* value)
-{
-	libvar_t* v = LibVarGet(var_name);
-	if (v)
-	{
+libvar_t* LibVar( const char* var_name, const char* value ) {
+	libvar_t* v = LibVarGet( var_name );
+	if ( v ) {
 		return v;
 	}
 	//create new variable
-	v = LibVarAlloc(var_name);
+	v = LibVarAlloc( var_name );
 	//variable string
-	v->string = (char*)Mem_Alloc(String::Length(value) + 1);
-	String::Cpy(v->string, value);
+	v->string = ( char* )Mem_Alloc( String::Length( value ) + 1 );
+	String::Cpy( v->string, value );
 	//the value
-	v->value = LibVarStringValue(v->string);
+	v->value = LibVarStringValue( v->string );
 
 	return v;
 }
 
-const char* LibVarString(const char* var_name, const char* value)
-{
-	libvar_t* v = LibVar(var_name, value);
+const char* LibVarString( const char* var_name, const char* value ) {
+	libvar_t* v = LibVar( var_name, value );
 	return v->string;
 }
 
-float LibVarValue(const char* var_name, const char* value)
-{
-	libvar_t* v = LibVar(var_name, value);
+float LibVarValue( const char* var_name, const char* value ) {
+	libvar_t* v = LibVar( var_name, value );
 	return v->value;
 }
 
-void LibVarSet(const char* var_name, const char* value)
-{
-	libvar_t* v = LibVarGet(var_name);
-	if (v)
-	{
-		Mem_Free(v->string);
-	}
-	else
-	{
-		v = LibVarAlloc(var_name);
+void LibVarSet( const char* var_name, const char* value ) {
+	libvar_t* v = LibVarGet( var_name );
+	if ( v ) {
+		Mem_Free( v->string );
+	} else   {
+		v = LibVarAlloc( var_name );
 	}
 	//variable string
-	v->string = (char*)Mem_Alloc(String::Length(value) + 1);
-	String::Cpy(v->string, value);
+	v->string = ( char* )Mem_Alloc( String::Length( value ) + 1 );
+	String::Cpy( v->string, value );
 	//the value
-	v->value = LibVarStringValue(v->string);
+	v->value = LibVarStringValue( v->string );
 }
 
-int BotLibVarSet(const char* var_name, const char* value)
-{
-	LibVarSet(var_name, value);
+int BotLibVarSet( const char* var_name, const char* value ) {
+	LibVarSet( var_name, value );
 	return BLERR_NOERROR;
 }
 
-int BotLibVarGet(char* var_name, char* value, int size)
-{
-	const char* varvalue = LibVarGetString(var_name);
-	String::NCpyZ(value, varvalue, size);
+int BotLibVarGet( char* var_name, char* value, int size ) {
+	const char* varvalue = LibVarGetString( var_name );
+	String::NCpyZ( value, varvalue, size );
 	return BLERR_NOERROR;
 }

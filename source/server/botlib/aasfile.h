@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#define AASID                       (('S' << 24) + ('A' << 16) + ('A' << 8) + 'E')
+#define AASID                       ( ( 'S' << 24 ) + ( 'A' << 16 ) + ( 'A' << 8 ) + 'E' )
 #define AASVERSION4                 4
 #define AASVERSION5                 5
 #define AASVERSION8                 8
@@ -48,8 +48,8 @@
 
 //additional travel flags
 #define TRAVELTYPE_MASK             0xFFFFFF
-#define TRAVELFLAG_NOTTEAM1         (1 << 24)
-#define TRAVELFLAG_NOTTEAM2         (2 << 24)
+#define TRAVELFLAG_NOTTEAM1         ( 1 << 24 )
+#define TRAVELFLAG_NOTTEAM2         ( 2 << 24 )
 
 //face flags
 #define FACE_SOLID                  1		//just solid at the other side
@@ -75,7 +75,7 @@
 //number of model of the mover inside this area
 #define AREACONTENTS_MODELNUMSHIFT      24
 #define AREACONTENTS_MAXMODELNUM        0xFF
-#define AREACONTENTS_MODELNUM           (AREACONTENTS_MAXMODELNUM << AREACONTENTS_MODELNUMSHIFT)
+#define AREACONTENTS_MODELNUM           ( AREACONTENTS_MAXMODELNUM << AREACONTENTS_MODELNUMSHIFT )
 
 //area flags
 #define AREA_GROUNDED               1		//bot can stand on the ground
@@ -92,7 +92,7 @@
 #define ETAREA_AVOID_AXIS           2048	// death area
 #define ETAREA_AVOID_ALLIES         4096	// death area
 
-#define ETAREA_TEAM_FLAGS           (ETAREA_TEAM_AXIS | ETAREA_TEAM_ALLIES | ETAREA_TEAM_AXIS_DISGUISED | ETAREA_TEAM_ALLIES_DISGUISED | ETAREA_AVOID_AXIS | ETAREA_AVOID_ALLIES)
+#define ETAREA_TEAM_FLAGS           ( ETAREA_TEAM_AXIS | ETAREA_TEAM_ALLIES | ETAREA_TEAM_AXIS_DISGUISED | ETAREA_TEAM_ALLIES_DISGUISED | ETAREA_AVOID_AXIS | ETAREA_AVOID_ALLIES )
 
 //aas file header lumps
 #define AAS_LUMPS                   14
@@ -112,16 +112,14 @@
 #define AASLUMP_CLUSTERS            13
 
 //bounding box
-struct aas_bbox_t
-{
+struct aas_bbox_t {
 	int presencetype;
 	int flags;
 	vec3_t mins, maxs;
 };
 
 //reachability to another area
-struct aas_reachability_t
-{
+struct aas_reachability_t {
 	int areanum;					//number of the reachable area
 	int facenum;					//number of the face towards the other area
 	int edgenum;					//number of the edge towards the other area
@@ -132,8 +130,7 @@ struct aas_reachability_t
 };
 
 //area settings
-struct aas5_areasettings_t
-{
+struct aas5_areasettings_t {
 	//could also add all kind of statistic fields
 	int contents;					//contents of the area
 	int areaflags;					//several area flags
@@ -145,8 +142,7 @@ struct aas5_areasettings_t
 };
 
 //area settings
-struct aas8_areasettings_t
-{
+struct aas8_areasettings_t {
 	//could also add all kind of statistic fields
 	int contents;					//contents of the convex area
 	int areaflags;					//several area flags
@@ -160,20 +156,18 @@ struct aas8_areasettings_t
 };
 
 //cluster portal
-struct aas_portal_t
-{
+struct aas_portal_t {
 	int areanum;						//area that is the actual portal
 	int frontcluster;					//cluster at front of portal
 	int backcluster;					//cluster at back of portal
-	int clusterareanum[2];			//number of the area in the front and back cluster
+	int clusterareanum[ 2 ];			//number of the area in the front and back cluster
 };
 
 //cluster portal index
 typedef int aas_portalindex_t;
 
 //cluster
-struct aas_cluster_t
-{
+struct aas_cluster_t {
 	int numareas;						//number of areas in the cluster
 	int numreachabilityareas;			//number of areas with reachabilities
 	int numportals;						//number of cluster portals
@@ -183,25 +177,22 @@ struct aas_cluster_t
 typedef vec3_t aas_vertex_t;
 
 //just a plane in the third dimension
-struct aas_plane_t
-{
+struct aas_plane_t {
 	vec3_t normal;						//normal vector of the plane
 	float dist;							//distance of the plane (normal vector * distance = point in plane)
 	int type;
 };
 
 //edge
-struct aas_edge_t
-{
-	int v[2];							//numbers of the vertexes of this edge
+struct aas_edge_t {
+	int v[ 2 ];								//numbers of the vertexes of this edge
 };
 
 //edge index, negative if vertexes are reversed
 typedef int aas_edgeindex_t;
 
 //a face bounds an area, often it will also seperate two areas
-struct aas_face_t
-{
+struct aas_face_t {
 	int planenum;						//number of the plane this face is in
 	int faceflags;						//face flags (no use to create face settings for just this field)
 	int numedges;						//number of edges in the boundary of the face
@@ -214,8 +205,7 @@ struct aas_face_t
 typedef int aas_faceindex_t;
 
 //area with a boundary of faces
-struct aas_area_t
-{
+struct aas_area_t {
 	int areanum;						//number of this area
 	//3d definition
 	int numfaces;						//number of faces used for the boundary of the area
@@ -226,28 +216,25 @@ struct aas_area_t
 };
 
 //nodes of the bsp tree
-struct aas_node_t
-{
+struct aas_node_t {
 	int planenum;
-	int children[2];					//child nodes of this node, or areas as leaves when negative
-										//when a child is zero it's a solid leaf
+	int children[ 2 ];						//child nodes of this node, or areas as leaves when negative
+											//when a child is zero it's a solid leaf
 };
 
 //header lump
-struct aas_lump_t
-{
+struct aas_lump_t {
 	int fileofs;
 	int filelen;
 };
 
 //aas file header
-struct aas_header_t
-{
+struct aas_header_t {
 	int ident;
 	int version;
 	int bspchecksum;
 	//data entries
-	aas_lump_t lumps[AAS_LUMPS];
+	aas_lump_t lumps[ AAS_LUMPS ];
 };
 
 //====== additional information ======

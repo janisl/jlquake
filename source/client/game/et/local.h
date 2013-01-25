@@ -19,18 +19,18 @@
 
 #include "../tech3/local.h"
 
-bool CLET_GetTag(int clientNum, const char* tagname, orientation_t* _or);
-bool CLET_CGameCheckKeyExec(int key);
+bool CLET_GetTag( int clientNum, const char* tagname, orientation_t* _or );
+bool CLET_CGameCheckKeyExec( int key );
 bool CLET_WantsBindKeys();
-void CLET_CGameBinaryMessageReceived(const char* buf, int buflen, int serverTime);
-qintptr CLET_CgameSystemCalls(qintptr* args);
+void CLET_CGameBinaryMessageReceived( const char* buf, int buflen, int serverTime );
+qintptr CLET_CgameSystemCalls( qintptr* args );
 
-bool UIET_ConsoleCommand(int realTime);
-void UIET_DrawConnectScreen(bool overlay);
+bool UIET_ConsoleCommand( int realTime );
+void UIET_DrawConnectScreen( bool overlay );
 bool UIET_HasUniqueCDKey();
-bool UIET_CheckExecKey(int key);
+bool UIET_CheckExecKey( int key );
 bool UIET_WantsBindKeys();
 void UIET_Init();
-qintptr CLET_UISystemCalls(qintptr* args);
+qintptr CLET_UISystemCalls( qintptr* args );
 
 #endif

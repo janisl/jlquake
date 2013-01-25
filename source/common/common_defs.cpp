@@ -32,7 +32,7 @@ Cvar* com_viewlog;
 Cvar* com_timescale;
 
 Cvar* com_developer;
-#if defined(_DEBUG)
+#if defined( _DEBUG )
 Cvar* com_noErrorInterrupt;
 #endif
 
@@ -72,7 +72,7 @@ bool q1_hipnotic;
 
 char* rd_buffer;
 int rd_buffersize;
-void (* rd_flush)(char* buffer);
+void ( * rd_flush )( char* buffer );
 
 bool com_errorEntered;
 
@@ -114,40 +114,34 @@ static unsigned short pop[] =
 	0x0000,0x0000,0x0000,0x0000,0x6400,0x0000,0x0000,0x0000
 };
 
-void COM_InitCommonCvars()
-{
-	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
-	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
-	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
-	com_logfile = Cvar_Get("logfile", "0", CVAR_TEMP);
-	com_speeds = Cvar_Get("com_speeds", "0", 0);
+void COM_InitCommonCvars() {
+	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
+	com_timescale = Cvar_Get( "timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
+	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
+	com_logfile = Cvar_Get( "logfile", "0", CVAR_TEMP );
+	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 
-#if defined(_WIN32) && defined(_DEBUG) && !defined(_WIN64)
-	com_noErrorInterrupt = Cvar_Get("com_noErrorInterrupt", "0", 0);
+#if defined( _WIN32 ) && defined( _DEBUG ) && !defined( _WIN64 )
+	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
 #endif
 }
 
-int Com_HashKey(const char* string, int maxlen)
-{
+int Com_HashKey( const char* string, int maxlen ) {
 	int hash = 0;
-	for (int i = 0; i < maxlen && string[i] != '\0'; i++)
-	{
-		hash += string[i] * (119 + i);
+	for ( int i = 0; i < maxlen && string[ i ] != '\0'; i++ ) {
+		hash += string[ i ] * ( 119 + i );
 	}
-	hash = (hash ^ (hash >> 10) ^ (hash >> 20));
+	hash = ( hash ^ ( hash >> 10 ) ^ ( hash >> 20 ) );
 	return hash;
 }
 
-int Com_RealTime(qtime_t* qtime)
-{
-	time_t t = time(NULL);
-	if (!qtime)
-	{
+int Com_RealTime( qtime_t* qtime ) {
+	time_t t = time( NULL );
+	if ( !qtime ) {
 		return t;
 	}
-	tm* tms = localtime(&t);
-	if (tms)
-	{
+	tm* tms = localtime( &t );
+	if ( tms ) {
 		qtime->tm_sec = tms->tm_sec;
 		qtime->tm_min = tms->tm_min;
 		qtime->tm_hour = tms->tm_hour;
@@ -161,7 +155,7 @@ int Com_RealTime(qtime_t* qtime)
 	return t;
 }
 
-static byte qw_chktbl[1024 + 4] = {
+static byte qw_chktbl[ 1024 + 4 ] = {
 	0x78,0xd2,0x94,0xe3,0x41,0xec,0xd6,0xd5,0xcb,0xfc,0xdb,0x8a,0x4b,0xcc,0x85,0x01,
 	0x23,0xd2,0xe5,0xf2,0x29,0xa7,0x45,0x94,0x4a,0x62,0xe3,0xa5,0x6f,0x3f,0xe1,0x7a,
 	0x64,0xed,0x5c,0x99,0x29,0x87,0xa8,0x78,0x59,0x0d,0xaa,0x0f,0x25,0x0a,0x5c,0x58,
@@ -200,32 +194,30 @@ static byte qw_chktbl[1024 + 4] = {
 };
 
 //	For proxy protecting
-byte COMQW_BlockSequenceCRCByte(byte* base, int length, int sequence)
-{
-	byte* p = qw_chktbl + (sequence % (sizeof(qw_chktbl) - 8));
+byte COMQW_BlockSequenceCRCByte( byte* base, int length, int sequence ) {
+	byte* p = qw_chktbl + ( sequence % ( sizeof ( qw_chktbl ) - 8 ) );
 
-	if (length > 60)
-	{
+	if ( length > 60 ) {
 		length = 60;
 	}
-	byte chkb[60 + 4];
-	Com_Memcpy(chkb, base, length);
+	byte chkb[ 60 + 4 ];
+	Com_Memcpy( chkb, base, length );
 
-	chkb[length] = (sequence & 0xff) ^ p[0];
-	chkb[length + 1] = p[1];
-	chkb[length + 2] = ((sequence >> 8) & 0xff) ^ p[2];
-	chkb[length + 3] = p[3];
+	chkb[ length ] = ( sequence & 0xff ) ^ p[ 0 ];
+	chkb[ length + 1 ] = p[ 1 ];
+	chkb[ length + 2 ] = ( ( sequence >> 8 ) & 0xff ) ^ p[ 2 ];
+	chkb[ length + 3 ] = p[ 3 ];
 
 	length += 4;
 
-	unsigned short crc = CRC_Block(chkb, length);
+	unsigned short crc = CRC_Block( chkb, length );
 
 	crc &= 0xff;
 
 	return crc;
 }
 
-static byte q2_chktbl[1024] = {
+static byte q2_chktbl[ 1024 ] = {
 	0x84, 0x47, 0x51, 0xc1, 0x93, 0x22, 0x21, 0x24, 0x2f, 0x66, 0x60, 0x4d, 0xb0, 0x7c, 0xda,
 	0x88, 0x54, 0x15, 0x2b, 0xc6, 0x6c, 0x89, 0xc5, 0x9d, 0x48, 0xee, 0xe6, 0x8a, 0xb5, 0xf4,
 	0xcb, 0xfb, 0xf1, 0x0c, 0x2e, 0xa0, 0xd7, 0xc9, 0x1f, 0xd6, 0x06, 0x9a, 0x09, 0x41, 0x54,
@@ -293,46 +285,40 @@ static byte q2_chktbl[1024] = {
 };
 
 //	For proxy protecting
-byte COMQ2_BlockSequenceCRCByte(byte* base, int length, int sequence)
-{
-	if (sequence < 0)
-	{
-		common->FatalError("sequence < 0, this shouldn't happen\n");
+byte COMQ2_BlockSequenceCRCByte( byte* base, int length, int sequence ) {
+	if ( sequence < 0 ) {
+		common->FatalError( "sequence < 0, this shouldn't happen\n" );
 	}
 
-	byte* p = q2_chktbl + (sequence % (sizeof(q2_chktbl) - 4));
+	byte* p = q2_chktbl + ( sequence % ( sizeof ( q2_chktbl ) - 4 ) );
 
-	if (length > 60)
-	{
+	if ( length > 60 ) {
 		length = 60;
 	}
-	byte chkb[60 + 4];
-	Com_Memcpy(chkb, base, length);
+	byte chkb[ 60 + 4 ];
+	Com_Memcpy( chkb, base, length );
 
-	chkb[length] = p[0];
-	chkb[length + 1] = p[1];
-	chkb[length + 2] = p[2];
-	chkb[length + 3] = p[3];
+	chkb[ length ] = p[ 0 ];
+	chkb[ length + 1 ] = p[ 1 ];
+	chkb[ length + 2 ] = p[ 2 ];
+	chkb[ length + 3 ] = p[ 3 ];
 
 	length += 4;
 
-	unsigned short crc = CRC_Block(chkb, length);
+	unsigned short crc = CRC_Block( chkb, length );
 
 	int x = 0;
-	for (int n = 0; n < length; n++)
-	{
-		x += chkb[n];
+	for ( int n = 0; n < length; n++ ) {
+		x += chkb[ n ];
 	}
 
-	crc = (crc ^ x) & 0xff;
+	crc = ( crc ^ x ) & 0xff;
 
 	return crc;
 }
 
-void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*))
-{
-	if (!buffer || !buffersize || !flush)
-	{
+void Com_BeginRedirect( char* buffer, int buffersize, void ( * flush )( char* ) ) {
+	if ( !buffer || !buffersize || !flush ) {
 		return;
 	}
 	rd_buffer = buffer;
@@ -342,11 +328,9 @@ void Com_BeginRedirect(char* buffer, int buffersize, void (*flush)(char*))
 	*rd_buffer = 0;
 }
 
-void Com_EndRedirect(void)
-{
-	if (rd_flush)
-	{
-		rd_flush(rd_buffer);
+void Com_EndRedirect( void ) {
+	if ( rd_flush ) {
+		rd_flush( rd_buffer );
 	}
 
 	rd_buffer = NULL;
@@ -354,202 +338,158 @@ void Com_EndRedirect(void)
 	rd_flush = NULL;
 }
 
-int ComQ2_ServerState()
-{
+int ComQ2_ServerState() {
 	return q2server_state;
 }
 
-void ComQ2_SetServerState(int state)
-{
+void ComQ2_SetServerState( int state ) {
 	q2server_state = state;
 }
 
-void Com_WriteConfigToFile(const char* filename)
-{
-	fileHandle_t f = FS_FOpenFileWrite(filename);
-	if (!f)
-	{
-		common->Printf("Couldn't write %s.\n", filename);
+void Com_WriteConfigToFile( const char* filename ) {
+	fileHandle_t f = FS_FOpenFileWrite( filename );
+	if ( !f ) {
+		common->Printf( "Couldn't write %s.\n", filename );
 		return;
 	}
 
-	FS_Printf(f, "// generated by quake, do not modify\n");
-	Key_WriteBindings(f);
-	Cvar_WriteVariables(f);
-	FS_FCloseFile(f);
+	FS_Printf( f, "// generated by quake, do not modify\n" );
+	Key_WriteBindings( f );
+	Cvar_WriteVariables( f );
+	FS_FCloseFile( f );
 }
 
 //	Writes key bindings and archived cvars to config file if modified
-void Com_WriteConfiguration()
-{
+void Com_WriteConfiguration() {
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything
-	if (!com_fullyInitialized)
-	{
+	if ( !com_fullyInitialized ) {
 		return;
 	}
 
-	if (!(GGameType & GAME_Tech3) && com_dedicated->integer)
-	{
+	if ( !( GGameType & GAME_Tech3 ) && com_dedicated->integer ) {
 		return;
 	}
 
-	if (!(cvar_modifiedFlags & CVAR_ARCHIVE))
-	{
+	if ( !( cvar_modifiedFlags & CVAR_ARCHIVE ) ) {
 		return;
 	}
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-	if (GGameType & GAME_Quake3)
-	{
-		Com_WriteConfigToFile("q3config.cfg");
-	}
-	else if (GGameType & GAME_WolfSP)
-	{
-		Com_WriteConfigToFile("wolfconfig.cfg");
-	}
-	else if (GGameType & GAME_WolfMP)
-	{
-		Com_WriteConfigToFile("wolfconfig_mp.cfg");
-	}
-	else if (GGameType & GAME_ET)
-	{
-		const char* cl_profileStr = Cvar_VariableString("cl_profile");
-		if (comet_gameInfo.usesProfiles && cl_profileStr[0])
-		{
-			Com_WriteConfigToFile(va("profiles/%s/%s", cl_profileStr, ETCONFIG_NAME));
+	if ( GGameType & GAME_Quake3 ) {
+		Com_WriteConfigToFile( "q3config.cfg" );
+	} else if ( GGameType & GAME_WolfSP )     {
+		Com_WriteConfigToFile( "wolfconfig.cfg" );
+	} else if ( GGameType & GAME_WolfMP )     {
+		Com_WriteConfigToFile( "wolfconfig_mp.cfg" );
+	} else if ( GGameType & GAME_ET )     {
+		const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
+		if ( comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
+			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, ETCONFIG_NAME ) );
+		} else   {
+			Com_WriteConfigToFile( ETCONFIG_NAME );
 		}
-		else
-		{
-			Com_WriteConfigToFile(ETCONFIG_NAME);
-		}
-	}
-	else
-	{
-		Com_WriteConfigToFile("config.cfg");
+	} else   {
+		Com_WriteConfigToFile( "config.cfg" );
 	}
 
-	if (GGameType & GAME_Tech3)
-	{
+	if ( GGameType & GAME_Tech3 ) {
 		CLT3_WriteCDKey();
 	}
 }
 
 //	Write the config file to a specific name
-void Com_WriteConfig_f()
-{
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("Usage: writeconfig <filename>\n");
+void Com_WriteConfig_f() {
+	if ( Cmd_Argc() != 2 ) {
+		common->Printf( "Usage: writeconfig <filename>\n" );
 		return;
 	}
 
-	char filename[MAX_QPATH];
-	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
-	String::DefaultExtension(filename, sizeof(filename), ".cfg");
-	common->Printf("Writing %s.\n", filename);
-	Com_WriteConfigToFile(filename);
+	char filename[ MAX_QPATH ];
+	String::NCpyZ( filename, Cmd_Argv( 1 ), sizeof ( filename ) );
+	String::DefaultExtension( filename, sizeof ( filename ), ".cfg" );
+	common->Printf( "Writing %s.\n", filename );
+	Com_WriteConfigToFile( filename );
 }
 
-void Com_SetRecommended(bool vid_restart)
-{
-	common->Printf("Assume high quality video and fast CPU\n");
-	if (GGameType & GAME_ET)
-	{
-		Cvar_Get("com_recommended", "-1", CVAR_ARCHIVE);
-		Cbuf_AddText("exec preset_high.cfg\n");
-		Cvar_Set("com_recommended", "0");
-	}
-	else
-	{
-		Cbuf_AddText("exec highVidhighCPU.cfg\n");
+void Com_SetRecommended( bool vid_restart ) {
+	common->Printf( "Assume high quality video and fast CPU\n" );
+	if ( GGameType & GAME_ET ) {
+		Cvar_Get( "com_recommended", "-1", CVAR_ARCHIVE );
+		Cbuf_AddText( "exec preset_high.cfg\n" );
+		Cvar_Set( "com_recommended", "0" );
+	} else   {
+		Cbuf_AddText( "exec highVidhighCPU.cfg\n" );
 	}
 
-	if (GGameType & GAME_WolfSP)
-	{
+	if ( GGameType & GAME_WolfSP ) {
 		// (SA) set the cvar so the menu will reflect this on first run
-		Cvar_Set("ui_glCustom", "999");		// 'recommended'
+		Cvar_Set( "ui_glCustom", "999" );		// 'recommended'
 	}
 
-	if (vid_restart)
-	{
-		Cbuf_AddText("vid_restart\n");
+	if ( vid_restart ) {
+		Cbuf_AddText( "vid_restart\n" );
 	}
 }
 
-void Com_LogToFile(const char* msg)
-{
-	if (com_logfile && com_logfile->integer)
-	{
+void Com_LogToFile( const char* msg ) {
+	if ( com_logfile && com_logfile->integer ) {
 		// TTimo: only open the qconsole.log if the filesystem is in an initialized state
 		//   also, avoid recursing in the qconsole.log opening (i.e. if fs_debug is on)
 		static bool opening_qconsole = false;
-		if (!logfile_ && FS_Initialized() && !opening_qconsole)
-		{
+		if ( !logfile_ && FS_Initialized() && !opening_qconsole ) {
 			opening_qconsole = true;
 
 			time_t aclock;
-			time(&aclock);
-			tm* newtime = localtime(&aclock);
+			time( &aclock );
+			tm* newtime = localtime( &aclock );
 
-			logfile_ = FS_FOpenFileWrite("qconsole.log");
-			common->Printf("logfile opened on %s\n", asctime(newtime));
-			if (com_logfile->integer > 1)
-			{
+			logfile_ = FS_FOpenFileWrite( "qconsole.log" );
+			common->Printf( "logfile opened on %s\n", asctime( newtime ) );
+			if ( com_logfile->integer > 1 ) {
 				// force it to not buffer so we get valid
 				// data even if we are crashing
-				FS_ForceFlush(logfile_);
+				FS_ForceFlush( logfile_ );
 			}
 
 			opening_qconsole = false;
 		}
-		if (logfile_ && FS_Initialized())
-		{
-			FS_Write(msg, String::Length(msg), logfile_);
+		if ( logfile_ && FS_Initialized() ) {
+			FS_Write( msg, String::Length( msg ), logfile_ );
 		}
 	}
 }
 
-void Com_Shutdown()
-{
-	if (GGameType & GAME_ET)
-	{
+void Com_Shutdown() {
+	if ( GGameType & GAME_ET ) {
 		// delete pid file
-		const char* cl_profileStr = Cvar_VariableString("cl_profile");
-		if (comet_gameInfo.usesProfiles && cl_profileStr[0])
-		{
-			if (FS_FileExists(va("profiles/%s/profile.pid", cl_profileStr)))
-			{
-				FS_Delete(va("profiles/%s/profile.pid", cl_profileStr));
+		const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
+		if ( comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
+			if ( FS_FileExists( va( "profiles/%s/profile.pid", cl_profileStr ) ) ) {
+				FS_Delete( va( "profiles/%s/profile.pid", cl_profileStr ) );
 			}
 		}
 	}
 
-	if (logfile_)
-	{
-		FS_FCloseFile(logfile_);
+	if ( logfile_ ) {
+		FS_FCloseFile( logfile_ );
 		logfile_ = 0;
 	}
 
-	if (com_journalFile)
-	{
-		FS_FCloseFile(com_journalFile);
+	if ( com_journalFile ) {
+		FS_FCloseFile( com_journalFile );
 		com_journalFile = 0;
 	}
 }
 
 //	FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
 // to run quit through here before the final handoff to the sys code.
-void ComQH_HostShutdown()
-{
+void ComQH_HostShutdown() {
 	CL_Shutdown();
-	if (!(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)))
-	{
+	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) ) {
 		SVQH_ShutdownNetwork();
 		NETQH_Shutdown();
-	}
-	else
-	{
+	} else   {
 		NET_Shutdown();
 	}
 	Com_Shutdown();
@@ -557,28 +497,21 @@ void ComQH_HostShutdown()
 
 //	Both client and server can use this, and it will
 // do the apropriate things.
-void Com_Quit_f()
-{
+void Com_Quit_f() {
 	// don't try to shutdown if we are in a recursive error
-	if (!com_errorEntered)
-	{
-		if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
-		{
-			CL_Disconnect(true);
+	if ( !com_errorEntered ) {
+		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+			CL_Disconnect( true );
 			CL_Shutdown();
-			SV_Shutdown("server shutdown\n");
+			SV_Shutdown( "server shutdown\n" );
 			NET_Shutdown();
 			Com_Shutdown();
-		}
-		else if (GGameType & GAME_QuakeHexen)
-		{
-			CL_Disconnect(true);
-			SV_Shutdown("");
+		} else if ( GGameType & GAME_QuakeHexen )     {
+			CL_Disconnect( true );
+			SV_Shutdown( "" );
 			ComQH_HostShutdown();
-		}
-		else
-		{
-			SV_Shutdown("Server quit\n");
+		} else   {
+			SV_Shutdown( "Server quit\n" );
 			CL_Shutdown();
 			Com_Shutdown();
 		}
@@ -587,109 +520,96 @@ void Com_Quit_f()
 	Sys_Quit();
 }
 
-void COM_InitCommonCommands()
-{
-	Cmd_AddCommand("quit", Com_Quit_f);
-	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
+void COM_InitCommonCommands() {
+	Cmd_AddCommand( "quit", Com_Quit_f );
+	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
 }
 
 // bani - checks if profile.pid is valid
 // return true if it is
 // return false if it isn't(!)
-bool ComET_CheckProfile(const char* profile_path)
-{
+bool ComET_CheckProfile( const char* profile_path ) {
 	//let user override this
-	if (com_ignorecrash->integer)
-	{
+	if ( com_ignorecrash->integer ) {
 		return true;
 	}
 
 	fileHandle_t f;
-	if (FS_FOpenFileRead(profile_path, &f, true) < 0)
-	{
+	if ( FS_FOpenFileRead( profile_path, &f, true ) < 0 ) {
 		//no profile found, we're ok
 		return true;
 	}
 
-	char f_data[32];
-	if (FS_Read(&f_data, sizeof(f_data) - 1, f) < 0)
-	{
+	char f_data[ 32 ];
+	if ( FS_Read( &f_data, sizeof ( f_data ) - 1, f ) < 0 ) {
 		//b0rk3d!
-		FS_FCloseFile(f);
+		FS_FCloseFile( f );
 		//try to delete corrupted pid file
-		FS_Delete(profile_path);
+		FS_Delete( profile_path );
 		return false;
 	}
 
-	int f_pid = String::Atoi(f_data);
-	if (f_pid != com_pid->integer)
-	{
+	int f_pid = String::Atoi( f_data );
+	if ( f_pid != com_pid->integer ) {
 		//pid doesn't match
-		FS_FCloseFile(f);
+		FS_FCloseFile( f );
 		return false;
 	}
 
 	//we're all ok
-	FS_FCloseFile(f);
+	FS_FCloseFile( f );
 	return true;
 }
 
 //bani - from files.c
-static char last_fs_gamedir[MAX_OSPATH];
-static char last_profile_path[MAX_OSPATH];
+static char last_fs_gamedir[ MAX_OSPATH ];
+static char last_profile_path[ MAX_OSPATH ];
 
 //bani - track profile changes, delete old profile.pid if we change fs_game(dir)
 //hackish, we fiddle with fs_gamedir to make FS_* calls work "right"
-static void ComET_TrackProfile(const char* profile_path)
-{
-	char temp_fs_gamedir[MAX_OSPATH];
+static void ComET_TrackProfile( const char* profile_path ) {
+	char temp_fs_gamedir[ MAX_OSPATH ];
 
 	//have we changed fs_game(dir)?
-	if (String::Cmp(last_fs_gamedir, fs_gamedir))
-	{
-		if (String::Length(last_fs_gamedir) && String::Length(last_profile_path))
-		{
+	if ( String::Cmp( last_fs_gamedir, fs_gamedir ) ) {
+		if ( String::Length( last_fs_gamedir ) && String::Length( last_profile_path ) ) {
 			//save current fs_gamedir
-			String::NCpyZ(temp_fs_gamedir, fs_gamedir, sizeof(temp_fs_gamedir));
+			String::NCpyZ( temp_fs_gamedir, fs_gamedir, sizeof ( temp_fs_gamedir ) );
 			//set fs_gamedir temporarily to make FS_* stuff work "right"
-			String::NCpyZ(fs_gamedir, last_fs_gamedir, sizeof(fs_gamedir));
-			if (FS_FileExists(last_profile_path))
-			{
-				common->Printf("Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path);
-				FS_Delete(last_profile_path);
+			String::NCpyZ( fs_gamedir, last_fs_gamedir, sizeof ( fs_gamedir ) );
+			if ( FS_FileExists( last_profile_path ) ) {
+				common->Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
+				FS_Delete( last_profile_path );
 			}
 			//restore current fs_gamedir
-			String::NCpyZ(fs_gamedir, temp_fs_gamedir, sizeof(fs_gamedir));
+			String::NCpyZ( fs_gamedir, temp_fs_gamedir, sizeof ( fs_gamedir ) );
 		}
 		//and save current vars for future reference
-		String::NCpyZ(last_fs_gamedir, fs_gamedir, sizeof(last_fs_gamedir));
-		String::NCpyZ(last_profile_path, profile_path, sizeof(last_profile_path));
+		String::NCpyZ( last_fs_gamedir, fs_gamedir, sizeof ( last_fs_gamedir ) );
+		String::NCpyZ( last_profile_path, profile_path, sizeof ( last_profile_path ) );
 	}
 }
 
 // bani - writes pid to profile
 // returns true if successful
 // returns false if not(!!)
-bool ComET_WriteProfile(const char* profile_path)
-{
-	if (FS_FileExists(profile_path))
-	{
-		FS_Delete(profile_path);
+bool ComET_WriteProfile( const char* profile_path ) {
+	if ( FS_FileExists( profile_path ) ) {
+		FS_Delete( profile_path );
 	}
 
-	fileHandle_t f = FS_FOpenFileWrite(profile_path);
-	if (f < 0)
-	{
-		common->Printf("Com_WriteProfile: Can't write %s.\n", profile_path);
+	fileHandle_t f = FS_FOpenFileWrite( profile_path );
+	if ( f < 0 ) {
+		common->Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
 		return false;
 	}
 
-	FS_Printf(f, "%d", com_pid->integer);
+	FS_Printf( f, "%d", com_pid->integer );
 
-	FS_FCloseFile(f);
+	FS_FCloseFile( f );
 
 	//track profile changes
-	ComET_TrackProfile(profile_path);
+	ComET_TrackProfile( profile_path );
 
 	return true;
 }
@@ -698,31 +618,27 @@ bool ComET_WriteProfile(const char* profile_path)
 //	Sets the "registered" cvar.
 //	Immediately exits out if an alternate game was attempted to be started without
 // being registered.
-void COMQH_CheckRegistered()
-{
-	qh_registered = Cvar_Get("registered", "0", 0);
+void COMQH_CheckRegistered() {
+	qh_registered = Cvar_Get( "registered", "0", 0 );
 
 	fileHandle_t h;
-	FS_FOpenFileRead("gfx/pop.lmp", &h, true);
+	FS_FOpenFileRead( "gfx/pop.lmp", &h, true );
 
-	if (!h)
-	{
-		common->Printf(GGameType & GAME_Hexen2 ? "Playing demo version.\n" : "Playing shareware version.\n");
+	if ( !h ) {
+		common->Printf( GGameType & GAME_Hexen2 ? "Playing demo version.\n" : "Playing shareware version.\n" );
 		return;
 	}
 
-	unsigned short check[128];
-	FS_Read(check, sizeof(check), h);
-	FS_FCloseFile(h);
+	unsigned short check[ 128 ];
+	FS_Read( check, sizeof ( check ), h );
+	FS_FCloseFile( h );
 
-	for (int i = 0; i < 128; i++)
-	{
-		if (pop[i] != (unsigned short)BigShort(check[i]))
-		{
-			common->FatalError("Corrupted data file.");
+	for ( int i = 0; i < 128; i++ ) {
+		if ( pop[ i ] != ( unsigned short )BigShort( check[ i ] ) ) {
+			common->FatalError( "Corrupted data file." );
 		}
 	}
 
-	Cvar_Set("registered", "1");
-	common->Printf(GGameType & GAME_Hexen2 ? "Playing retail version.\n" : "Playing registered version.\n");
+	Cvar_Set( "registered", "1" );
+	common->Printf( GGameType & GAME_Hexen2 ? "Playing retail version.\n" : "Playing registered version.\n" );
 }

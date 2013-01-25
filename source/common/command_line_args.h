@@ -20,21 +20,20 @@
 #include "qcommon.h"
 
 int COM_Argc();
-const char* COM_Argv(int arg);	// range and null checked
-void COM_InitArgv(int argc, char** argv);
-void COM_AddParm(const char* parm);
-void COM_InitArgv2(int argc, char** argv);
-void COM_ClearArgv(int arg);
-int COM_CheckParm(const char* parm);
+const char* COM_Argv( int arg );	// range and null checked
+void COM_InitArgv( int argc, char** argv );
+void COM_AddParm( const char* parm );
+void COM_InitArgv2( int argc, char** argv );
+void COM_ClearArgv( int arg );
+int COM_CheckParm( const char* parm );
 
-void Com_ParseCommandLine(char* commandLine);
+void Com_ParseCommandLine( char* commandLine );
 bool Com_SafeMode();
 bool Com_AddStartupCommands();
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
 // only a set with the exact name.  Only used during startup.
 void Cmd_StuffCmds_f();
-void Com_StartupVariable(const char* match);
+void Com_StartupVariable( const char* match );
 
 #endif
-

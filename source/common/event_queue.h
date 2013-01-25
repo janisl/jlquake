@@ -37,7 +37,7 @@ extern fileHandle_t com_journalDataFile;
 
 void Com_InitEventQueue();
 void Com_InitJournaling();
-void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr);
+void Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void* ptr );
 int Com_EventLoop();
 int Com_Milliseconds();
 

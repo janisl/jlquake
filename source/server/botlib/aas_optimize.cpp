@@ -20,8 +20,7 @@
 #include "../../common/qcommon.h"
 #include "local.h"
 
-struct optimized_t
-{
+struct optimized_t {
 	//vertexes
 	int numvertexes;
 	aas_vertex_t* vertexes;
@@ -46,255 +45,209 @@ struct optimized_t
 	int* faceoptimizeindex;
 };
 
-static int AAS_OptimizeEdge(optimized_t* optimized, int edgenum)
-{
-	aas_edge_t* edge = &aasworld->edges[abs(edgenum)];
+static int AAS_OptimizeEdge( optimized_t* optimized, int edgenum ) {
+	aas_edge_t* edge = &aasworld->edges[ abs( edgenum ) ];
 
-	int optedgenum = optimized->edgeoptimizeindex[abs(edgenum)];
-	if (optedgenum)
-	{
+	int optedgenum = optimized->edgeoptimizeindex[ abs( edgenum ) ];
+	if ( optedgenum ) {
 		//keep the edge reversed sign
-		if (edgenum > 0)
-		{
+		if ( edgenum > 0 ) {
 			return optedgenum;
-		}
-		else
-		{
+		} else   {
 			return -optedgenum;
 		}
 	}
 
-	aas_edge_t* optedge = &optimized->edges[optimized->numedges];
+	aas_edge_t* optedge = &optimized->edges[ optimized->numedges ];
 
-	for (int i = 0; i < 2; i++)
-	{
-		if (optimized->vertexoptimizeindex[edge->v[i]])
-		{
-			optedge->v[i] = optimized->vertexoptimizeindex[edge->v[i]];
-		}
-		else
-		{
-			VectorCopy(aasworld->vertexes[edge->v[i]], optimized->vertexes[optimized->numvertexes]);
-			optedge->v[i] = optimized->numvertexes;
-			optimized->vertexoptimizeindex[edge->v[i]] = optimized->numvertexes;
+	for ( int i = 0; i < 2; i++ ) {
+		if ( optimized->vertexoptimizeindex[ edge->v[ i ] ] ) {
+			optedge->v[ i ] = optimized->vertexoptimizeindex[ edge->v[ i ] ];
+		} else   {
+			VectorCopy( aasworld->vertexes[ edge->v[ i ] ], optimized->vertexes[ optimized->numvertexes ] );
+			optedge->v[ i ] = optimized->numvertexes;
+			optimized->vertexoptimizeindex[ edge->v[ i ] ] = optimized->numvertexes;
 			optimized->numvertexes++;
 		}
 	}
-	optimized->edgeoptimizeindex[abs(edgenum)] = optimized->numedges;
+	optimized->edgeoptimizeindex[ abs( edgenum ) ] = optimized->numedges;
 	optedgenum = optimized->numedges;
 	optimized->numedges++;
 	//keep the edge reversed sign
-	if (edgenum > 0)
-	{
+	if ( edgenum > 0 ) {
 		return optedgenum;
-	}
-	else
-	{
+	} else   {
 		return -optedgenum;
 	}
 }
 
-static bool AAS_KeepFace(aas_face_t* face)
-{
-	if (!(face->faceflags & FACE_LADDER))
-	{
+static bool AAS_KeepFace( aas_face_t* face ) {
+	if ( !( face->faceflags & FACE_LADDER ) ) {
 		return false;
-	}
-	else
-	{
+	} else   {
 		return true;
 	}
 }
 
-static int AAS_OptimizeFace(optimized_t* optimized, int facenum)
-{
+static int AAS_OptimizeFace( optimized_t* optimized, int facenum ) {
 	int i, edgenum, optedgenum, optfacenum;
 	aas_face_t* face, * optface;
 
-	face = &aasworld->faces[abs(facenum)];
-	if (!AAS_KeepFace(face))
-	{
+	face = &aasworld->faces[ abs( facenum ) ];
+	if ( !AAS_KeepFace( face ) ) {
 		return 0;
 	}
 
-	optfacenum = optimized->faceoptimizeindex[abs(facenum)];
-	if (optfacenum)
-	{
+	optfacenum = optimized->faceoptimizeindex[ abs( facenum ) ];
+	if ( optfacenum ) {
 		//keep the face side sign
-		if (facenum > 0)
-		{
+		if ( facenum > 0 ) {
 			return optfacenum;
-		}
-		else
-		{
+		} else   {
 			return -optfacenum;
 		}
 	}	//end if
 
-	optface = &optimized->faces[optimized->numfaces];
-	Com_Memcpy(optface, face, sizeof(aas_face_t));
+	optface = &optimized->faces[ optimized->numfaces ];
+	Com_Memcpy( optface, face, sizeof ( aas_face_t ) );
 
 	optface->numedges = 0;
 	optface->firstedge = optimized->edgeindexsize;
-	for (i = 0; i < face->numedges; i++)
-	{
-		edgenum = aasworld->edgeindex[face->firstedge + i];
-		optedgenum = AAS_OptimizeEdge(optimized, edgenum);
-		if (optedgenum)
-		{
-			optimized->edgeindex[optface->firstedge + optface->numedges] = optedgenum;
+	for ( i = 0; i < face->numedges; i++ ) {
+		edgenum = aasworld->edgeindex[ face->firstedge + i ];
+		optedgenum = AAS_OptimizeEdge( optimized, edgenum );
+		if ( optedgenum ) {
+			optimized->edgeindex[ optface->firstedge + optface->numedges ] = optedgenum;
 			optface->numedges++;
 			optimized->edgeindexsize++;
 		}	//end if
 	}	//end for
-	optimized->faceoptimizeindex[abs(facenum)] = optimized->numfaces;
+	optimized->faceoptimizeindex[ abs( facenum ) ] = optimized->numfaces;
 	optfacenum = optimized->numfaces;
 	optimized->numfaces++;
 	//keep the face side sign
-	if (facenum > 0)
-	{
+	if ( facenum > 0 ) {
 		return optfacenum;
-	}
-	else
-	{
+	} else   {
 		return -optfacenum;
 	}
 }
 
-static void AAS_OptimizeArea(optimized_t* optimized, int areanum)
-{
-	aas_area_t* area = &aasworld->areas[areanum];
-	aas_area_t* optarea = &optimized->areas[areanum];
-	Com_Memcpy(optarea, area, sizeof(aas_area_t));
+static void AAS_OptimizeArea( optimized_t* optimized, int areanum ) {
+	aas_area_t* area = &aasworld->areas[ areanum ];
+	aas_area_t* optarea = &optimized->areas[ areanum ];
+	Com_Memcpy( optarea, area, sizeof ( aas_area_t ) );
 
 	optarea->numfaces = 0;
 	optarea->firstface = optimized->faceindexsize;
-	for (int i = 0; i < area->numfaces; i++)
-	{
-		int facenum = aasworld->faceindex[area->firstface + i];
-		int optfacenum = AAS_OptimizeFace(optimized, facenum);
-		if (optfacenum)
-		{
-			optimized->faceindex[optarea->firstface + optarea->numfaces] = optfacenum;
+	for ( int i = 0; i < area->numfaces; i++ ) {
+		int facenum = aasworld->faceindex[ area->firstface + i ];
+		int optfacenum = AAS_OptimizeFace( optimized, facenum );
+		if ( optfacenum ) {
+			optimized->faceindex[ optarea->firstface + optarea->numfaces ] = optfacenum;
 			optarea->numfaces++;
 			optimized->faceindexsize++;
 		}
 	}
 }
 
-static void AAS_OptimizeAlloc(optimized_t* optimized)
-{
-	optimized->vertexes = (aas_vertex_t*)Mem_ClearedAlloc(aasworld->numvertexes * sizeof(aas_vertex_t));
+static void AAS_OptimizeAlloc( optimized_t* optimized ) {
+	optimized->vertexes = ( aas_vertex_t* )Mem_ClearedAlloc( aasworld->numvertexes * sizeof ( aas_vertex_t ) );
 	optimized->numvertexes = 0;
-	optimized->edges = (aas_edge_t*)Mem_ClearedAlloc(aasworld->numedges * sizeof(aas_edge_t));
+	optimized->edges = ( aas_edge_t* )Mem_ClearedAlloc( aasworld->numedges * sizeof ( aas_edge_t ) );
 	optimized->numedges = 1;//edge zero is a dummy
-	optimized->edgeindex = (aas_edgeindex_t*)Mem_ClearedAlloc(aasworld->edgeindexsize * sizeof(aas_edgeindex_t));
+	optimized->edgeindex = ( aas_edgeindex_t* )Mem_ClearedAlloc( aasworld->edgeindexsize * sizeof ( aas_edgeindex_t ) );
 	optimized->edgeindexsize = 0;
-	optimized->faces = (aas_face_t*)Mem_ClearedAlloc(aasworld->numfaces * sizeof(aas_face_t));
+	optimized->faces = ( aas_face_t* )Mem_ClearedAlloc( aasworld->numfaces * sizeof ( aas_face_t ) );
 	optimized->numfaces = 1;//face zero is a dummy
-	optimized->faceindex = (aas_faceindex_t*)Mem_ClearedAlloc(aasworld->faceindexsize * sizeof(aas_faceindex_t));
+	optimized->faceindex = ( aas_faceindex_t* )Mem_ClearedAlloc( aasworld->faceindexsize * sizeof ( aas_faceindex_t ) );
 	optimized->faceindexsize = 0;
-	optimized->areas = (aas_area_t*)Mem_ClearedAlloc(aasworld->numareas * sizeof(aas_area_t));
+	optimized->areas = ( aas_area_t* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( aas_area_t ) );
 	optimized->numareas = aasworld->numareas;
 
-	optimized->vertexoptimizeindex = (int*)Mem_ClearedAlloc(aasworld->numvertexes * sizeof(int));
-	optimized->edgeoptimizeindex = (int*)Mem_ClearedAlloc(aasworld->numedges * sizeof(int));
-	optimized->faceoptimizeindex = (int*)Mem_ClearedAlloc(aasworld->numfaces * sizeof(int));
+	optimized->vertexoptimizeindex = ( int* )Mem_ClearedAlloc( aasworld->numvertexes * sizeof ( int ) );
+	optimized->edgeoptimizeindex = ( int* )Mem_ClearedAlloc( aasworld->numedges * sizeof ( int ) );
+	optimized->faceoptimizeindex = ( int* )Mem_ClearedAlloc( aasworld->numfaces * sizeof ( int ) );
 }
 
-static void AAS_OptimizeStore(optimized_t* optimized)
-{
+static void AAS_OptimizeStore( optimized_t* optimized ) {
 	//store the optimized vertexes
-	if (aasworld->vertexes)
-	{
-		Mem_Free(aasworld->vertexes);
+	if ( aasworld->vertexes ) {
+		Mem_Free( aasworld->vertexes );
 	}
 	aasworld->vertexes = optimized->vertexes;
 	aasworld->numvertexes = optimized->numvertexes;
 	//store the optimized edges
-	if (aasworld->edges)
-	{
-		Mem_Free(aasworld->edges);
+	if ( aasworld->edges ) {
+		Mem_Free( aasworld->edges );
 	}
 	aasworld->edges = optimized->edges;
 	aasworld->numedges = optimized->numedges;
 	//store the optimized edge index
-	if (aasworld->edgeindex)
-	{
-		Mem_Free(aasworld->edgeindex);
+	if ( aasworld->edgeindex ) {
+		Mem_Free( aasworld->edgeindex );
 	}
 	aasworld->edgeindex = optimized->edgeindex;
 	aasworld->edgeindexsize = optimized->edgeindexsize;
 	//store the optimized faces
-	if (aasworld->faces)
-	{
-		Mem_Free(aasworld->faces);
+	if ( aasworld->faces ) {
+		Mem_Free( aasworld->faces );
 	}
 	aasworld->faces = optimized->faces;
 	aasworld->numfaces = optimized->numfaces;
 	//store the optimized face index
-	if (aasworld->faceindex)
-	{
-		Mem_Free(aasworld->faceindex);
+	if ( aasworld->faceindex ) {
+		Mem_Free( aasworld->faceindex );
 	}
 	aasworld->faceindex = optimized->faceindex;
 	aasworld->faceindexsize = optimized->faceindexsize;
 	//store the optimized areas
-	if (aasworld->areas)
-	{
-		Mem_Free(aasworld->areas);
+	if ( aasworld->areas ) {
+		Mem_Free( aasworld->areas );
 	}
 	aasworld->areas = optimized->areas;
 	aasworld->numareas = optimized->numareas;
 	//free optimize indexes
-	Mem_Free(optimized->vertexoptimizeindex);
-	Mem_Free(optimized->edgeoptimizeindex);
-	Mem_Free(optimized->faceoptimizeindex);
+	Mem_Free( optimized->vertexoptimizeindex );
+	Mem_Free( optimized->edgeoptimizeindex );
+	Mem_Free( optimized->faceoptimizeindex );
 }
 
-void AAS_Optimize()
-{
+void AAS_Optimize() {
 	optimized_t optimized;
-	AAS_OptimizeAlloc(&optimized);
-	for (int i = 1; i < aasworld->numareas; i++)
-	{
-		AAS_OptimizeArea(&optimized, i);
+	AAS_OptimizeAlloc( &optimized );
+	for ( int i = 1; i < aasworld->numareas; i++ ) {
+		AAS_OptimizeArea( &optimized, i );
 	}
 	//reset the reachability face pointers
-	for (int i = 0; i < aasworld->reachabilitysize; i++)
-	{
+	for ( int i = 0; i < aasworld->reachabilitysize; i++ ) {
 		//NOTE: for TRAVEL_ELEVATOR the facenum is the model number of
 		//		the elevator
-		if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_ELEVATOR)
-		{
+		if ( ( aasworld->reachability[ i ].traveltype & TRAVELTYPE_MASK ) == TRAVEL_ELEVATOR ) {
 			continue;
 		}
 		//NOTE: for TRAVEL_JUMPPAD the facenum is the Z velocity and the edgenum is the hor velocity
-		if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_JUMPPAD)
-		{
+		if ( ( aasworld->reachability[ i ].traveltype & TRAVELTYPE_MASK ) == TRAVEL_JUMPPAD ) {
 			continue;
 		}
 		//NOTE: for TRAVEL_FUNCBOB the facenum and edgenum contain other coded information
-		if ((aasworld->reachability[i].traveltype & TRAVELTYPE_MASK) == TRAVEL_FUNCBOB)
-		{
+		if ( ( aasworld->reachability[ i ].traveltype & TRAVELTYPE_MASK ) == TRAVEL_FUNCBOB ) {
 			continue;
 		}
 
-		int sign = aasworld->reachability[i].facenum;
-		aasworld->reachability[i].facenum = optimized.faceoptimizeindex[abs(aasworld->reachability[i].facenum)];
-		if (sign < 0)
-		{
-			aasworld->reachability[i].facenum = -aasworld->reachability[i].facenum;
+		int sign = aasworld->reachability[ i ].facenum;
+		aasworld->reachability[ i ].facenum = optimized.faceoptimizeindex[ abs( aasworld->reachability[ i ].facenum ) ];
+		if ( sign < 0 ) {
+			aasworld->reachability[ i ].facenum = -aasworld->reachability[ i ].facenum;
 		}
-		sign = aasworld->reachability[i].edgenum;
-		aasworld->reachability[i].edgenum = optimized.edgeoptimizeindex[abs(aasworld->reachability[i].edgenum)];
-		if (sign < 0)
-		{
-			aasworld->reachability[i].edgenum = -aasworld->reachability[i].edgenum;
+		sign = aasworld->reachability[ i ].edgenum;
+		aasworld->reachability[ i ].edgenum = optimized.edgeoptimizeindex[ abs( aasworld->reachability[ i ].edgenum ) ];
+		if ( sign < 0 ) {
+			aasworld->reachability[ i ].edgenum = -aasworld->reachability[ i ].edgenum;
 		}
 	}
 	//store the optimized AAS data into aasworld
-	AAS_OptimizeStore(&optimized);
+	AAS_OptimizeStore( &optimized );
 	//print some nice stuff :)
-	BotImport_Print(PRT_MESSAGE, "AAS data optimized.\n");
+	BotImport_Print( PRT_MESSAGE, "AAS data optimized.\n" );
 }

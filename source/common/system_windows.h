@@ -24,9 +24,9 @@ extern HINSTANCE global_hInstance;
 extern unsigned sysMsgTime;
 extern bool Minimized;
 
-void Sys_CreateConsole(const char* Title);
+void Sys_CreateConsole( const char* Title );
 void Sys_DestroyConsole();
-void Sys_SetErrorText(const char* text);
+void Sys_SetErrorText( const char* text );
 void Sys_ClearViewlog_f();
 
 #endif

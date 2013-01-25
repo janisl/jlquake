@@ -14,20 +14,20 @@
 //**
 //**************************************************************************
 
-#define GLF_0(r, n)         extern r(APIENTRY * qgl ## n) ();
-#define GLF_V0(n)           extern void(APIENTRY * qgl ## n) ();
-#define GLF_1(r, n, t1, p1) extern r(APIENTRY * qgl ## n) (t1 p1);
-#define GLF_V1(n, t1, p1)   extern void(APIENTRY * qgl ## n) (t1 p1);
-#define GLF_V2(n, t1, p1, t2, p2)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2);
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) extern r(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4);
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5);
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6);
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7);
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8);
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9);
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    extern void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10);
+#define GLF_0( r, n )         extern r( APIENTRY * qgl ## n ) ( );
+#define GLF_V0( n )           extern void( APIENTRY * qgl ## n ) ( );
+#define GLF_1( r, n, t1, p1 ) extern r( APIENTRY * qgl ## n ) ( t1 p1 );
+#define GLF_V1( n, t1, p1 )   extern void( APIENTRY * qgl ## n ) ( t1 p1 );
+#define GLF_V2( n, t1, p1, t2, p2 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2 );
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) extern r( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3 );
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3 );
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4 );
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5 );
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6 );
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7 );
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8 );
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9 );
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    extern void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10 );
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -46,26 +46,26 @@
 
 void QGL_Init();
 void QGL_Shutdown();
-void QGL_EnableLogging(bool Enable);
-void QGL_LogComment(const char* Comment);
+void QGL_EnableLogging( bool Enable );
+void QGL_LogComment( const char* Comment );
 
-extern void (APIENTRY* qglMultiTexCoord2fARB)(GLenum texture, GLfloat s, GLfloat t);
-extern void (APIENTRY* qglActiveTextureARB)(GLenum texture);
-extern void (APIENTRY* qglClientActiveTextureARB)(GLenum texture);
+extern void ( APIENTRY* qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+extern void ( APIENTRY* qglActiveTextureARB )( GLenum texture );
+extern void ( APIENTRY* qglClientActiveTextureARB )( GLenum texture );
 
-extern void (APIENTRY* qglLockArraysEXT)(GLint, GLint);
-extern void (APIENTRY* qglUnlockArraysEXT)(void);
+extern void ( APIENTRY* qglLockArraysEXT )( GLint, GLint );
+extern void ( APIENTRY* qglUnlockArraysEXT )( void );
 
-extern void (APIENTRY* qglPointParameterfEXT)(GLenum param, GLfloat value);
-extern void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
+extern void ( APIENTRY* qglPointParameterfEXT )( GLenum param, GLfloat value );
+extern void ( APIENTRY* qglPointParameterfvEXT )( GLenum param, const GLfloat* value );
 
-extern void (APIENTRY* qglPNTrianglesiATI)(GLenum pname, GLint param);
-extern void (APIENTRY* qglPNTrianglesfATI)(GLenum pname, GLfloat param);
+extern void ( APIENTRY* qglPNTrianglesiATI )( GLenum pname, GLint param );
+extern void ( APIENTRY* qglPNTrianglesfATI )( GLenum pname, GLfloat param );
 
-#if defined(_WIN32)
-extern BOOL (WINAPI* qwglSwapIntervalEXT)(int interval);
+#if defined( _WIN32 )
+extern BOOL ( WINAPI* qwglSwapIntervalEXT )( int interval );
 #else
-extern int (* qglXSwapIntervalSGI)(int interval);
+extern int ( * qglXSwapIntervalSGI )( int interval );
 #endif
 
 // S3TC compression constants
@@ -129,8 +129,8 @@ extern int (* qglXSwapIntervalSGI)(int interval);
 #define GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI      0x87F7
 #define GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI   0x87F8
 
-typedef void (APIENTRY * PFNGLPNTRIANGLESIATIPROC)(GLenum pname, GLint param);
-typedef void (APIENTRY * PFNGLPNTRIANGLESFATIPROC)(GLenum pname, GLfloat param);
+typedef void ( APIENTRY * PFNGLPNTRIANGLESIATIPROC )( GLenum pname, GLint param );
+typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat param );
 #endif
 
 #ifndef GL_CLAMP_TO_EDGE

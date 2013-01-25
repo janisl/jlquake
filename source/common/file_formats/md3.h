@@ -21,7 +21,7 @@
 #ifndef _MD3FILE_H
 #define _MD3FILE_H
 
-#define MD3_IDENT           (('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MD3_IDENT           ( ( '3' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MD3_VERSION         15
 
 // limits
@@ -29,21 +29,19 @@
 #define MD3_MAX_SURFACES    32		// per model
 
 // vertex scales
-#define MD3_XYZ_SCALE       (1.0 / 64)
+#define MD3_XYZ_SCALE       ( 1.0 / 64 )
 
-struct md3Frame_t
-{
-	vec3_t bounds[2];
+struct md3Frame_t {
+	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
-	char name[16];
+	char name[ 16 ];
 };
 
-struct md3Tag_t
-{
-	char name[MAX_QPATH];			// tag name
+struct md3Tag_t {
+	char name[ MAX_QPATH ];				// tag name
 	vec3_t origin;
-	vec3_t axis[3];
+	vec3_t axis[ 3 ];
 };
 
 /*
@@ -56,11 +54,10 @@ struct md3Tag_t
 ** st				sizeof( md3St_t ) * numVerts
 ** XyzNormals		sizeof( md3XyzNormal_t ) * numVerts * numFrames
 */
-struct md3Surface_t
-{
+struct md3Surface_t {
 	int ident;						//
 
-	char name[MAX_QPATH];			// polyset name
+	char name[ MAX_QPATH ];				// polyset name
 
 	int flags;
 	int numFrames;					// all surfaces in a model should have the same
@@ -78,34 +75,29 @@ struct md3Surface_t
 	int ofsEnd;						// next surface follows
 };
 
-struct md3Shader_t
-{
-	char name[MAX_QPATH];
+struct md3Shader_t {
+	char name[ MAX_QPATH ];
 	int shaderIndex;			// for in-game use
 };
 
-struct md3Triangle_t
-{
-	int indexes[3];
+struct md3Triangle_t {
+	int indexes[ 3 ];
 };
 
-struct md3St_t
-{
-	float st[2];
+struct md3St_t {
+	float st[ 2 ];
 };
 
-struct md3XyzNormal_t
-{
-	short xyz[3];
+struct md3XyzNormal_t {
+	short xyz[ 3 ];
 	short normal;
 };
 
-struct md3Header_t
-{
+struct md3Header_t {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH];			// model name
+	char name[ MAX_QPATH ];				// model name
 
 	int flags;
 

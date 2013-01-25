@@ -22,47 +22,39 @@
 
 static Cvar* cl_polyblend;
 
-void V_Init()
-{
-	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
-	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
+void V_Init() {
+	crosshair = Cvar_Get( "crosshair", "0", CVAR_ARCHIVE );
+	cl_polyblend = Cvar_Get( "cl_polyblend", "1", 0 );
 
-	if (GGameType & GAME_QuakeHexen)
-	{
+	if ( GGameType & GAME_QuakeHexen ) {
 		VQH_Init();
 	}
-	if (GGameType & GAME_Quake2)
-	{
+	if ( GGameType & GAME_Quake2 ) {
 		VQ2_Init();
 	}
 }
 
-float CalcFov(float fovX, float width, float height)
-{
-	if (fovX < 1 || fovX > 179)
-	{
-		common->Error("Bad fov: %f", fovX);
+float CalcFov( float fovX, float width, float height ) {
+	if ( fovX < 1 || fovX > 179 ) {
+		common->Error( "Bad fov: %f", fovX );
 	}
 
-	float x = width / tan(DEG2RAD(fovX * 0.5f));
+	float x = width / tan( DEG2RAD( fovX * 0.5f ) );
 
-	float a = atan(height / x);
+	float a = atan( height / x );
 
-	a = RAD2DEG(a * 2);
+	a = RAD2DEG( a * 2 );
 
 	return a;
 }
 
-void R_PolyBlend(refdef_t* fd, float* blendColour)
-{
-	if (!cl_polyblend->value)
-	{
+void R_PolyBlend( refdef_t* fd, float* blendColour ) {
+	if ( !cl_polyblend->value ) {
 		return;
 	}
-	if (!blendColour[3])
-	{
+	if ( !blendColour[ 3 ] ) {
 		return;
 	}
 
-	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, blendColour[0], blendColour[1], blendColour[2], blendColour[3]);
+	R_Draw2DQuad( fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, blendColour[ 0 ], blendColour[ 1 ], blendColour[ 2 ], blendColour[ 3 ] );
 }

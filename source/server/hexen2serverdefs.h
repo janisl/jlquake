@@ -17,22 +17,19 @@
 #ifndef __HEXEN2SERVERDEFS_H__
 #define __HEXEN2SERVERDEFS_H__
 
-struct hwclient_frame_t
-{
+struct hwclient_frame_t {
 	double senttime;
 	float ping_time;
 	hwpacket_entities_t entities;
 };
 
-struct h2client_frames_t
-{
-	h2entity_state_t states[MAX_CLIENT_STATES_H2];
+struct h2client_frames_t {
+	h2entity_state_t states[ MAX_CLIENT_STATES_H2 ];
 	int count;
 };
 
-struct h2client_state2_t
-{
-	h2client_frames_t frames[H2MAX_FRAMES + 2];	// 0 = base, 1-max = proposed, max+1 = too late
+struct h2client_state2_t {
+	h2client_frames_t frames[ H2MAX_FRAMES + 2 ];	// 0 = base, 1-max = proposed, max+1 = too late
 };
 
 // Built-in Spawn Flags

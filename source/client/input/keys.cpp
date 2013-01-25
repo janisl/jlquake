@@ -28,18 +28,17 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 
-struct keyname_t
-{
+struct keyname_t {
 	const char* name;
 	int keynum;
 };
 
-qkey_t keys[MAX_KEYS];
+qkey_t keys[ MAX_KEYS ];
 
 bool key_overstrikeMode;
 
-static bool consolekeys[256];	// if true, can't be rebound while in console
-static bool menubound[256];	// if true, can't be rebound while in menu
+static bool consolekeys[ 256 ];		// if true, can't be rebound while in console
+static bool menubound[ 256 ];	// if true, can't be rebound while in menu
 
 static bool consoleButtonWasPressed = false;
 
@@ -777,24 +776,20 @@ static keyname_t keynames_i[] =	//Italian
 	{NULL,0}
 };
 
-bool Key_GetOverstrikeMode()
-{
+bool Key_GetOverstrikeMode() {
 	return key_overstrikeMode;
 }
 
-void Key_SetOverstrikeMode(bool state)
-{
+void Key_SetOverstrikeMode( bool state ) {
 	key_overstrikeMode = state;
 }
 
-bool Key_IsDown(int keynum)
-{
-	if (keynum == -1)
-	{
+bool Key_IsDown( int keynum ) {
+	if ( keynum == -1 ) {
 		return false;
 	}
 
-	return keys[keynum].down;
+	return keys[ keynum ].down;
 }
 
 //	Returns a key number to be used to index keys[] by looking at
@@ -802,56 +797,40 @@ bool Key_IsDown(int keynum)
 // the K_* names are matched up.
 //	0x11 will be interpreted as raw hex, which will allow new controlers
 // to be configured even if they don't have defined names.
-static int Key_StringToKeynum(const char* str)
-{
-	if (!str || !str[0])
-	{
+static int Key_StringToKeynum( const char* str ) {
+	if ( !str || !str[ 0 ] ) {
 		return -1;
 	}
-	if (!str[1])
-	{
+	if ( !str[ 1 ] ) {
 		// Always lowercase
-		return String::ToLower(str[0]);
+		return String::ToLower( str[ 0 ] );
 	}
 
 	// check for hex code
-	if (str[0] == '0' && str[1] == 'x' && String::Length(str) == 4)
-	{
-		int n1 = str[2];
-		if (String::IsDigit(n1))
-		{
+	if ( str[ 0 ] == '0' && str[ 1 ] == 'x' && String::Length( str ) == 4 ) {
+		int n1 = str[ 2 ];
+		if ( String::IsDigit( n1 ) ) {
 			n1 -= '0';
-		}
-		else if (n1 >= 'a' && n1 <= 'f')
-		{
+		} else if ( n1 >= 'a' && n1 <= 'f' )     {
 			n1 = n1 - 'a' + 10;
-		}
-		else
-		{
+		} else   {
 			n1 = 0;
 		}
 
-		int n2 = str[3];
-		if (String::IsDigit(n2))
-		{
+		int n2 = str[ 3 ];
+		if ( String::IsDigit( n2 ) ) {
 			n2 -= '0';
-		}
-		else if (n2 >= 'a' && n2 <= 'f')
-		{
+		} else if ( n2 >= 'a' && n2 <= 'f' )     {
 			n2 = n2 - 'a' + 10;
-		}
-		else
-		{
+		} else   {
 			n2 = 0;
 		}
 
 		return n1 * 16 + n2;
 	}
 
-	for (keyname_t* kn = keynames; kn->name; kn++)
-	{
-		if (!String::ICmp(str,kn->name))
-		{
+	for ( keyname_t* kn = keynames; kn->name; kn++ ) {
+		if ( !String::ICmp( str,kn->name ) ) {
 			return kn->keynum;
 		}
 	}
@@ -860,54 +839,40 @@ static int Key_StringToKeynum(const char* str)
 
 //	Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) for the
 // given keynum.
-const char* Key_KeynumToString(int keynum, bool translate)
-{
-	static char tinystr[5];
+const char* Key_KeynumToString( int keynum, bool translate ) {
+	static char tinystr[ 5 ];
 
-	if (keynum == -1)
-	{
+	if ( keynum == -1 ) {
 		return "<KEY NOT FOUND>";
 	}
 
-	if (keynum < 0 || keynum > 255)
-	{
+	if ( keynum < 0 || keynum > 255 ) {
 		return "<OUT OF RANGE>";
 	}
 
 	// check for printable ascii (don't use quote)
-	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';')
-	{
-		tinystr[0] = keynum;
-		tinystr[1] = 0;
+	if ( keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';' ) {
+		tinystr[ 0 ] = keynum;
+		tinystr[ 1 ] = 0;
 		return tinystr;
 	}
 
 	keyname_t* kn = keynames;		//init to english
-	if (translate && GGameType & (GAME_WolfSP | GAME_WolfMP | GAME_ET))
-	{
-		if (cl_language->integer - 1 == LANGUAGE_FRENCH)
-		{
+	if ( translate && GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
+		if ( cl_language->integer - 1 == LANGUAGE_FRENCH ) {
 			kn = keynames_f;	//use french
-		}
-		else if (cl_language->integer - 1 == LANGUAGE_GERMAN)
-		{
+		} else if ( cl_language->integer - 1 == LANGUAGE_GERMAN )     {
 			kn = keynames_d;	//use german
-		}
-		else if (cl_language->integer - 1 == LANGUAGE_ITALIAN)
-		{
+		} else if ( cl_language->integer - 1 == LANGUAGE_ITALIAN )     {
 			kn = keynames_i;	//use italian
-		}
-		else if (cl_language->integer - 1 == LANGUAGE_SPANISH)
-		{
+		} else if ( cl_language->integer - 1 == LANGUAGE_SPANISH )     {
 			kn = keynames_s;	//use spanish
 		}
 	}
 
 	// check for a key string
-	for (; kn->name; kn++)
-	{
-		if (keynum == kn->keynum)
-		{
+	for (; kn->name; kn++ ) {
+		if ( keynum == kn->keynum ) {
 			return kn->name;
 		}
 	}
@@ -916,54 +881,45 @@ const char* Key_KeynumToString(int keynum, bool translate)
 	int i = keynum >> 4;
 	int j = keynum & 15;
 
-	tinystr[0] = '0';
-	tinystr[1] = 'x';
-	tinystr[2] = i > 9 ? i - 10 + 'a' : i + '0';
-	tinystr[3] = j > 9 ? j - 10 + 'a' : j + '0';
-	tinystr[4] = 0;
+	tinystr[ 0 ] = '0';
+	tinystr[ 1 ] = 'x';
+	tinystr[ 2 ] = i > 9 ? i - 10 + 'a' : i + '0';
+	tinystr[ 3 ] = j > 9 ? j - 10 + 'a' : j + '0';
+	tinystr[ 4 ] = 0;
 
 	return tinystr;
 }
 
-void Key_SetBinding(int keynum, const char* binding)
-{
-	if (keynum == -1)
-	{
+void Key_SetBinding( int keynum, const char* binding ) {
+	if ( keynum == -1 ) {
 		return;
 	}
 
 	// free old bindings
-	if (keys[keynum].binding)
-	{
-		Mem_Free(keys[keynum].binding);
+	if ( keys[ keynum ].binding ) {
+		Mem_Free( keys[ keynum ].binding );
 	}
 
 	// allocate memory for new binding
-	keys[keynum].binding = __CopyString(binding);
+	keys[ keynum ].binding = __CopyString( binding );
 
 	// consider this like modifying an archived cvar, so the
 	// file write will be triggered at the next oportunity
 	cvar_modifiedFlags |= CVAR_ARCHIVE;
 }
 
-const char* Key_GetBinding(int keynum)
-{
-	if (keynum == -1)
-	{
+const char* Key_GetBinding( int keynum ) {
+	if ( keynum == -1 ) {
 		return "";
 	}
 
-	return keys[keynum].binding;
+	return keys[ keynum ].binding;
 }
 
-int Key_GetKey(const char* binding)
-{
-	if (binding)
-	{
-		for (int i = 0; i < MAX_KEYS; i++)
-		{
-			if (keys[i].binding && String::ICmp(binding, keys[i].binding) == 0)
-			{
+int Key_GetKey( const char* binding ) {
+	if ( binding ) {
+		for ( int i = 0; i < MAX_KEYS; i++ ) {
+			if ( keys[ i ].binding && String::ICmp( binding, keys[ i ].binding ) == 0 ) {
 				return i;
 			}
 		}
@@ -971,25 +927,18 @@ int Key_GetKey(const char* binding)
 	return -1;
 }
 
-void Key_GetKeysForBinding(const char* binding, int* key1, int* key2)
-{
+void Key_GetKeysForBinding( const char* binding, int* key1, int* key2 ) {
 	*key1 = -1;
 	*key2 = -1;
 
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (!keys[i].binding)
-		{
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( !keys[ i ].binding ) {
 			continue;
 		}
-		if (!String::ICmp(keys[i].binding, binding))
-		{
-			if (*key1 == -1)
-			{
+		if ( !String::ICmp( keys[ i ].binding, binding ) ) {
+			if ( *key1 == -1 ) {
 				*key1 = i;
-			}
-			else
-			{
+			} else   {
 				*key2 = i;
 				return;
 			}
@@ -997,379 +946,307 @@ void Key_GetKeysForBinding(const char* binding, int* key1, int* key2)
 	}
 }
 
-void Key_UnbindCommand(const char* command)
-{
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (!keys[i].binding)
-		{
+void Key_UnbindCommand( const char* command ) {
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( !keys[ i ].binding ) {
 			continue;
 		}
-		if (!String::ICmp(keys[i].binding, command))
-		{
-			Key_SetBinding(i, "");
+		if ( !String::ICmp( keys[ i ].binding, command ) ) {
+			Key_SetBinding( i, "" );
 		}
 	}
 }
 
-static void Key_Unbind_f()
-{
-	if (Cmd_Argc() != 2)
-	{
-		common->Printf("unbind <key> : remove commands from a key\n");
+static void Key_Unbind_f() {
+	if ( Cmd_Argc() != 2 ) {
+		common->Printf( "unbind <key> : remove commands from a key\n" );
 		return;
 	}
 
-	int b = Key_StringToKeynum(Cmd_Argv(1));
-	if (b == -1)
-	{
-		common->Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+	int b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+	if ( b == -1 ) {
+		common->Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
 	}
 
-	Key_SetBinding(b, "");
+	Key_SetBinding( b, "" );
 }
 
-static void Key_Unbindall_f()
-{
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (keys[i].binding)
-		{
-			Key_SetBinding(i, "");
+static void Key_Unbindall_f() {
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( keys[ i ].binding ) {
+			Key_SetBinding( i, "" );
 		}
 	}
 }
 
-static void Key_Bind_f()
-{
+static void Key_Bind_f() {
 	int c = Cmd_Argc();
 
-	if (c < 2)
-	{
-		common->Printf("bind <key> [command] : attach a command to a key\n");
+	if ( c < 2 ) {
+		common->Printf( "bind <key> [command] : attach a command to a key\n" );
 		return;
 	}
-	int b = Key_StringToKeynum(Cmd_Argv(1));
-	if (b == -1)
-	{
-		common->Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
+	int b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+	if ( b == -1 ) {
+		common->Printf( "\"%s\" isn't a valid key\n", Cmd_Argv( 1 ) );
 		return;
 	}
 
-	if (c == 2)
-	{
-		if (keys[b].binding)
-		{
-			common->Printf("\"%s\" = \"%s\"\n", Cmd_Argv(1), keys[b].binding);
-		}
-		else
-		{
-			common->Printf("\"%s\" is not bound\n", Cmd_Argv(1));
+	if ( c == 2 ) {
+		if ( keys[ b ].binding ) {
+			common->Printf( "\"%s\" = \"%s\"\n", Cmd_Argv( 1 ), keys[ b ].binding );
+		} else   {
+			common->Printf( "\"%s\" is not bound\n", Cmd_Argv( 1 ) );
 		}
 		return;
 	}
 
 	// copy the rest of the command line
-	char cmd[1024];
-	cmd[0] = 0;		// start out with a null string
-	for (int i = 2; i < c; i++)
-	{
-		String::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
-		if (i != (c - 1))
-		{
-			String::Cat(cmd, sizeof(cmd), " ");
+	char cmd[ 1024 ];
+	cmd[ 0 ] = 0;		// start out with a null string
+	for ( int i = 2; i < c; i++ ) {
+		String::Cat( cmd, sizeof ( cmd ), Cmd_Argv( i ) );
+		if ( i != ( c - 1 ) ) {
+			String::Cat( cmd, sizeof ( cmd ), " " );
 		}
 	}
 
-	Key_SetBinding(b, cmd);
+	Key_SetBinding( b, cmd );
 }
 
-static void Key_Bindlist_f()
-{
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (keys[i].binding && keys[i].binding[0])
-		{
-			common->Printf("%s \"%s\"\n", Key_KeynumToString(i, false), keys[i].binding);
+static void Key_Bindlist_f() {
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] ) {
+			common->Printf( "%s \"%s\"\n", Key_KeynumToString( i, false ), keys[ i ].binding );
 		}
 	}
 }
 
-void CL_InitKeyCommands()
-{
+void CL_InitKeyCommands() {
 	//
 	// init ascii characters in console mode
 	//
-	for (int i = 32; i < 128; i++)
-	{
-		consolekeys[i] = true;
+	for ( int i = 32; i < 128; i++ ) {
+		consolekeys[ i ] = true;
 	}
-	consolekeys[K_ENTER] = true;
-	consolekeys[K_KP_ENTER] = true;
-	consolekeys[K_TAB] = true;
-	consolekeys[K_LEFTARROW] = true;
-	consolekeys[K_KP_LEFTARROW] = true;
-	consolekeys[K_RIGHTARROW] = true;
-	consolekeys[K_KP_RIGHTARROW] = true;
-	consolekeys[K_UPARROW] = true;
-	consolekeys[K_KP_UPARROW] = true;
-	consolekeys[K_DOWNARROW] = true;
-	consolekeys[K_KP_DOWNARROW] = true;
-	consolekeys[K_BACKSPACE] = true;
-	consolekeys[K_HOME] = true;
-	consolekeys[K_KP_HOME] = true;
-	consolekeys[K_END] = true;
-	consolekeys[K_KP_END] = true;
-	consolekeys[K_PGUP] = true;
-	consolekeys[K_KP_PGUP] = true;
-	consolekeys[K_PGDN] = true;
-	consolekeys[K_KP_PGDN] = true;
-	consolekeys[K_INS] = true;
-	consolekeys[K_KP_INS] = true;
-	consolekeys[K_DEL] = true;
-	consolekeys[K_KP_DEL] = true;
-	consolekeys[K_KP_SLASH] = true;
-	consolekeys[K_KP_PLUS] = true;
-	consolekeys[K_KP_MINUS] = true;
-	consolekeys[K_KP_5] = true;
-	consolekeys[K_SHIFT] = true;
-	consolekeys[K_MWHEELUP] = true;
-	consolekeys[K_MWHEELDOWN] = true;
-	consolekeys['`'] = false;
-	consolekeys['~'] = false;
+	consolekeys[ K_ENTER ] = true;
+	consolekeys[ K_KP_ENTER ] = true;
+	consolekeys[ K_TAB ] = true;
+	consolekeys[ K_LEFTARROW ] = true;
+	consolekeys[ K_KP_LEFTARROW ] = true;
+	consolekeys[ K_RIGHTARROW ] = true;
+	consolekeys[ K_KP_RIGHTARROW ] = true;
+	consolekeys[ K_UPARROW ] = true;
+	consolekeys[ K_KP_UPARROW ] = true;
+	consolekeys[ K_DOWNARROW ] = true;
+	consolekeys[ K_KP_DOWNARROW ] = true;
+	consolekeys[ K_BACKSPACE ] = true;
+	consolekeys[ K_HOME ] = true;
+	consolekeys[ K_KP_HOME ] = true;
+	consolekeys[ K_END ] = true;
+	consolekeys[ K_KP_END ] = true;
+	consolekeys[ K_PGUP ] = true;
+	consolekeys[ K_KP_PGUP ] = true;
+	consolekeys[ K_PGDN ] = true;
+	consolekeys[ K_KP_PGDN ] = true;
+	consolekeys[ K_INS ] = true;
+	consolekeys[ K_KP_INS ] = true;
+	consolekeys[ K_DEL ] = true;
+	consolekeys[ K_KP_DEL ] = true;
+	consolekeys[ K_KP_SLASH ] = true;
+	consolekeys[ K_KP_PLUS ] = true;
+	consolekeys[ K_KP_MINUS ] = true;
+	consolekeys[ K_KP_5 ] = true;
+	consolekeys[ K_SHIFT ] = true;
+	consolekeys[ K_MWHEELUP ] = true;
+	consolekeys[ K_MWHEELDOWN ] = true;
+	consolekeys[ '`' ] = false;
+	consolekeys[ '~' ] = false;
 
-	menubound[K_ESCAPE] = true;
-	for (int i = 0; i < 12; i++)
-	{
-		menubound[K_F1 + i] = true;
+	menubound[ K_ESCAPE ] = true;
+	for ( int i = 0; i < 12; i++ ) {
+		menubound[ K_F1 + i ] = true;
 	}
 
 	// register our functions
-	Cmd_AddCommand("bind", Key_Bind_f);
-	Cmd_AddCommand("unbind", Key_Unbind_f);
-	Cmd_AddCommand("unbindall", Key_Unbindall_f);
-	Cmd_AddCommand("bindlist", Key_Bindlist_f);
+	Cmd_AddCommand( "bind", Key_Bind_f );
+	Cmd_AddCommand( "unbind", Key_Unbind_f );
+	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
+	Cmd_AddCommand( "bindlist", Key_Bindlist_f );
 }
 
 //	Writes lines containing "bind key value"
-void Key_WriteBindings(fileHandle_t f)
-{
-	FS_Printf(f, "unbindall\n");
+void Key_WriteBindings( fileHandle_t f ) {
+	FS_Printf( f, "unbindall\n" );
 
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (keys[i].binding && keys[i].binding[0])
-		{
-			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i, false), keys[i].binding);
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] ) {
+			FS_Printf( f, "bind %s \"%s\"\n", Key_KeynumToString( i, false ), keys[ i ].binding );
 		}
 	}
 }
 
-static void CL_AddKeyDownCommands(int key, unsigned time)
-{
-	char* kb = keys[key].binding;
-	if (!kb)
-	{
-		if (key >= 200)
-		{
-			common->Printf("%s is unbound, use controls menu to set.\n",
-				Key_KeynumToString(key, true));
+static void CL_AddKeyDownCommands( int key, unsigned time ) {
+	char* kb = keys[ key ].binding;
+	if ( !kb ) {
+		if ( key >= 200 ) {
+			common->Printf( "%s is unbound, use controls menu to set.\n",
+				Key_KeynumToString( key, true ) );
 		}
 		return;
 	}
 
-	if (kb[0] == '+')
-	{
-		char button[1024];
+	if ( kb[ 0 ] == '+' ) {
+		char button[ 1024 ];
 		char* buttonPtr = button;
-		for (int i = 0;; i++)
-		{
-			if (kb[i] == ';' || !kb[i])
-			{
+		for ( int i = 0;; i++ ) {
+			if ( kb[ i ] == ';' || !kb[ i ] ) {
 				*buttonPtr = '\0';
-				if (button[0] == '+')
-				{
+				if ( button[ 0 ] == '+' ) {
 					// button commands add keynum and time as parms so that multiple
 					// sources can be discriminated and subframe corrected
-					char cmd[1024];
-					String::Sprintf(cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
-					Cbuf_AddText(cmd);
-				}
-				else
-				{
+					char cmd[ 1024 ];
+					String::Sprintf( cmd, sizeof ( cmd ), "%s %i %i\n", button, key, time );
+					Cbuf_AddText( cmd );
+				} else   {
 					// down-only command
-					Cbuf_AddText(button);
-					Cbuf_AddText("\n");
+					Cbuf_AddText( button );
+					Cbuf_AddText( "\n" );
 				}
 				buttonPtr = button;
-				while ((kb[i] <= ' ' || kb[i] == ';') && kb[i] != 0)
-				{
+				while ( ( kb[ i ] <= ' ' || kb[ i ] == ';' ) && kb[ i ] != 0 ) {
 					i++;
 				}
 			}
-			*buttonPtr++ = kb[i];
-			if (!kb[i])
-			{
+			*buttonPtr++ = kb[ i ];
+			if ( !kb[ i ] ) {
 				break;
 			}
 		}
-	}
-	else
-	{
+	} else   {
 		// down-only command
-		Cbuf_AddText(kb);
-		Cbuf_AddText("\n");
+		Cbuf_AddText( kb );
+		Cbuf_AddText( "\n" );
 	}
 }
 
-static void CL_AddKeyUpCommands(int key, unsigned time)
-{
-	char* kb = keys[key].binding;
+static void CL_AddKeyUpCommands( int key, unsigned time ) {
+	char* kb = keys[ key ].binding;
 
-	if (!kb)
-	{
+	if ( !kb ) {
 		return;
 	}
 	bool keyevent = false;
-	char button[1024];
+	char button[ 1024 ];
 	char* buttonPtr = button;
-	for (int i = 0;; i++)
-	{
-		if (kb[i] == ';' || !kb[i])
-		{
+	for ( int i = 0;; i++ ) {
+		if ( kb[ i ] == ';' || !kb[ i ] ) {
 			*buttonPtr = '\0';
-			if (button[0] == '+')
-			{
+			if ( button[ 0 ] == '+' ) {
 				// button commands add keynum and time as parms so that multiple
 				// sources can be discriminated and subframe corrected
-				char cmd[1024];
-				String::Sprintf(cmd, sizeof(cmd), "-%s %i %i\n", button + 1, key, time);
-				Cbuf_AddText(cmd);
+				char cmd[ 1024 ];
+				String::Sprintf( cmd, sizeof ( cmd ), "-%s %i %i\n", button + 1, key, time );
+				Cbuf_AddText( cmd );
 				keyevent = true;
-			}
-			else if (keyevent)
-			{
+			} else if ( keyevent )     {
 				// down-only command
-				Cbuf_AddText(button);
-				Cbuf_AddText("\n");
+				Cbuf_AddText( button );
+				Cbuf_AddText( "\n" );
 			}
 			buttonPtr = button;
-			while ((kb[i] <= ' ' || kb[i] == ';') && kb[i] != 0)
-			{
+			while ( ( kb[ i ] <= ' ' || kb[ i ] == ';' ) && kb[ i ] != 0 ) {
 				i++;
 			}
 		}
-		*buttonPtr++ = kb[i];
-		if (!kb[i])
-		{
+		*buttonPtr++ = kb[ i ];
+		if ( !kb[ i ] ) {
 			break;
 		}
 	}
 }
 
 //	Called by the system for both key up and key down events
-void CL_KeyEvent(int key, bool down, unsigned time)
-{
-	if (!key)
-	{
+void CL_KeyEvent( int key, bool down, unsigned time ) {
+	if ( !key ) {
 		return;
 	}
 
 	// update auto-repeat status and BUTTON_ANY status
-	keys[key].down = down;
+	keys[ key ].down = down;
 
-	if (down)
-	{
-		keys[key].repeats++;
-		if (keys[key].repeats == 1)
-		{
+	if ( down ) {
+		keys[ key ].repeats++;
+		if ( keys[ key ].repeats == 1 ) {
 			anykeydown++;
 		}
-	}
-	else
-	{
-		keys[key].repeats = 0;
+	} else   {
+		keys[ key ].repeats = 0;
 		anykeydown--;
-		if (anykeydown < 0)
-		{
+		if ( anykeydown < 0 ) {
 			anykeydown = 0;
 		}
 	}
 
 #ifdef __linux__
-	if (key == K_ENTER)
-	{
-		if (down)
-		{
-			if (keys[K_ALT].down)
-			{
+	if ( key == K_ENTER ) {
+		if ( down ) {
+			if ( keys[ K_ALT ].down ) {
 				Key_ClearStates();
-				if (Cvar_VariableValue("r_fullscreen") == 0)
-				{
-					common->Printf("Switching to fullscreen rendering\n");
-					Cvar_Set("r_fullscreen", "1");
+				if ( Cvar_VariableValue( "r_fullscreen" ) == 0 ) {
+					common->Printf( "Switching to fullscreen rendering\n" );
+					Cvar_Set( "r_fullscreen", "1" );
+				} else   {
+					common->Printf( "Switching to windowed rendering\n" );
+					Cvar_Set( "r_fullscreen", "0" );
 				}
-				else
-				{
-					common->Printf("Switching to windowed rendering\n");
-					Cvar_Set("r_fullscreen", "0");
-				}
-				Cbuf_ExecuteText(EXEC_APPEND, "vid_restart\n");
+				Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 				return;
 			}
 		}
 	}
 #endif
 
-	if (GGameType & GAME_WolfMP)
-	{
+	if ( GGameType & GAME_WolfMP ) {
 		// are we waiting to clear stats and move to briefing screen
-		if (down && clwm_waitForFire && clwm_waitForFire->integer)			//DAJ BUG in dedicated clwm_waitForFire don't exist
-		{
-			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the consol
-			{
+		if ( down && clwm_waitForFire && clwm_waitForFire->integer ) {			//DAJ BUG in dedicated clwm_waitForFire don't exist
+			if ( in_keyCatchers & KEYCATCH_CONSOLE ) {		// get rid of the consol
 				Con_ToggleConsole_f();
 			}
 			// clear all input controls
 			CL_ClearKeys();
 			// allow only attack command input
-			char* kb = keys[key].binding;
-			if (!String::ICmp(kb, "+attack"))
-			{
+			char* kb = keys[ key ].binding;
+			if ( !String::ICmp( kb, "+attack" ) ) {
 				// clear the stats out, ignore the keypress
-				Cvar_Set("g_missionStats", "xx");			// just remove the stats, but still wait until we're done loading, and player has hit fire to begin playing
-				Cvar_Set("clwm_waitForFire", "0");
+				Cvar_Set( "g_missionStats", "xx" );				// just remove the stats, but still wait until we're done loading, and player has hit fire to begin playing
+				Cvar_Set( "clwm_waitForFire", "0" );
 			}
 			return;		// no buttons while waiting
 		}
 
 		// are we waiting to begin the level
-		if (down && clwm_missionStats && clwm_missionStats->string[0] && clwm_missionStats->string[1])		//DAJ BUG in dedicated clwm_missionStats don't exist
-		{
-			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the consol
-			{
+		if ( down && clwm_missionStats && clwm_missionStats->string[ 0 ] && clwm_missionStats->string[ 1 ] ) {		//DAJ BUG in dedicated clwm_missionStats don't exist
+			if ( in_keyCatchers & KEYCATCH_CONSOLE ) {		// get rid of the consol
 				Con_ToggleConsole_f();
 			}
 			// clear all input controls
 			CL_ClearKeys();
 			// allow only attack command input
-			char* kb = keys[key].binding;
-			if (!String::ICmp(kb, "+attack"))
-			{
+			char* kb = keys[ key ].binding;
+			if ( !String::ICmp( kb, "+attack" ) ) {
 				// clear the stats out, ignore the keypress
-				Cvar_Set("com_expectedhunkusage", "-1");
-				Cvar_Set("g_missionStats", "0");
+				Cvar_Set( "com_expectedhunkusage", "-1" );
+				Cvar_Set( "g_missionStats", "0" );
 			}
 			return;		// no buttons while waiting
 		}
 	}
 
 	// console key is hardcoded, so the user can never unbind it
-	if (key == '`' || key == '~')
-	{
-		if (!down)
-		{
+	if ( key == '`' || key == '~' ) {
+		if ( !down ) {
 			return;
 		}
 		Con_ToggleConsole_f();
@@ -1377,111 +1254,87 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 		// the console key should never be used as a char
 		consoleButtonWasPressed = true;
 		return;
-	}
-	else
-	{
+	} else   {
 		consoleButtonWasPressed = false;
 	}
 
-	if (GGameType & (GAME_WolfSP | GAME_ET) && cl.wa_cameraMode)
-	{
-		if (!(in_keyCatchers & (KEYCATCH_UI | KEYCATCH_CONSOLE)))			// let menu/console handle keys if necessary
-		{
+	if ( GGameType & ( GAME_WolfSP | GAME_ET ) && cl.wa_cameraMode ) {
+		if ( !( in_keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) ) ) {			// let menu/console handle keys if necessary
 			// in cutscenes we need to handle keys specially (pausing not allowed in camera mode)
-			if ((key == K_ESCAPE ||
-				 key == K_SPACE ||
-				 key == K_ENTER) && down)
-			{
-				CL_AddReliableCommand("cameraInterrupt");
+			if ( ( key == K_ESCAPE ||
+				   key == K_SPACE ||
+				   key == K_ENTER ) && down ) {
+				CL_AddReliableCommand( "cameraInterrupt" );
 				return;
 			}
 
 			// eat all keys
-			if (down)
-			{
+			if ( down ) {
 				return;
 			}
 		}
 
-		if ((in_keyCatchers & KEYCATCH_CONSOLE) && key == K_ESCAPE)
-		{
+		if ( ( in_keyCatchers & KEYCATCH_CONSOLE ) && key == K_ESCAPE ) {
 			// don't allow menu starting when console is down and camera running
 			return;
 		}
 	}
 
 	// any key during the attract mode will bring up the menu
-	if (GGameType & GAME_Quake2 && cl.q2_attractloop && !(in_keyCatchers & KEYCATCH_UI))
-	{
+	if ( GGameType & GAME_Quake2 && cl.q2_attractloop && !( in_keyCatchers & KEYCATCH_UI ) ) {
 		key = K_ESCAPE;
 	}
 
 	// keys can still be used for bound actions
-	if (GGameType & GAME_Tech3 && down && (key < 128 || key == K_MOUSE1) &&
-		(clc.demoplaying || cls.state == CA_CINEMATIC) && !in_keyCatchers)
-	{
-		if (!(GGameType & GAME_Quake3) || Cvar_VariableValue("com_cameraMode") == 0)
-		{
-			Cvar_Set("nextdemo","");
+	if ( GGameType & GAME_Tech3 && down && ( key < 128 || key == K_MOUSE1 ) &&
+		 ( clc.demoplaying || cls.state == CA_CINEMATIC ) && !in_keyCatchers ) {
+		if ( !( GGameType & GAME_Quake3 ) || Cvar_VariableValue( "com_cameraMode" ) == 0 ) {
+			Cvar_Set( "nextdemo","" );
 			key = K_ESCAPE;
 		}
 	}
 
 	// escape is always handled special
-	if (key == K_ESCAPE && down)
-	{
-		if (in_keyCatchers & KEYCATCH_MESSAGE)
-		{
+	if ( key == K_ESCAPE && down ) {
+		if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 			// clear message mode
-			Con_MessageKeyEvent(key);
+			Con_MessageKeyEvent( key );
 			return;
 		}
 
 		// escape always gets out of CGAME stuff
-		if (in_keyCatchers & KEYCATCH_CGAME)
-		{
+		if ( in_keyCatchers & KEYCATCH_CGAME ) {
 			in_keyCatchers &= ~KEYCATCH_CGAME;
-			if (GGameType & GAME_Tech3)
-			{
+			if ( GGameType & GAME_Tech3 ) {
 				CLT3_EventHandling();
 			}
 			return;
 		}
 
-		if (in_keyCatchers & KEYCATCH_UI)
-		{
-			UI_KeyDownEvent(key);
+		if ( in_keyCatchers & KEYCATCH_UI ) {
+			UI_KeyDownEvent( key );
 			return;
 		}
 
-		if (GGameType & GAME_Quake2 && cl.q2_frame.playerstate.stats[Q2STAT_LAYOUTS] && in_keyCatchers == 0)
-		{
+		if ( GGameType & GAME_Quake2 && cl.q2_frame.playerstate.stats[ Q2STAT_LAYOUTS ] && in_keyCatchers == 0 ) {
 			// put away help computer / inventory
-			Cbuf_AddText("cmd putaway\n");
+			Cbuf_AddText( "cmd putaway\n" );
 			return;
 		}
 
-		if (cls.state == CA_ACTIVE && !clc.demoplaying)
-		{
-			if (in_keyCatchers & KEYCATCH_CONSOLE)		// get rid of the console
-			{
+		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
+			if ( in_keyCatchers & KEYCATCH_CONSOLE ) {		// get rid of the console
 				Con_ToggleConsole_f();
-			}
-			else
-			{
+			} else   {
 				UI_SetInGameMenu();
 			}
-		}
-		else
-		{
-			if (GGameType & GAME_QuakeHexen && in_keyCatchers & KEYCATCH_CONSOLE && (!(GGameType & GAME_HexenWorld) || cls.state == CA_ACTIVE))
-			{
+		} else   {
+			if ( GGameType & GAME_QuakeHexen && in_keyCatchers & KEYCATCH_CONSOLE && ( !( GGameType & GAME_HexenWorld ) || cls.state == CA_ACTIVE ) ) {
 				Con_ToggleConsole_f();
 				return;
 			}
 
-			if (GGameType & GAME_Tech3)
-			{
+			if ( GGameType & GAME_Tech3 ) {
 				CL_Disconnect_f();
 				S_StopAllSounds();
 			}
@@ -1491,10 +1344,8 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 	}
 
 	bool onlybinds = false;
-	if (GGameType & GAME_ET)
-	{
-		switch (key)
-		{
+	if ( GGameType & GAME_ET ) {
+		switch ( key ) {
 		case K_KP_PGUP:
 		case K_KP_EQUALS:
 		case K_KP_5:
@@ -1507,8 +1358,7 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 		case K_KP_INS:
 		case K_KP_DEL:
 		case K_KP_HOME:
-			if (Sys_IsNumLockDown())
-			{
+			if ( Sys_IsNumLockDown() ) {
 				onlybinds = true;
 			}
 			break;
@@ -1521,22 +1371,16 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 	// console mode and menu mode, to keep the character from continuing
 	// an action started before a mode switch.
 	//
-	if (!down)
-	{
-		CL_AddKeyUpCommands(key, time);
+	if ( !down ) {
+		CL_AddKeyUpCommands( key, time );
 
-		if (in_keyCatchers & KEYCATCH_UI)
-		{
-			if (!(GGameType & GAME_ET) || !onlybinds || UIET_WantsBindKeys())
-			{
-				UI_KeyEvent(key, down);
+		if ( in_keyCatchers & KEYCATCH_UI ) {
+			if ( !( GGameType & GAME_ET ) || !onlybinds || UIET_WantsBindKeys() ) {
+				UI_KeyEvent( key, down );
 			}
-		}
-		else if (GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME)
-		{
-			if (!(GGameType & GAME_ET) || !onlybinds || CLET_WantsBindKeys())
-			{
-				CLT3_KeyEvent(key, down);
+		} else if ( GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME )     {
+			if ( !( GGameType & GAME_ET ) || !onlybinds || CLET_WantsBindKeys() ) {
+				CLT3_KeyEvent( key, down );
 			}
 		}
 
@@ -1546,161 +1390,114 @@ void CL_KeyEvent(int key, bool down, unsigned time)
 	//
 	// during demo playback, most keys bring up the main menu
 	//
-	if (GGameType & GAME_QuakeHexen && clc.demoplaying && consolekeys[key] && in_keyCatchers == 0)
-	{
+	if ( GGameType & GAME_QuakeHexen && clc.demoplaying && consolekeys[ key ] && in_keyCatchers == 0 ) {
 		UI_SetMainMenu();
 		return;
 	}
 
-	if (GGameType & GAME_Hexen2 && !(GGameType & GAME_HexenWorld) && cl.qh_intermission == 12)
-	{
-		Cbuf_AddText(GGameType & GAME_H2Portals ? "map keep1\n" : "map demo1\n");
+	if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_HexenWorld ) && cl.qh_intermission == 12 ) {
+		Cbuf_AddText( GGameType & GAME_H2Portals ? "map keep1\n" : "map demo1\n" );
 	}
 
 	// NERVE - SMF - if we just want to pass it along to game
 	bool bypassMenu = false;
-	if (GGameType & (GAME_WolfMP | GAME_ET) && cl_bypassMouseInput && cl_bypassMouseInput->integer)
-	{
-		if ((key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5))
-		{
-			if (cl_bypassMouseInput->integer == 1)
-			{
+	if ( GGameType & ( GAME_WolfMP | GAME_ET ) && cl_bypassMouseInput && cl_bypassMouseInput->integer ) {
+		if ( ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5 ) ) {
+			if ( cl_bypassMouseInput->integer == 1 ) {
 				bypassMenu = true;
 			}
-		}
-		else if ((in_keyCatchers & KEYCATCH_UI && !UIT3_CheckKeyExec(key)) ||
-			(GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec(key)))
-		{
+		} else if ( ( in_keyCatchers & KEYCATCH_UI && !UIT3_CheckKeyExec( key ) ) ||
+					( GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME && !CLET_CGameCheckKeyExec( key ) ) ) {
 			bypassMenu = true;
 		}
 	}
 
-	if (!(GGameType & GAME_Tech3))
-	{
+	if ( !( GGameType & GAME_Tech3 ) ) {
 		//
 		// if not a consolekey, send to the interpreter no matter what mode is
 		//
-		if (((in_keyCatchers & KEYCATCH_UI) && menubound[key]) ||
-			((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key]) ||
-			(in_keyCatchers == 0 && ((cls.state == CA_ACTIVE && (GGameType & (GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2) || clc.qh_signon == SIGNONS)) || !consolekeys[key])))
-		{
-			CL_AddKeyDownCommands(key, time);
+		if ( ( ( in_keyCatchers & KEYCATCH_UI ) && menubound[ key ] ) ||
+			 ( ( in_keyCatchers & KEYCATCH_CONSOLE ) && !consolekeys[ key ] ) ||
+			 ( in_keyCatchers == 0 && ( ( cls.state == CA_ACTIVE && ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) || clc.qh_signon == SIGNONS ) ) || !consolekeys[ key ] ) ) ) {
+			CL_AddKeyDownCommands( key, time );
 			return;
 		}
 
-		if (in_keyCatchers & KEYCATCH_MESSAGE)
-		{
-			Con_MessageKeyEvent(key);
+		if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
+			Con_MessageKeyEvent( key );
+		} else if ( in_keyCatchers & KEYCATCH_UI )     {
+			UI_KeyDownEvent( key );
+		} else   {
+			Con_KeyEvent( key );
 		}
-		else if (in_keyCatchers & KEYCATCH_UI)
-		{
-			UI_KeyDownEvent(key);
-		}
-		else
-		{
-			Con_KeyEvent(key);
-		}
-	}
-	else
-	{
+	} else   {
 		// distribute the key down event to the apropriate handler
-		if (in_keyCatchers & KEYCATCH_CONSOLE)
-		{
-			if (!onlybinds)
-			{
-				Con_KeyEvent(key);
+		if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
+			if ( !onlybinds ) {
+				Con_KeyEvent( key );
 			}
-		}
-		else if (in_keyCatchers & KEYCATCH_UI && !bypassMenu)
-		{
-			if (!(GGameType & GAME_ET) || !onlybinds || UIET_WantsBindKeys())
-			{
-				UI_KeyDownEvent(key);
+		} else if ( in_keyCatchers & KEYCATCH_UI && !bypassMenu )     {
+			if ( !( GGameType & GAME_ET ) || !onlybinds || UIET_WantsBindKeys() ) {
+				UI_KeyDownEvent( key );
 			}
-		}
-		else if (in_keyCatchers & KEYCATCH_CGAME && !bypassMenu)
-		{
-			if (!(GGameType & GAME_ET) || !onlybinds || CLET_WantsBindKeys())
-			{
-				CLT3_KeyEvent(key, down);
+		} else if ( in_keyCatchers & KEYCATCH_CGAME && !bypassMenu )     {
+			if ( !( GGameType & GAME_ET ) || !onlybinds || CLET_WantsBindKeys() ) {
+				CLT3_KeyEvent( key, down );
 			}
-		}
-		else if (in_keyCatchers & KEYCATCH_MESSAGE)
-		{
-			if (!onlybinds)
-			{
-				Con_MessageKeyEvent(key);
+		} else if ( in_keyCatchers & KEYCATCH_MESSAGE )     {
+			if ( !onlybinds ) {
+				Con_MessageKeyEvent( key );
 			}
-		}
-		else if (cls.state == CA_DISCONNECTED)
-		{
-			if (!onlybinds)
-			{
-				Con_KeyEvent(key);
+		} else if ( cls.state == CA_DISCONNECTED )     {
+			if ( !onlybinds ) {
+				Con_KeyEvent( key );
 			}
-		}
-		else
-		{
+		} else   {
 			// send the bound action
-			CL_AddKeyDownCommands(key, time);
+			CL_AddKeyDownCommands( key, time );
 		}
 	}
 }
 
 //	Normal keyboard characters, already shifted / capslocked / etc
-void CL_CharEvent(int key)
-{
+void CL_CharEvent( int key ) {
 	// fretn
 	// we just pressed the console button,
 	// so ignore this event
 	// this prevents chars appearing at console input
 	// when you just opened it
-	if (GGameType & GAME_ET && consoleButtonWasPressed)
-	{
+	if ( GGameType & GAME_ET && consoleButtonWasPressed ) {
 		consoleButtonWasPressed = false;
 		return;
 	}
 
 	// the console key should never be used as a char
-	if (key == '`' || key == '~' || key == 0xac)
-	{
+	if ( key == '`' || key == '~' || key == 0xac ) {
 		return;
 	}
 
 	// distribute the key down event to the apropriate handler
-	if (in_keyCatchers & KEYCATCH_CONSOLE)
-	{
-		Con_CharEvent(key);
-	}
-	else if (in_keyCatchers & KEYCATCH_UI)
-	{
-		UI_CharEvent(key);
-	}
-	else if (GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME)
-	{
-		CLT3_KeyEvent(key | K_CHAR_FLAG, true);
-	}
-	else if (in_keyCatchers & KEYCATCH_MESSAGE)
-	{
-		Con_MessageCharEvent(key);
-	}
-	else if (cls.state == CA_DISCONNECTED)
-	{
-		Con_CharEvent(key);
+	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
+		Con_CharEvent( key );
+	} else if ( in_keyCatchers & KEYCATCH_UI )     {
+		UI_CharEvent( key );
+	} else if ( GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME )     {
+		CLT3_KeyEvent( key | K_CHAR_FLAG, true );
+	} else if ( in_keyCatchers & KEYCATCH_MESSAGE )     {
+		Con_MessageCharEvent( key );
+	} else if ( cls.state == CA_DISCONNECTED )     {
+		Con_CharEvent( key );
 	}
 }
 
-void Key_ClearStates()
-{
+void Key_ClearStates() {
 	anykeydown = 0;
 
-	for (int i = 0; i < MAX_KEYS; i++)
-	{
-		if (keys[i].down)
-		{
-			CL_KeyEvent(i, false, 0);
+	for ( int i = 0; i < MAX_KEYS; i++ ) {
+		if ( keys[ i ].down ) {
+			CL_KeyEvent( i, false, 0 );
 		}
-		keys[i].down = false;
-		keys[i].repeats = 0;
+		keys[ i ].down = false;
+		keys[ i ].repeats = 0;
 	}
 }

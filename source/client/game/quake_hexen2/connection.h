@@ -33,7 +33,7 @@ void CLQHW_CheckForResend();
 void CLQHW_BeginServerConnect();
 void CLQHW_Connect_f();
 void CLQHW_Reconnect_f();
-void CLQHW_ConnectionlessPacket(QMsg& message, netadr_t& net_from);
+void CLQHW_ConnectionlessPacket( QMsg& message, netadr_t& net_from );
 void CLQH_ReadFromServer();
 void CLQHW_ReadPackets();
 

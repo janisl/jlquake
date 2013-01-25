@@ -22,22 +22,20 @@
 //!!!!!!!!!!!!!!! Used by game VMs, do not change !!!!!!!!!!!!!!!!!!!!!
 #define MAX_TOKENLENGTH     1024
 
-struct q3pc_token_t
-{
+struct q3pc_token_t {
 	int type;
 	int subtype;
 	int intvalue;
 	float floatvalue;
-	char string[MAX_TOKENLENGTH];
+	char string[ MAX_TOKENLENGTH ];
 };
 
-struct etpc_token_t
-{
+struct etpc_token_t {
 	int type;
 	int subtype;
 	int intvalue;
 	float floatvalue;
-	char string[MAX_TOKENLENGTH];
+	char string[ MAX_TOKENLENGTH ];
 	int line;
 	int linescrossed;
 };
@@ -54,8 +52,7 @@ struct etpc_token_t
 #define INDENT_IFNDEF           0x0010
 
 //macro definitions
-struct define_t
-{
+struct define_t {
 	char* name;					//define name
 	int flags;					//define flags
 	int numparms;				//number of define parameters
@@ -68,8 +65,7 @@ struct define_t
 //indents
 //used for conditional compilation directives:
 //#if, #else, #elif, #ifdef, #ifndef
-struct indent_t
-{
+struct indent_t {
 	int type;					//indent type
 	int skip;					//true if skipping current indent
 	script_t* script;			//script the indent was in
@@ -77,10 +73,9 @@ struct indent_t
 };
 
 //source file
-struct source_t
-{
-	char filename[MAX_QPATH];				//file name of the script
-	char includepath[MAX_QPATH];			//path to include files
+struct source_t {
+	char filename[ MAX_QPATH ];					//file name of the script
+	char includepath[ MAX_QPATH ];				//path to include files
 	punctuation_t* punctuations;			//punctuations to use
 	script_t* scriptstack;					//stack with scripts of the source
 	token_t* tokens;						//tokens to read first
@@ -92,38 +87,38 @@ struct source_t
 };
 
 //print a source error
-void SourceError(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
+void SourceError( source_t* source, const char* str, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
 //print a source warning
-void SourceWarning(source_t* source, const char* str, ...) id_attribute((format(printf, 2, 3)));
+void SourceWarning( source_t* source, const char* str, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
 //add a globals define that will be added to all opened sources
-int PC_AddGlobalDefine(const char* string);
+int PC_AddGlobalDefine( const char* string );
 //remove all globals defines
 void PC_RemoveAllGlobalDefines();
 //read a token from the source
-bool PC_ReadToken(source_t* source, token_t* token);
+bool PC_ReadToken( source_t* source, token_t* token );
 //expect a certain token
-bool PC_ExpectTokenString(source_t* source, const char* string);
+bool PC_ExpectTokenString( source_t* source, const char* string );
 //expect a certain token type
-bool PC_ExpectTokenType(source_t* source, int type, int subtype, token_t* token);
+bool PC_ExpectTokenType( source_t* source, int type, int subtype, token_t* token );
 //expect a token
-bool PC_ExpectAnyToken(source_t* source, token_t* token);
+bool PC_ExpectAnyToken( source_t* source, token_t* token );
 //returns true when the token is available
-bool PC_CheckTokenString(source_t* source, const char* string);
+bool PC_CheckTokenString( source_t* source, const char* string );
 //unread the last token read from the script
-void PC_UnreadLastToken(source_t* source);
+void PC_UnreadLastToken( source_t* source );
 //set the base folder to load files from
-void PC_SetBaseFolder(const char* path);
+void PC_SetBaseFolder( const char* path );
 //load a source file
-source_t* LoadSourceFile(const char* filename);
+source_t* LoadSourceFile( const char* filename );
 //free the given source
-void FreeSource(source_t* source);
+void FreeSource( source_t* source );
 
-int PC_LoadSourceHandle(const char* filename);
-int PC_FreeSourceHandle(int handle);
-int PC_ReadTokenHandleQ3(int handle, q3pc_token_t* pc_token);
-int PC_ReadTokenHandleET(int handle, etpc_token_t* pc_token);
-void PC_UnreadLastTokenHandle(int handle);
-int PC_SourceFileAndLine(int handle, char* filename, int* line);
+int PC_LoadSourceHandle( const char* filename );
+int PC_FreeSourceHandle( int handle );
+int PC_ReadTokenHandleQ3( int handle, q3pc_token_t* pc_token );
+int PC_ReadTokenHandleET( int handle, etpc_token_t* pc_token );
+void PC_UnreadLastTokenHandle( int handle );
+int PC_SourceFileAndLine( int handle, char* filename, int* line );
 void PC_CheckOpenSourceHandles();
 
 #endif

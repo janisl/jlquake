@@ -16,7 +16,7 @@
 
 #include "local.h"
 
-const char* h2_ClassNames[NUM_CLASSES_H2MP] =
+const char* h2_ClassNames[ NUM_CLASSES_H2MP ] =
 {
 	"Paladin",
 	"Crusader",
@@ -25,7 +25,7 @@ const char* h2_ClassNames[NUM_CLASSES_H2MP] =
 	"Demoness"
 };
 
-const char* hw_ClassNames[MAX_PLAYER_CLASS] =
+const char* hw_ClassNames[ MAX_PLAYER_CLASS ] =
 {
 	"Paladin",
 	"Crusader",

@@ -18,8 +18,7 @@
 #include "system.h"
 #include "strings.h"
 
-Interface::~Interface()
-{
+Interface::~Interface() {
 }
 
 #if 0	//id386 && defined _MSC_VER && !defined __VECTORC
@@ -30,12 +29,11 @@ typedef enum
 	PRE_READ_WRITE								// prefetch assuming that buffer is used for both reading and writing
 } e_prefetch;
 
-void Com_Prefetch(const void* s, const unsigned int bytes, e_prefetch type);
+void Com_Prefetch( const void* s, const unsigned int bytes, e_prefetch type );
 
 #define EMMS_INSTRUCTION    __asm emms
 
-void _copyDWord(unsigned int* dest, const unsigned int constant, const unsigned int count)
-{
+void _copyDWord( unsigned int* dest, const unsigned int constant, const unsigned int count ) {
 	__asm
 	{
 		mov edx,dest
@@ -88,9 +86,8 @@ outta:
 
 // optimized memory copy routine that handles all alignment
 // cases and block sizes efficiently
-void Com_Memcpy(void* dest, const void* src, const size_t count)
-{
-	Com_Prefetch(src, count, PRE_READ);
+void Com_Memcpy( void* dest, const void* src, const size_t count ) {
+	Com_Prefetch( src, count, PRE_READ );
 	__asm
 	{
 		push edi
@@ -188,12 +185,10 @@ outta:
 	}
 }
 
-void Com_Memset(void* dest, const int val, const size_t count)
-{
+void Com_Memset( void* dest, const int val, const size_t count ) {
 	unsigned int fillval;
 
-	if (count < 8)
-	{
+	if ( count < 8 ) {
 		__asm
 		{
 			mov edx,dest
@@ -224,10 +219,10 @@ skip1:
 
 	fillval = val;
 
-	fillval = fillval | (fillval << 8);
-	fillval = fillval | (fillval << 16);		// fill dword with 8-bit pattern
+	fillval = fillval | ( fillval << 8 );
+	fillval = fillval | ( fillval << 16 );			// fill dword with 8-bit pattern
 
-	_copyDWord((unsigned int*)(dest),fillval, count / 4);
+	_copyDWord( ( unsigned int* )( dest ),fillval, count / 4 );
 
 	__asm									// padding of 0-3 bytes
 	{
@@ -254,14 +249,12 @@ skipA:
 	}
 }
 
-void Com_Prefetch(const void* s, const unsigned int bytes, e_prefetch type)
-{
+void Com_Prefetch( const void* s, const unsigned int bytes, e_prefetch type ) {
 	// write buffer prefetching is performed only if
 	// the processor benefits from it. Read and read/write
 	// prefetching is always performed.
 
-	switch (type)
-	{
+	switch ( type ) {
 	case PRE_WRITE: break;
 	case PRE_READ:
 	case PRE_READ_WRITE:
@@ -308,10 +301,9 @@ typedef enum {
 	PRE_READ_WRITE	// prefetch assuming that buffer is used for both reading and writing
 } e_prefetch;
 
-void Com_Prefetch(const void* s, const unsigned int bytes, e_prefetch type);
+void Com_Prefetch( const void* s, const unsigned int bytes, e_prefetch type );
 
-void _copyDWord(unsigned int* dest, const unsigned int constant, const unsigned int count)
-{
+void _copyDWord( unsigned int* dest, const unsigned int constant, const unsigned int count ) {
 	// MMX version not used on standard Pentium MMX
 	// because the dword version is faster (with
 	// proper destination prefetching)
@@ -385,15 +377,14 @@ void _copyDWord(unsigned int* dest, const unsigned int constant, const unsigned 
 		"			movl		%%eax, (%%edx)		\n"
 		"6:											\n"
 		"			emms							\n"
-		: : "a" (constant), "c" (count), "d" (dest)
-		: "%ebx", "%edi", "%esi", "cc", "memory");
+		: : "a" ( constant ), "c" ( count ), "d" ( dest )
+		: "%ebx", "%edi", "%esi", "cc", "memory" );
 }
 
 // optimized memory copy routine that handles all alignment
 // cases and block sizes efficiently
-void Com_Memcpy(void* dest, const void* src, const size_t count)
-{
-	Com_Prefetch(src, count, PRE_READ);
+void Com_Memcpy( void* dest, const void* src, const size_t count ) {
+	Com_Prefetch( src, count, PRE_READ );
 	__asm__ __volatile__ (
 		"		pushl		%%edi							\n"
 		"		pushl		%%esi							\n"
@@ -487,16 +478,14 @@ void Com_Memcpy(void* dest, const void* src, const size_t count)
 		"6:										\n"
 		"		popl		%%esi				\n"
 		"		popl		%%edi				\n"
-		: : "m" (src), "d" (dest), "c" (count)
-		: "%eax", "%ebx", "%edi", "%esi", "cc", "memory");
+		: : "m" ( src ), "d" ( dest ), "c" ( count )
+		: "%eax", "%ebx", "%edi", "%esi", "cc", "memory" );
 }
 
-void Com_Memset(void* dest, const int val, const size_t count)
-{
+void Com_Memset( void* dest, const int val, const size_t count ) {
 	unsigned int fillval;
 
-	if (count < 8)
-	{
+	if ( count < 8 ) {
 		__asm__ __volatile__ (
 			//mov		edx,dest
 			//mov		eax, val
@@ -520,18 +509,18 @@ void Com_Memset(void* dest, const int val, const size_t count)
 			"			je		2f					\n"
 			"			movb		%%al, (%%edx)	\n"// copy single byte
 			"	2:									\n"
-			: : "d" (dest), "a" (val), "c" (count)
-			: "%ebx", "%edi", "%esi", "cc", "memory");
+			: : "d" ( dest ), "a" ( val ), "c" ( count )
+			: "%ebx", "%edi", "%esi", "cc", "memory" );
 
 		return;
 	}
 
 	fillval = val;
 
-	fillval = fillval | (fillval << 8);
-	fillval = fillval | (fillval << 16);		// fill dword with 8-bit pattern
+	fillval = fillval | ( fillval << 8 );
+	fillval = fillval | ( fillval << 16 );			// fill dword with 8-bit pattern
 
-	_copyDWord((unsigned int*)(dest),fillval, count / 4);
+	_copyDWord( ( unsigned int* )( dest ),fillval, count / 4 );
 
 	__asm__ __volatile__ (	// padding of 0-3 bytes
 		//mov		ecx,count
@@ -554,18 +543,16 @@ void Com_Memset(void* dest, const int val, const size_t count)
 		"		je		1f						\n"
 		"		movb		%%al, (%%edx)		\n"
 		"1:										\n"
-		: : "m" (fillval), "c" (count), "d" (dest)
-		: "%eax", "%ebx", "%edi", "%esi", "cc", "memory");
+		: : "m" ( fillval ), "c" ( count ), "d" ( dest )
+		: "%eax", "%ebx", "%edi", "%esi", "cc", "memory" );
 }
 
-void Com_Prefetch(const void* s, const unsigned int bytes, e_prefetch type)
-{
+void Com_Prefetch( const void* s, const unsigned int bytes, e_prefetch type ) {
 	// write buffer prefetching is performed only if
 	// the processor benefits from it. Read and read/write
 	// prefetching is always performed.
 
-	switch (type)
-	{
+	switch ( type ) {
 	case PRE_WRITE: break;
 	case PRE_READ:
 	case PRE_READ_WRITE:
@@ -588,27 +575,24 @@ void Com_Prefetch(const void* s, const unsigned int bytes, e_prefetch type)
 			"			decl		%%ecx			\n"
 			"			jnz		1b					\n"
 			"	2:									\n"
-			: : "d" (s), "c" (bytes)
-			: "%eax", "%ebx", "%edi", "%esi", "memory", "cc");
+			: : "d" ( s ), "c" ( bytes )
+			: "%eax", "%ebx", "%edi", "%esi", "memory", "cc" );
 
 		break;
 	}
 }
 #else
-void Com_Memcpy(void* dest, const void* src, const size_t count)
-{
-	memcpy(dest, src, count);
+void Com_Memcpy( void* dest, const void* src, const size_t count ) {
+	memcpy( dest, src, count );
 }
 
-void Com_Memset(void* dest, const int val, const size_t count)
-{
-	memset(dest, val, count);
+void Com_Memset( void* dest, const int val, const size_t count ) {
+	memset( dest, val, count );
 }
 #endif	// bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
 
-void AssertFailed(const char* file, int line, const char* expression)
-{
-	Sys_Print(va("\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression));
+void AssertFailed( const char* file, int line, const char* expression ) {
+	Sys_Print( va( "\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression ) );
 #ifdef _MSC_VER
 	__debugbreak();
 #elif defined( __GNUC__ )

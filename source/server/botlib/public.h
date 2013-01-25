@@ -53,20 +53,20 @@
 #define LINECOLOR_YELLOW        4	//0xdcdddedfL
 #define LINECOLOR_ORANGE        5	//0xe0e1e2e3L
 
-int BotImport_DebugPolygonCreate(int color, int numPoints, const vec3_t* points);
-void BotImport_DebugPolygonDelete(int id);
+int BotImport_DebugPolygonCreate( int color, int numPoints, const vec3_t* points );
+void BotImport_DebugPolygonDelete( int id );
 
-int BotLibVarSet(const char* var_name, const char* value);
-int BotLibVarGet(char* var_name, char* value, int size);
+int BotLibVarSet( const char* var_name, const char* value );
+int BotLibVarGet( char* var_name, char* value, int size );
 
 #include "ai_public.h"
 #include "aas_public.h"
 #include "ea_public.h"
 
-int BotLibSetup(bool singleplayer);
+int BotLibSetup( bool singleplayer );
 int BotLibShutdown();
-int BotLibStartFrame(float time);
-int BotLibLoadMap(const char* mapname);
-int BotLibUpdateEntity(int ent, bot_entitystate_t* state);
+int BotLibStartFrame( float time );
+int BotLibLoadMap( const char* mapname );
+int BotLibUpdateEntity( int ent, bot_entitystate_t* state );
 
 #endif

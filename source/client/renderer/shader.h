@@ -23,7 +23,7 @@ typedef unsigned int glIndex_t;
 
 // surface geometry should not exceed these limits
 #define SHADER_MAX_VERTEXES 4000//1000
-#define SHADER_MAX_INDEXES  (6 * SHADER_MAX_VERTEXES)
+#define SHADER_MAX_INDEXES  ( 6 * SHADER_MAX_VERTEXES )
 
 #define MAX_IMAGE_ANIMATIONS    16
 #define TR_MAX_TEXMODS          4
@@ -176,8 +176,7 @@ enum fogPass_t
 	FP_LE			// surface is trnaslucent, but still needs a fog pass (fog surface)
 };
 
-struct waveForm_t
-{
+struct waveForm_t {
 	genFunc_t func;
 
 	float base;
@@ -186,38 +185,36 @@ struct waveForm_t
 	float frequency;
 };
 
-struct texModInfo_t
-{
+struct texModInfo_t {
 	texMod_t type;
 
 	// used for TMOD_TURBULENT and TMOD_STRETCH
 	waveForm_t wave;
 
 	// used for TMOD_TRANSFORM
-	float matrix[2][2];					// s' = s * m[0][0] + t * m[1][0] + trans[0]
-	float translate[2];					// t' = s * m[0][1] + t * m[0][1] + trans[1]
+	float matrix[ 2 ][ 2 ];					// s' = s * m[0][0] + t * m[1][0] + trans[0]
+	float translate[ 2 ];					// t' = s * m[0][1] + t * m[0][1] + trans[1]
 
 	// used for TMOD_SCALE
-	float scale[2];						// s *= scale[0]
-										// t *= scale[1]
+	float scale[ 2 ];						// s *= scale[0]
+											// t *= scale[1]
 
 	// used for TMOD_SCROLL
-	float scroll[2];					// s' = s + scroll[0] * time
-										// t' = t + scroll[1] * time
+	float scroll[ 2 ];						// s' = s + scroll[0] * time
+											// t' = t + scroll[1] * time
 
 	// + = clockwise
 	// - = counterclockwise
 	float rotateSpeed;
 };
 
-struct textureBundle_t
-{
-	image_t* image[MAX_IMAGE_ANIMATIONS];
+struct textureBundle_t {
+	image_t* image[ MAX_IMAGE_ANIMATIONS ];
 	int numImageAnimations;
 	float imageAnimationSpeed;
 
 	texCoordGen_t tcGen;
-	vec3_t tcGenVectors[2];
+	vec3_t tcGenVectors[ 2 ];
 
 	int numTexMods;
 	texModInfo_t* texMods;
@@ -228,11 +225,10 @@ struct textureBundle_t
 	bool isVideoMap;
 };
 
-struct shaderStage_t
-{
+struct shaderStage_t {
 	bool active;
 
-	textureBundle_t bundle[NUM_TEXTURE_BUNDLES];
+	textureBundle_t bundle[ NUM_TEXTURE_BUNDLES ];
 
 	waveForm_t rgbWave;
 	colorGen_t rgbGen;
@@ -240,20 +236,19 @@ struct shaderStage_t
 	waveForm_t alphaWave;
 	alphaGen_t alphaGen;
 
-	byte constantColor[4];						// for CGEN_CONST and AGEN_CONST
+	byte constantColor[ 4 ];						// for CGEN_CONST and AGEN_CONST
 
 	unsigned stateBits;							// GLS_xxxx mask
 
 	acff_t adjustColorsForFog;
 
-	float zFadeBounds[2];
+	float zFadeBounds[ 2 ];
 
 	bool isDetail;
 	bool isFogged;								// used only for shaders that have fog disabled, so we can enable it for individual stages
 };
 
-struct deformStage_t
-{
+struct deformStage_t {
 	deform_t deformation;				// vertex coordinate modification type
 
 	vec3_t moveVector;
@@ -265,24 +260,21 @@ struct deformStage_t
 	float bulgeSpeed;
 };
 
-struct skyParms_t
-{
+struct skyParms_t {
 	float cloudHeight;
-	image_t* outerbox[6];
-	image_t* innerbox[6];
+	image_t* outerbox[ 6 ];
+	image_t* innerbox[ 6 ];
 };
 
-struct fogParms_t
-{
+struct fogParms_t {
 	vec3_t color;
 	float depthForOpaque;
 	unsigned colorInt;					// in packed byte format
 	float tcScale;						// texture coordinate vector scales
 };
 
-struct shader_t
-{
-	char name[MAX_QPATH];				// game path, including extension
+struct shader_t {
+	char name[ MAX_QPATH ];					// game path, including extension
 	int lightmapIndex;					// for a shader to match, both name and lightmapIndex must match
 
 	int index;							// this shader == tr.shaders[index]
@@ -329,12 +321,12 @@ struct shader_t
 	vec4_t distanceCull;				// ydnar: opaque alpha range for foliage (inner, outer, alpha threshold, 1/(outer-inner))
 
 	int numDeforms;
-	deformStage_t deforms[MAX_SHADER_DEFORMS];
+	deformStage_t deforms[ MAX_SHADER_DEFORMS ];
 
 	int numUnfoggedPasses;
-	shaderStage_t* stages[MAX_SHADER_STAGES];
+	shaderStage_t* stages[ MAX_SHADER_STAGES ];
 
-	void (* optimalStageIteratorFunc)();
+	void ( * optimalStageIteratorFunc )();
 
 	float clampTime;					// time this shader is clamped to
 	float timeOffset;					// current time offset for this shader
@@ -347,31 +339,29 @@ struct shader_t
 
 	shader_t* remappedShader;			// current shader this one is remapped too
 
-	int shaderStates[MAX_STATES_PER_SHADER];			// index to valid shader states
+	int shaderStates[ MAX_STATES_PER_SHADER ];				// index to valid shader states
 
 	shader_t* next;
 };
 
-typedef byte color4ub_t[4];
+typedef byte color4ub_t[ 4 ];
 
-struct stageVars_t
-{
-	color4ub_t colors[SHADER_MAX_VERTEXES];
-	vec2_t texcoords[NUM_TEXTURE_BUNDLES][SHADER_MAX_VERTEXES];
+struct stageVars_t {
+	color4ub_t colors[ SHADER_MAX_VERTEXES ];
+	vec2_t texcoords[ NUM_TEXTURE_BUNDLES ][ SHADER_MAX_VERTEXES ];
 };
 
-struct shaderCommands_t
-{
-	glIndex_t indexes[SHADER_MAX_INDEXES];
-	vec4_t xyz[SHADER_MAX_VERTEXES];
-	vec4_t normal[SHADER_MAX_VERTEXES];
-	vec2_t texCoords[SHADER_MAX_VERTEXES][2];
-	color4ub_t vertexColors[SHADER_MAX_VERTEXES];
-	int vertexDlightBits[SHADER_MAX_VERTEXES];
+struct shaderCommands_t {
+	glIndex_t indexes[ SHADER_MAX_INDEXES ];
+	vec4_t xyz[ SHADER_MAX_VERTEXES ];
+	vec4_t normal[ SHADER_MAX_VERTEXES ];
+	vec2_t texCoords[ SHADER_MAX_VERTEXES ][ 2 ];
+	color4ub_t vertexColors[ SHADER_MAX_VERTEXES ];
+	int vertexDlightBits[ SHADER_MAX_VERTEXES ];
 
 	stageVars_t svars;
 
-	color4ub_t constantColor255[SHADER_MAX_VERTEXES];
+	color4ub_t constantColor255[ SHADER_MAX_VERTEXES ];
 
 	shader_t* shader;
 	float shaderTime;
@@ -386,31 +376,31 @@ struct shaderCommands_t
 
 	// info extracted from current shader
 	int numPasses;
-	void (* currentStageIteratorFunc)(void);
+	void ( * currentStageIteratorFunc )( void );
 	shaderStage_t** xstages;
 };
 
 void R_InitShaders();
 void R_FreeShaders();
-shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
-qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
-shader_t* R_GetShaderByHandle(qhandle_t hShader);
+shader_t* R_FindShader( const char* Name, int LightmapIndex, bool MipRawImage );
+qhandle_t R_RegisterShaderFromImage( const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage );
+shader_t* R_GetShaderByHandle( qhandle_t hShader );
 void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
 
-void RB_BeginSurface(shader_t* shader, int fogNum);
+void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();
 void RB_StageIteratorLightmappedMultitexture();
 void RB_EndSurface();
 
-void GlobalVectorToLocal(const vec3_t in, vec3_t out);
+void GlobalVectorToLocal( const vec3_t in, vec3_t out );
 void RB_DeformTessGeometry();
-void RB_CalcDiffuseColor(byte* colors);
-void ComputeColors(shaderStage_t* pStage);
-void RB_CalcFogTexCoords(float* dstTexCoords);
-void ComputeTexCoords(shaderStage_t* pStage);
+void RB_CalcDiffuseColor( byte* colors );
+void ComputeColors( shaderStage_t* pStage );
+void RB_CalcFogTexCoords( float* dstTexCoords );
+void ComputeTexCoords( shaderStage_t* pStage );
 
 //
 //	SHADOWS

@@ -19,14 +19,13 @@
 
 #include "../../client_main.h"
 
-struct uiClientState_t
-{
+struct uiClientState_t {
 	connstate_t connState;
 	int connectPacketCount;
 	int clientNum;
-	char servername[MAX_STRING_CHARS];
-	char updateInfoString[MAX_STRING_CHARS];
-	char messageString[MAX_STRING_CHARS];
+	char servername[ MAX_STRING_CHARS ];
+	char updateInfoString[ MAX_STRING_CHARS ];
+	char messageString[ MAX_STRING_CHARS ];
 };
 
 #define SORT_HOST           0
@@ -74,22 +73,22 @@ enum
 //	void UI_SetActiveMenu(uiMenuCommand_t menu);
 };
 
-void UIT3_GetClientState(uiClientState_t* state);
+void UIT3_GetClientState( uiClientState_t* state );
 void LAN_LoadCachedServers();
 void LAN_SaveServersToCache();
-q3serverInfo_t* LAN_GetServerPtr(int source, int n);
-int LAN_AddServer(int source, const char* name, const char* address);
-void LAN_RemoveServer(int source, const char* addr);
-int LAN_GetServerCount(int source);
-void LAN_GetServerAddressString(int source, int n, char* buf, int buflen);
-void LAN_GetServerInfo(int source, int n, char* buf, int buflen);
-int LAN_GetServerPing(int source, int n);
-void LAN_MarkServerVisible(int source, int n, qboolean visible);
-int LAN_ServerIsVisible(int source, int n);
-void LAN_ResetPings(int source);
-int LAN_CompareServers(int source, int sortKey, int sortDir, int s1, int s2);
-void CLT3_GetClipboardData(char* buf, int buflen);
-bool CLT3_GetLimboString(int index, char* buf);
-void CLT3_OpenURL(const char* url);
+q3serverInfo_t* LAN_GetServerPtr( int source, int n );
+int LAN_AddServer( int source, const char* name, const char* address );
+void LAN_RemoveServer( int source, const char* addr );
+int LAN_GetServerCount( int source );
+void LAN_GetServerAddressString( int source, int n, char* buf, int buflen );
+void LAN_GetServerInfo( int source, int n, char* buf, int buflen );
+int LAN_GetServerPing( int source, int n );
+void LAN_MarkServerVisible( int source, int n, qboolean visible );
+int LAN_ServerIsVisible( int source, int n );
+void LAN_ResetPings( int source );
+int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
+void CLT3_GetClipboardData( char* buf, int buflen );
+bool CLT3_GetLimboString( int index, char* buf );
+void CLT3_OpenURL( const char* url );
 
 #endif

@@ -37,15 +37,14 @@ enum
 	ALIGN = 4
 };
 
-#define ALIGN_SIZE(bytes)   (((bytes) + ALIGN - 1) & ~(ALIGN - 1))
+#define ALIGN_SIZE( bytes )   ( ( ( bytes ) + ALIGN - 1 ) & ~( ALIGN - 1 ) )
 
-#define SMALL_HEADER_SIZE   ALIGN_SIZE(sizeof(byte) + sizeof(byte))
-#define LARGE_HEADER_SIZE   ALIGN_SIZE(sizeof(void*) + sizeof(byte))
+#define SMALL_HEADER_SIZE   ALIGN_SIZE( sizeof ( byte ) + sizeof ( byte ) )
+#define LARGE_HEADER_SIZE   ALIGN_SIZE( sizeof ( void* ) + sizeof ( byte ) )
 
-#define SMALL_ALIGN(bytes)  (ALIGN_SIZE((bytes) + SMALL_HEADER_SIZE) - SMALL_HEADER_SIZE)
+#define SMALL_ALIGN( bytes )  ( ALIGN_SIZE( ( bytes ) + SMALL_HEADER_SIZE ) - SMALL_HEADER_SIZE )
 
-struct MemDebug_t
-{
+struct MemDebug_t {
 	const char* FileName;
 	int LineNumber;
 	int Size;
@@ -53,17 +52,15 @@ struct MemDebug_t
 	MemDebug_t* Next;
 };
 
-class QMemHeap
-{
+class QMemHeap {
 public:
 	QMemHeap();
 
-	void* Alloc(size_t Bytes);
-	void Free(void* Ptr);
+	void* Alloc( size_t Bytes );
+	void Free( void* Ptr );
 
 private:
-	struct QPage
-	{
+	struct QPage {
 		void* Data;
 		size_t Size;
 
@@ -73,21 +70,21 @@ private:
 
 	size_t PageSize;
 
-	void* SmallFirstFree[256 / ALIGN + 1];
+	void* SmallFirstFree[ 256 / ALIGN + 1 ];
 	QPage* SmallPage;
 	size_t SmallOffset;
 	QPage* SmallUsedPages;
 
 	QPage* LargeFirstUsedPage;
 
-	QPage* AllocPage(size_t Bytes);
-	void FreePage(QPage* Page);
+	QPage* AllocPage( size_t Bytes );
+	void FreePage( QPage* Page );
 
-	void* SmallAlloc(size_t Bytes);
-	void SmallFree(void* Ptr);
+	void* SmallAlloc( size_t Bytes );
+	void SmallFree( void* Ptr );
 
-	void* LargeAlloc(size_t Bytes);
-	void LargeFree(void* Ptr);
+	void* LargeAlloc( size_t Bytes );
+	void LargeFree( void* Ptr );
 };
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -120,12 +117,11 @@ static MemDebug_t* MemDebug;
 //==========================================================================
 
 QMemHeap::QMemHeap()
-	: PageSize(0),
-	SmallPage(NULL),
-	SmallOffset(0),
-	SmallUsedPages(NULL),
-	LargeFirstUsedPage(NULL)
-{
+	: PageSize( 0 ),
+	SmallPage( NULL ),
+	SmallOffset( 0 ),
+	SmallUsedPages( NULL ),
+	LargeFirstUsedPage( NULL ) {
 }
 
 //==========================================================================
@@ -134,13 +130,11 @@ QMemHeap::QMemHeap()
 //
 //==========================================================================
 
-void* QMemHeap::Alloc(size_t Bytes)
-{
-	if (Bytes < 256)
-	{
-		return SmallAlloc(Bytes);
+void* QMemHeap::Alloc( size_t Bytes ) {
+	if ( Bytes < 256 ) {
+		return SmallAlloc( Bytes );
 	}
-	return LargeAlloc(Bytes);
+	return LargeAlloc( Bytes );
 }
 
 //==========================================================================
@@ -149,18 +143,16 @@ void* QMemHeap::Alloc(size_t Bytes)
 //
 //==========================================================================
 
-void QMemHeap::Free(void* Ptr)
-{
-	switch (((byte*)Ptr)[-1])
-	{
+void QMemHeap::Free( void* Ptr ) {
+	switch ( ( ( byte* )Ptr )[ -1 ] ) {
 	case SMALLID:
-		SmallFree(Ptr);
+		SmallFree( Ptr );
 		break;
 	case LARGEID:
-		LargeFree(Ptr);
+		LargeFree( Ptr );
 		break;
 	default:
-		common->FatalError("Invalid memory block");
+		common->FatalError( "Invalid memory block" );
 	}
 }
 
@@ -170,14 +162,12 @@ void QMemHeap::Free(void* Ptr)
 //
 //==========================================================================
 
-QMemHeap::QPage* QMemHeap::AllocPage(size_t Bytes)
-{
-	size_t Size = Bytes + sizeof(QPage);
-	QPage* P = (QPage*)::malloc(Size);
-	if (!P)
-	{
+QMemHeap::QPage* QMemHeap::AllocPage( size_t Bytes ) {
+	size_t Size = Bytes + sizeof ( QPage );
+	QPage* P = ( QPage* )::malloc( Size );
+	if ( !P ) {
 		//common->FatalError("Failed to allocate %d bytes", Bytes);
-		common->FatalError("Failed to allocate page");
+		common->FatalError( "Failed to allocate page" );
 	}
 	P->Data = P + 1;
 	P->Size = Bytes;
@@ -192,13 +182,11 @@ QMemHeap::QPage* QMemHeap::AllocPage(size_t Bytes)
 //
 //==========================================================================
 
-void QMemHeap::FreePage(QMemHeap::QPage* Page)
-{
-	if (!Page)
-	{
-		common->FatalError("Tried to free NULL page");
+void QMemHeap::FreePage( QMemHeap::QPage* Page ) {
+	if ( !Page ) {
+		common->FatalError( "Tried to free NULL page" );
 	}
-	::free(Page);
+	::free( Page );
 }
 
 //==========================================================================
@@ -207,49 +195,44 @@ void QMemHeap::FreePage(QMemHeap::QPage* Page)
 //
 //==========================================================================
 
-void* QMemHeap::SmallAlloc(size_t Bytes)
-{
+void* QMemHeap::SmallAlloc( size_t Bytes ) {
 	//	We need enough memory for the free list.
-	if (Bytes < sizeof(void*))
-	{
-		Bytes = sizeof(void*);
+	if ( Bytes < sizeof ( void* ) ) {
+		Bytes = sizeof ( void* );
 	}
 
-	if (!PageSize)
-	{
-		PageSize = 65536 - sizeof(QPage);
+	if ( !PageSize ) {
+		PageSize = 65536 - sizeof ( QPage );
 
-		Com_Memset(SmallFirstFree, 0, sizeof(SmallFirstFree));
-		SmallPage = AllocPage(PageSize);
+		Com_Memset( SmallFirstFree, 0, sizeof ( SmallFirstFree ) );
+		SmallPage = AllocPage( PageSize );
 		SmallOffset = 0;
 		SmallUsedPages = NULL;
 	}
 
 	//	Align the size.
-	Bytes = SMALL_ALIGN(Bytes);
-	byte* SmallBlock = (byte*)SmallFirstFree[Bytes / ALIGN];
-	if (SmallBlock)
-	{
+	Bytes = SMALL_ALIGN( Bytes );
+	byte* SmallBlock = ( byte* )SmallFirstFree[ Bytes / ALIGN ];
+	if ( SmallBlock ) {
 		byte* Ptr = SmallBlock + SMALL_HEADER_SIZE;
-		SmallFirstFree[Bytes / ALIGN] = *(void**)Ptr;
-		Ptr[-1] = SMALLID;
+		SmallFirstFree[ Bytes / ALIGN ] = *( void** )Ptr;
+		Ptr[ -1 ] = SMALLID;
 		return Ptr;
 	}
 
 	size_t BytesLeft = PageSize - SmallOffset;
-	if (BytesLeft < Bytes + SMALL_HEADER_SIZE)
-	{
+	if ( BytesLeft < Bytes + SMALL_HEADER_SIZE ) {
 		//	Add current page to the used ones.
 		SmallPage->Next = SmallUsedPages;
 		SmallUsedPages = SmallPage;
-		SmallPage = AllocPage(PageSize);
+		SmallPage = AllocPage( PageSize );
 		SmallOffset = 0;
 	}
 
-	SmallBlock = (byte*)SmallPage->Data + SmallOffset;
+	SmallBlock = ( byte* )SmallPage->Data + SmallOffset;
 	byte* Ptr = SmallBlock + SMALL_HEADER_SIZE;
-	SmallBlock[0] = (byte)(Bytes / ALIGN);
-	Ptr[-1] = SMALLID;
+	SmallBlock[ 0 ] = ( byte )( Bytes / ALIGN );
+	Ptr[ -1 ] = SMALLID;
 	SmallOffset += Bytes + SMALL_HEADER_SIZE;
 	return Ptr;
 }
@@ -260,19 +243,17 @@ void* QMemHeap::SmallAlloc(size_t Bytes)
 //
 //==========================================================================
 
-void QMemHeap::SmallFree(void* Ptr)
-{
-	((byte*)Ptr)[-1] = 0;
+void QMemHeap::SmallFree( void* Ptr ) {
+	( ( byte* )Ptr )[ -1 ] = 0;
 
-	byte* Block = (byte*)Ptr - SMALL_HEADER_SIZE;
+	byte* Block = ( byte* )Ptr - SMALL_HEADER_SIZE;
 	size_t Idx = *Block;
-	if (Idx > 256 / ALIGN)
-	{
-		common->FatalError("Invalid small memory block size");
+	if ( Idx > 256 / ALIGN ) {
+		common->FatalError( "Invalid small memory block size" );
 	}
 
-	*((void**)Ptr) = SmallFirstFree[Idx];
-	SmallFirstFree[Idx] = Block;
+	*( ( void** )Ptr ) = SmallFirstFree[ Idx ];
+	SmallFirstFree[ Idx ] = Block;
 }
 
 //==========================================================================
@@ -281,19 +262,17 @@ void QMemHeap::SmallFree(void* Ptr)
 //
 //==========================================================================
 
-void* QMemHeap::LargeAlloc(size_t Bytes)
-{
-	QPage* P = AllocPage(Bytes + LARGE_HEADER_SIZE);
+void* QMemHeap::LargeAlloc( size_t Bytes ) {
+	QPage* P = AllocPage( Bytes + LARGE_HEADER_SIZE );
 
-	byte* Ptr = (byte*)P->Data + LARGE_HEADER_SIZE;
-	*(void**)P->Data = P;
-	Ptr[-1] = LARGEID;
+	byte* Ptr = ( byte* )P->Data + LARGE_HEADER_SIZE;
+	*( void** )P->Data = P;
+	Ptr[ -1 ] = LARGEID;
 
 	//	Link to 'large used page list'
 	P->Prev = NULL;
 	P->Next = LargeFirstUsedPage;
-	if (P->Next)
-	{
+	if ( P->Next ) {
 		P->Next->Prev = P;
 	}
 	LargeFirstUsedPage = P;
@@ -307,29 +286,25 @@ void* QMemHeap::LargeAlloc(size_t Bytes)
 //
 //==========================================================================
 
-void QMemHeap::LargeFree(void* Ptr)
-{
-	((byte*)Ptr)[-1] = 0;
+void QMemHeap::LargeFree( void* Ptr ) {
+	( ( byte* )Ptr )[ -1 ] = 0;
 
 	//	Get page pointer
-	QPage* P = (QPage*)(*((void**)(((byte*)Ptr) - LARGE_HEADER_SIZE)));
+	QPage* P = ( QPage* )( *( ( void** )( ( ( byte* )Ptr ) - LARGE_HEADER_SIZE ) ) );
 
 	//	Unlink from doubly linked list
-	if (P->Prev)
-	{
+	if ( P->Prev ) {
 		P->Prev->Next = P->Next;
 	}
-	if (P->Next)
-	{
+	if ( P->Next ) {
 		P->Next->Prev = P->Prev;
 	}
-	if (P == LargeFirstUsedPage)
-	{
+	if ( P == LargeFirstUsedPage ) {
 		LargeFirstUsedPage = P->Next;
 	}
 	P->Next = P->Prev = NULL;
 
-	FreePage(P);
+	FreePage( P );
 }
 
 //==========================================================================
@@ -338,8 +313,7 @@ void QMemHeap::LargeFree(void* Ptr)
 //
 //==========================================================================
 
-void Mem_Shutdown()
-{
+void Mem_Shutdown() {
 #ifdef MEM_DEBUG
 	Mem_MemDebugDump();
 #endif
@@ -357,32 +331,28 @@ void Mem_Shutdown()
 //
 //==========================================================================
 
-void* Mem_Alloc(int size, const char* FileName, int LineNumber)
-{
-	if (!size)
-	{
+void* Mem_Alloc( int size, const char* FileName, int LineNumber ) {
+	if ( !size ) {
 		return NULL;
 	}
 
-	void* ptr = MainHeap.Alloc(size + sizeof(MemDebug_t));
-	if (!ptr)
-	{
+	void* ptr = MainHeap.Alloc( size + sizeof ( MemDebug_t ) );
+	if ( !ptr ) {
 		//	It should always return valid pointer.
-		common->FatalError("MainHeap.Alloc failed");
+		common->FatalError( "MainHeap.Alloc failed" );
 	}
 
-	MemDebug_t* m = (MemDebug_t*)ptr;
+	MemDebug_t* m = ( MemDebug_t* )ptr;
 	m->FileName = FileName;
 	m->LineNumber = LineNumber;
 	m->Size = size;
 	m->Next = MemDebug;
-	if (MemDebug)
-	{
+	if ( MemDebug ) {
 		MemDebug->Prev = m;
 	}
 	MemDebug = m;
 
-	return (byte*)ptr + sizeof(MemDebug_t);
+	return ( byte* )ptr + sizeof ( MemDebug_t );
 }
 
 //==========================================================================
@@ -391,10 +361,9 @@ void* Mem_Alloc(int size, const char* FileName, int LineNumber)
 //
 //==========================================================================
 
-void* Mem_ClearedAlloc(int size, const char* FileName, int LineNumber)
-{
-	void* P = Mem_Alloc(size, FileName, LineNumber);
-	Com_Memset(P, 0, size);
+void* Mem_ClearedAlloc( int size, const char* FileName, int LineNumber ) {
+	void* P = Mem_Alloc( size, FileName, LineNumber );
+	Com_Memset( P, 0, size );
 	return P;
 }
 
@@ -404,29 +373,23 @@ void* Mem_ClearedAlloc(int size, const char* FileName, int LineNumber)
 //
 //==========================================================================
 
-void Mem_Free(void* ptr, const char* FileName, int LineNumber)
-{
-	if (!ptr)
-	{
+void Mem_Free( void* ptr, const char* FileName, int LineNumber ) {
+	if ( !ptr ) {
 		return;
 	}
 
 	//	Unlink debug info.
-	MemDebug_t* m = (MemDebug_t*)((char*)ptr - sizeof(MemDebug_t));
-	if (m->Next)
-	{
+	MemDebug_t* m = ( MemDebug_t* )( ( char* )ptr - sizeof ( MemDebug_t ) );
+	if ( m->Next ) {
 		m->Next->Prev = m->Prev;
 	}
-	if (m == MemDebug)
-	{
+	if ( m == MemDebug ) {
 		MemDebug = m->Next;
-	}
-	else
-	{
+	} else   {
 		m->Prev->Next = m->Next;
 	}
 
-	MainHeap.Free((char*)ptr - sizeof(MemDebug_t));
+	MainHeap.Free( ( char* )ptr - sizeof ( MemDebug_t ) );
 }
 
 //==========================================================================
@@ -435,16 +398,14 @@ void Mem_Free(void* ptr, const char* FileName, int LineNumber)
 //
 //==========================================================================
 
-static void Mem_MemDebugDump()
-{
+static void Mem_MemDebugDump() {
 	int NumBlocks = 0;
-	for (MemDebug_t* m = MemDebug; m; m = m->Next)
-	{
-		common->Printf("block %p size %8d at %s:%d\n", m + 1, m->Size,
-			m->FileName, m->LineNumber);
+	for ( MemDebug_t* m = MemDebug; m; m = m->Next ) {
+		common->Printf( "block %p size %8d at %s:%d\n", m + 1, m->Size,
+			m->FileName, m->LineNumber );
 		NumBlocks++;
 	}
-	common->Printf("%d blocks allocated\n", NumBlocks);
+	common->Printf( "%d blocks allocated\n", NumBlocks );
 }
 
 #else
@@ -455,18 +416,15 @@ static void Mem_MemDebugDump()
 //
 //==========================================================================
 
-void* Mem_Alloc(int size)
-{
-	if (!size)
-	{
+void* Mem_Alloc( int size ) {
+	if ( !size ) {
 		return NULL;
 	}
 
-	void* ptr = MainHeap.Alloc(size);
-	if (!ptr)
-	{
+	void* ptr = MainHeap.Alloc( size );
+	if ( !ptr ) {
 		//	It should always return valid pointer.
-		common->FatalError("MainHeap.Alloc failed");
+		common->FatalError( "MainHeap.Alloc failed" );
 	}
 	return ptr;
 }
@@ -477,10 +435,9 @@ void* Mem_Alloc(int size)
 //
 //==========================================================================
 
-void* Mem_ClearedAlloc(int size)
-{
-	void* P = Mem_Alloc(size);
-	Com_Memset(P, 0, size);
+void* Mem_ClearedAlloc( int size ) {
+	void* P = Mem_Alloc( size );
+	Com_Memset( P, 0, size );
 	return P;
 }
 
@@ -490,14 +447,12 @@ void* Mem_ClearedAlloc(int size)
 //
 //==========================================================================
 
-void Mem_Free(void* ptr)
-{
-	if (!ptr)
-	{
+void Mem_Free( void* ptr ) {
+	if ( !ptr ) {
 		return;
 	}
 
-	MainHeap.Free(ptr);
+	MainHeap.Free( ptr );
 }
 
 #endif

@@ -487,183 +487,174 @@ vec3_t monster_flash_offset [] =
 	{ 0.0, 0.0, 0.0 }
 };
 
-void CLQ2_LogoutEffect(vec3_t org, int type)
-{
-	if (type == Q2MZ_LOGIN)
-	{
-		CLQ2_PlayerSpawnParticles(org, 0xd0);	// green
-	}
-	else if (type == Q2MZ_LOGOUT)
-	{
-		CLQ2_PlayerSpawnParticles(org, 0x40);	// red
-	}
-	else
-	{
-		CLQ2_PlayerSpawnParticles(org, 0xe0);	// yellow
+void CLQ2_LogoutEffect( vec3_t org, int type ) {
+	if ( type == Q2MZ_LOGIN ) {
+		CLQ2_PlayerSpawnParticles( org, 0xd0 );		// green
+	} else if ( type == Q2MZ_LOGOUT )     {
+		CLQ2_PlayerSpawnParticles( org, 0x40 );		// red
+	} else   {
+		CLQ2_PlayerSpawnParticles( org, 0xe0 );		// yellow
 	}
 }
 
-void CLQ2_ParseMuzzleFlash(QMsg& message)
-{
+void CLQ2_ParseMuzzleFlash( QMsg& message ) {
 
 	int i = message.ReadShort();
-	if (i < 1 || i >= MAX_EDICTS_Q2)
-	{
-		common->Error("CLQ2_ParseMuzzleFlash: bad entity");
+	if ( i < 1 || i >= MAX_EDICTS_Q2 ) {
+		common->Error( "CLQ2_ParseMuzzleFlash: bad entity" );
 	}
 
 	int weapon = message.ReadByte();
 	int silenced = weapon & Q2MZ_SILENCED;
 	weapon &= ~Q2MZ_SILENCED;
 
-	q2centity_t* pl = &clq2_entities[i];
+	q2centity_t* pl = &clq2_entities[ i ];
 
-	float radius = (silenced ?  100 : 200) + (rand() & 31);
+	float radius = ( silenced ?  100 : 200 ) + ( rand() & 31 );
 	float volume = silenced ? 0.2 : 1;
 
 	int delay = 0;
 	vec3_t color;
-	char soundname[64];
-	switch (weapon)
-	{
+	char soundname[ 64 ];
+	switch ( weapon ) {
 	case Q2MZ_BLASTER:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/blastf1a.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/blastf1a.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_BLUEHYPERBLASTER:
-		color[0] = 0; color[1] = 0; color[2] = 1;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/hyprbf1a.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 0; color[ 1 ] = 0; color[ 2 ] = 1;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/hyprbf1a.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_HYPERBLASTER:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/hyprbf1a.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/hyprbf1a.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_MACHINEGUN:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_SHOTGUN:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/shotgf1b.wav"), volume, ATTN_NORM, 0);
-		S_StartSound(NULL, i, Q2CHAN_AUTO,   S_RegisterSound("weapons/shotgr1b.wav"), volume, ATTN_NORM, 0.1);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/shotgf1b.wav" ), volume, ATTN_NORM, 0 );
+		S_StartSound( NULL, i, Q2CHAN_AUTO,   S_RegisterSound( "weapons/shotgr1b.wav" ), volume, ATTN_NORM, 0.1 );
 		break;
 	case Q2MZ_SSHOTGUN:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/sshotf1b.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/sshotf1b.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_CHAINGUN1:
-		radius = 200 + (rand() & 31);
-		color[0] = 1; color[1] = 0.25; color[2] = 0;
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
+		radius = 200 + ( rand() & 31 );
+		color[ 0 ] = 1; color[ 1 ] = 0.25; color[ 2 ] = 0;
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_CHAINGUN2:
-		radius = 225 + (rand() & 31);
-		color[0] = 1; color[1] = 0.5; color[2] = 0;
+		radius = 225 + ( rand() & 31 );
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0;
 		delay = 0.1;	// long delay
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.05);
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0 );
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0.05 );
 		break;
 	case Q2MZ_CHAINGUN3:
-		radius = 250 + (rand() & 31);
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		radius = 250 + ( rand() & 31 );
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 0.1;	// long delay
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0);
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.033);
-		String::Sprintf(soundname, sizeof(soundname), "weapons/machgf%ib.wav", (rand() % 5) + 1);
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound(soundname), volume, ATTN_NORM, 0.066);
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0 );
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0.033 );
+		String::Sprintf( soundname, sizeof ( soundname ), "weapons/machgf%ib.wav", ( rand() % 5 ) + 1 );
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( soundname ), volume, ATTN_NORM, 0.066 );
 		break;
 	case Q2MZ_RAILGUN:
-		color[0] = 0.5; color[1] = 0.5; color[2] = 1.0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/railgf1a.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 0.5; color[ 1 ] = 0.5; color[ 2 ] = 1.0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/railgf1a.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_ROCKET:
-		color[0] = 1; color[1] = 0.5; color[2] = 0.2;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/rocklf1a.wav"), volume, ATTN_NORM, 0);
-		S_StartSound(NULL, i, Q2CHAN_AUTO,   S_RegisterSound("weapons/rocklr1b.wav"), volume, ATTN_NORM, 0.1);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.2;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/rocklf1a.wav" ), volume, ATTN_NORM, 0 );
+		S_StartSound( NULL, i, Q2CHAN_AUTO,   S_RegisterSound( "weapons/rocklr1b.wav" ), volume, ATTN_NORM, 0.1 );
 		break;
 	case Q2MZ_GRENADE:
-		color[0] = 1; color[1] = 0.5; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), volume, ATTN_NORM, 0);
-		S_StartSound(NULL, i, Q2CHAN_AUTO,   S_RegisterSound("weapons/grenlr1b.wav"), volume, ATTN_NORM, 0.1);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/grenlf1a.wav" ), volume, ATTN_NORM, 0 );
+		S_StartSound( NULL, i, Q2CHAN_AUTO,   S_RegisterSound( "weapons/grenlr1b.wav" ), volume, ATTN_NORM, 0.1 );
 		break;
 	case Q2MZ_BFG:
-		color[0] = 0; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/bfg__f1y.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 0; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/bfg__f1y.wav" ), volume, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ_LOGIN:
-		color[0] = 0; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 0; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 1.0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CLQ2_LogoutEffect(pl->current.origin, weapon);
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/grenlf1a.wav" ), 1, ATTN_NORM, 0 );
+		CLQ2_LogoutEffect( pl->current.origin, weapon );
 		break;
 	case Q2MZ_LOGOUT:
-		color[0] = 1; color[1] = 0; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 0; color[ 2 ] = 0;
 		delay = 1.0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CLQ2_LogoutEffect(pl->current.origin, weapon);
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/grenlf1a.wav" ), 1, ATTN_NORM, 0 );
+		CLQ2_LogoutEffect( pl->current.origin, weapon );
 		break;
 	case Q2MZ_RESPAWN:
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 1.0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/grenlf1a.wav"), 1, ATTN_NORM, 0);
-		CLQ2_LogoutEffect(pl->current.origin, weapon);
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/grenlf1a.wav" ), 1, ATTN_NORM, 0 );
+		CLQ2_LogoutEffect( pl->current.origin, weapon );
 		break;
 	// RAFAEL
 	case Q2MZ_PHALANX:
-		color[0] = 1; color[1] = 0.5; color[2] = 0.5;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/plasshot.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.5;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/plasshot.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	// RAFAEL
 	case Q2MZ_IONRIPPER:
-		color[0] = 1; color[1] = 0.5; color[2] = 0.5;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/rippfire.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.5;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/rippfire.wav" ), volume, ATTN_NORM, 0 );
 		break;
 
 // ======================
 // PGM
 	case Q2MZ_ETF_RIFLE:
-		color[0] = 0.9; color[1] = 0.7; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/nail1.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 0.9; color[ 1 ] = 0.7; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/nail1.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_SHOTGUN2:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/shotg2.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/shotg2.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_HEATBEAM:
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 100;
 		break;
 	case Q2MZ_BLASTER2:
-		color[0] = 0; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 0; color[ 1 ] = 1; color[ 2 ] = 0;
 		// FIXME - different sound for blaster2 ??
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/blastf1a.wav"), volume, ATTN_NORM, 0);
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/blastf1a.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_TRACKER:
 		// negative flashes handled the same in gl/soft until CL_AddDLights
-		color[0] = -1; color[1] = -1; color[2] = -1;
-		S_StartSound(NULL, i, Q2CHAN_WEAPON, S_RegisterSound("weapons/disint2.wav"), volume, ATTN_NORM, 0);
+		color[ 0 ] = -1; color[ 1 ] = -1; color[ 2 ] = -1;
+		S_StartSound( NULL, i, Q2CHAN_WEAPON, S_RegisterSound( "weapons/disint2.wav" ), volume, ATTN_NORM, 0 );
 		break;
 	case Q2MZ_NUKE1:
-		color[0] = 1; color[1] = 0; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 0; color[ 2 ] = 0;
 		delay = 100;
 		break;
 	case Q2MZ_NUKE2:
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 100;
 		break;
 	case Q2MZ_NUKE4:
-		color[0] = 0; color[1] = 0; color[2] = 1;
+		color[ 0 ] = 0; color[ 1 ] = 0; color[ 2 ] = 1;
 		delay = 100;
 		break;
 	case Q2MZ_NUKE8:
-		color[0] = 0; color[1] = 1; color[2] = 1;
+		color[ 0 ] = 0; color[ 1 ] = 1; color[ 2 ] = 1;
 		delay = 100;
 		break;
 // PGM
@@ -671,32 +662,29 @@ void CLQ2_ParseMuzzleFlash(QMsg& message)
 	default:
 		return;
 	}
-	CLQ2_MuzzleFlashLight(i, pl->current.origin, pl->current.angles, radius, delay, color);
+	CLQ2_MuzzleFlashLight( i, pl->current.origin, pl->current.angles, radius, delay, color );
 }
 
-void CLQ2_ParseMuzzleFlash2(QMsg& message)
-{
+void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	int ent = message.ReadShort();
-	if (ent < 1 || ent >= MAX_EDICTS_Q2)
-	{
-		common->Error("CLQ2_ParseMuzzleFlash2: bad entity");
+	if ( ent < 1 || ent >= MAX_EDICTS_Q2 ) {
+		common->Error( "CLQ2_ParseMuzzleFlash2: bad entity" );
 	}
 	int flash_number = message.ReadByte();
 
 	// locate the origin
 	vec3_t forward, right;
-	AngleVectors(clq2_entities[ent].current.angles, forward, right, NULL);
+	AngleVectors( clq2_entities[ ent ].current.angles, forward, right, NULL );
 	vec3_t origin;
-	origin[0] = clq2_entities[ent].current.origin[0] + forward[0] * monster_flash_offset[flash_number][0] + right[0] * monster_flash_offset[flash_number][1];
-	origin[1] = clq2_entities[ent].current.origin[1] + forward[1] * monster_flash_offset[flash_number][0] + right[1] * monster_flash_offset[flash_number][1];
-	origin[2] = clq2_entities[ent].current.origin[2] + forward[2] * monster_flash_offset[flash_number][0] + right[2] * monster_flash_offset[flash_number][1] + monster_flash_offset[flash_number][2];
+	origin[ 0 ] = clq2_entities[ ent ].current.origin[ 0 ] + forward[ 0 ] * monster_flash_offset[ flash_number ][ 0 ] + right[ 0 ] * monster_flash_offset[ flash_number ][ 1 ];
+	origin[ 1 ] = clq2_entities[ ent ].current.origin[ 1 ] + forward[ 1 ] * monster_flash_offset[ flash_number ][ 0 ] + right[ 1 ] * monster_flash_offset[ flash_number ][ 1 ];
+	origin[ 2 ] = clq2_entities[ ent ].current.origin[ 2 ] + forward[ 2 ] * monster_flash_offset[ flash_number ][ 0 ] + right[ 2 ] * monster_flash_offset[ flash_number ][ 1 ] + monster_flash_offset[ flash_number ][ 2 ];
 
-	float radius = 200 + (rand() & 31);
+	float radius = 200 + ( rand() & 31 );
 	int delay = 0;
 	vec3_t color;
-	char soundname[64];
-	switch (flash_number)
-	{
+	char soundname[ 64 ];
+	switch ( flash_number ) {
 	case Q2MZ2_INFANTRY_MACHINEGUN_1:
 	case Q2MZ2_INFANTRY_MACHINEGUN_2:
 	case Q2MZ2_INFANTRY_MACHINEGUN_3:
@@ -710,10 +698,10 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_INFANTRY_MACHINEGUN_11:
 	case Q2MZ2_INFANTRY_MACHINEGUN_12:
 	case Q2MZ2_INFANTRY_MACHINEGUN_13:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_SOLDIER_MACHINEGUN_1:
@@ -724,10 +712,10 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_SOLDIER_MACHINEGUN_6:
 	case Q2MZ2_SOLDIER_MACHINEGUN_7:
 	case Q2MZ2_SOLDIER_MACHINEGUN_8:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("soldier/solatck3.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "soldier/solatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_GUNNER_MACHINEGUN_1:
@@ -738,10 +726,10 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_GUNNER_MACHINEGUN_6:
 	case Q2MZ2_GUNNER_MACHINEGUN_7:
 	case Q2MZ2_GUNNER_MACHINEGUN_8:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("gunner/gunatck2.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "gunner/gunatck2.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_ACTOR_MACHINEGUN_1:
@@ -752,11 +740,11 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_SUPERTANK_MACHINEGUN_5:
 	case Q2MZ2_SUPERTANK_MACHINEGUN_6:
 	case Q2MZ2_TURRET_MACHINEGUN:			// PGM
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NORM, 0);
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_BOSS2_MACHINEGUN_L1:
@@ -766,11 +754,11 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_BOSS2_MACHINEGUN_L5:
 	case Q2MZ2_CARRIER_MACHINEGUN_L1:		// PMM
 	case Q2MZ2_CARRIER_MACHINEGUN_L2:		// PMM
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("infantry/infatck1.wav"), 1, ATTN_NONE, 0);
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NONE, 0 );
 		break;
 
 	case Q2MZ2_SOLDIER_BLASTER_1:
@@ -782,29 +770,29 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_SOLDIER_BLASTER_7:
 	case Q2MZ2_SOLDIER_BLASTER_8:
 	case Q2MZ2_TURRET_BLASTER:			// PGM
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("soldier/solatck2.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "soldier/solatck2.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_FLYER_BLASTER_1:
 	case Q2MZ2_FLYER_BLASTER_2:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("flyer/flyatck3.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "flyer/flyatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_MEDIC_BLASTER_1:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("medic/medatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "medic/medatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_HOVER_BLASTER_1:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("hover/hovatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "hover/hovatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_FLOAT_BLASTER_1:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("floater/fltatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "floater/fltatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_SOLDIER_SHOTGUN_1:
@@ -815,16 +803,16 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_SOLDIER_SHOTGUN_6:
 	case Q2MZ2_SOLDIER_SHOTGUN_7:
 	case Q2MZ2_SOLDIER_SHOTGUN_8:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("soldier/solatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "soldier/solatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_TANK_BLASTER_1:
 	case Q2MZ2_TANK_BLASTER_2:
 	case Q2MZ2_TANK_BLASTER_3:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("tank/tnkatck3.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "tank/tnkatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_TANK_MACHINEGUN_1:
@@ -846,24 +834,24 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_TANK_MACHINEGUN_17:
 	case Q2MZ2_TANK_MACHINEGUN_18:
 	case Q2MZ2_TANK_MACHINEGUN_19:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		String::Sprintf(soundname, sizeof(soundname), "tank/tnkatk2%c.wav", 'a' + rand() % 5);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound(soundname), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		String::Sprintf( soundname, sizeof ( soundname ), "tank/tnkatk2%c.wav", 'a' + rand() % 5 );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( soundname ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_CHICK_ROCKET_1:
 	case Q2MZ2_TURRET_ROCKET:			// PGM
-		color[0] = 1; color[1] = 0.5; color[2] = 0.2;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("chick/chkatck2.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.2;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "chick/chkatck2.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_TANK_ROCKET_1:
 	case Q2MZ2_TANK_ROCKET_2:
 	case Q2MZ2_TANK_ROCKET_3:
-		color[0] = 1; color[1] = 0.5; color[2] = 0.2;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("tank/tnkatck1.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.2;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "tank/tnkatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_SUPERTANK_ROCKET_1:
@@ -877,16 +865,16 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 //	case Q2MZ2_CARRIER_ROCKET_2:
 //	case Q2MZ2_CARRIER_ROCKET_3:
 //	case Q2MZ2_CARRIER_ROCKET_4:
-		color[0] = 1; color[1] = 0.5; color[2] = 0.2;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("tank/rocket.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0.2;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "tank/rocket.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_GUNNER_GRENADE_1:
 	case Q2MZ2_GUNNER_GRENADE_2:
 	case Q2MZ2_GUNNER_GRENADE_3:
 	case Q2MZ2_GUNNER_GRENADE_4:
-		color[0] = 1; color[1] = 0.5; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("gunner/gunatck3.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 0.5; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "gunner/gunatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_GLADIATOR_RAILGUN_1:
@@ -894,12 +882,12 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_CARRIER_RAILGUN:
 	case Q2MZ2_WIDOW_RAIL:
 		// pmm
-		color[0] = 0.5; color[1] = 0.5; color[2] = 1.0;
+		color[ 0 ] = 0.5; color[ 1 ] = 0.5; color[ 2 ] = 1.0;
 		break;
 
 // --- Xian's shit starts ---
 	case Q2MZ2_MAKRON_BFG:
-		color[0] = 0.5; color[1] = 1; color[2] = 0.5;
+		color[ 0 ] = 0.5; color[ 1 ] = 1; color[ 2 ] = 0.5;
 		//S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("makron/bfg_fire.wav"), 1, ATTN_NORM, 0);
 		break;
 
@@ -920,8 +908,8 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_MAKRON_BLASTER_15:
 	case Q2MZ2_MAKRON_BLASTER_16:
 	case Q2MZ2_MAKRON_BLASTER_17:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("makron/blaster.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "makron/blaster.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_JORG_MACHINEGUN_L1:
@@ -930,10 +918,10 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_JORG_MACHINEGUN_L4:
 	case Q2MZ2_JORG_MACHINEGUN_L5:
 	case Q2MZ2_JORG_MACHINEGUN_L6:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("boss3/xfire.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "boss3/xfire.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_JORG_MACHINEGUN_R1:
@@ -942,13 +930,13 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_JORG_MACHINEGUN_R4:
 	case Q2MZ2_JORG_MACHINEGUN_R5:
 	case Q2MZ2_JORG_MACHINEGUN_R6:
-		color[0] = 1; color[1] = 1; color[2] = 0;
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
 		break;
 
 	case Q2MZ2_JORG_BFG_1:
-		color[0] = 0.5; color[1] = 1; color[2] = 0.5;
+		color[ 0 ] = 0.5; color[ 1 ] = 1; color[ 2 ] = 0.5;
 		break;
 
 	case Q2MZ2_BOSS2_MACHINEGUN_R1:
@@ -959,10 +947,10 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_CARRIER_MACHINEGUN_R1:			// PMM
 	case Q2MZ2_CARRIER_MACHINEGUN_R2:			// PMM
 
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect(origin, vec3_origin, 0, 40);
-		CLQ2_SmokeAndFlash(origin);
+		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_SmokeAndFlash( origin );
 		break;
 
 // ======
@@ -1006,13 +994,13 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_WIDOW_RUN_6:
 	case Q2MZ2_WIDOW_RUN_7:
 	case Q2MZ2_WIDOW_RUN_8:
-		color[0] = 0; color[1] = 1; color[2] = 0;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("tank/tnkatck3.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = 0; color[ 1 ] = 1; color[ 2 ] = 0;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "tank/tnkatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_WIDOW_DISRUPTOR:
-		color[0] = -1; color[1] = -1; color[2] = -1;
-		S_StartSound(NULL, ent, Q2CHAN_WEAPON, S_RegisterSound("weapons/disint2.wav"), 1, ATTN_NORM, 0);
+		color[ 0 ] = -1; color[ 1 ] = -1; color[ 2 ] = -1;
+		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "weapons/disint2.wav" ), 1, ATTN_NORM, 0 );
 		break;
 
 	case Q2MZ2_WIDOW_PLASMABEAM:
@@ -1032,8 +1020,8 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	case Q2MZ2_WIDOW2_BEAM_SWEEP_9:
 	case Q2MZ2_WIDOW2_BEAM_SWEEP_10:
 	case Q2MZ2_WIDOW2_BEAM_SWEEP_11:
-		radius = 300 + (rand() & 100);
-		color[0] = 1; color[1] = 1; color[2] = 0;
+		radius = 300 + ( rand() & 100 );
+		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 		delay = 200;
 		break;
 // ROGUE
@@ -1044,72 +1032,59 @@ void CLQ2_ParseMuzzleFlash2(QMsg& message)
 	default:
 		return;
 	}
-	CLQ2_MuzzleFlash2Light(ent, origin, radius, delay, color);
+	CLQ2_MuzzleFlash2Light( ent, origin, radius, delay, color );
 }
 
-void CLQ2_FlyEffect(q2centity_t* ent, vec3_t origin)
-{
+void CLQ2_FlyEffect( q2centity_t* ent, vec3_t origin ) {
 	int starttime;
-	if (ent->fly_stoptime < cl.serverTime)
-	{
+	if ( ent->fly_stoptime < cl.serverTime ) {
 		starttime = cl.serverTime;
 		ent->fly_stoptime = cl.serverTime + 60000;
-	}
-	else
-	{
+	} else   {
 		starttime = ent->fly_stoptime - 60000;
 	}
 
 	int n = cl.serverTime - starttime;
 	int count;
-	if (n < 20000)
-	{
+	if ( n < 20000 ) {
 		count = n * 162 / 20000.0;
-	}
-	else
-	{
+	} else   {
 		n = ent->fly_stoptime - cl.serverTime;
-		if (n < 20000)
-		{
+		if ( n < 20000 ) {
 			count = n * 162 / 20000.0;
-		}
-		else
-		{
+		} else   {
 			count = 162;
 		}
 	}
 
-	CLQ2_FlyParticles(origin, count);
+	CLQ2_FlyParticles( origin, count );
 }
 
 //	An entity has just been parsed that has an event value
 // the female events are there for backwards compatability
-void CLQ2_EntityEvent(q2entity_state_t* ent)
-{
-	switch (ent->event)
-	{
+void CLQ2_EntityEvent( q2entity_state_t* ent ) {
+	switch ( ent->event ) {
 	case Q2EV_ITEM_RESPAWN:
-		S_StartSound(NULL, ent->number, Q2CHAN_WEAPON, S_RegisterSound("items/respawn1.wav"), 1, ATTN_IDLE, 0);
-		CLQ2_ItemRespawnParticles(ent->origin);
+		S_StartSound( NULL, ent->number, Q2CHAN_WEAPON, S_RegisterSound( "items/respawn1.wav" ), 1, ATTN_IDLE, 0 );
+		CLQ2_ItemRespawnParticles( ent->origin );
 		break;
 	case Q2EV_PLAYER_TELEPORT:
-		S_StartSound(NULL, ent->number, Q2CHAN_WEAPON, S_RegisterSound("misc/tele1.wav"), 1, ATTN_IDLE, 0);
-		CLQ2_TeleportParticles(ent->origin);
+		S_StartSound( NULL, ent->number, Q2CHAN_WEAPON, S_RegisterSound( "misc/tele1.wav" ), 1, ATTN_IDLE, 0 );
+		CLQ2_TeleportParticles( ent->origin );
 		break;
 	case Q2EV_FOOTSTEP:
-		if (clq2_footsteps->value)
-		{
-			S_StartSound(NULL, ent->number, Q2CHAN_BODY, clq2_sfx_footsteps[rand() & 3], 1, ATTN_NORM, 0);
+		if ( clq2_footsteps->value ) {
+			S_StartSound( NULL, ent->number, Q2CHAN_BODY, clq2_sfx_footsteps[ rand() & 3 ], 1, ATTN_NORM, 0 );
 		}
 		break;
 	case Q2EV_FALLSHORT:
-		S_StartSound(NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound("player/land1.wav"), 1, ATTN_NORM, 0);
+		S_StartSound( NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound( "player/land1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 	case Q2EV_FALL:
-		S_StartSound(NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound("*fall2.wav"), 1, ATTN_NORM, 0);
+		S_StartSound( NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound( "*fall2.wav" ), 1, ATTN_NORM, 0 );
 		break;
 	case Q2EV_FALLFAR:
-		S_StartSound(NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound("*fall1.wav"), 1, ATTN_NORM, 0);
+		S_StartSound( NULL, ent->number, Q2CHAN_AUTO, S_RegisterSound( "*fall1.wav" ), 1, ATTN_NORM, 0 );
 		break;
 	}
 }

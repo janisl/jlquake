@@ -30,7 +30,7 @@
 static bool msgInit = false;
 static huffman_t msgHuff;
 
-static int msg_hData[256] =
+static int msg_hData[ 256 ] =
 {
 	250315,		// 0
 	41193,		// 1
@@ -290,69 +290,57 @@ static int msg_hData[256] =
 	13504,		// 255
 };
 
-static void MSG_initHuffman()
-{
+static void MSG_initHuffman() {
 	int i,j;
 
 	msgInit = true;
-	Huff_Init(&msgHuff);
-	for (i = 0; i < 256; i++)
-	{
-		for (j = 0; j < msg_hData[i]; j++)
-		{
-			Huff_addRef(&msgHuff.compressor,    (byte)i);			// Do update
-			Huff_addRef(&msgHuff.decompressor,  (byte)i);			// Do update
+	Huff_Init( &msgHuff );
+	for ( i = 0; i < 256; i++ ) {
+		for ( j = 0; j < msg_hData[ i ]; j++ ) {
+			Huff_addRef( &msgHuff.compressor,    ( byte )i );			// Do update
+			Huff_addRef( &msgHuff.decompressor,  ( byte )i );			// Do update
 		}
 	}
 }
 
-void QMsg::Init(byte* NewData, int Length)
-{
-	if (!msgInit)
-	{
+void QMsg::Init( byte* NewData, int Length ) {
+	if ( !msgInit ) {
 		MSG_initHuffman();
 	}
-	Com_Memset(this, 0, sizeof(*this));
+	Com_Memset( this, 0, sizeof ( *this ) );
 	_data = NewData;
 	maxsize = Length;
-	if (GGameType & GAME_Tech3)
-	{
+	if ( GGameType & GAME_Tech3 ) {
 		allowoverflow = true;
 	}
 }
 
-void QMsg::InitOOB(byte* NewData, int Length)
-{
-	if (!msgInit)
-	{
+void QMsg::InitOOB( byte* NewData, int Length ) {
+	if ( !msgInit ) {
 		MSG_initHuffman();
 	}
-	Com_Memset(this, 0, sizeof(*this));
+	Com_Memset( this, 0, sizeof ( *this ) );
 	_data = NewData;
 	maxsize = Length;
 	oob = true;
-	if (GGameType & GAME_Tech3)
-	{
+	if ( GGameType & GAME_Tech3 ) {
 		allowoverflow = true;
 	}
 }
 
-void QMsg::Clear()
-{
+void QMsg::Clear() {
 	cursize = 0;
 	overflowed = false;
 	bit = 0;					//<- in bits
 }
 
-void QMsg::Bitstream()
-{
+void QMsg::Bitstream() {
 	oob = false;
 }
 
-void QMsg::Uncompressed()
-{
+void QMsg::Uncompressed() {
 	// align to byte-boundary
-	bit = (bit + 7) & ~7;
+	bit = ( bit + 7 ) & ~7;
 	oob = true;
 }
 
@@ -360,27 +348,23 @@ void QMsg::Uncompressed()
 //	Copy a QMsg in case we need to store it as is for a bit
 // (as I needed this to keep an QMsg from a static var for later use)
 // sets data buffer as Init does prior to do the copy
-void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
-{
-	if (Length < Src.cursize)
-	{
-		common->Error("QMsg::Copy: can't copy into a smaller QMsg buffer");
+void QMsg::Copy( byte* NewData, int Length, QMsg& Src ) {
+	if ( Length < Src.cursize ) {
+		common->Error( "QMsg::Copy: can't copy into a smaller QMsg buffer" );
 	}
-	Com_Memcpy(this, &Src, sizeof(QMsg));
+	Com_Memcpy( this, &Src, sizeof ( QMsg ) );
 	_data = NewData;
-	Com_Memcpy(_data, Src._data, Src.cursize);
+	Com_Memcpy( _data, Src._data, Src.cursize );
 }
 
-void QMsg::BeginReading()
-{
+void QMsg::BeginReading() {
 	readcount = 0;
 	badread = false;
 	bit = 0;
 	oob = false;
 }
 
-void QMsg::BeginReadingOOB()
-{
+void QMsg::BeginReadingOOB() {
 	readcount = 0;
 	badread = false;
 	bit = 0;
@@ -388,564 +372,446 @@ void QMsg::BeginReadingOOB()
 }
 
 //	Negative bit values include signs
-void QMsg::WriteBits(int Value, int NumBits)
-{
+void QMsg::WriteBits( int Value, int NumBits ) {
 	uncompsize += NumBits;
 
-	if (maxsize - cursize < (abs(NumBits) + 7) / 8)
-	{
-		if (!allowoverflow)
-		{
-			common->FatalError("SZ_GetSpace: overflow without allowoverflow set");
+	if ( maxsize - cursize < ( abs( NumBits ) + 7 ) / 8 ) {
+		if ( !allowoverflow ) {
+			common->FatalError( "SZ_GetSpace: overflow without allowoverflow set" );
 		}
-		if (!(GGameType & GAME_Tech3))
-		{
-			common->Printf("SZ_GetSpace: overflow\n");
+		if ( !( GGameType & GAME_Tech3 ) ) {
+			common->Printf( "SZ_GetSpace: overflow\n" );
 			Clear();
 		}
 		overflowed = true;
 		return;
 	}
 
-	if (NumBits == 0 || NumBits < -31 || NumBits > 32)
-	{
-		common->Error("QMsg::WriteBits: bad bits %i", NumBits);
+	if ( NumBits == 0 || NumBits < -31 || NumBits > 32 ) {
+		common->Error( "QMsg::WriteBits: bad bits %i", NumBits );
 	}
 
-	if (NumBits < 0)
-	{
+	if ( NumBits < 0 ) {
 		NumBits = -NumBits;
 	}
-	if (oob)
-	{
-		if (NumBits == 8)
-		{
-			_data[cursize] = Value;
+	if ( oob ) {
+		if ( NumBits == 8 ) {
+			_data[ cursize ] = Value;
 			cursize += 1;
 			bit += 8;
-		}
-		else if (NumBits == 16)
-		{
-			quint16* sp = (quint16*)&_data[cursize];
-			*sp = LittleShort(Value);
+		} else if ( NumBits == 16 )     {
+			quint16* sp = ( quint16* )&_data[ cursize ];
+			*sp = LittleShort( Value );
 			cursize += 2;
 			bit += 16;
-		}
-		else if (NumBits == 32)
-		{
-			quint32* ip = (quint32*)&_data[cursize];
-			*ip = LittleLong(Value);
+		} else if ( NumBits == 32 )     {
+			quint32* ip = ( quint32* )&_data[ cursize ];
+			*ip = LittleLong( Value );
 			cursize += 4;
 			bit += 32;
+		} else   {
+			common->Error( "can't read %d bits\n", NumBits );
 		}
-		else
-		{
-			common->Error("can't read %d bits\n", NumBits);
-		}
-	}
-	else
-	{
-		Value &= (0xffffffff >> (32 - NumBits));
-		if (NumBits & 7)
-		{
+	} else   {
+		Value &= ( 0xffffffff >> ( 32 - NumBits ) );
+		if ( NumBits & 7 ) {
 			int nbits = NumBits & 7;
-			for (int i = 0; i < nbits; i++)
-			{
-				Huff_putBit((Value & 1), _data, &bit);
-				Value = (Value >> 1);
+			for ( int i = 0; i < nbits; i++ ) {
+				Huff_putBit( ( Value & 1 ), _data, &bit );
+				Value = ( Value >> 1 );
 			}
 			NumBits = NumBits - nbits;
 		}
-		if (NumBits)
-		{
-			for (int i = 0; i < NumBits; i += 8)
-			{
-				Huff_offsetTransmit(&msgHuff.compressor, (Value & 0xff), _data, &bit);
-				Value = (Value >> 8);
+		if ( NumBits ) {
+			for ( int i = 0; i < NumBits; i += 8 ) {
+				Huff_offsetTransmit( &msgHuff.compressor, ( Value & 0xff ), _data, &bit );
+				Value = ( Value >> 8 );
 			}
 		}
-		cursize = (bit >> 3) + 1;
+		cursize = ( bit >> 3 ) + 1;
 	}
 }
 
-int QMsg::ReadBits(int NumBits)
-{
+int QMsg::ReadBits( int NumBits ) {
 	bool Sgn;
 
 	int Value = 0;
 
-	if (NumBits < 0)
-	{
+	if ( NumBits < 0 ) {
 		NumBits = -NumBits;
 		Sgn = true;
-	}
-	else
-	{
+	} else   {
 		Sgn = false;
 	}
 
-	if (oob)
-	{
-		if (NumBits == 8)
-		{
-			Value = _data[readcount];
+	if ( oob ) {
+		if ( NumBits == 8 ) {
+			Value = _data[ readcount ];
 			readcount += 1;
 			bit += 8;
-		}
-		else if (NumBits == 16)
-		{
-			quint16* sp = (quint16*)&_data[readcount];
-			Value = LittleShort(*sp);
+		} else if ( NumBits == 16 )     {
+			quint16* sp = ( quint16* )&_data[ readcount ];
+			Value = LittleShort( *sp );
 			readcount += 2;
 			bit += 16;
-		}
-		else if (NumBits == 32)
-		{
-			quint32* ip = (quint32*)&_data[readcount];
-			Value = LittleLong(*ip);
+		} else if ( NumBits == 32 )     {
+			quint32* ip = ( quint32* )&_data[ readcount ];
+			Value = LittleLong( *ip );
 			readcount += 4;
 			bit += 32;
+		} else   {
+			common->Error( "can't read %d bits\n", NumBits );
 		}
-		else
-		{
-			common->Error("can't read %d bits\n", NumBits);
-		}
-	}
-	else
-	{
+	} else   {
 		int nbits = 0;
-		if (NumBits & 7)
-		{
+		if ( NumBits & 7 ) {
 			nbits = NumBits & 7;
-			for (int i = 0; i < nbits; i++)
-			{
-				Value |= (Huff_getBit(_data, &bit) << i);
+			for ( int i = 0; i < nbits; i++ ) {
+				Value |= ( Huff_getBit( _data, &bit ) << i );
 			}
 			NumBits = NumBits - nbits;
 		}
-		if (NumBits)
-		{
-			for (int i = 0; i < NumBits; i += 8)
-			{
+		if ( NumBits ) {
+			for ( int i = 0; i < NumBits; i += 8 ) {
 				int Get;
-				Huff_offsetReceive(msgHuff.decompressor.tree, &Get, _data, &bit);
-				Value |= (Get << (i + nbits));
+				Huff_offsetReceive( msgHuff.decompressor.tree, &Get, _data, &bit );
+				Value |= ( Get << ( i + nbits ) );
 			}
 		}
-		readcount = (bit >> 3) + 1;
+		readcount = ( bit >> 3 ) + 1;
 	}
-	if (Sgn)
-	{
-		if (Value & (1 << (NumBits - 1)))
-		{
-			Value |= -1 ^ ((1 << NumBits) - 1);
+	if ( Sgn ) {
+		if ( Value & ( 1 << ( NumBits - 1 ) ) ) {
+			Value |= -1 ^ ( ( 1 << NumBits ) - 1 );
 		}
 	}
 
 	return Value;
 }
 
-void QMsg::WriteChar(int C)
-{
+void QMsg::WriteChar( int C ) {
 #ifdef PARANOID
-	if (C < MIN_QINT8 || C > MAX_QINT8)
-	{
-		common->FatalError("MSG_WriteChar: range error");
+	if ( C < MIN_QINT8 || C > MAX_QINT8 ) {
+		common->FatalError( "MSG_WriteChar: range error" );
 	}
 #endif
 
-	WriteBits(C, 8);
+	WriteBits( C, 8 );
 }
 
-void QMsg::WriteByte(int C)
-{
+void QMsg::WriteByte( int C ) {
 #ifdef PARANOID
-	if (C < 0 || C > MAX_QUINT8)
-	{
-		common->FatalError("MSG_WriteByte: range error");
+	if ( C < 0 || C > MAX_QUINT8 ) {
+		common->FatalError( "MSG_WriteByte: range error" );
 	}
 #endif
 
-	WriteBits(C, 8);
+	WriteBits( C, 8 );
 }
 
-void QMsg::WriteShort(int C)
-{
+void QMsg::WriteShort( int C ) {
 #ifdef PARANOID
-	if (C < MIN_QINT16 || c > MAX_QINT16)
-	{
-		common->FatalError("QMsg::WriteShort: range error");
+	if ( C < MIN_QINT16 || c > MAX_QINT16 ) {
+		common->FatalError( "QMsg::WriteShort: range error" );
 	}
 #endif
 
-	WriteBits(C, 16);
+	WriteBits( C, 16 );
 }
 
-void QMsg::WriteLong(int C)
-{
-	WriteBits(C, 32);
+void QMsg::WriteLong( int C ) {
+	WriteBits( C, 32 );
 }
 
-void QMsg::WriteFloat(float F)
-{
-	union
-	{
+void QMsg::WriteFloat( float F ) {
+	union {
 		float F;
 		int L;
 	} Dat;
 
 	Dat.F = F;
-	WriteBits(Dat.L, 32);
+	WriteBits( Dat.L, 32 );
 }
 
-void QMsg::WriteString(const char* S)
-{
-	if (!S)
-	{
-		WriteData("", 1);
-	}
-	else
-	{
-		char string[MAX_STRING_CHARS];
+void QMsg::WriteString( const char* S ) {
+	if ( !S ) {
+		WriteData( "", 1 );
+	} else   {
+		char string[ MAX_STRING_CHARS ];
 
-		int L = String::Length(S);
-		if (L >= MAX_STRING_CHARS)
-		{
-			common->Printf("QMsg::WriteString: MAX_STRING_CHARS");
-			WriteData("", 1);
+		int L = String::Length( S );
+		if ( L >= MAX_STRING_CHARS ) {
+			common->Printf( "QMsg::WriteString: MAX_STRING_CHARS" );
+			WriteData( "", 1 );
 			return;
 		}
-		String::NCpyZ(string, S, sizeof(string));
+		String::NCpyZ( string, S, sizeof ( string ) );
 
 		// get rid of 0xff chars, because old clients don't like them
-		for (int i = 0; i < L; i++)
-		{
-			if (((byte*)string)[i] > 127)
-			{
-				string[i] = '.';
+		for ( int i = 0; i < L; i++ ) {
+			if ( ( ( byte* )string )[ i ] > 127 ) {
+				string[ i ] = '.';
 			}
 		}
 
-		WriteData(string, L + 1);
+		WriteData( string, L + 1 );
 	}
 }
 
-void QMsg::WriteString2(const char* S)
-{
-	if (!S)
-	{
-		WriteData("", 1);
-	}
-	else
-	{
-		WriteData(S, String::Length(S) + 1);
+void QMsg::WriteString2( const char* S ) {
+	if ( !S ) {
+		WriteData( "", 1 );
+	} else   {
+		WriteData( S, String::Length( S ) + 1 );
 	}
 }
 
-void QMsg::WriteBigString(const char* S)
-{
-	if (!S)
-	{
-		WriteData("", 1);
-	}
-	else
-	{
-		char string[BIG_INFO_STRING];
+void QMsg::WriteBigString( const char* S ) {
+	if ( !S ) {
+		WriteData( "", 1 );
+	} else   {
+		char string[ BIG_INFO_STRING ];
 
-		int L = String::Length(S);
-		if (L >= BIG_INFO_STRING)
-		{
-			common->Printf("MSG_WriteString: BIG_INFO_STRING");
-			WriteData("", 1);
+		int L = String::Length( S );
+		if ( L >= BIG_INFO_STRING ) {
+			common->Printf( "MSG_WriteString: BIG_INFO_STRING" );
+			WriteData( "", 1 );
 			return;
 		}
-		String::NCpyZ(string, S, sizeof(string));
+		String::NCpyZ( string, S, sizeof ( string ) );
 
 		// get rid of 0xff chars, because old clients don't like them
-		for (int i = 0; i < L; i++)
-		{
-			if (((byte*)string)[i] > 127)
-			{
-				string[i] = '.';
+		for ( int i = 0; i < L; i++ ) {
+			if ( ( ( byte* )string )[ i ] > 127 ) {
+				string[ i ] = '.';
 			}
 		}
 
-		WriteData(string, L + 1);
+		WriteData( string, L + 1 );
 	}
 }
 
-void QMsg::WriteCoord(float F)
-{
-	WriteShort((int)(F * 8));
+void QMsg::WriteCoord( float F ) {
+	WriteShort( ( int )( F * 8 ) );
 }
 
-void QMsg::WritePos(const vec3_t pos)
-{
-	WriteCoord(pos[0]);
-	WriteCoord(pos[1]);
-	WriteCoord(pos[2]);
+void QMsg::WritePos( const vec3_t pos ) {
+	WriteCoord( pos[ 0 ] );
+	WriteCoord( pos[ 1 ] );
+	WriteCoord( pos[ 2 ] );
 }
 
-void QMsg::WriteDir(const vec3_t dir)
-{
-	WriteByte(DirToByte(dir));
+void QMsg::WriteDir( const vec3_t dir ) {
+	WriteByte( DirToByte( dir ) );
 }
 
-void QMsg::WriteAngle(float F)
-{
-	WriteByte((int)(F * 256 / 360) & 255);
+void QMsg::WriteAngle( float F ) {
+	WriteByte( ( int )( F * 256 / 360 ) & 255 );
 }
 
-void QMsg::WriteAngle16(float F)
-{
-	WriteShort(ANGLE2SHORT(F));
+void QMsg::WriteAngle16( float F ) {
+	WriteShort( ANGLE2SHORT( F ) );
 }
 
-void QMsg::WriteData(const void* Buffer, int Length)
-{
-	for (int i = 0; i < Length; i++)
-	{
-		WriteByte(((byte*)Buffer)[i]);
+void QMsg::WriteData( const void* Buffer, int Length ) {
+	for ( int i = 0; i < Length; i++ ) {
+		WriteByte( ( ( byte* )Buffer )[ i ] );
 	}
 }
 
 //	strcats onto the sizebuf
-void QMsg::Print(const char* S)
-{
-	if (!_data[cursize - 1])
-	{
+void QMsg::Print( const char* S ) {
+	if ( !_data[ cursize - 1 ] ) {
 		// write over trailing 0
 		cursize--;
 	}
-	WriteString2(S);
+	WriteString2( S );
 }
 
 //	Returns -1 if no more characters are available
-int QMsg::ReadChar()
-{
-	int C = (qint8)ReadBits(8);
-	if (readcount > cursize)
-	{
+int QMsg::ReadChar() {
+	int C = ( qint8 )ReadBits( 8 );
+	if ( readcount > cursize ) {
 		C = -1;
 		badread = true;
 	}
 	return C;
 }
 
-int QMsg::ReadByte()
-{
-	int C = (quint8)ReadBits(8);
-	if (readcount > cursize)
-	{
+int QMsg::ReadByte() {
+	int C = ( quint8 )ReadBits( 8 );
+	if ( readcount > cursize ) {
 		C = -1;
 		badread = true;
 	}
 	return C;
 }
 
-int QMsg::ReadShort()
-{
-	int C = (qint16)ReadBits(16);
-	if (readcount > cursize)
-	{
+int QMsg::ReadShort() {
+	int C = ( qint16 )ReadBits( 16 );
+	if ( readcount > cursize ) {
 		C = -1;
 		badread = true;
 	}
 	return C;
 }
 
-int QMsg::ReadLong()
-{
-	int C = ReadBits(32);
-	if (readcount > cursize)
-	{
+int QMsg::ReadLong() {
+	int C = ReadBits( 32 );
+	if ( readcount > cursize ) {
 		C = -1;
 		badread = true;
 	}
 	return C;
 }
 
-float QMsg::ReadFloat()
-{
-	union
-	{
+float QMsg::ReadFloat() {
+	union {
 		float F;
 		int L;
 	} Dat;
 
-	Dat.L = ReadBits(32);
-	if (readcount > cursize)
-	{
+	Dat.L = ReadBits( 32 );
+	if ( readcount > cursize ) {
 		Dat.F = -1;
 		badread = true;
 	}
 	return Dat.F;
 }
 
-const char* QMsg::ReadString()
-{
-	static char string[MAX_STRING_CHARS];
+const char* QMsg::ReadString() {
+	static char string[ MAX_STRING_CHARS ];
 
 	int L = 0;
-	do
-	{
+	do {
 		int C = ReadByte();		// use ReadByte so -1 is out of bounds
-		if (C == -1 || C == 0)
-		{
+		if ( C == -1 || C == 0 ) {
 			break;
 		}
 		// translate all fmt spec to avoid crash bugs
-		if (C == '%')
-		{
+		if ( C == '%' ) {
 			C = '.';
 		}
 		// don't allow higher ascii values
-		if (C > 127)
-		{
+		if ( C > 127 ) {
 			C = '.';
 		}
 
-		string[L] = C;
+		string[ L ] = C;
 		L++;
-	}
-	while (L < (int)sizeof(string) - 1);
+	} while ( L < ( int )sizeof ( string ) - 1 );
 
-	string[L] = 0;
+	string[ L ] = 0;
 
 	return string;
 }
 
-const char* QMsg::ReadString2()
-{
-	static char string[2048];
+const char* QMsg::ReadString2() {
+	static char string[ 2048 ];
 
 	int L = 0;
-	do
-	{
+	do {
 		int C = ReadChar();
-		if (C == -1 || C == 0)
-		{
+		if ( C == -1 || C == 0 ) {
 			break;
 		}
-		string[L] = C;
+		string[ L ] = C;
 		L++;
-	}
-	while (L < (int)sizeof(string) - 1);
+	} while ( L < ( int )sizeof ( string ) - 1 );
 
-	string[L] = 0;
+	string[ L ] = 0;
 
 	return string;
 }
 
-const char* QMsg::ReadBigString()
-{
-	static char string[BIG_INFO_STRING];
+const char* QMsg::ReadBigString() {
+	static char string[ BIG_INFO_STRING ];
 
 	int L = 0;
-	do
-	{
+	do {
 		int C = ReadByte();		// use ReadByte so -1 is out of bounds
-		if (C == -1 || C == 0)
-		{
+		if ( C == -1 || C == 0 ) {
 			break;
 		}
 		// translate all fmt spec to avoid crash bugs
-		if (C == '%')
-		{
+		if ( C == '%' ) {
 			C = '.';
 		}
 
-		string[L] = C;
+		string[ L ] = C;
 		L++;
-	}
-	while (L < (int)sizeof(string) - 1);
+	} while ( L < ( int )sizeof ( string ) - 1 );
 
-	string[L] = 0;
+	string[ L ] = 0;
 
 	return string;
 }
 
-const char* QMsg::ReadStringLine()
-{
-	static char string[MAX_STRING_CHARS];
+const char* QMsg::ReadStringLine() {
+	static char string[ MAX_STRING_CHARS ];
 
 	int L = 0;
-	do
-	{
+	do {
 		int C = ReadByte();		// use ReadByte so -1 is out of bounds
-		if (C == -1 || C == 0 || C == '\n')
-		{
+		if ( C == -1 || C == 0 || C == '\n' ) {
 			break;
 		}
 		// translate all fmt spec to avoid crash bugs
-		if (C == '%')
-		{
+		if ( C == '%' ) {
 			C = '.';
 		}
-		string[L] = C;
+		string[ L ] = C;
 		L++;
-	}
-	while (L < (int)sizeof(string) - 1);
+	} while ( L < ( int )sizeof ( string ) - 1 );
 
-	string[L] = 0;
+	string[ L ] = 0;
 
 	return string;
 }
 
-const char* QMsg::ReadStringLine2()
-{
-	static char string[2048];
+const char* QMsg::ReadStringLine2() {
+	static char string[ 2048 ];
 
 	int L = 0;
-	do
-	{
+	do {
 		int C = ReadChar();
-		if (C == -1 || C == 0 || C == '\n')
-		{
+		if ( C == -1 || C == 0 || C == '\n' ) {
 			break;
 		}
-		string[L] = C;
+		string[ L ] = C;
 		L++;
-	}
-	while (L < (int)sizeof(string) - 1);
+	} while ( L < ( int )sizeof ( string ) - 1 );
 
-	string[L] = 0;
+	string[ L ] = 0;
 
 	return string;
 }
 
-float QMsg::ReadCoord()
-{
-	return ReadShort() * (1.0 / 8.0);
+float QMsg::ReadCoord() {
+	return ReadShort() * ( 1.0 / 8.0 );
 }
 
-void QMsg::ReadPos(vec3_t pos)
-{
-	pos[0] = ReadCoord();
-	pos[1] = ReadCoord();
-	pos[2] = ReadCoord();
+void QMsg::ReadPos( vec3_t pos ) {
+	pos[ 0 ] = ReadCoord();
+	pos[ 1 ] = ReadCoord();
+	pos[ 2 ] = ReadCoord();
 }
 
-void QMsg::ReadDir(vec3_t dir)
-{
+void QMsg::ReadDir( vec3_t dir ) {
 	int b = ReadByte();
-	ByteToDir(b, dir);
+	ByteToDir( b, dir );
 }
 
-float QMsg::ReadAngle()
-{
-	return ReadChar() * (360.0 / 256.0);
+float QMsg::ReadAngle() {
+	return ReadChar() * ( 360.0 / 256.0 );
 }
 
-float QMsg::ReadAngle16()
-{
-	return SHORT2ANGLE(ReadShort());
+float QMsg::ReadAngle16() {
+	return SHORT2ANGLE( ReadShort() );
 }
 
-void QMsg::ReadData(void* Buffer, int Len)
-{
-	for (int i = 0; i < Len; i++)
-	{
-		((byte*)Buffer)[i] = ReadByte();
+void QMsg::ReadData( void* Buffer, int Len ) {
+	for ( int i = 0; i < Len; i++ ) {
+		( ( byte* )Buffer )[ i ] = ReadByte();
 	}
 }

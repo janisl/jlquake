@@ -20,14 +20,12 @@
 int in_keyCatchers;		// bit flags
 int anykeydown;
 
-int CL_GetKeyCatchers()
-{
+int CL_GetKeyCatchers() {
 	return in_keyCatchers;
 }
 
 //	Restart the input subsystem
-void In_Restart_f()
-{
+void In_Restart_f() {
 	IN_Shutdown();
 	IN_Init();
 }

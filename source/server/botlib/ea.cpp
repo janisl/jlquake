@@ -26,251 +26,206 @@
 
 static bot_input_t* botinputs;
 
-void EA_Gesture(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Gesture( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_GESTURE : WOLFACTION_GESTURE;
 }
 
-void EA_SelectWeapon(int client, int weapon)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_SelectWeapon( int client, int weapon ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->weapon = weapon;
 }
 
-void EA_Attack(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Attack( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= ACTION_ATTACK;
 }
 
-void EA_Talk(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Talk( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_TALK : WOLFACTION_TALK;
 }
 
-void EA_Use(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Use( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= ACTION_USE;
 }
 
-void EA_Respawn(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Respawn( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_RESPAWN : WOLFACTION_RESPAWN;
 }
 
-void EA_Jump(int client)
-{
-	bot_input_t* bi = &botinputs[client];
-	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
-	{
-		bi->actionflags &= ~(GGameType & GAME_Quake3 ? Q3ACTION_JUMP : WOLFACTION_JUMP);
-	}
-	else
-	{
+void EA_Jump( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
+	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME ) {
+		bi->actionflags &= ~( GGameType & GAME_Quake3 ? Q3ACTION_JUMP : WOLFACTION_JUMP );
+	} else   {
 		bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_JUMP : WOLFACTION_JUMP;
 	}
 }
 
-void EA_DelayedJump(int client)
-{
-	bot_input_t* bi = &botinputs[client];
-	if (bi->actionflags & ACTION_JUMPEDLASTFRAME)
-	{
-		bi->actionflags &= ~(GGameType & GAME_Quake3 ? Q3ACTION_DELAYEDJUMP : WOLFACTION_DELAYEDJUMP);
-	}
-	else
-	{
+void EA_DelayedJump( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
+	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME ) {
+		bi->actionflags &= ~( GGameType & GAME_Quake3 ? Q3ACTION_DELAYEDJUMP : WOLFACTION_DELAYEDJUMP );
+	} else   {
 		bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_DELAYEDJUMP : WOLFACTION_DELAYEDJUMP;
 	}
 }
 
-void EA_Crouch(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Crouch( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_CROUCH : WOLFACTION_CROUCH;
 }
 
-void EA_Walk(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Walk( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_WALK : WOLFACTION_WALK;
 }
 
-void EA_MoveUp(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveUp( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVEUP : WOLFACTION_MOVEUP;
 }
 
-void EA_MoveDown(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveDown( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVEDOWN : WOLFACTION_MOVEDOWN;
 }
 
-void EA_MoveForward(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveForward( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVEFORWARD : WOLFACTION_MOVEFORWARD;
 }
 
-void EA_MoveBack(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveBack( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVEBACK : WOLFACTION_MOVEBACK;
 }
 
-void EA_MoveLeft(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveLeft( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVELEFT : WOLFACTION_MOVELEFT;
 }
 
-void EA_MoveRight(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_MoveRight( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_MOVERIGHT : WOLFACTION_MOVERIGHT;
 }
 
-void EA_Reload(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Reload( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= WOLFACTION_RELOAD;
 }
 
-void EA_Prone(int client)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Prone( int client ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= ETACTION_PRONE;
 }
 
-void EA_Action(int client, int action)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Action( int client, int action ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->actionflags |= action;
 }
 
-void EA_Move(int client, const vec3_t dir, float speed)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_Move( int client, const vec3_t dir, float speed ) {
+	bot_input_t* bi = &botinputs[ client ];
 
-	VectorCopy(dir, bi->dir);
+	VectorCopy( dir, bi->dir );
 	//cap speed
-	if (speed > MAX_USERMOVE)
-	{
+	if ( speed > MAX_USERMOVE ) {
 		speed = MAX_USERMOVE;
-	}
-	else if (speed < -MAX_USERMOVE)
-	{
+	} else if ( speed < -MAX_USERMOVE )     {
 		speed = -MAX_USERMOVE;
 	}
 	bi->speed = speed;
 }
 
-void EA_View(int client, vec3_t viewangles)
-{
-	bot_input_t* bi = &botinputs[client];
-	VectorCopy(viewangles, bi->viewangles);
+void EA_View( int client, vec3_t viewangles ) {
+	bot_input_t* bi = &botinputs[ client ];
+	VectorCopy( viewangles, bi->viewangles );
 }
 
-void EA_GetInput(int client, float thinktime, bot_input_t* input)
-{
-	bot_input_t* bi = &botinputs[client];
+void EA_GetInput( int client, float thinktime, bot_input_t* input ) {
+	bot_input_t* bi = &botinputs[ client ];
 	bi->thinktime = thinktime;
-	Com_Memcpy(input, bi, sizeof(bot_input_t));
+	Com_Memcpy( input, bi, sizeof ( bot_input_t ) );
 }
 
-void EA_ResetInputQ3(int client)
-{
+void EA_ResetInputQ3( int client ) {
 	bot_input_t* bi;
 	int jumped = false;
 
-	bi = &botinputs[client];
+	bi = &botinputs[ client ];
 	bi->actionflags &= ~ACTION_JUMPEDLASTFRAME;
 
 	bi->thinktime = 0;
-	VectorClear(bi->dir);
+	VectorClear( bi->dir );
 	bi->speed = 0;
 	jumped = bi->actionflags & Q3ACTION_JUMP;
 	bi->actionflags = 0;
-	if (jumped)
-	{
+	if ( jumped ) {
 		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
 	}
 }
 
-void EA_ResetInputWolf(int client, bot_input_t* init)
-{
+void EA_ResetInputWolf( int client, bot_input_t* init ) {
 	bot_input_t* bi;
 	int jumped = false;
 
-	bi = &botinputs[client];
+	bi = &botinputs[ client ];
 	bi->actionflags &= ~ACTION_JUMPEDLASTFRAME;
 
 	bi->thinktime = 0;
-	VectorClear(bi->dir);
+	VectorClear( bi->dir );
 	bi->speed = 0;
 	jumped = bi->actionflags & WOLFACTION_JUMP;
 	bi->actionflags = 0;
-	if (jumped)
-	{
+	if ( jumped ) {
 		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
 	}
 
-	if (init)
-	{
-		memcpy(bi, init, sizeof(bot_input_t));
+	if ( init ) {
+		memcpy( bi, init, sizeof ( bot_input_t ) );
 	}
 }
 
-int EA_Setup()
-{
+int EA_Setup() {
 	//initialize the bot inputs
-	botinputs = (bot_input_t*)Mem_ClearedAlloc(botlibglobals.maxclients * sizeof(bot_input_t));
+	botinputs = ( bot_input_t* )Mem_ClearedAlloc( botlibglobals.maxclients * sizeof ( bot_input_t ) );
 	return BLERR_NOERROR;
 }
 
-void EA_Shutdown()
-{
-	Mem_Free(botinputs);
+void EA_Shutdown() {
+	Mem_Free( botinputs );
 	botinputs = NULL;
 }
 
-void EA_Say(int client, const char* str)
-{
-	BotClientCommand(client, va("say %s", str));
+void EA_Say( int client, const char* str ) {
+	BotClientCommand( client, va( "say %s", str ) );
 }
 
-void EA_SayTeam(int client, const char* str)
-{
-	BotClientCommand(client, va("say_team %s", str));
+void EA_SayTeam( int client, const char* str ) {
+	BotClientCommand( client, va( "say_team %s", str ) );
 }
 
-void EA_UseItem(int client, const char* it)
-{
-	BotClientCommand(client, va("use %s", it));
+void EA_UseItem( int client, const char* it ) {
+	BotClientCommand( client, va( "use %s", it ) );
 }
 
-void EA_DropItem(int client, const char* it)
-{
-	BotClientCommand(client, va("drop %s", it));
+void EA_DropItem( int client, const char* it ) {
+	BotClientCommand( client, va( "drop %s", it ) );
 }
 
-void EA_UseInv(int client, const char* inv)
-{
-	BotClientCommand(client, va("invuse %s", inv));
+void EA_UseInv( int client, const char* inv ) {
+	BotClientCommand( client, va( "invuse %s", inv ) );
 }
 
-void EA_DropInv(int client, const char* inv)
-{
-	BotClientCommand(client, va("invdrop %s", inv));
+void EA_DropInv( int client, const char* inv ) {
+	BotClientCommand( client, va( "invdrop %s", inv ) );
 }
 
-void EA_Command(int client, const char* command)
-{
-	BotClientCommand(client, command);
+void EA_Command( int client, const char* command ) {
+	BotClientCommand( client, command );
 }

@@ -39,20 +39,20 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-#define GLF_0(r, n)             r(APIENTRY * qgl ## n) ();
-#define GLF_V0(n)               void(APIENTRY * qgl ## n) ();
-#define GLF_1(r, n, t1, p1)     r(APIENTRY * qgl ## n) (t1 p1);
-#define GLF_V1(n, t1, p1)       void(APIENTRY * qgl ## n) (t1 p1);
-#define GLF_V2(n, t1, p1, t2, p2)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2);
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) r(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3);
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4);
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5);
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6);
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7);
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8);
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9);
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    void(APIENTRY * qgl ## n) (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10);
+#define GLF_0( r, n )             r( APIENTRY * qgl ## n ) ( );
+#define GLF_V0( n )               void( APIENTRY * qgl ## n ) ( );
+#define GLF_1( r, n, t1, p1 )     r( APIENTRY * qgl ## n ) ( t1 p1 );
+#define GLF_V1( n, t1, p1 )       void( APIENTRY * qgl ## n ) ( t1 p1 );
+#define GLF_V2( n, t1, p1, t2, p2 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2 );
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) r( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3 );
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3 );
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4 );
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5 );
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6 );
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7 );
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8 );
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9 );
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    void( APIENTRY * qgl ## n ) ( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10 );
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -69,23 +69,23 @@
 #undef GLF_V9
 #undef GLF_V10
 
-void (APIENTRY* qglMultiTexCoord2fARB)(GLenum texture, GLfloat s, GLfloat t);
-void (APIENTRY* qglActiveTextureARB)(GLenum texture);
-void (APIENTRY* qglClientActiveTextureARB)(GLenum texture);
+void ( APIENTRY* qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+void ( APIENTRY* qglActiveTextureARB )( GLenum texture );
+void ( APIENTRY* qglClientActiveTextureARB )( GLenum texture );
 
-void (APIENTRY* qglLockArraysEXT)(GLint, GLint);
-void (APIENTRY* qglUnlockArraysEXT)(void);
+void ( APIENTRY* qglLockArraysEXT )( GLint, GLint );
+void ( APIENTRY* qglUnlockArraysEXT )( void );
 
-void (APIENTRY* qglPointParameterfEXT)(GLenum param, GLfloat value);
-void (APIENTRY* qglPointParameterfvEXT)(GLenum param, const GLfloat* value);
+void ( APIENTRY* qglPointParameterfEXT )( GLenum param, GLfloat value );
+void ( APIENTRY* qglPointParameterfvEXT )( GLenum param, const GLfloat* value );
 
-void (APIENTRY* qglPNTrianglesiATI)(GLenum pname, GLint param);
-void (APIENTRY* qglPNTrianglesfATI)(GLenum pname, GLfloat param);
+void ( APIENTRY* qglPNTrianglesiATI )( GLenum pname, GLint param );
+void ( APIENTRY* qglPNTrianglesfATI )( GLenum pname, GLfloat param );
 
 #ifdef _WIN32
-BOOL (WINAPI* qwglSwapIntervalEXT)(int interval);
+BOOL ( WINAPI* qwglSwapIntervalEXT )( int interval );
 #else
-int (* qglXSwapIntervalSGI)(int interval);
+int ( * qglXSwapIntervalSGI )( int interval );
 #endif
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -100,16 +100,15 @@ static fileHandle_t log_fp;
 //
 //==========================================================================
 
-static void QGL_Log(const char* Fmt, ...)
-{
+static void QGL_Log( const char* Fmt, ... ) {
 	va_list ArgPtr;
-	char string[1024];
+	char string[ 1024 ];
 
-	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(string, 1024, Fmt, ArgPtr);
-	va_end(ArgPtr);
+	va_start( ArgPtr, Fmt );
+	Q_vsnprintf( string, 1024, Fmt, ArgPtr );
+	va_end( ArgPtr );
 
-	FS_Printf(log_fp, "%s", string);
+	FS_Printf( log_fp, "%s", string );
 }
 
 //==========================================================================
@@ -118,93 +117,93 @@ static void QGL_Log(const char* Fmt, ...)
 //
 //==========================================================================
 
-#define GLF_0(r, n)	\
+#define GLF_0( r, n ) \
 	static r APIENTRY log ## n() \
 	{ \
-		QGL_Log("gl" # n "\n");	\
+		QGL_Log( "gl" # n "\n" ); \
 		return gl ## n(); \
 	}
-#define GLF_V0(n) \
+#define GLF_V0( n )	\
 	static void APIENTRY log ## n()	\
 	{ \
-		QGL_Log("gl" # n "\n");	\
+		QGL_Log( "gl" # n "\n" ); \
 		gl ## n(); \
 	}
-#define GLF_1(r, n, t1, p1)	\
-	static r APIENTRY log ## n(t1 p1) \
+#define GLF_1( r, n, t1, p1 ) \
+	static r APIENTRY log ## n( t1 p1 )	\
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		return gl ## n(p1);	\
+		QGL_Log( "gl" # n "\n" ); \
+		return gl ## n( p1 ); \
 	}
-#define GLF_V1(n, t1, p1) \
-	static void APIENTRY log ## n(t1 p1) \
+#define GLF_V1( n, t1, p1 )	\
+	static void APIENTRY log ## n( t1 p1 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1 ); \
 	}
-#define GLF_V1_X(n, t1, p1)
-#define GLF_V2(n, t1, p1, t2, p2) \
-	static void APIENTRY log ## n(t1 p1, t2 p2)	\
+#define GLF_V1_X( n, t1, p1 )
+#define GLF_V2( n, t1, p1, t2, p2 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2 ); \
 	}
-#define GLF_V2_X(n, t1, p1, t2, p2)
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3)	\
-	static r APIENTRY log ## n(t1 p1, t2 p2, t3 p3)	\
+#define GLF_V2_X( n, t1, p1, t2, p2 )
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) \
+	static r APIENTRY log ## n( t1 p1, t2 p2, t3 p3 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		return gl ## n(p1, p2, p3);	\
+		QGL_Log( "gl" # n "\n" ); \
+		return gl ## n( p1, p2, p3 ); \
 	}
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3) \
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3 ); \
 	}
-#define GLF_V3_X(n, t1, p1, t2, p2, t3, p3)
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4) \
+#define GLF_V3_X( n, t1, p1, t2, p2, t3, p3 )
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4 )	\
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4 ); \
 	}
-#define GLF_V4_X(n, t1, p1, t2, p2, t3, p3, t4, p4)
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5) \
+#define GLF_V4_X( n, t1, p1, t2, p2, t3, p3, t4, p4 )
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5 ); \
 	}
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6)	\
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5, p6); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5, p6 ); \
 	}
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7) \
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5, p6, p7); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5, p6, p7 ); \
 	}
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8) \
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8 )	\
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5, p6, p7, p8 ); \
 	}
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9) \
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )	\
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9 ) \
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8, p9); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5, p6, p7, p8, p9 ); \
 	}
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10) \
-	static void APIENTRY log ## n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10) \
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 ) \
+	static void APIENTRY log ## n( t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10 )	\
 	{ \
-		QGL_Log("gl" # n "\n");	\
-		gl ## n(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10); \
+		QGL_Log( "gl" # n "\n" ); \
+		gl ## n( p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 );	\
 	}
 #include "qgl_functions.h"
 #undef GLF_0
@@ -232,14 +231,11 @@ static void QGL_Log(const char* Fmt, ...)
 //
 //==========================================================================
 
-static const char* BooleanToString(GLboolean b)
-{
-	if (b == GL_FALSE)
-	{
+static const char* BooleanToString( GLboolean b ) {
+	if ( b == GL_FALSE ) {
 		return "GL_FALSE";
 	}
-	if (b == GL_TRUE)
-	{
+	if ( b == GL_TRUE ) {
 		return "GL_TRUE";
 	}
 	return "OUT OF RANGE FOR BOOLEAN";
@@ -251,10 +247,8 @@ static const char* BooleanToString(GLboolean b)
 //
 //==========================================================================
 
-static const char* FuncToString(GLenum f)
-{
-	switch (f)
-	{
+static const char* FuncToString( GLenum f ) {
+	switch ( f ) {
 	case GL_ALWAYS:
 		return "GL_ALWAYS";
 	case GL_NEVER:
@@ -282,53 +276,31 @@ static const char* FuncToString(GLenum f)
 //
 //==========================================================================
 
-static const char* PrimToString(GLenum mode)
-{
-	static char prim[1024];
+static const char* PrimToString( GLenum mode ) {
+	static char prim[ 1024 ];
 
-	if (mode == GL_TRIANGLES)
-	{
+	if ( mode == GL_TRIANGLES ) {
 		return "GL_TRIANGLES";
-	}
-	else if (mode == GL_TRIANGLE_STRIP)
-	{
+	} else if ( mode == GL_TRIANGLE_STRIP )     {
 		return "GL_TRIANGLE_STRIP";
-	}
-	else if (mode == GL_TRIANGLE_FAN)
-	{
+	} else if ( mode == GL_TRIANGLE_FAN )     {
 		return "GL_TRIANGLE_FAN";
-	}
-	else if (mode == GL_QUADS)
-	{
+	} else if ( mode == GL_QUADS )     {
 		return "GL_QUADS";
-	}
-	else if (mode == GL_QUAD_STRIP)
-	{
+	} else if ( mode == GL_QUAD_STRIP )     {
 		return "GL_QUAD_STRIP";
-	}
-	else if (mode == GL_POLYGON)
-	{
+	} else if ( mode == GL_POLYGON )     {
 		return "GL_POLYGON";
-	}
-	else if (mode == GL_POINTS)
-	{
+	} else if ( mode == GL_POINTS )     {
 		return "GL_POINTS";
-	}
-	else if (mode == GL_LINES)
-	{
+	} else if ( mode == GL_LINES )     {
 		return "GL_LINES";
-	}
-	else if (mode == GL_LINE_STRIP)
-	{
+	} else if ( mode == GL_LINE_STRIP )     {
 		return "GL_LINE_STRIP";
-	}
-	else if (mode == GL_LINE_LOOP)
-	{
+	} else if ( mode == GL_LINE_LOOP )     {
 		return "GL_LINE_LOOP";
-	}
-	else
-	{
-		sprintf(prim, "0x%x", mode);
+	} else   {
+		sprintf( prim, "0x%x", mode );
 	}
 
 	return prim;
@@ -340,12 +312,10 @@ static const char* PrimToString(GLenum mode)
 //
 //==========================================================================
 
-static const char* CapToString(GLenum cap)
-{
-	static char buffer[1024];
+static const char* CapToString( GLenum cap ) {
+	static char buffer[ 1024 ];
 
-	switch (cap)
-	{
+	switch ( cap ) {
 	case GL_TEXTURE_2D:
 		return "GL_TEXTURE_2D";
 	case GL_BLEND:
@@ -367,7 +337,7 @@ static const char* CapToString(GLenum cap)
 	case GL_STENCIL_TEST:
 		return "GL_STENCIL_TEST";
 	default:
-		sprintf(buffer, "0x%x", cap);
+		sprintf( buffer, "0x%x", cap );
 	}
 
 	return buffer;
@@ -379,10 +349,8 @@ static const char* CapToString(GLenum cap)
 //
 //==========================================================================
 
-static const char* TypeToString(GLenum t)
-{
-	switch (t)
-	{
+static const char* TypeToString( GLenum t ) {
+	switch ( t ) {
 	case GL_BYTE:
 		return "GL_BYTE";
 	case GL_UNSIGNED_BYTE:
@@ -410,238 +378,202 @@ static const char* TypeToString(GLenum t)
 //
 //==========================================================================
 
-static void BlendToName(char* n, GLenum f)
-{
-	switch (f)
-	{
+static void BlendToName( char* n, GLenum f ) {
+	switch ( f ) {
 	case GL_ONE:
-		String::Cpy(n, "GL_ONE");
+		String::Cpy( n, "GL_ONE" );
 		break;
 	case GL_ZERO:
-		String::Cpy(n, "GL_ZERO");
+		String::Cpy( n, "GL_ZERO" );
 		break;
 	case GL_SRC_ALPHA:
-		String::Cpy(n, "GL_SRC_ALPHA");
+		String::Cpy( n, "GL_SRC_ALPHA" );
 		break;
 	case GL_ONE_MINUS_SRC_ALPHA:
-		String::Cpy(n, "GL_ONE_MINUS_SRC_ALPHA");
+		String::Cpy( n, "GL_ONE_MINUS_SRC_ALPHA" );
 		break;
 	case GL_DST_COLOR:
-		String::Cpy(n, "GL_DST_COLOR");
+		String::Cpy( n, "GL_DST_COLOR" );
 		break;
 	case GL_ONE_MINUS_DST_COLOR:
-		String::Cpy(n, "GL_ONE_MINUS_DST_COLOR");
+		String::Cpy( n, "GL_ONE_MINUS_DST_COLOR" );
 		break;
 	case GL_DST_ALPHA:
-		String::Cpy(n, "GL_DST_ALPHA");
+		String::Cpy( n, "GL_DST_ALPHA" );
 		break;
 	default:
-		sprintf(n, "0x%x", f);
+		sprintf( n, "0x%x", f );
 	}
 }
 
-static void APIENTRY logAlphaFunc(GLenum func, GLclampf ref)
-{
-	QGL_Log("glAlphaFunc( 0x%x, %f )\n", func, ref);
-	glAlphaFunc(func, ref);
+static void APIENTRY logAlphaFunc( GLenum func, GLclampf ref ) {
+	QGL_Log( "glAlphaFunc( 0x%x, %f )\n", func, ref );
+	glAlphaFunc( func, ref );
 }
 
-static void APIENTRY logBegin(GLenum mode)
-{
-	QGL_Log("glBegin( %s )\n", PrimToString(mode));
-	glBegin(mode);
+static void APIENTRY logBegin( GLenum mode ) {
+	QGL_Log( "glBegin( %s )\n", PrimToString( mode ) );
+	glBegin( mode );
 }
 
-static void APIENTRY logBindTexture(GLenum target, GLuint texture)
-{
-	QGL_Log("glBindTexture( 0x%x, %u )\n", target, texture);
-	glBindTexture(target, texture);
+static void APIENTRY logBindTexture( GLenum target, GLuint texture ) {
+	QGL_Log( "glBindTexture( 0x%x, %u )\n", target, texture );
+	glBindTexture( target, texture );
 }
 
-static void APIENTRY logBlendFunc(GLenum sfactor, GLenum dfactor)
-{
-	char sf[128], df[128];
+static void APIENTRY logBlendFunc( GLenum sfactor, GLenum dfactor ) {
+	char sf[ 128 ], df[ 128 ];
 
-	BlendToName(sf, sfactor);
-	BlendToName(df, dfactor);
+	BlendToName( sf, sfactor );
+	BlendToName( df, dfactor );
 
-	QGL_Log("glBlendFunc( %s, %s )\n", sf, df);
-	glBlendFunc(sfactor, dfactor);
+	QGL_Log( "glBlendFunc( %s, %s )\n", sf, df );
+	glBlendFunc( sfactor, dfactor );
 }
 
-static void APIENTRY logCallList(GLuint list)
-{
-	QGL_Log("glCallList( %u )\n", list);
-	glCallList(list);
+static void APIENTRY logCallList( GLuint list ) {
+	QGL_Log( "glCallList( %u )\n", list );
+	glCallList( list );
 }
 
-static void APIENTRY logClear(GLbitfield mask)
-{
-	QGL_Log("glClear( 0x%x = ", mask);
+static void APIENTRY logClear( GLbitfield mask ) {
+	QGL_Log( "glClear( 0x%x = ", mask );
 
-	if (mask & GL_COLOR_BUFFER_BIT)
-	{
-		QGL_Log("GL_COLOR_BUFFER_BIT ");
+	if ( mask & GL_COLOR_BUFFER_BIT ) {
+		QGL_Log( "GL_COLOR_BUFFER_BIT " );
 	}
-	if (mask & GL_DEPTH_BUFFER_BIT)
-	{
-		QGL_Log("GL_DEPTH_BUFFER_BIT ");
+	if ( mask & GL_DEPTH_BUFFER_BIT ) {
+		QGL_Log( "GL_DEPTH_BUFFER_BIT " );
 	}
-	if (mask & GL_STENCIL_BUFFER_BIT)
-	{
-		QGL_Log("GL_STENCIL_BUFFER_BIT ");
+	if ( mask & GL_STENCIL_BUFFER_BIT ) {
+		QGL_Log( "GL_STENCIL_BUFFER_BIT " );
 	}
-	if (mask & GL_ACCUM_BUFFER_BIT)
-	{
-		QGL_Log("GL_ACCUM_BUFFER_BIT ");
+	if ( mask & GL_ACCUM_BUFFER_BIT ) {
+		QGL_Log( "GL_ACCUM_BUFFER_BIT " );
 	}
 
-	QGL_Log(")\n");
-	glClear(mask);
+	QGL_Log( ")\n" );
+	glClear( mask );
 }
 
-static void APIENTRY logClearDepth(GLclampd depth)
-{
-	QGL_Log("glClearDepth( %f )\n", (float)depth);
-	glClearDepth(depth);
+static void APIENTRY logClearDepth( GLclampd depth ) {
+	QGL_Log( "glClearDepth( %f )\n", ( float )depth );
+	glClearDepth( depth );
 }
 
-static void APIENTRY logClearStencil(GLint s)
-{
-	QGL_Log("glClearStencil( %d )\n", s);
-	glClearStencil(s);
+static void APIENTRY logClearStencil( GLint s ) {
+	QGL_Log( "glClearStencil( %d )\n", s );
+	glClearStencil( s );
 }
 
-static void APIENTRY logColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
-{
-	QGL_Log("glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha);
-	glColor4f(red, green, blue, alpha);
+static void APIENTRY logColor4f( GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha ) {
+	QGL_Log( "glColor4f( %f,%f,%f,%f )\n", red, green, blue, alpha );
+	glColor4f( red, green, blue, alpha );
 }
 
-static void APIENTRY logColor4fv(const GLfloat* v)
-{
-	QGL_Log("glColor4fv( %f,%f,%f,%f )\n", v[0], v[1], v[2], v[3]);
-	glColor4fv(v);
+static void APIENTRY logColor4fv( const GLfloat* v ) {
+	QGL_Log( "glColor4fv( %f,%f,%f,%f )\n", v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+	glColor4fv( v );
 }
 
-static void APIENTRY logColorPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
-{
-	QGL_Log("glColorPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
-	glColorPointer(size, type, stride, pointer);
+static void APIENTRY logColorPointer( GLint size, GLenum type, GLsizei stride, const void* pointer ) {
+	QGL_Log( "glColorPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	glColorPointer( size, type, stride, pointer );
 }
 
-static void APIENTRY logCullFace(GLenum mode)
-{
-	QGL_Log("glCullFace( %s )\n", (mode == GL_FRONT) ? "GL_FRONT" : "GL_BACK");
-	glCullFace(mode);
+static void APIENTRY logCullFace( GLenum mode ) {
+	QGL_Log( "glCullFace( %s )\n", ( mode == GL_FRONT ) ? "GL_FRONT" : "GL_BACK" );
+	glCullFace( mode );
 }
 
-static void APIENTRY logDepthFunc(GLenum func)
-{
-	QGL_Log("glDepthFunc( %s )\n", FuncToString(func));
-	glDepthFunc(func);
+static void APIENTRY logDepthFunc( GLenum func ) {
+	QGL_Log( "glDepthFunc( %s )\n", FuncToString( func ) );
+	glDepthFunc( func );
 }
 
-static void APIENTRY logDepthMask(GLboolean flag)
-{
-	QGL_Log("glDepthMask( %s )\n", BooleanToString(flag));
-	glDepthMask(flag);
+static void APIENTRY logDepthMask( GLboolean flag ) {
+	QGL_Log( "glDepthMask( %s )\n", BooleanToString( flag ) );
+	glDepthMask( flag );
 }
 
-static void APIENTRY logDepthRange(GLclampd zNear, GLclampd zFar)
-{
-	QGL_Log("glDepthRange( %f, %f )\n", (float)zNear, (float)zFar);
-	glDepthRange(zNear, zFar);
+static void APIENTRY logDepthRange( GLclampd zNear, GLclampd zFar ) {
+	QGL_Log( "glDepthRange( %f, %f )\n", ( float )zNear, ( float )zFar );
+	glDepthRange( zNear, zFar );
 }
 
-static void APIENTRY logDisable(GLenum cap)
-{
-	QGL_Log("glDisable( %s )\n", CapToString(cap));
-	glDisable(cap);
+static void APIENTRY logDisable( GLenum cap ) {
+	QGL_Log( "glDisable( %s )\n", CapToString( cap ) );
+	glDisable( cap );
 }
 
-static void APIENTRY logDisableClientState(GLenum array)
-{
-	QGL_Log("glDisableClientState( %s )\n", CapToString(array));
-	glDisableClientState(array);
+static void APIENTRY logDisableClientState( GLenum array ) {
+	QGL_Log( "glDisableClientState( %s )\n", CapToString( array ) );
+	glDisableClientState( array );
 }
 
-static void APIENTRY logDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
-{
-	QGL_Log("glDrawElements( %s, %d, %s, MEM )\n", PrimToString(mode), count, TypeToString(type));
-	glDrawElements(mode, count, type, indices);
+static void APIENTRY logDrawElements( GLenum mode, GLsizei count, GLenum type, const void* indices ) {
+	QGL_Log( "glDrawElements( %s, %d, %s, MEM )\n", PrimToString( mode ), count, TypeToString( type ) );
+	glDrawElements( mode, count, type, indices );
 }
 
-static void APIENTRY logEnable(GLenum cap)
-{
-	QGL_Log("glEnable( %s )\n", CapToString(cap));
-	glEnable(cap);
+static void APIENTRY logEnable( GLenum cap ) {
+	QGL_Log( "glEnable( %s )\n", CapToString( cap ) );
+	glEnable( cap );
 }
 
-static void APIENTRY logEnableClientState(GLenum array)
-{
-	QGL_Log("glEnableClientState( %s )\n", CapToString(array));
-	glEnableClientState(array);
+static void APIENTRY logEnableClientState( GLenum array ) {
+	QGL_Log( "glEnableClientState( %s )\n", CapToString( array ) );
+	glEnableClientState( array );
 }
 
-static void APIENTRY logHint(GLenum target, GLenum mode)
-{
-	QGL_Log("glHint( 0x%x, 0x%x )\n", target, mode);
-	glHint(target, mode);
+static void APIENTRY logHint( GLenum target, GLenum mode ) {
+	QGL_Log( "glHint( 0x%x, 0x%x )\n", target, mode );
+	glHint( target, mode );
 }
 
-static void APIENTRY logPolygonMode(GLenum face, GLenum mode)
-{
-	QGL_Log("glPolygonMode( 0x%x, 0x%x )\n", face, mode);
-	glPolygonMode(face, mode);
+static void APIENTRY logPolygonMode( GLenum face, GLenum mode ) {
+	QGL_Log( "glPolygonMode( 0x%x, 0x%x )\n", face, mode );
+	glPolygonMode( face, mode );
 }
 
-static void APIENTRY logScissor(GLint x, GLint y, GLsizei width, GLsizei height)
-{
-	QGL_Log("glScissor( %d, %d, %d, %d )\n", x, y, width, height);
-	glScissor(x, y, width, height);
+static void APIENTRY logScissor( GLint x, GLint y, GLsizei width, GLsizei height ) {
+	QGL_Log( "glScissor( %d, %d, %d, %d )\n", x, y, width, height );
+	glScissor( x, y, width, height );
 }
 
-static void APIENTRY logTexCoordPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
-{
-	QGL_Log("glTexCoordPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
-	glTexCoordPointer(size, type, stride, pointer);
+static void APIENTRY logTexCoordPointer( GLint size, GLenum type, GLsizei stride, const void* pointer ) {
+	QGL_Log( "glTexCoordPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	glTexCoordPointer( size, type, stride, pointer );
 }
 
-static void APIENTRY logTexEnvf(GLenum target, GLenum pname, GLfloat param)
-{
-	QGL_Log("glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param);
-	glTexEnvf(target, pname, param);
+static void APIENTRY logTexEnvf( GLenum target, GLenum pname, GLfloat param ) {
+	QGL_Log( "glTexEnvf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	glTexEnvf( target, pname, param );
 }
 
-static void APIENTRY logTexEnvi(GLenum target, GLenum pname, GLint param)
-{
-	QGL_Log("glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param);
-	glTexEnvi(target, pname, param);
+static void APIENTRY logTexEnvi( GLenum target, GLenum pname, GLint param ) {
+	QGL_Log( "glTexEnvi( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	glTexEnvi( target, pname, param );
 }
 
-static void APIENTRY logTexParameterf(GLenum target, GLenum pname, GLfloat param)
-{
-	QGL_Log("glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param);
-	glTexParameterf(target, pname, param);
+static void APIENTRY logTexParameterf( GLenum target, GLenum pname, GLfloat param ) {
+	QGL_Log( "glTexParameterf( 0x%x, 0x%x, %f )\n", target, pname, param );
+	glTexParameterf( target, pname, param );
 }
 
-static void APIENTRY logTexParameteri(GLenum target, GLenum pname, GLint param)
-{
-	QGL_Log("glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param);
-	glTexParameteri(target, pname, param);
+static void APIENTRY logTexParameteri( GLenum target, GLenum pname, GLint param ) {
+	QGL_Log( "glTexParameteri( 0x%x, 0x%x, 0x%x )\n", target, pname, param );
+	glTexParameteri( target, pname, param );
 }
 
-static void APIENTRY logVertexPointer(GLint size, GLenum type, GLsizei stride, const void* pointer)
-{
-	QGL_Log("glVertexPointer( %d, %s, %d, MEM )\n", size, TypeToString(type), stride);
-	glVertexPointer(size, type, stride, pointer);
+static void APIENTRY logVertexPointer( GLint size, GLenum type, GLsizei stride, const void* pointer ) {
+	QGL_Log( "glVertexPointer( %d, %s, %d, MEM )\n", size, TypeToString( type ), stride );
+	glVertexPointer( size, type, stride, pointer );
 }
 
-static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height)
-{
-	QGL_Log("glViewport( %d, %d, %d, %d )\n", x, y, width, height);
-	glViewport(x, y, width, height);
+static void APIENTRY logViewport( GLint x, GLint y, GLsizei width, GLsizei height ) {
+	QGL_Log( "glViewport( %d, %d, %d, %d )\n", x, y, width, height );
+	glViewport( x, y, width, height );
 }
 
 //==========================================================================
@@ -650,28 +582,22 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 //
 //==========================================================================
 
-static bool CheckExtension(const char* Extension)
-{
+static bool CheckExtension( const char* Extension ) {
 	idList<idStr> Extensions;
-	idStr((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
-	for (int i = 0; i < Extensions.Num(); i++)
-	{
-		if (Extensions[i] == Extension)
-		{
+	idStr( ( char* )qglGetString( GL_EXTENSIONS ) ).Split( ' ', Extensions );
+	for ( int i = 0; i < Extensions.Num(); i++ ) {
+		if ( Extensions[ i ] == Extension ) {
 			return true;
 		}
 	}
 	return false;
 }
 
-static bool CheckSystemExtension(const char* Extension)
-{
+static bool CheckSystemExtension( const char* Extension ) {
 	idList<idStr> Extensions;
-	idStr(GLimp_GetSystemExtensionsString()).Split(' ', Extensions);
-	for (int i = 0; i < Extensions.Num(); i++)
-	{
-		if (Extensions[i] == Extension)
-		{
+	idStr( GLimp_GetSystemExtensionsString() ).Split( ' ', Extensions );
+	for ( int i = 0; i < Extensions.Num(); i++ ) {
+		if ( Extensions[ i ] == Extension ) {
 			return true;
 		}
 	}
@@ -687,24 +613,23 @@ static bool CheckSystemExtension(const char* Extension)
 //
 //==========================================================================
 
-void QGL_Init()
-{
-	common->Printf("...initializing QGL\n");
+void QGL_Init() {
+	common->Printf( "...initializing QGL\n" );
 
-#define GLF_0(r, n)             qgl ## n = gl ## n;
-#define GLF_V0(n)               qgl ## n = gl ## n;
-#define GLF_1(r, n, t1, p1)     qgl ## n = gl ## n;
-#define GLF_V1(n, t1, p1)       qgl ## n = gl ## n;
-#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = gl ## n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = gl ## n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = gl ## n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = gl ## n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = gl ## n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = gl ## n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = gl ## n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = gl ## n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = gl ## n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = gl ## n;
+#define GLF_0( r, n )             qgl ## n = gl ## n;
+#define GLF_V0( n )               qgl ## n = gl ## n;
+#define GLF_1( r, n, t1, p1 )     qgl ## n = gl ## n;
+#define GLF_V1( n, t1, p1 )       qgl ## n = gl ## n;
+#define GLF_V2( n, t1, p1, t2, p2 )   qgl ## n = gl ## n;
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) qgl ## n = gl ## n;
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   qgl ## n = gl ## n;
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   qgl ## n = gl ## n;
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   qgl ## n = gl ## n;
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   qgl ## n = gl ## n;
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   qgl ## n = gl ## n;
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   qgl ## n = gl ## n;
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   qgl ## n = gl ## n;
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    qgl ## n = gl ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -740,246 +665,174 @@ void QGL_Init()
 	qglXSwapIntervalSGI = NULL;
 #endif
 
-	common->Printf("Initializing OpenGL extensions\n");
+	common->Printf( "Initializing OpenGL extensions\n" );
 
 	// GL_S3_s3tc
 	glConfig.textureCompression = TC_NONE;
-	if (CheckExtension("GL_EXT_texture_compression_s3tc"))
-	{
-		if (r_ext_compressed_textures->integer)
-		{
+	if ( CheckExtension( "GL_EXT_texture_compression_s3tc" ) ) {
+		if ( r_ext_compressed_textures->integer ) {
 			glConfig.textureCompression = TC_EXT_COMP_S3TC;
-			common->Printf("...using GL_EXT_texture_compression_s3tc\n");
-		}
-		else
-		{
+			common->Printf( "...using GL_EXT_texture_compression_s3tc\n" );
+		} else   {
 			glConfig.textureCompression = TC_NONE;
-			common->Printf("...ignoring GL_EXT_texture_compression_s3tc\n");
+			common->Printf( "...ignoring GL_EXT_texture_compression_s3tc\n" );
 		}
-	}
-	else if (CheckExtension("GL_S3_s3tc"))
-	{
-		if (r_ext_compressed_textures->integer)
-		{
+	} else if ( CheckExtension( "GL_S3_s3tc" ) )       {
+		if ( r_ext_compressed_textures->integer ) {
 			glConfig.textureCompression = TC_S3TC;
-			common->Printf("...using GL_S3_s3tc\n");
-		}
-		else
-		{
+			common->Printf( "...using GL_S3_s3tc\n" );
+		} else   {
 			glConfig.textureCompression = TC_NONE;
-			common->Printf("...ignoring GL_S3_s3tc\n");
+			common->Printf( "...ignoring GL_S3_s3tc\n" );
 		}
-	}
-	else
-	{
-		common->Printf("...GL_S3_s3tc not found\n");
+	} else   {
+		common->Printf( "...GL_S3_s3tc not found\n" );
 	}
 
 	// GL_ARB_multitexture
-	if (CheckExtension("GL_ARB_multitexture"))
-	{
-		if (r_ext_multitexture->integer)
-		{
-			qglMultiTexCoord2fARB = (void (APIENTRY*)(GLenum target, GLfloat s, GLfloat t))GLimp_GetProcAddress("glMultiTexCoord2fARB");
-			qglActiveTextureARB = (void (APIENTRY*)(GLenum target))GLimp_GetProcAddress("glActiveTextureARB");
-			qglClientActiveTextureARB = (void (APIENTRY*)(GLenum target))GLimp_GetProcAddress("glClientActiveTextureARB");
+	if ( CheckExtension( "GL_ARB_multitexture" ) ) {
+		if ( r_ext_multitexture->integer ) {
+			qglMultiTexCoord2fARB = ( void ( APIENTRY* )( GLenum target, GLfloat s, GLfloat t ) )GLimp_GetProcAddress( "glMultiTexCoord2fARB" );
+			qglActiveTextureARB = ( void ( APIENTRY* )( GLenum target ) )GLimp_GetProcAddress( "glActiveTextureARB" );
+			qglClientActiveTextureARB = ( void ( APIENTRY* )( GLenum target ) )GLimp_GetProcAddress( "glClientActiveTextureARB" );
 
-			if (qglActiveTextureARB)
-			{
-				qglGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures);
+			if ( qglActiveTextureARB ) {
+				qglGetIntegerv( GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures );
 
-				if (glConfig.maxActiveTextures > 1)
-				{
-					common->Printf("...using GL_ARB_multitexture\n");
-				}
-				else
-				{
+				if ( glConfig.maxActiveTextures > 1 ) {
+					common->Printf( "...using GL_ARB_multitexture\n" );
+				} else   {
 					qglMultiTexCoord2fARB = NULL;
 					qglActiveTextureARB = NULL;
 					qglClientActiveTextureARB = NULL;
-					common->Printf("...not using GL_ARB_multitexture, < 2 texture units\n");
+					common->Printf( "...not using GL_ARB_multitexture, < 2 texture units\n" );
 				}
 			}
+		} else   {
+			common->Printf( "...ignoring GL_ARB_multitexture\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_ARB_multitexture\n");
-		}
-	}
-	else
-	{
-		common->Printf("...GL_ARB_multitexture not found\n");
+	} else   {
+		common->Printf( "...GL_ARB_multitexture not found\n" );
 	}
 
 	// GL_EXT_texture_env_add
 	glConfig.textureEnvAddAvailable = false;
-	if (CheckExtension("GL_EXT_texture_env_add"))
-	{
-		if (r_ext_texture_env_add->integer)
-		{
+	if ( CheckExtension( "GL_EXT_texture_env_add" ) ) {
+		if ( r_ext_texture_env_add->integer ) {
 			glConfig.textureEnvAddAvailable = true;
-			common->Printf("...using GL_EXT_texture_env_add\n");
-		}
-		else
-		{
+			common->Printf( "...using GL_EXT_texture_env_add\n" );
+		} else   {
 			glConfig.textureEnvAddAvailable = false;
-			common->Printf("...ignoring GL_EXT_texture_env_add\n");
+			common->Printf( "...ignoring GL_EXT_texture_env_add\n" );
 		}
-	}
-	else
-	{
-		common->Printf("...GL_EXT_texture_env_add not found\n");
+	} else   {
+		common->Printf( "...GL_EXT_texture_env_add not found\n" );
 	}
 
 #ifdef _WIN32
 	// WGL_EXT_swap_control
-	if (CheckExtension("WGL_EXT_swap_control"))
-	{
-		if (r_ext_gamma_control->integer)
-		{
-			qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
-			if (qwglSwapIntervalEXT)
-			{
-				common->Printf("...using WGL_EXT_swap_control\n");
+	if ( CheckExtension( "WGL_EXT_swap_control" ) ) {
+		if ( r_ext_gamma_control->integer ) {
+			qwglSwapIntervalEXT = ( BOOL ( WINAPI* )( int ) )GLimp_GetProcAddress( "wglSwapIntervalEXT" );
+			if ( qwglSwapIntervalEXT ) {
+				common->Printf( "...using WGL_EXT_swap_control\n" );
 				r_swapInterval->modified = true;	// force a set next frame
+			} else   {
+				common->Printf( "...WGL_EXT_swap_control not found\n" );
 			}
-			else
-			{
-				common->Printf("...WGL_EXT_swap_control not found\n");
-			}
+		} else   {
+			common->Printf( "...ignoring WGL_EXT_swap_control\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring WGL_EXT_swap_control\n");
-		}
-	}
-	else
-	{
-		common->Printf("...WGL_EXT_swap_control not found\n");
+	} else   {
+		common->Printf( "...WGL_EXT_swap_control not found\n" );
 	}
 #else
 	// GLX_SGI_swap_control
-	if (CheckSystemExtension("GLX_SGI_swap_control"))
-	{
-		qglXSwapIntervalSGI = (int (*)(int interval))GLimp_GetProcAddress("glXSwapIntervalSGI");
-		common->Printf("...using GLX_SGI_swap_control\n");
-	}
-	else
-	{
-		common->Printf("... GLX_SGI_swap_control not found\n");
+	if ( CheckSystemExtension( "GLX_SGI_swap_control" ) ) {
+		qglXSwapIntervalSGI = ( int ( * )( int interval ) )GLimp_GetProcAddress( "glXSwapIntervalSGI" );
+		common->Printf( "...using GLX_SGI_swap_control\n" );
+	} else   {
+		common->Printf( "... GLX_SGI_swap_control not found\n" );
 	}
 #endif
 
 	// GL_EXT_compiled_vertex_array
-	if (CheckExtension("GL_EXT_compiled_vertex_array"))
-	{
-		if (r_ext_compiled_vertex_array->integer)
-		{
-			common->Printf("...using GL_EXT_compiled_vertex_array\n");
-			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
-			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
-			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
-			{
-				common->FatalError("bad getprocaddress");
+	if ( CheckExtension( "GL_EXT_compiled_vertex_array" ) ) {
+		if ( r_ext_compiled_vertex_array->integer ) {
+			common->Printf( "...using GL_EXT_compiled_vertex_array\n" );
+			qglLockArraysEXT = ( void ( APIENTRY* )( int, int ) )GLimp_GetProcAddress( "glLockArraysEXT" );
+			qglUnlockArraysEXT = ( void ( APIENTRY* )() )GLimp_GetProcAddress( "glUnlockArraysEXT" );
+			if ( !qglLockArraysEXT || !qglUnlockArraysEXT ) {
+				common->FatalError( "bad getprocaddress" );
 			}
+		} else   {
+			common->Printf( "...ignoring GL_EXT_compiled_vertex_array\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_EXT_compiled_vertex_array\n");
-		}
-	}
-	else
-	{
-		common->Printf("...GL_EXT_compiled_vertex_array not found\n");
+	} else   {
+		common->Printf( "...GL_EXT_compiled_vertex_array not found\n" );
 	}
 
-	if (CheckExtension("GL_EXT_point_parameters"))
-	{
-		if (r_ext_point_parameters->integer)
-		{
-			common->Printf("...using GL_EXT_point_parameters\n");
-			qglPointParameterfEXT = (void (APIENTRY*)(GLenum, GLfloat))GLimp_GetProcAddress("glPointParameterfEXT");
-			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))GLimp_GetProcAddress("glPointParameterfvEXT");
-			if (!qglPointParameterfEXT || !qglPointParameterfvEXT)
-			{
-				common->FatalError("bad getprocaddress");
+	if ( CheckExtension( "GL_EXT_point_parameters" ) ) {
+		if ( r_ext_point_parameters->integer ) {
+			common->Printf( "...using GL_EXT_point_parameters\n" );
+			qglPointParameterfEXT = ( void ( APIENTRY* )( GLenum, GLfloat ) )GLimp_GetProcAddress( "glPointParameterfEXT" );
+			qglPointParameterfvEXT = ( void ( APIENTRY* )( GLenum, const GLfloat* ) )GLimp_GetProcAddress( "glPointParameterfvEXT" );
+			if ( !qglPointParameterfEXT || !qglPointParameterfvEXT ) {
+				common->FatalError( "bad getprocaddress" );
 			}
+		} else   {
+			common->Printf( "...ignoring GL_EXT_point_parameters\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_EXT_point_parameters\n");
-		}
-	}
-	else
-	{
-		common->Printf("...GL_EXT_point_parameters not found\n");
+	} else   {
+		common->Printf( "...GL_EXT_point_parameters not found\n" );
 	}
 
 	// GL_NV_fog_distance
 	glConfig.NVFogAvailable = false;
 	glConfig.NVFogMode = 0;
-	if (CheckExtension("GL_NV_fog_distance"))
-	{
-		if (r_ext_NV_fog_dist->integer)
-		{
+	if ( CheckExtension( "GL_NV_fog_distance" ) ) {
+		if ( r_ext_NV_fog_dist->integer ) {
 			glConfig.NVFogAvailable = true;
-			common->Printf("...using GL_NV_fog_distance\n");
+			common->Printf( "...using GL_NV_fog_distance\n" );
+		} else   {
+			common->Printf( "...ignoring GL_NV_fog_distance\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_NV_fog_distance\n");
-		}
-	}
-	else
-	{
-		common->Printf("...GL_NV_fog_distance not found\n");
+	} else   {
+		common->Printf( "...GL_NV_fog_distance not found\n" );
 	}
 
 	// GL_EXT_texture_filter_anisotropic
-	if (CheckExtension("GL_EXT_texture_filter_anisotropic"))
-	{
-		if (r_ext_texture_filter_anisotropic->integer)
-		{
+	if ( CheckExtension( "GL_EXT_texture_filter_anisotropic" ) ) {
+		if ( r_ext_texture_filter_anisotropic->integer ) {
 			glConfig.anisotropicAvailable = true;
-			common->Printf("...using GL_EXT_texture_filter_anisotropic\n");
+			common->Printf( "...using GL_EXT_texture_filter_anisotropic\n" );
+		} else   {
+			common->Printf( "...ignoring GL_EXT_texture_filter_anisotropic\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_EXT_texture_filter_anisotropic\n");
-		}
-	}
-	else
-	{
-		common->Printf("... GL_EXT_texture_filter_anisotropic not found\n");
+	} else   {
+		common->Printf( "... GL_EXT_texture_filter_anisotropic not found\n" );
 	}
 
 	// GL_ATI_pn_triangles - ATI PN-Triangles
-	if (CheckExtension("GL_ATI_pn_triangles"))
-	{
-		if (r_ext_ATI_pntriangles->integer)
-		{
-			common->Printf("...using GL_ATI_pn_triangles\n");
+	if ( CheckExtension( "GL_ATI_pn_triangles" ) ) {
+		if ( r_ext_ATI_pntriangles->integer ) {
+			common->Printf( "...using GL_ATI_pn_triangles\n" );
 
-			qglPNTrianglesiATI = (PFNGLPNTRIANGLESIATIPROC)GLimp_GetProcAddress("glPNTrianglesiATI");
-			qglPNTrianglesfATI = (PFNGLPNTRIANGLESFATIPROC)GLimp_GetProcAddress("glPNTrianglesfATI");
+			qglPNTrianglesiATI = ( PFNGLPNTRIANGLESIATIPROC )GLimp_GetProcAddress( "glPNTrianglesiATI" );
+			qglPNTrianglesfATI = ( PFNGLPNTRIANGLESFATIPROC )GLimp_GetProcAddress( "glPNTrianglesfATI" );
 
-			if (!qglPNTrianglesiATI || !qglPNTrianglesfATI)
-			{
-				common->FatalError("bad getprocaddress 0");
+			if ( !qglPNTrianglesiATI || !qglPNTrianglesfATI ) {
+				common->FatalError( "bad getprocaddress 0" );
 			}
+		} else   {
+			common->Printf( "...ignoring GL_ATI_pn_triangles\n" );
 		}
-		else
-		{
-			common->Printf("...ignoring GL_ATI_pn_triangles\n");
-		}
-	}
-	else
-	{
-		common->Printf("...GL_ATI_pn_triangles not found\n");
+	} else   {
+		common->Printf( "...GL_ATI_pn_triangles not found\n" );
 	}
 
 	// check logging
-	QGL_EnableLogging(!!r_logFile->integer);
+	QGL_EnableLogging( !!r_logFile->integer );
 }
 
 //==========================================================================
@@ -991,31 +844,29 @@ void QGL_Init()
 //
 //==========================================================================
 
-void QGL_Shutdown()
-{
-	common->Printf("...shutting down QGL\n");
+void QGL_Shutdown() {
+	common->Printf( "...shutting down QGL\n" );
 
 	// close the r_logFile
-	if (log_fp)
-	{
-		FS_FCloseFile(log_fp);
+	if ( log_fp ) {
+		FS_FCloseFile( log_fp );
 		log_fp = 0;
 	}
 
-#define GLF_0(r, n)             qgl ## n = NULL;
-#define GLF_V0(n)               qgl ## n = NULL;
-#define GLF_1(r, n, t1, p1)     qgl ## n = NULL;
-#define GLF_V1(n, t1, p1)       qgl ## n = NULL;
-#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = NULL;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = NULL;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = NULL;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = NULL;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = NULL;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = NULL;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = NULL;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = NULL;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = NULL;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = NULL;
+#define GLF_0( r, n )             qgl ## n = NULL;
+#define GLF_V0( n )               qgl ## n = NULL;
+#define GLF_1( r, n, t1, p1 )     qgl ## n = NULL;
+#define GLF_V1( n, t1, p1 )       qgl ## n = NULL;
+#define GLF_V2( n, t1, p1, t2, p2 )   qgl ## n = NULL;
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) qgl ## n = NULL;
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   qgl ## n = NULL;
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   qgl ## n = NULL;
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   qgl ## n = NULL;
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   qgl ## n = NULL;
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   qgl ## n = NULL;
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   qgl ## n = NULL;
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   qgl ## n = NULL;
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    qgl ## n = NULL;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -1055,59 +906,53 @@ void QGL_Shutdown()
 //
 //==========================================================================
 
-void QGL_EnableLogging(bool enable)
-{
+void QGL_EnableLogging( bool enable ) {
 	static bool isEnabled;
 
 	// return if we're already active
-	if (isEnabled && enable)
-	{
+	if ( isEnabled && enable ) {
 		// decrement log counter and stop if it has reached 0
-		Cvar_Set("r_logFile", va("%d", r_logFile->integer - 1));
-		if (r_logFile->integer)
-		{
+		Cvar_Set( "r_logFile", va( "%d", r_logFile->integer - 1 ) );
+		if ( r_logFile->integer ) {
 			return;
 		}
 		enable = false;
 	}
 
 	// return if we're already disabled
-	if (!enable && !isEnabled)
-	{
+	if ( !enable && !isEnabled ) {
 		return;
 	}
 
 	isEnabled = enable;
 
-	if (enable)
-	{
-		if (!log_fp)
-		{
+	if ( enable ) {
+		if ( !log_fp ) {
 			struct tm* newtime;
 			time_t aclock;
 
-			time(&aclock);
-			newtime = localtime(&aclock);
+			time( &aclock );
+			newtime = localtime( &aclock );
 
-			log_fp = FS_FOpenFileWrite("gl.log");
+			log_fp = FS_FOpenFileWrite( "gl.log" );
 
-			QGL_Log("%s\n", asctime(newtime));
+			QGL_Log( "%s\n", asctime( newtime ) );
 		}
 
-#define GLF_0(r, n)             qgl ## n = log ## n;
-#define GLF_V0(n)               qgl ## n = log ## n;
-#define GLF_1(r, n, t1, p1)     qgl ## n = log ## n;
-#define GLF_V1(n, t1, p1)       qgl ## n = log ## n;
-#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = log ## n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = log ## n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = log ## n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = log ## n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = log ## n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = log ## n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = log ## n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = log ## n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = log ## n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = log ## n;
+#define GLF_0( r, n )             qgl ## n = log ## n;
+#define GLF_V0( n )               qgl ## n = log ## n;
+#define GLF_1( r, n, t1, p1 )     qgl ## n = log ## n;
+#define GLF_V1( n, t1, p1 )       qgl ## n = log ## n;
+#define GLF_V2( n, t1, p1, t2, p2 )   qgl ## n = log ## n;
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) qgl ## n = log ## n;
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   qgl ## n = log ## n;
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   qgl ## n = log ## n;
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   qgl ## n = log ## n;
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   qgl ## n = log ## n;
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   qgl ## n = log ## n;
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   qgl ## n = log ## n;
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   qgl ## n = log ## n;
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    qgl ## n = log ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -1123,30 +968,27 @@ void QGL_EnableLogging(bool enable)
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
-	}
-	else
-	{
-		if (log_fp)
-		{
-			QGL_Log("*** CLOSING LOG ***\n");
-			FS_FCloseFile(log_fp);
+	} else   {
+		if ( log_fp ) {
+			QGL_Log( "*** CLOSING LOG ***\n" );
+			FS_FCloseFile( log_fp );
 			log_fp = 0;
 		}
 
-#define GLF_0(r, n)             qgl ## n = gl ## n;
-#define GLF_V0(n)               qgl ## n = gl ## n;
-#define GLF_1(r, n, t1, p1)     qgl ## n = gl ## n;
-#define GLF_V1(n, t1, p1)       qgl ## n = gl ## n;
-#define GLF_V2(n, t1, p1, t2, p2)   qgl ## n = gl ## n;
-#define GLF_3(r, n, t1, p1, t2, p2, t3, p3) qgl ## n = gl ## n;
-#define GLF_V3(n, t1, p1, t2, p2, t3, p3)   qgl ## n = gl ## n;
-#define GLF_V4(n, t1, p1, t2, p2, t3, p3, t4, p4)   qgl ## n = gl ## n;
-#define GLF_V5(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5)   qgl ## n = gl ## n;
-#define GLF_V6(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6)   qgl ## n = gl ## n;
-#define GLF_V7(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7)   qgl ## n = gl ## n;
-#define GLF_V8(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8)   qgl ## n = gl ## n;
-#define GLF_V9(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9)   qgl ## n = gl ## n;
-#define GLF_V10(n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10)    qgl ## n = gl ## n;
+#define GLF_0( r, n )             qgl ## n = gl ## n;
+#define GLF_V0( n )               qgl ## n = gl ## n;
+#define GLF_1( r, n, t1, p1 )     qgl ## n = gl ## n;
+#define GLF_V1( n, t1, p1 )       qgl ## n = gl ## n;
+#define GLF_V2( n, t1, p1, t2, p2 )   qgl ## n = gl ## n;
+#define GLF_3( r, n, t1, p1, t2, p2, t3, p3 ) qgl ## n = gl ## n;
+#define GLF_V3( n, t1, p1, t2, p2, t3, p3 )   qgl ## n = gl ## n;
+#define GLF_V4( n, t1, p1, t2, p2, t3, p3, t4, p4 )   qgl ## n = gl ## n;
+#define GLF_V5( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5 )   qgl ## n = gl ## n;
+#define GLF_V6( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6 )   qgl ## n = gl ## n;
+#define GLF_V7( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7 )   qgl ## n = gl ## n;
+#define GLF_V8( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8 )   qgl ## n = gl ## n;
+#define GLF_V9( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9 )   qgl ## n = gl ## n;
+#define GLF_V10( n, t1, p1, t2, p2, t3, p3, t4, p4, t5, p5, t6, p6, t7, p7, t8, p8, t9, p9, t10, p10 )    qgl ## n = gl ## n;
 #include "qgl_functions.h"
 #undef GLF_0
 #undef GLF_V0
@@ -1171,10 +1013,8 @@ void QGL_EnableLogging(bool enable)
 //
 //==========================================================================
 
-void QGL_LogComment(const char* Comment)
-{
-	if (log_fp)
-	{
-		QGL_Log("%s", Comment);
+void QGL_LogComment( const char* Comment ) {
+	if ( log_fp ) {
+		QGL_Log( "%s", Comment );
 	}
 }

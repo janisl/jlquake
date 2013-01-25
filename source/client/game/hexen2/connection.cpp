@@ -23,28 +23,26 @@
 #include "../../../common/message_utils.h"
 
 //	An h2svc_signonnum has been received, perform a client side setup
-void CLH2_SignonReply()
-{
-	char str[8192];
+void CLH2_SignonReply() {
+	char str[ 8192 ];
 
-	common->DPrintf("CLH2_SignonReply: %i\n", clc.qh_signon);
+	common->DPrintf( "CLH2_SignonReply: %i\n", clc.qh_signon );
 
-	switch (clc.qh_signon)
-	{
+	switch ( clc.qh_signon ) {
 	case 1:
-		CL_AddReliableCommand("prespawn");
+		CL_AddReliableCommand( "prespawn" );
 		break;
 
 	case 2:
-		CL_AddReliableCommand(va("name \"%s\"\n", clqh_name->string));
-		CL_AddReliableCommand(va("playerclass %i\n", (int)clh2_playerclass->value));
-		CL_AddReliableCommand(va("color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15));
-		sprintf(str, "spawn %s", cls.qh_spawnparms);
-		CL_AddReliableCommand(str);
+		CL_AddReliableCommand( va( "name \"%s\"\n", clqh_name->string ) );
+		CL_AddReliableCommand( va( "playerclass %i\n", ( int )clh2_playerclass->value ) );
+		CL_AddReliableCommand( va( "color %i %i\n", clqh_color->integer >> 4, clqh_color->integer & 15 ) );
+		sprintf( str, "spawn %s", cls.qh_spawnparms );
+		CL_AddReliableCommand( str );
 		break;
 
 	case 3:
-		CL_AddReliableCommand("begin");
+		CL_AddReliableCommand( "begin" );
 		break;
 
 	case 4:
@@ -53,25 +51,22 @@ void CLH2_SignonReply()
 	}
 }
 
-void CLHW_SendCmd()
-{
-	if (cls.state == CA_DISCONNECTED)
-	{
+void CLHW_SendCmd() {
+	if ( cls.state == CA_DISCONNECTED ) {
 		return;
 	}
-	if (clc.demoplaying)
-	{
+	if ( clc.demoplaying ) {
 		// sendcmds come from the demo
 		return;
 	}
 
 	// save this command off for prediction
 	int i = clc.netchan.outgoingSequence & UPDATE_MASK_HW;
-	hwusercmd_t* cmd = &cl.hw_frames[i].cmd;
-	cl.hw_frames[i].senttime = cls.realtime * 0.001;
-	cl.hw_frames[i].receivedtime = -1;		// we haven't gotten a reply yet
+	hwusercmd_t* cmd = &cl.hw_frames[ i ].cmd;
+	cl.hw_frames[ i ].senttime = cls.realtime * 0.001;
+	cl.hw_frames[ i ].receivedtime = -1;		// we haven't gotten a reply yet
 
-	Com_Memset(cmd, 0, sizeof(*cmd));
+	Com_Memset( cmd, 0, sizeof ( *cmd ) );
 	in_usercmd_t inCmd = CL_CreateCmd();
 
 	cmd->forwardmove = inCmd.forwardmove;
@@ -81,56 +76,50 @@ void CLHW_SendCmd()
 	cmd->impulse = inCmd.impulse;
 	cmd->msec = inCmd.msec;
 	cmd->light_level = inCmd.lightlevel;
-	VectorCopy(inCmd.fAngles, cmd->angles);
+	VectorCopy( inCmd.fAngles, cmd->angles );
 
 	//
 	// allways dump the first two message, because it may contain leftover inputs
 	// from the last level
 	//
-	if (++cl.qh_movemessages <= 2)
-	{
+	if ( ++cl.qh_movemessages <= 2 ) {
 		return;
 	}
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
 	QMsg buf;
-	byte data[128];
-	buf.InitOOB(data, 128);
+	byte data[ 128 ];
+	buf.InitOOB( data, 128 );
 
-	buf.WriteByte(h2clc_move);
-	i = (clc.netchan.outgoingSequence - 2) & UPDATE_MASK_HW;
-	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
-	i = (clc.netchan.outgoingSequence - 1) & UPDATE_MASK_HW;
-	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, false);
-	i = (clc.netchan.outgoingSequence) & UPDATE_MASK_HW;
-	MSGHW_WriteUsercmd(&buf, &cl.hw_frames[i].cmd, true);
+	buf.WriteByte( h2clc_move );
+	i = ( clc.netchan.outgoingSequence - 2 ) & UPDATE_MASK_HW;
+	MSGHW_WriteUsercmd( &buf, &cl.hw_frames[ i ].cmd, false );
+	i = ( clc.netchan.outgoingSequence - 1 ) & UPDATE_MASK_HW;
+	MSGHW_WriteUsercmd( &buf, &cl.hw_frames[ i ].cmd, false );
+	i = ( clc.netchan.outgoingSequence ) & UPDATE_MASK_HW;
+	MSGHW_WriteUsercmd( &buf, &cl.hw_frames[ i ].cmd, true );
 
 	// request delta compression of entities
-	if (clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_HW - 1)
-	{
+	if ( clc.netchan.outgoingSequence - cl.qh_validsequence >= UPDATE_BACKUP_HW - 1 ) {
 		cl.qh_validsequence = 0;
 	}
 
-	if (cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
-		!clc.demorecording)
-	{
-		cl.hw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_HW].delta_sequence = cl.qh_validsequence;
-		buf.WriteByte(hwclc_delta);
-		buf.WriteByte(cl.qh_validsequence & 255);
-	}
-	else
-	{
-		cl.hw_frames[clc.netchan.outgoingSequence & UPDATE_MASK_HW].delta_sequence = -1;
+	if ( cl.qh_validsequence && !cl_nodelta->value && cls.state == CA_ACTIVE &&
+		 !clc.demorecording ) {
+		cl.hw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_HW ].delta_sequence = cl.qh_validsequence;
+		buf.WriteByte( hwclc_delta );
+		buf.WriteByte( cl.qh_validsequence & 255 );
+	} else   {
+		cl.hw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_HW ].delta_sequence = -1;
 	}
 
-	if (clc.demorecording)
-	{
-		CLHW_WriteDemoCmd(cmd);
+	if ( clc.demorecording ) {
+		CLHW_WriteDemoCmd( cmd );
 	}
 
 	//
 	// deliver the message
 	//
-	Netchan_Transmit(&clc.netchan, buf.cursize, buf._data);
+	Netchan_Transmit( &clc.netchan, buf.cursize, buf._data );
 }

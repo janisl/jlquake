@@ -23,7 +23,7 @@
 
 //!!!!!!! Used in cgame QVM, do not change !!!!!!!
 #define CMD_BACKUP_Q3       64
-#define CMD_MASK_Q3         (CMD_BACKUP_Q3 - 1)
+#define CMD_MASK_Q3         ( CMD_BACKUP_Q3 - 1 )
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP_Q3
@@ -52,8 +52,7 @@
 #define MAX_PARSE_ENTITIES_Q3   2048
 
 // snapshots are a view of the server at a given time
-struct q3clSnapshot_t
-{
+struct q3clSnapshot_t {
 	bool valid;				// cleared if delta parsing was invalid
 	int snapFlags;			// rate delayed and dropped commands
 
@@ -62,7 +61,7 @@ struct q3clSnapshot_t
 	int messageNum;			// copied from netchan->incoming_sequence
 	int deltaNum;			// messageNum the delta is from
 	int ping;				// time from when cmdNum-1 was sent to time packet was reeceived
-	byte areamask[MAX_MAP_AREA_BYTES];	// portalarea visibility bits
+	byte areamask[ MAX_MAP_AREA_BYTES ];	// portalarea visibility bits
 
 	int cmdNum;				// the next cmdNum the server is expecting
 	q3playerState_t ps;		// complete information about the current player at this time
@@ -76,15 +75,13 @@ struct q3clSnapshot_t
 
 #define MAX_GAMESTATE_CHARS_Q3  16000
 
-struct q3gameState_t
-{
-	int stringOffsets[MAX_CONFIGSTRINGS_Q3];
-	char stringData[MAX_GAMESTATE_CHARS_Q3];
+struct q3gameState_t {
+	int stringOffsets[ MAX_CONFIGSTRINGS_Q3 ];
+	char stringData[ MAX_GAMESTATE_CHARS_Q3 ];
 	int dataCount;
 };
 
-struct q3outPacket_t
-{
+struct q3outPacket_t {
 	int p_cmdNumber;		// cl.cmdNumber when packet was sent
 	int p_serverTime;		// usercmd->serverTime when packet was sent
 	int p_realtime;			// cls.realtime when packet was sent
@@ -92,12 +89,11 @@ struct q3outPacket_t
 
 #define MAX_NAME_LENGTH_ET     36		// max length of a client name
 
-struct q3serverInfo_t
-{
+struct q3serverInfo_t {
 	netadr_t adr;
-	char hostName[MAX_NAME_LENGTH_ET];
-	char mapName[MAX_NAME_LENGTH_ET];
-	char game[MAX_NAME_LENGTH_ET];
+	char hostName[ MAX_NAME_LENGTH_ET ];
+	char mapName[ MAX_NAME_LENGTH_ET ];
+	char game[ MAX_NAME_LENGTH_ET ];
 	int netType;
 	int gameType;
 	int clients;
@@ -112,7 +108,7 @@ struct q3serverInfo_t
 	int maxlives;					// NERVE - SMF
 	int tourney;					// NERVE - SMF
 	int antilag;		// TTimo
-	char gameName[MAX_NAME_LENGTH_ET];			// Arnout
+	char gameName[ MAX_NAME_LENGTH_ET ];			// Arnout
 	int load;
 	int needpass;
 	int weaprestrict;

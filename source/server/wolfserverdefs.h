@@ -25,8 +25,7 @@ enum
 	WMGT_WOLF_CPH,			// JPW NERVE - Capture & Hold gametype
 };
 
-struct wsreliableCommands_t
-{
+struct wsreliableCommands_t {
 	int bufSize;
 	char* buf;					// actual strings
 	char** commands;			// pointers to actual strings
@@ -34,8 +33,7 @@ struct wsreliableCommands_t
 	char* rover;
 };
 
-struct wsentityShared_t
-{
+struct wsentityShared_t {
 	wsentityState_t s;					// communicated by server to clients
 
 	qboolean linked;				// false if not in any good cluster
@@ -69,14 +67,12 @@ struct wsentityShared_t
 };
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
-struct wssharedEntity_t
-{
+struct wssharedEntity_t {
 	wsentityState_t s;					// communicated by server to clients
 	wsentityShared_t r;				// shared by both the server system and game
 };
 
-struct wmentityShared_t
-{
+struct wmentityShared_t {
 	wmentityState_t s;					// communicated by server to clients
 
 	qboolean linked;				// false if not in any good cluster
@@ -112,14 +108,12 @@ struct wmentityShared_t
 };
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
-struct wmsharedEntity_t
-{
+struct wmsharedEntity_t {
 	wmentityState_t s;					// communicated by server to clients
 	wmentityShared_t r;				// shared by both the server system and game
 };
 
-struct etentityShared_t
-{
+struct etentityShared_t {
 	qboolean linked;				// false if not in any good cluster
 	int linkcount;
 
@@ -155,8 +149,7 @@ struct etentityShared_t
 };
 
 // the server looks at a sharedEntity, which is the start of the game's gentity_t structure
-struct etsharedEntity_t
-{
+struct etsharedEntity_t {
 	etentityState_t s;					// communicated by server to clients
 	etentityShared_t r;				// shared by both the server system and game
 };
@@ -166,17 +159,15 @@ struct etsharedEntity_t
 #define MAX_SERVER_TAGS_ET  256
 #define MAX_TAG_FILES_ET    64
 
-struct ettagHeaderExt_t
-{
-	char filename[MAX_QPATH];
+struct ettagHeaderExt_t {
+	char filename[ MAX_QPATH ];
 	int start;
 	int count;
 };
 
 #define MAX_TEMPBAN_ADDRESSES               MAX_CLIENTS_ET
 
-struct tempBan_t
-{
+struct tempBan_t {
 	netadr_t adr;
 	int endtime;
 };
@@ -216,7 +207,7 @@ enum gamestate_t
 //bani - cl->downloadnotify
 #define DLNOTIFY_REDIRECT   0x00000001	// "Redirecting client ..."
 #define DLNOTIFY_BEGIN      0x00000002	// "clientDownload: 4 : beginning ..."
-#define DLNOTIFY_ALL        (DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN)
+#define DLNOTIFY_ALL        ( DLNOTIFY_REDIRECT | DLNOTIFY_BEGIN )
 
 // RF, this is just here so different elements of the engine can be aware of this setting as it changes
 #define WSMAX_SP_CLIENTS    64		// increasing this will increase memory usage significantly

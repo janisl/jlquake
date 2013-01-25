@@ -78,8 +78,8 @@ enum glHardwareType_t
 #define RF_GLOW             8192	// pulse lighting for bonus items
 #define RF_IR_VISIBLE       16384	// in red light when infrared googles are on
 #define RF_LEFTHAND         0x8000	// left hand weapon, flip projection matrix.
-#define RF_BLINK            BIT(16)	// eyes in 'blink' state
-#define RF_FORCENOLOD       BIT(17)
+#define RF_BLINK            BIT( 16 )	// eyes in 'blink' state
+#define RF_FORCENOLOD       BIT( 17 )
 
 //	reFlags flags
 #define REFLAG_ONLYHAND         1	// only draw hand surfaces
@@ -89,15 +89,13 @@ enum glHardwareType_t
 #define REFLAG_SCALEDSPHERECULL 64	// on LOD switch, align the model to the player's camera
 #define REFLAG_FULL_LOD         8	// force a FULL lod
 
-struct polyVert_t
-{
+struct polyVert_t {
 	vec3_t xyz;
-	float st[2];
-	byte modulate[4];
+	float st[ 2 ];
+	byte modulate[ 4 ];
 };
 
-struct poly_t
-{
+struct poly_t {
 	qhandle_t hShader;
 	int numVerts;
 	polyVert_t* verts;
@@ -105,16 +103,15 @@ struct poly_t
 
 // Gordon, these MUST NOT exceed the values for SHADER_MAX_VERTEXES/SHADER_MAX_INDEXES
 #define MAX_PB_VERTS        1025
-#define MAX_PB_INDICIES     (MAX_PB_VERTS * 6)
+#define MAX_PB_INDICIES     ( MAX_PB_VERTS * 6 )
 
-struct polyBuffer_t
-{
-	vec4_t xyz[MAX_PB_VERTS];
-	vec2_t st[MAX_PB_VERTS];
-	byte color[MAX_PB_VERTS][4];
+struct polyBuffer_t {
+	vec4_t xyz[ MAX_PB_VERTS ];
+	vec2_t st[ MAX_PB_VERTS ];
+	byte color[ MAX_PB_VERTS ][ 4 ];
 	int numVerts;
 
-	int indicies[MAX_PB_INDICIES];
+	int indicies[ MAX_PB_INDICIES ];
 	int numIndicies;
 
 	qhandle_t shader;
@@ -123,11 +120,11 @@ struct polyBuffer_t
 // refdef flags
 #define RDF_NOWORLDMODEL    1		// used for player configuration screen
 #define RDF_HYPERSPACE      4		// teleportation effect
-#define RDF_SKYBOXPORTAL    BIT(3)
-#define RDF_UNDERWATER      BIT(4)	// so the renderer knows to use underwater fog when the player is underwater
-#define RDF_DRAWINGSKY      BIT(5)
-#define RDF_SNOOPERVIEW     BIT(6)
-#define RDF_DRAWSKYBOX      BIT(7)	// the above marks a scene as being a 'portal sky'.  this flag says to draw it or not
+#define RDF_SKYBOXPORTAL    BIT( 3 )
+#define RDF_UNDERWATER      BIT( 4 )	// so the renderer knows to use underwater fog when the player is underwater
+#define RDF_DRAWINGSKY      BIT( 5 )
+#define RDF_SNOOPERVIEW     BIT( 6 )
+#define RDF_DRAWSKYBOX      BIT( 7 )	// the above marks a scene as being a 'portal sky'.  this flag says to draw it or not
 //	New flags
 #define RDF_IRGOGGLES       2
 
@@ -160,13 +157,12 @@ enum glfogType_t
 	NUM_FOGS
 };
 
-#define REF_FORCE_DLIGHT    BIT(31)	// RF, passed in through overdraw parameter, force this dlight under all conditions
-#define REF_JUNIOR_DLIGHT   BIT(30)	// (SA) this dlight does not light surfaces.  it only affects dynamic light grid
-#define REF_DIRECTED_DLIGHT BIT(29)	// ydnar: global directional light, origin should be interpreted as a normal vector
+#define REF_FORCE_DLIGHT    BIT( 31 )	// RF, passed in through overdraw parameter, force this dlight under all conditions
+#define REF_JUNIOR_DLIGHT   BIT( 30 )	// (SA) this dlight does not light surfaces.  it only affects dynamic light grid
+#define REF_DIRECTED_DLIGHT BIT( 29 )	// ydnar: global directional light, origin should be interpreted as a normal vector
 
 // markfragments are returned by R_MarkFragments()
-struct markFragment_t
-{
+struct markFragment_t {
 	int firstPoint;
 	int numPoints;
 };
@@ -179,8 +175,7 @@ struct markFragment_t
 #define GLYPH_CHAREND 127
 #define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
 
-struct glyphInfo_t
-{
+struct glyphInfo_t {
 	int height;					// number of scan lines
 	int top;					// top of glyph in buffer
 	int bottom;					// bottom of glyph in buffer
@@ -193,14 +188,13 @@ struct glyphInfo_t
 	float s2;
 	float t2;
 	qhandle_t glyph;			// handle to the shader with the glyph
-	char shaderName[32];
+	char shaderName[ 32 ];
 };
 
-struct fontInfo_t
-{
-	glyphInfo_t glyphs [GLYPHS_PER_FONT];
+struct fontInfo_t {
+	glyphInfo_t glyphs [ GLYPHS_PER_FONT ];
 	float glyphScale;
-	char name[MAX_QPATH];
+	char name[ MAX_QPATH ];
 };
 
 //
@@ -247,8 +241,7 @@ enum stereoFrame_t
 
 struct image_t;
 
-struct refEntity_t
-{
+struct refEntity_t {
 	refEntityType_t reType;
 	int renderfx;
 
@@ -258,8 +251,8 @@ struct refEntity_t
 	vec3_t lightingOrigin;		// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
 	float shadowPlane;			// projection shadows go here, stencils go slightly lower
 
-	vec3_t axis[3];				// rotation vectors
-	vec3_t torsoAxis[3];		// rotation vectors for torso section of skeletal animation
+	vec3_t axis[ 3 ];				// rotation vectors
+	vec3_t torsoAxis[ 3 ];			// rotation vectors for torso section of skeletal animation
 	bool nonNormalizedAxes;		// axis are not normalized, i.e. they have scale
 	vec3_t origin;				// also used as MODEL_BEAM's "from"
 	int frame;					// also used as MODEL_BEAM's diameter
@@ -282,8 +275,8 @@ struct refEntity_t
 	qhandle_t customShader;		// use one image for the entire thing
 
 	// misc
-	byte shaderRGBA[4];			// colors used by rgbgen entity shaders
-	float shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
+	byte shaderRGBA[ 4 ];			// colors used by rgbgen entity shaders
+	float shaderTexCoord[ 2 ];		// texture coordinates used by tcMod entity modifiers
 	float shaderTime;			// subtracted from refdef time to control effect start times
 
 	// extra sprite information
@@ -308,13 +301,12 @@ struct refEntity_t
 	int entityNum;					// currentState.number, so we can attach rendering effects to specific entities (Zombie)
 };
 
-struct glfog_t
-{
+struct glfog_t {
 	int mode;					// GL_LINEAR, GL_EXP
 	int hint;					// GL_DONT_CARE
 	int startTime;				// in ms
 	int finishTime;				// in ms
-	float color[4];
+	float color[ 4 ];
 	float start;				// near
 	float end;					// far
 	bool useEndForClip;		// use the 'far' value for the far clipping plane
@@ -326,8 +318,7 @@ struct glfog_t
 	int dirty;
 };
 
-struct refdef_t
-{
+struct refdef_t {
 	int x;
 	int y;
 	int width;
@@ -335,7 +326,7 @@ struct refdef_t
 	float fov_x;
 	float fov_y;
 	vec3_t vieworg;
-	vec3_t viewaxis[3];				// transformation matrix
+	vec3_t viewaxis[ 3 ];				// transformation matrix
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
 	int time;
@@ -343,21 +334,20 @@ struct refdef_t
 	int rdflags;					// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
-	byte areamask[MAX_MAP_AREA_BYTES];
+	byte areamask[ MAX_MAP_AREA_BYTES ];
 
 	// text messages for deform text shaders
-	char text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+	char text[ MAX_RENDER_STRINGS ][ MAX_RENDER_STRING_LENGTH ];
 
 	//	needed to pass fog infos into the portal sky scene
 	glfog_t glfog;
 };
 
-struct glconfig_t
-{
-	char renderer_string[MAX_STRING_CHARS];
-	char vendor_string[MAX_STRING_CHARS];
-	char version_string[MAX_STRING_CHARS];
-	char extensions_string[BIG_INFO_STRING];
+struct glconfig_t {
+	char renderer_string[ MAX_STRING_CHARS ];
+	char vendor_string[ MAX_STRING_CHARS ];
+	char version_string[ MAX_STRING_CHARS ];
+	char extensions_string[ BIG_INFO_STRING ];
 
 	int maxTextureSize;								// queried from GL
 	int maxActiveTextures;							// multitexture ability
@@ -398,122 +388,122 @@ struct glconfig_t
 	qboolean smpActive;						// dual processor
 };
 
-void R_BeginRegistration(glconfig_t* glconfig);
+void R_BeginRegistration( glconfig_t* glconfig );
 void R_EndRegistration();
 void R_PurgeCache();
-void R_Shutdown(bool destroyWindow);
+void R_Shutdown( bool destroyWindow );
 
-void R_BeginFrame(stereoFrame_t stereoFrame);
-void R_EndFrame(int* frontEndMsec, int* backEndMsec);
+void R_BeginFrame( stereoFrame_t stereoFrame );
+void R_EndFrame( int* frontEndMsec, int* backEndMsec );
 
-image_t* R_PicFromWad(const char* Name);
-image_t* R_PicFromWadRepeat(const char* name);
-qhandle_t R_GetImageHandle(image_t* Image);
-void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height);
-void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height);
-image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height);
-image_t* R_LoadRawFontImageFromWad(const char* name, int width, int height);
-image_t* R_LoadBigFontImage(const char* name);
-image_t* R_LoadQuake2FontImage(const char* name);
+image_t* R_PicFromWad( const char* Name );
+image_t* R_PicFromWadRepeat( const char* name );
+qhandle_t R_GetImageHandle( image_t* Image );
+void R_CreateOrUpdateTranslatedImage( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
+void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
+image_t* R_LoadRawFontImageFromFile( const char* name, int width, int height );
+image_t* R_LoadRawFontImageFromWad( const char* name, int width, int height );
+image_t* R_LoadBigFontImage( const char* name );
+image_t* R_LoadQuake2FontImage( const char* name );
 image_t* R_CreateCrosshairImage();
-image_t* R_CachePic(const char* path);
-image_t* R_CachePicRepeat(const char* path);
-image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels);
-image_t* R_RegisterPic(const char* name);
-image_t* R_RegisterPicRepeat(const char* name);
-int R_GetTextureId(const char* name);
-void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte* translation);
-void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex);
-byte* R_LoadQuakeWorldSkinData(const char* name);
+image_t* R_CachePic( const char* path );
+image_t* R_CachePicRepeat( const char* path );
+image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels );
+image_t* R_RegisterPic( const char* name );
+image_t* R_RegisterPicRepeat( const char* name );
+int R_GetTextureId( const char* name );
+void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation );
+void R_CreateOrUpdateTranslatedModelSkinH2( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex );
+byte* R_LoadQuakeWorldSkinData( const char* name );
 
-const char* R_GetImageName(qhandle_t Handle);
-int R_GetImageWidth(image_t* pic);
-int R_GetImageHeight(image_t* pic);
-void R_GetPicSize(int* w, int* h, const char* name);
+const char* R_GetImageName( qhandle_t Handle );
+int R_GetImageWidth( image_t* pic );
+int R_GetImageHeight( image_t* pic );
+void R_GetPicSize( int* w, int* h, const char* name );
 
-void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
+void R_UploadCinematic( int Width, int Height, const byte* Data, int Client, bool Dirty );
 
-void R_LoadWorld(const char* Name);
-bool R_GetEntityToken(char* Buffer, int Size);
-int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
-	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
-int R_MarkFragmentsWolf(int orientation, const vec3_t* points, const vec3_t projection,
-	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer);
-int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
+void R_LoadWorld( const char* Name );
+bool R_GetEntityToken( char* Buffer, int Size );
+int R_MarkFragments( int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
+	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer );
+int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t projection,
+	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer );
+int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-qhandle_t R_RegisterModel(const char* Name);
-void R_ModelBounds(qhandle_t Handle, vec3_t Mins, vec3_t Maxs);
-int R_ModelNumFrames(qhandle_t Handle);
-int R_ModelFlags(qhandle_t Handle);
-bool R_IsMeshModel(qhandle_t Handle);
-const char* R_ModelName(qhandle_t Handle);
-int R_ModelSyncType(qhandle_t Handle);
-void R_CalculateModelScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
-bool R_LerpTag(orientation_t* Tag, qhandle_t Handle, int StartFrame, int EndFrame, float Frac, const char* TagName);
-int R_LerpTag(orientation_t* tag, const refEntity_t* refent, const char* tagName, int startIndex);
+qhandle_t R_RegisterModel( const char* Name );
+void R_ModelBounds( qhandle_t Handle, vec3_t Mins, vec3_t Maxs );
+int R_ModelNumFrames( qhandle_t Handle );
+int R_ModelFlags( qhandle_t Handle );
+bool R_IsMeshModel( qhandle_t Handle );
+const char* R_ModelName( qhandle_t Handle );
+int R_ModelSyncType( qhandle_t Handle );
+void R_CalculateModelScaleOffset( qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out );
+bool R_LerpTag( orientation_t* Tag, qhandle_t Handle, int StartFrame, int EndFrame, float Frac, const char* TagName );
+int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagName, int startIndex );
 
-qhandle_t R_RegisterShader(const char* Name);
-qhandle_t R_RegisterShaderNoMip(const char* Name);
-void R_RemapShader(const char* OldShader, const char* NewShader, const char* TimeOffset);
-bool R_LoadDynamicShader(const char* shadername, const char* shadertext);
+qhandle_t R_RegisterShader( const char* Name );
+qhandle_t R_RegisterShaderNoMip( const char* Name );
+void R_RemapShader( const char* OldShader, const char* NewShader, const char* TimeOffset );
+bool R_LoadDynamicShader( const char* shadername, const char* shadertext );
 
-qhandle_t R_RegisterSkin(const char* Name);
-image_t* R_RegisterSkinQ2(const char* name);
-bool R_GetSkinModel(qhandle_t skinid, const char* type, char* name);
-qhandle_t R_GetShaderFromModel(qhandle_t modelid, int surfnum, int withlightmap);
+qhandle_t R_RegisterSkin( const char* Name );
+image_t* R_RegisterSkinQ2( const char* name );
+bool R_GetSkinModel( qhandle_t skinid, const char* type, char* name );
+qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 
-void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
+void R_RegisterFont( const char* FontName, int PointSize, fontInfo_t* Font );
 
 // a scene is built up by calls to R_ClearScene and the various R_Add functions.
 // Nothing is drawn until R_RenderScene is called.
 void R_ClearScene();
-void R_AddRefEntityToScene(const refEntity_t* Entity);
-void R_AddLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
-void R_AddLightToScene(const vec3_t origin, float intensity, float r, float g, float b, int overdraw);
-void R_AddLightToScene(const vec3_t origin, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags);
-void R_AddAdditiveLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
-void R_AddCoronaToScene(const vec3_t org, float r, float g, float b, float scale, int id, int flags);
-void R_AddPolyToScene(qhandle_t hShader, int NumVerts, const polyVert_t* Verts, int Num);
-void R_AddPolyBufferToScene(polyBuffer_t* pPolyBuffer);
-void R_AddLightStyleToScene(int style, float r, float g, float b);
-void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture);
-void R_RenderScene(const refdef_t* fd);
+void R_AddRefEntityToScene( const refEntity_t* Entity );
+void R_AddLightToScene( const vec3_t Origin, float Intensity, float r, float g, float b );
+void R_AddLightToScene( const vec3_t origin, float intensity, float r, float g, float b, int overdraw );
+void R_AddLightToScene( const vec3_t origin, float radius, float intensity, float r, float g, float b, qhandle_t hShader, int flags );
+void R_AddAdditiveLightToScene( const vec3_t Origin, float Intensity, float r, float g, float b );
+void R_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, int flags );
+void R_AddPolyToScene( qhandle_t hShader, int NumVerts, const polyVert_t* Verts, int Num );
+void R_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer );
+void R_AddLightStyleToScene( int style, float r, float g, float b );
+void R_AddParticleToScene( vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture );
+void R_RenderScene( const refdef_t* fd );
 void R_SaveViewParms();
 void R_RestoreViewParms();
-void R_SetGlobalFog(bool restore, int duration, float r, float g, float b, float depthForOpaque);
+void R_SetGlobalFog( bool restore, int duration, float r, float g, float b, float depthForOpaque );
 
-float R_CalcEntityLight(refEntity_t* e);
-void R_SetSky(const char* name, float rotate, vec3_t axis);
+float R_CalcEntityLight( refEntity_t* e );
+void R_SetSky( const char* name, float rotate, vec3_t axis );
 
-void R_SetColor(const float* rgba);
-void R_StretchPic(float x, float y, float w, float h,
-	float s1, float t1, float s2, float t2, qhandle_t hShader);
-void R_StretchPicGradient(float x, float y, float w, float h,
-	float s1, float t1, float s2, float t2, qhandle_t hShader, const float* gradientColor, int gradientType);
-void R_RotatedPic(float x, float y, float w, float h,
-	float s1, float t1, float s2, float t2, qhandle_t hShader, float angle);
-void R_2DPolyies(polyVert_t* verts, int numverts, qhandle_t hShader);
-void R_RenderToTexture(qhandle_t textureid, int x, int y, int w, int h);
+void R_SetColor( const float* rgba );
+void R_StretchPic( float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader );
+void R_StretchPicGradient( float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, const float* gradientColor, int gradientType );
+void R_RotatedPic( float x, float y, float w, float h,
+	float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );
+void R_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader );
+void R_RenderToTexture( qhandle_t textureid, int x, int y, int w, int h );
 void R_Finish();
-void R_Draw2DQuad(float x, float y, float width, float height,
+void R_Draw2DQuad( float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a);
-bool R_GetScreenPosFromWorldPos(vec3_t origin, int& u, int& v);
+	float r, float g, float b, float a );
+bool R_GetScreenPosFromWorldPos( vec3_t origin, int& u, int& v );
 
-void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty);
+void R_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty );
 
-void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, idList<byte>& buffer);
+void R_CaptureRemoteScreenShot( const char* string1, const char* string2, const char* string3, idList<byte>& buffer );
 
-void R_SetFog(int fogvar, int var1, int var2, float r, float g, float b, float density);
+void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 
-void R_ProjectDecal(qhandle_t hShader, int numPoints, vec3_t* points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime);
+void R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t* points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 void R_ClearDecals();
 
-extern byte r_palette[256][4];
+extern byte r_palette[ 256 ][ 4 ];
 
-extern int ColorIndex[16];
-extern unsigned ColorPercent[16];
+extern int ColorIndex[ 16 ];
+extern unsigned ColorPercent[ 16 ];
 
-extern void (* BotDrawDebugPolygonsFunc)(void (* drawPoly)(int color, int numPoints, float* points), int value);
+extern void ( * BotDrawDebugPolygonsFunc )( void ( * drawPoly )( int color, int numPoints, float* points ), int value );
 
 #endif

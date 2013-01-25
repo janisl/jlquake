@@ -17,100 +17,81 @@
 #include "../../common/qcommon.h"
 #include "local.h"
 
-static int GeneticSelection(int numranks, float* rankings)
-{
+static int GeneticSelection( int numranks, float* rankings ) {
 	float sum = 0;
-	for (int i = 0; i < numranks; i++)
-	{
-		if (rankings[i] < 0)
-		{
+	for ( int i = 0; i < numranks; i++ ) {
+		if ( rankings[ i ] < 0 ) {
 			continue;
 		}
-		sum += rankings[i];
+		sum += rankings[ i ];
 	}
-	if (sum > 0)
-	{
+	if ( sum > 0 ) {
 		//select a bot where the ones with the higest rankings have
 		//the highest chance of being selected
-		for (int i = 0; i < numranks; i++)
-		{
-			if (rankings[i] < 0)
-			{
+		for ( int i = 0; i < numranks; i++ ) {
+			if ( rankings[ i ] < 0 ) {
 				continue;
 			}
-			sum -= rankings[i];
-			if (sum <= 0)
-			{
+			sum -= rankings[ i ];
+			if ( sum <= 0 ) {
 				return i;
 			}
 		}
 	}
 	//select a bot randomly
 	int index = random() * numranks;
-	for (int i = 0; i < numranks; i++)
-	{
-		if (rankings[index] >= 0)
-		{
+	for ( int i = 0; i < numranks; i++ ) {
+		if ( rankings[ index ] >= 0 ) {
 			return index;
 		}
-		index = (index + 1) % numranks;
+		index = ( index + 1 ) % numranks;
 	}
 	return 0;
 }
 
-bool GeneticParentsAndChildSelection(int numranks, float* ranks, int* parent1, int* parent2, int* child)
-{
-	if (numranks > 256)
-	{
-		BotImport_Print(PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n");
+bool GeneticParentsAndChildSelection( int numranks, float* ranks, int* parent1, int* parent2, int* child ) {
+	if ( numranks > 256 ) {
+		BotImport_Print( PRT_WARNING, "GeneticParentsAndChildSelection: too many bots\n" );
 		*parent1 = *parent2 = *child = 0;
 		return false;
 	}
 	float max = 0;
-	for (int i = 0; i < numranks; i++)
-	{
-		if (ranks[i] < 0)
-		{
+	for ( int i = 0; i < numranks; i++ ) {
+		if ( ranks[ i ] < 0 ) {
 			continue;
 		}
 		max++;
 	}
-	if (max < 3)
-	{
-		BotImport_Print(PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n");
+	if ( max < 3 ) {
+		BotImport_Print( PRT_WARNING, "GeneticParentsAndChildSelection: too few valid bots\n" );
 		*parent1 = *parent2 = *child = 0;
 		return false;
 	}
-	float rankings[256];
-	Com_Memcpy(rankings, ranks, sizeof(float) * numranks);
+	float rankings[ 256 ];
+	Com_Memcpy( rankings, ranks, sizeof ( float ) * numranks );
 	//select first parent
-	*parent1 = GeneticSelection(numranks, rankings);
-	rankings[*parent1] = -1;
+	*parent1 = GeneticSelection( numranks, rankings );
+	rankings[ *parent1 ] = -1;
 	//select second parent
-	*parent2 = GeneticSelection(numranks, rankings);
-	rankings[*parent2] = -1;
+	*parent2 = GeneticSelection( numranks, rankings );
+	rankings[ *parent2 ] = -1;
 	//reverse the rankings
 	max = 0;
-	for (int i = 0; i < numranks; i++)
-	{
-		if (rankings[i] < 0)
-		{
+	for ( int i = 0; i < numranks; i++ ) {
+		if ( rankings[ i ] < 0 ) {
 			continue;
 		}
-		if (rankings[i] > max)
-		{
-			max = rankings[i];
+		if ( rankings[ i ] > max ) {
+			max = rankings[ i ];
 		}
 	}
-	for (int i = 0; i < numranks; i++)
-	{
-		if (rankings[i] < 0)
-		{
+	for ( int i = 0; i < numranks; i++ ) {
+		if ( rankings[ i ] < 0 ) {
 			continue;
 		}
-		rankings[i] = max - rankings[i];
+		rankings[ i ] = max - rankings[ i ];
 	}
 	//select child
-	*child = GeneticSelection(numranks, rankings);
+	*child = GeneticSelection( numranks, rankings );
 	return true;
 }

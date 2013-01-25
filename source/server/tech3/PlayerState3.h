@@ -21,8 +21,7 @@
 
 //	This is initial portion of shared entity struct that is common in all
 // Tech3 games.
-struct sharedPlayerState_t
-{
+struct sharedPlayerState_t {
 	int commandTime;	// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;		// for view bobbing and footstep generation
@@ -33,12 +32,11 @@ struct sharedPlayerState_t
 	int weaponTime;
 };
 
-class idPlayerState3 : public Interface
-{
+class idPlayerState3 : public Interface {
 public:
 	idPlayerState3();
 
-	void SetGEntity(void* newPS);
+	void SetGEntity( void* newPS );
 
 	/*
 	int commandTime;	// cmd->serverTime of last executed command
@@ -48,46 +46,42 @@ public:
 	int pm_time;
 	*/
 	const float* GetOrigin() const;
-	void SetOrigin(const vec3_t value);
+	void SetOrigin( const vec3_t value );
 	/*
 	vec3_t velocity;
 	int weaponTime;
 	 */
 
 	virtual float GetLeanf() const = 0;
-	virtual void SetLeanf(float value) = 0;
+	virtual void SetLeanf( float value ) = 0;
 	virtual int GetClientNum() const = 0;
-	virtual void SetClientNum(int value) = 0;
+	virtual void SetClientNum( int value ) = 0;
 	virtual const float* GetViewAngles() const = 0;
-	virtual void SetViewAngles(const vec3_t value) = 0;
+	virtual void SetViewAngles( const vec3_t value ) = 0;
 	virtual int GetViewHeight() const = 0;
-	virtual void SetViewHeight(int value) = 0;
+	virtual void SetViewHeight( int value ) = 0;
 	virtual int GetPersistantScore() const = 0;
 	virtual int GetPing() const = 0;
-	virtual void SetPing(int value) = 0;
+	virtual void SetPing( int value ) = 0;
 
 protected:
 	sharedPlayerState_t* ps;
 };
 
 inline idPlayerState3::idPlayerState3()
-: ps(NULL)
-{
+	: ps( NULL ) {
 }
 
-inline void idPlayerState3::SetGEntity(void* newPS)
-{
-	ps = reinterpret_cast<sharedPlayerState_t*>(newPS);
+inline void idPlayerState3::SetGEntity( void* newPS ) {
+	ps = reinterpret_cast<sharedPlayerState_t*>( newPS );
 }
 
-inline const float* idPlayerState3::GetOrigin() const
-{
+inline const float* idPlayerState3::GetOrigin() const {
 	return ps->origin;
 }
 
-inline void idPlayerState3::SetOrigin(const vec3_t value)
-{
-	VectorCopy(value, ps->origin);
+inline void idPlayerState3::SetOrigin( const vec3_t value ) {
+	VectorCopy( value, ps->origin );
 }
 
 #endif

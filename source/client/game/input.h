@@ -20,8 +20,7 @@
 #include "../../common/mathlib.h"
 #include "../../common/console_variable.h"
 
-struct in_usercmd_t
-{
+struct in_usercmd_t {
 	int forwardmove;
 	int sidemove;
 	int upmove;
@@ -29,7 +28,7 @@ struct in_usercmd_t
 	int doubleTap;
 	int kick;
 	vec3_t fAngles;
-	int angles[3];
+	int angles[ 3 ];
 	int impulse;
 	int weapon;
 	float mtime;

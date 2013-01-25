@@ -25,7 +25,7 @@ viddef_t viddef;
 image_t* char_texture;
 image_t* char_smalltexture;
 
-vec4_t g_color_table[32] =
+vec4_t g_color_table[ 32 ] =
 {
 	{ 0.0,  0.0,    0.0,    1.0 },		// 0 - black		0
 	{ 1.0,  0.0,    0.0,    1.0 },		// 1 - red			1
@@ -62,123 +62,101 @@ vec4_t g_color_table[32] =
 };
 
 //	Adjusted for resolution and screen aspect ratio
-void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
-{
+void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h ) {
 	// scale for screen sizes
-	float xscale = (float)cls.glconfig.vidWidth / viddef.width;
-	float yscale = (float)cls.glconfig.vidHeight / viddef.height;
-	if (x)
-	{
+	float xscale = ( float )cls.glconfig.vidWidth / viddef.width;
+	float yscale = ( float )cls.glconfig.vidHeight / viddef.height;
+	if ( x ) {
 		*x *= xscale;
 	}
-	if (y)
-	{
+	if ( y ) {
 		*y *= yscale;
 	}
-	if (w)
-	{
+	if ( w ) {
 		*w *= xscale;
 	}
-	if (h)
-	{
+	if ( h ) {
 		*h *= yscale;
 	}
 }
 
-void UI_DrawPic(int x, int y, image_t* pic, float alpha)
-{
-	UI_DrawStretchPic(x, y, R_GetImageWidth(pic), R_GetImageHeight(pic), pic, alpha);
+void UI_DrawPic( int x, int y, image_t* pic, float alpha ) {
+	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic, alpha );
 }
 
-void UI_DrawNamedPic(int x, int y, const char* pic)
-{
-	image_t* gl = R_RegisterPic(pic);
-	if (!gl)
-	{
-		common->Printf("Can't find pic: %s\n", pic);
+void UI_DrawNamedPic( int x, int y, const char* pic ) {
+	image_t* gl = R_RegisterPic( pic );
+	if ( !gl ) {
+		common->Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
-	UI_DrawPic(x, y, gl);
+	UI_DrawPic( x, y, gl );
 }
 
-static void DoQuad(float x, float y, float width, float height,
+static void DoQuad( float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a)
-{
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+	float r, float g, float b, float a ) {
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 
-	R_Draw2DQuad(x, y, width, height, image, s1, t1, s2, t2, r, g, b, a);
+	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2, r, g, b, a );
 }
 
-void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
-{
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha);
+void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic, float alpha ) {
+	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha );
 }
 
-void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
-{
-	image_t* gl = R_RegisterPic(pic);
-	if (!gl)
-	{
-		common->Printf("Can't find pic: %s\n", pic);
+void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
+	image_t* gl = R_RegisterPic( pic );
+	if ( !gl ) {
+		common->Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
-	UI_DrawStretchPic(x, y, w, h, gl);
+	UI_DrawStretchPic( x, y, w, h, gl );
 }
 
-void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
-{
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, colour[0] / 255.0, colour[1] / 255.0, colour[2] / 255.0, colour[3] / 255.0);
+void UI_DrawStretchPicWithColour( int x, int y, int w, int h, image_t* pic, byte* colour ) {
+	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, colour[ 0 ] / 255.0, colour[ 1 ] / 255.0, colour[ 2 ] / 255.0, colour[ 3 ] / 255.0 );
 }
 
-void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
-{
-	float newsl = (float)srcx / (float)R_GetImageWidth(pic);
-	float newsh = newsl + (float)width / (float)R_GetImageWidth(pic);
+void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
+	float newsl = ( float )srcx / ( float )R_GetImageWidth( pic );
+	float newsh = newsl + ( float )width / ( float )R_GetImageWidth( pic );
 
-	float newtl = (float)srcy / (float)R_GetImageHeight(pic);
-	float newth = newtl + (float)height / (float)R_GetImageHeight(pic);
+	float newtl = ( float )srcy / ( float )R_GetImageHeight( pic );
+	float newth = newtl + ( float )height / ( float )R_GetImageHeight( pic );
 
-	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1);
+	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1 );
 }
 
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
-void UI_TileClear(int x, int y, int w, int h, image_t* pic)
-{
-	DoQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0, 1, 1, 1, 1);
+void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
+	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0, 1, 1, 1, 1 );
 }
 
-void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
-{
-	image_t* image = R_RegisterPicRepeat(pic);
-	if (!image)
-	{
-		common->Printf("Can't find pic: %s\n", pic);
+void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
+	image_t* image = R_RegisterPicRepeat( pic );
+	if ( !image ) {
+		common->Printf( "Can't find pic: %s\n", pic );
 		return;
 	}
-	UI_TileClear(x, y, w, h, image);
+	UI_TileClear( x, y, w, h, image );
 }
 
-void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
-{
-	DoQuad(x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a);
+void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a ) {
+	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a );
 }
 
-void UI_FillPal(int x, int y, int w, int h, int c)
-{
-	if ((unsigned)c > 255)
-	{
-		common->FatalError("UI_FillPal: bad color");
+void UI_FillPal( int x, int y, int w, int h, int c ) {
+	if ( ( unsigned )c > 255 ) {
+		common->FatalError( "UI_FillPal: bad color" );
 	}
-	UI_Fill(x, y, w, h, r_palette[c][0] / 255.0, r_palette[c][1] / 255.0, r_palette[c][2] / 255.0, 1);
+	UI_Fill( x, y, w, h, r_palette[ c ][ 0 ] / 255.0, r_palette[ c ][ 1 ] / 255.0, r_palette[ c ][ 2 ] / 255.0, 1 );
 }
 
-void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
-	int numberOfRows, float r, float g, float b, float a)
-{
-	if (y <= -h || y >= viddef.height)
-	{
+void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+	int numberOfRows, float r, float g, float b, float a ) {
+	if ( y <= -h || y >= viddef.height ) {
 		// Totally off screen
 		return;
 	}
@@ -186,143 +164,111 @@ void UI_DrawCharBase(int x, int y, int num, int w, int h, image_t* image, int nu
 	int row = num / numberOfColumns;
 	int col = num % numberOfColumns;
 
-	float xsize = 1.0 / (float)numberOfColumns;
-	float ysize = 1.0 / (float)numberOfRows;
+	float xsize = 1.0 / ( float )numberOfColumns;
+	float ysize = 1.0 / ( float )numberOfRows;
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a);
+	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a );
 }
 
-void UI_DrawChar(int x, int y, int num, float r, float g, float b, float a)
-{
-	if (GGameType & GAME_Hexen2)
-	{
+void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
+	if ( GGameType & GAME_Hexen2 ) {
 		num &= 511;
 
-		if ((num & 255) == 32)
-		{
+		if ( ( num & 255 ) == 32 ) {
 			return;		// space
 
 		}
-		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 32, 16, r, g, b, a);
-	}
-	else
-	{
+		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 32, 16, r, g, b, a );
+	} else   {
 		num &= 255;
 
-		if ((num & 127) == 32)
-		{
+		if ( ( num & 127 ) == 32 ) {
 			return;		// space
 		}
-		UI_DrawCharBase(x, y, num, 8, 8, char_texture, 16, 16, r, g, b, a);
+		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 16, 16, r, g, b, a );
 	}
 }
 
-void UI_DrawString(int x, int y, const char* str, int mask)
-{
+void UI_DrawString( int x, int y, const char* str, int mask ) {
 	vec4_t color;
-	Vector4Set(color, 1, 1, 1, 1);
-	while (*str)
-	{
-		if (Q_IsColorString(str))
-		{
-			if (*(str + 1) == COLOR_NULL)
-			{
-				Vector4Set(color, 1, 1, 1, 1);
-			}
-			else
-			{
-				Com_Memcpy(color, g_color_table[ColorIndex(*(str + 1))], sizeof(color));
+	Vector4Set( color, 1, 1, 1, 1 );
+	while ( *str ) {
+		if ( Q_IsColorString( str ) ) {
+			if ( *( str + 1 ) == COLOR_NULL ) {
+				Vector4Set( color, 1, 1, 1, 1 );
+			} else   {
+				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
 			continue;
 		}
-		UI_DrawChar(x, y, ((byte)*str) | mask, color[0], color[1], color[2], color[3]);
+		UI_DrawChar( x, y, ( ( byte ) * str ) | mask, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
 		str++;
 		x += 8;
 	}
 }
 
-static void UI_SmallCharacter(int x, int y, int num, float r, float g, float b, float a)
-{
-	if (num < 32)
-	{
+static void UI_SmallCharacter( int x, int y, int num, float r, float g, float b, float a ) {
+	if ( num < 32 ) {
 		num = 0;
-	}
-	else if (num >= 'a' && num <= 'z')
-	{
+	} else if ( num >= 'a' && num <= 'z' )     {
 		num -= 64;
-	}
-	else if (num > '_')
-	{
+	} else if ( num > '_' )     {
 		num = 0;
-	}
-	else
-	{
+	} else   {
 		num -= 32;
 	}
 
-	if (num == 0)
-	{
+	if ( num == 0 ) {
 		return;
 	}
 
-	UI_DrawCharBase(x, y, num, 8, 8, char_smalltexture, 16, 4, r, g, b, a);
+	UI_DrawCharBase( x, y, num, 8, 8, char_smalltexture, 16, 4, r, g, b, a );
 }
 
-void UI_DrawSmallString(int x, int y, const char* str)
-{
+void UI_DrawSmallString( int x, int y, const char* str ) {
 	vec4_t color;
-	Vector4Set(color, 1, 1, 1, 1);
-	while (*str)
-	{
-		if (Q_IsColorString(str))
-		{
-			if (*(str + 1) == COLOR_NULL)
-			{
-				Vector4Set(color, 1, 1, 1, 1);
-			}
-			else
-			{
-				Com_Memcpy(color, g_color_table[ColorIndex(*(str + 1))], sizeof(color));
+	Vector4Set( color, 1, 1, 1, 1 );
+	while ( *str ) {
+		if ( Q_IsColorString( str ) ) {
+			if ( *( str + 1 ) == COLOR_NULL ) {
+				Vector4Set( color, 1, 1, 1, 1 );
+			} else   {
+				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
 			continue;
 		}
-		UI_SmallCharacter(x, y, *str, color[0], color[1], color[2], color[3]);
+		UI_SmallCharacter( x, y, *str, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
 		str++;
 		x += 6;
 	}
 }
 
-void SCR_FillRect(float x, float y, float width, float height, const float* color)
-{
-	R_SetColor(color);
+void SCR_FillRect( float x, float y, float width, float height, const float* color ) {
+	R_SetColor( color );
 
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-	R_StretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
+	R_StretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
 
-	R_SetColor(NULL);
+	R_SetColor( NULL );
 }
 
-void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
-{
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
+void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader ) {
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
+	R_StretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-static void SCR_DrawChar(int x, int y, float size, int ch)
-{
+static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	ch &= 255;
 
-	if (ch == ' ')
-	{
+	if ( ch == ' ' ) {
 		return;
 	}
 
-	if (y < -size)
-	{
+	if ( y < -size ) {
 		return;
 	}
 
@@ -330,7 +276,7 @@ static void SCR_DrawChar(int x, int y, float size, int ch)
 	float ay = y;
 	float aw = size;
 	float ah = size;
-	UI_AdjustFromVirtualScreen(&ax, &ay, &aw, &ah);
+	UI_AdjustFromVirtualScreen( &ax, &ay, &aw, &ah );
 
 	int row = ch >> 4;
 	int col = ch & 15;
@@ -339,21 +285,18 @@ static void SCR_DrawChar(int x, int y, float size, int ch)
 	float fcol = col * 0.0625;
 	size = 0.0625;
 
-	R_StretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader);
+	R_StretchPic( ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls.charSetShader );
 }
 
 //	small chars are drawn at native screen resolution
-void SCR_DrawSmallChar(int x, int y, int ch)
-{
+void SCR_DrawSmallChar( int x, int y, int ch ) {
 	ch &= 255;
 
-	if (ch == ' ')
-	{
+	if ( ch == ' ' ) {
 		return;
 	}
 
-	if (y < -SMALLCHAR_HEIGHT)
-	{
+	if ( y < -SMALLCHAR_HEIGHT ) {
 		return;
 	}
 
@@ -364,28 +307,25 @@ void SCR_DrawSmallChar(int x, int y, int ch)
 	float fcol = col * 0.0625;
 	float size = 0.0625;
 
-	R_StretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader);
+	R_StretchPic( x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls.charSetShader );
 }
 
 //	Draws a multi-colored string with a drop shadow, optionally forcing
 // to a fixed color.
-void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setColor, bool forceColor)
-{
+void SCR_DrawStringExt( int x, int y, float size, const char* string, float* setColor, bool forceColor ) {
 	// draw the drop shadow
 	vec4_t color;
-	color[0] = color[1] = color[2] = 0;
-	color[3] = setColor[3];
-	R_SetColor(color);
+	color[ 0 ] = color[ 1 ] = color[ 2 ] = 0;
+	color[ 3 ] = setColor[ 3 ];
+	R_SetColor( color );
 	const char* s = string;
 	int xx = x;
-	while (*s)
-	{
-		if (Q_IsColorString(s))
-		{
+	while ( *s ) {
+		if ( Q_IsColorString( s ) ) {
 			s += 2;
 			continue;
 		}
-		SCR_DrawChar(xx + 2, y + 2, size, *s);
+		SCR_DrawChar( xx + 2, y + 2, size, *s );
 		xx += size;
 		s++;
 	}
@@ -393,84 +333,68 @@ void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setC
 	// draw the colored text
 	s = string;
 	xx = x;
-	R_SetColor(setColor);
-	while (*s)
-	{
-		if (Q_IsColorString(s))
-		{
-			if (!forceColor)
-			{
-				if (*(s + 1) == COLOR_NULL)
-				{
-					Com_Memcpy(color, setColor, sizeof(color));
+	R_SetColor( setColor );
+	while ( *s ) {
+		if ( Q_IsColorString( s ) ) {
+			if ( !forceColor ) {
+				if ( *( s + 1 ) == COLOR_NULL ) {
+					Com_Memcpy( color, setColor, sizeof ( color ) );
+				} else   {
+					Com_Memcpy( color, g_color_table[ ColorIndex( *( s + 1 ) ) ], sizeof ( color ) );
+					color[ 3 ] = setColor[ 3 ];
 				}
-				else
-				{
-					Com_Memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
-					color[3] = setColor[3];
-				}
-				R_SetColor(color);
+				R_SetColor( color );
 			}
 			s += 2;
 			continue;
 		}
-		SCR_DrawChar(xx, y, size, *s);
+		SCR_DrawChar( xx, y, size, *s );
 		xx += size;
 		s++;
 	}
-	R_SetColor(NULL);
+	R_SetColor( NULL );
 }
 
-void SCR_DrawBigString(int x, int y, const char* s, float alpha)
-{
-	float color[4];
-	color[0] = color[1] = color[2] = 1.0;
-	color[3] = alpha;
-	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, false);
+void SCR_DrawBigString( int x, int y, const char* s, float alpha ) {
+	float color[ 4 ];
+	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
+	color[ 3 ] = alpha;
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false );
 }
 
-void SCR_DrawBigStringColor(int x, int y, const char* s, vec4_t color)
-{
-	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, true);
+void SCR_DrawBigStringColor( int x, int y, const char* s, vec4_t color ) {
+	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true );
 }
 
-static void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, bool forceColor)
-{
+static void SCR_DrawSmallStringExt( int x, int y, const char* string, float* setColor, bool forceColor ) {
 	// draw the colored text
 	const char* s = string;
 	int xx = x;
-	R_SetColor(setColor);
-	while (*s)
-	{
-		if (Q_IsColorString(s))
-		{
-			if (!forceColor)
-			{
+	R_SetColor( setColor );
+	while ( *s ) {
+		if ( Q_IsColorString( s ) ) {
+			if ( !forceColor ) {
 				vec4_t color;
-				if (*(s + 1) == COLOR_NULL)
-				{
-					Com_Memcpy(color, setColor, sizeof(color));
+				if ( *( s + 1 ) == COLOR_NULL ) {
+					Com_Memcpy( color, setColor, sizeof ( color ) );
+				} else   {
+					Com_Memcpy( color, g_color_table[ ColorIndex( *( s + 1 ) ) ], sizeof ( color ) );
+					color[ 3 ] = setColor[ 3 ];
 				}
-				else
-				{
-					Com_Memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
-					color[3] = setColor[3];
-				}
-				R_SetColor(color);
+				R_SetColor( color );
 			}
 			s += 2;
 			continue;
 		}
-		SCR_DrawSmallChar(xx, y, *s);
+		SCR_DrawSmallChar( xx, y, *s );
 		xx += SMALLCHAR_WIDTH;
 		s++;
 	}
-	R_SetColor(NULL);
+	R_SetColor( NULL );
 }
 
-void SCR_DrawSmallString(int x, int y, const char* string)
-{
-	float color[4];
-	color[0] = color[1] = color[2] = color[3] = 1.0;
-	SCR_DrawSmallStringExt(x, y, string, color, false);
+void SCR_DrawSmallString( int x, int y, const char* string ) {
+	float color[ 4 ];
+	color[ 0 ] = color[ 1 ] = color[ 2 ] = color[ 3 ] = 1.0;
+	SCR_DrawSmallStringExt( x, y, string, color, false );
 }

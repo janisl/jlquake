@@ -39,11 +39,10 @@ enum clientState_t
 	CS_ACTIVE		// client is fully in game
 };
 
-struct client_t
-{
+struct client_t {
 	clientState_t state;
-	char userinfo[BIGGEST_MAX_INFO_STRING];			// name, etc
-	char name[MAX_NAME_LENGTH];						// extracted from userinfo, high bits masked
+	char userinfo[ BIGGEST_MAX_INFO_STRING ];			// name, etc
+	char name[ MAX_NAME_LENGTH ];						// extracted from userinfo, high bits masked
 
 	netchan_t netchan;
 
@@ -52,7 +51,7 @@ struct client_t
 	// but only cleared when it is sent out to the client.
 	// It can be harmlessly overflowed.
 	QMsg datagram;
-	byte datagramBuffer[MAX_MSGLEN_H2];
+	byte datagramBuffer[ MAX_MSGLEN_H2 ];
 
 	// Only in QuakeWorld. HexenWorld and Quake 2
 	int messagelevel;					// for filtering printed messages
@@ -65,12 +64,12 @@ struct client_t
 	// Only in Quake 2
 	byte* q2_downloadData;				// file being downloaded
 	// Only in Tech3
-	char downloadName[MAX_QPATH];		// if not empty string, we are downloading
+	char downloadName[ MAX_QPATH ];			// if not empty string, we are downloading
 	int downloadClientBlock;			// last block we sent to the client, awaiting ack
 	int downloadCurrentBlock;			// current block number
 	int downloadXmitBlock;				// last block we xmited
-	unsigned char* downloadBlocks[MAX_DOWNLOAD_WINDOW];	// the buffers for the download blocks
-	int downloadBlockSize[MAX_DOWNLOAD_WINDOW];
+	unsigned char* downloadBlocks[ MAX_DOWNLOAD_WINDOW ];	// the buffers for the download blocks
+	int downloadBlockSize[ MAX_DOWNLOAD_WINDOW ];
 	bool downloadEOF;					// We have sent the EOF block
 	int downloadSendTime;				// time we last got an ack from the client
 
@@ -82,7 +81,7 @@ struct client_t
 	qhedict_t* qh_edict;				// QH_EDICT_NUM(clientnum+1)
 
 	// spawn parms are carried from level to level
-	float qh_spawn_parms[NUM_SPAWN_PARMS];
+	float qh_spawn_parms[ NUM_SPAWN_PARMS ];
 
 	// client known data for deltas
 	int qh_old_frags;
@@ -96,11 +95,11 @@ struct client_t
 
 	QMsg qh_message;					// can be added to at any time,
 										// copied and clear once per frame
-	byte qh_messageBuffer[MAX_MSGLEN_H2];
+	byte qh_messageBuffer[ MAX_MSGLEN_H2 ];
 
 	int qh_colors;
 
-	float qh_ping_times[NUM_PING_TIMES];
+	float qh_ping_times[ NUM_PING_TIMES ];
 	int qh_num_pings;					// ping_times[num_pings%NUM_PING_TIMES]
 
 	// Only in QuakeWorld and HexenWorld
@@ -120,11 +119,11 @@ struct client_t
 	double qh_connection_started;		// or time of disconnect for zombies
 	bool qh_send_message;				// set on frames a datagram arived on
 
-	int qh_stats[MAX_CL_STATS];
+	int qh_stats[ MAX_CL_STATS ];
 
 	int qh_spec_track;					// entnum of player tracking
 
-	double qh_whensaid[10];				// JACK: For floodprots
+	double qh_whensaid[ 10 ];				// JACK: For floodprots
 	int qh_whensaidhead;				// Head value for floodprots
 	double qh_lockedtill;
 
@@ -143,15 +142,15 @@ struct client_t
 	// back buffers for client reliable data
 	QMsg qw_backbuf;
 	int qw_num_backbuf;
-	int qw_backbuf_size[MAX_BACK_BUFFERS];
-	byte qw_backbuf_data[MAX_BACK_BUFFERS][MAX_MSGLEN_QW];
+	int qw_backbuf_size[ MAX_BACK_BUFFERS ];
+	byte qw_backbuf_data[ MAX_BACK_BUFFERS ][ MAX_MSGLEN_QW ];
 
 	fileHandle_t qw_upload;
-	char qw_uploadfn[MAX_QPATH];
+	char qw_uploadfn[ MAX_QPATH ];
 	netadr_t qw_snap_from;
 	bool qw_remote_snap;
 
-	qwclient_frame_t qw_frames[UPDATE_BACKUP_QW];	// updates can be deltad from here
+	qwclient_frame_t qw_frames[ UPDATE_BACKUP_QW ];		// updates can be deltad from here
 
 	int h2_playerclass;
 
@@ -173,7 +172,7 @@ struct client_t
 	int hw_siege_team;
 	int hw_next_playerclass;
 
-	hwclient_frame_t hw_frames[UPDATE_BACKUP_HW];	// updates can be deltad from here
+	hwclient_frame_t hw_frames[ UPDATE_BACKUP_HW ];		// updates can be deltad from here
 
 	unsigned hw_PIV, hw_LastPIV;		// people in view
 
@@ -185,17 +184,17 @@ struct client_t
 	int q2_commandMsec;					// every seconds this is reset, if user
 										// commands exhaust it, assume time cheating
 
-	int q2_frame_latency[LATENCY_COUNTS];
+	int q2_frame_latency[ LATENCY_COUNTS ];
 
-	int q2_message_size[RATE_MESSAGES];	// used to rate drop packets
+	int q2_message_size[ RATE_MESSAGES ];	// used to rate drop packets
 	int q2_surpressCount;				// number of messages rate supressed
 
-	q2client_frame_t q2_frames[UPDATE_BACKUP_Q2];	// updates can be delta'd from here
+	q2client_frame_t q2_frames[ UPDATE_BACKUP_Q2 ];		// updates can be delta'd from here
 
 	int q2_lastmessage;					// sv.framenum when packet was last received
 	int q2_lastconnect;
 
-	char q3_reliableCommands[BIGGEST_MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
+	char q3_reliableCommands[ BIGGEST_MAX_RELIABLE_COMMANDS ][ MAX_STRING_CHARS ];
 	wsreliableCommands_t ws_reliableCommands;
 	int q3_reliableSequence;			// last added reliable message, not necesarily sent or acknowledged yet
 	int q3_reliableAcknowledge;			// last acknowledged reliable message
@@ -210,7 +209,7 @@ struct client_t
 	etusercmd_t et_lastUsercmd;
 	int q3_lastMessageNum;				// for delta compression
 	int q3_lastClientCommand;			// reliable client message sequence
-	char q3_lastClientCommandString[MAX_STRING_CHARS];
+	char q3_lastClientCommandString[ MAX_STRING_CHARS ];
 
 	int q3_deltaMessage;				// frame last client usercmd message
 	int q3_nextReliableTime;			// svs.q3_time when another reliable command will be allowed
@@ -219,7 +218,7 @@ struct client_t
 	int q3_nextSnapshotTime;			// send another snapshot when svs.q3_time >= nextSnapshotTime
 	bool q3_rateDelayed;				// true if nextSnapshotTime was set based on rate instead of snapshotMsec
 	int q3_timeoutCount;				// must timeout a few frames in a row so debugging doesn't break
-	q3clientSnapshot_t q3_frames[PACKET_BACKUP_Q3];	// updates can be delta'd from here
+	q3clientSnapshot_t q3_frames[ PACKET_BACKUP_Q3 ];	// updates can be delta'd from here
 	int q3_snapshotMsec;				// requests a snapshot every snapshotMsec unless rate choked
 	bool q3_pureAuthentic;
 	bool q3_gotCP;						// additional flag to distinguish between a bad pure checksum, and no cp command at all
@@ -238,12 +237,12 @@ struct client_t
 	etsharedEntity_t* et_gentity;		// SVWS_GentityNum(clientnum)
 
 	int et_binaryMessageLength;
-	char et_binaryMessage[MAX_BINARY_MESSAGE_ET];
+	char et_binaryMessage[ MAX_BINARY_MESSAGE_ET ];
 	bool et_binaryMessageOverflowed;
 
 	// www downloading
 	bool et_bDlOK;		// passed from cl_wwwDownload CVAR_USERINFO, wether this client supports www dl
-	char et_downloadURL[MAX_OSPATH];			// the URL we redirected the client to
+	char et_downloadURL[ MAX_OSPATH ];				// the URL we redirected the client to
 	bool et_bWWWDl;	// we have a www download going
 	bool et_bWWWing;	// the client is doing an ftp/http download
 	bool et_bFallback;		// last www download attempt failed, fallback to regular download
@@ -265,14 +264,13 @@ enum serverState_t
 	SS_PIC
 };
 
-struct server_t
-{
+struct server_t {
 	serverState_t state;
 
 	//	Only in Quake/Hexen 2 and Quake 2
-	char name[MAX_QPATH];				// map name, or cinematic name
+	char name[ MAX_QPATH ];					// map name, or cinematic name
 
-	clipHandle_t models[BIGGEST_MAX_MODELS];
+	clipHandle_t models[ BIGGEST_MAX_MODELS ];
 
 	//	Only NetQuake/Hexen 2 and Quake 2
 	bool loadgame;						// client begins should reuse existing entity
@@ -281,7 +279,7 @@ struct server_t
 	// the multicast buffer is used to send a message to a set of clients
 	// it is only used to marshall data until SV_Multicast is called
 	QMsg multicast;
-	byte multicastBuffer[MAX_MSGLEN];
+	byte multicastBuffer[ MAX_MSGLEN ];
 
 	bool qh_paused;
 
@@ -290,10 +288,10 @@ struct server_t
 	int qh_lastcheck;					// used by PF_checkclient
 	int qh_lastchecktime;
 
-	char qh_modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	const char* qh_model_precache[BIGGEST_MAX_MODELS];	// NULL terminated
-	const char* qh_sound_precache[BIGGEST_MAX_SOUNDS];	// NULL terminated
-	const char* qh_lightstyles[MAX_LIGHTSTYLES_Q1];
+	char qh_modelname[ MAX_QPATH ];			// maps/<name>.bsp, for model_precache[0]
+	const char* qh_model_precache[ BIGGEST_MAX_MODELS ];	// NULL terminated
+	const char* qh_sound_precache[ BIGGEST_MAX_SOUNDS ];	// NULL terminated
+	const char* qh_lightstyles[ MAX_LIGHTSTYLES_Q1 ];
 
 	int qh_num_edicts;
 	qhedict_t* qh_edicts;				// can NOT be array indexed, because
@@ -302,33 +300,33 @@ struct server_t
 
 	// added to every client's unreliable buffer each frame, then cleared
 	QMsg qh_datagram;
-	byte qh_datagramBuffer[MAX_MSGLEN];
+	byte qh_datagramBuffer[ MAX_MSGLEN ];
 
 	// added to every client's reliable buffer each frame, then cleared
 	QMsg qh_reliable_datagram;
-	byte qh_reliable_datagramBuffer[MAX_MSGLEN];
+	byte qh_reliable_datagramBuffer[ MAX_MSGLEN ];
 
 	// the signon buffer will be sent to each client as they connect
 	// includes the entity baselines, the static entities, etc
 	// large levels will have >MAX_DATAGRAM_QW sized signons, so
 	// multiple signon messages are kept
 	QMsg qh_signon;
-	byte qh_signonBuffer[MAX_MSGLEN];
+	byte qh_signonBuffer[ MAX_MSGLEN ];
 	//	Only QuakeWorld and hexenWorld
 	int qh_num_signon_buffers;
-	int qh_signon_buffer_size[MAX_SIGNON_BUFFERS];
-	byte qh_signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM];
+	int qh_signon_buffer_size[ MAX_SIGNON_BUFFERS ];
+	byte qh_signon_buffers[ MAX_SIGNON_BUFFERS ][ MAX_DATAGRAM ];
 
 	//check player/eyes models for hacks
 	unsigned qw_model_player_checksum;
 	unsigned qw_eyes_player_checksum;
 
-	char h2_midi_name[MAX_QPATH];		// midi file name
+	char h2_midi_name[ MAX_QPATH ];			// midi file name
 	byte h2_cd_track;					// cd track number
 
-	char h2_startspot[64];
+	char h2_startspot[ 64 ];
 
-	h2EffectT h2_Effects[MAX_EFFECTS_H2];
+	h2EffectT h2_Effects[ MAX_EFFECTS_H2 ];
 
 	h2client_state2_t* h2_states;
 
@@ -341,8 +339,8 @@ struct server_t
 	unsigned q2_time;					// always sv.framenum * 100 msec
 	int q2_framenum;
 
-	char q2_configstrings[MAX_CONFIGSTRINGS_Q2][MAX_QPATH];
-	q2entity_state_t q2_baselines[MAX_EDICTS_Q2];
+	char q2_configstrings[ MAX_CONFIGSTRINGS_Q2 ][ MAX_QPATH ];
+	q2entity_state_t q2_baselines[ MAX_EDICTS_Q2 ];
 
 	// demo server information
 	fileHandle_t q2_demofile;
@@ -356,9 +354,9 @@ struct server_t
 	int q3_snapshotCounter;				// incremented for each snapshot built
 	int q3_timeResidual;				// <= 1000 / sv_frame->value
 
-	char* q3_configstrings[BIGGEST_MAX_CONFIGSTRINGS_T3];
-	q3svEntity_t q3_svEntities[MAX_GENTITIES_Q3];
-	idEntity3* q3_entities[MAX_GENTITIES_Q3];
+	char* q3_configstrings[ BIGGEST_MAX_CONFIGSTRINGS_T3 ];
+	q3svEntity_t q3_svEntities[ MAX_GENTITIES_Q3 ];
+	idEntity3* q3_entities[ MAX_GENTITIES_Q3 ];
 
 	const char* q3_entityParsePoint;	// used during game VM init
 
@@ -379,15 +377,15 @@ struct server_t
 
 	int q3_restartTime;
 
-	bool et_configstringsmodified[MAX_CONFIGSTRINGS_ET];
+	bool et_configstringsmodified[ MAX_CONFIGSTRINGS_ET ];
 
 	// NERVE - SMF - net debugging
-	int wm_bpsWindow[MAX_BPS_WINDOW];
+	int wm_bpsWindow[ MAX_BPS_WINDOW ];
 	int wm_bpsWindowSteps;
 	int wm_bpsTotalBytes;
 	int wm_bpsMaxBytes;
 
-	int wm_ubpsWindow[MAX_BPS_WINDOW];
+	int wm_ubpsWindow[ MAX_BPS_WINDOW ];
 	int wm_ubpsTotalBytes;
 	int wm_ubpsMaxBytes;
 
@@ -395,15 +393,14 @@ struct server_t
 	int wm_ucompNum;
 	// -NERVE - SMF
 
-	md3Tag_t et_tags[MAX_SERVER_TAGS_ET];
-	ettagHeaderExt_t et_tagHeadersExt[MAX_TAG_FILES_ET];
+	md3Tag_t et_tags[ MAX_SERVER_TAGS_ET ];
+	ettagHeaderExt_t et_tagHeadersExt[ MAX_TAG_FILES_ET ];
 
 	int et_num_tagheaders;
 	int et_num_tags;
 };
 
-struct svstats_t
-{
+struct svstats_t {
 	double active;
 	double idle;
 	int count;
@@ -419,8 +416,7 @@ struct svstats_t
 // out before legitimate users connected
 #define MAX_CHALLENGES  1024
 
-struct challenge_t
-{
+struct challenge_t {
 	netadr_t adr;
 	int challenge;
 	int time;						// time the last packet was sent to the autherize server
@@ -431,13 +427,12 @@ struct challenge_t
 };
 
 // this structure will be cleared only when the game dll changes
-struct serverStatic_t
-{
+struct serverStatic_t {
 	bool initialized;					// sv_init has completed
 
 	client_t* clients;					// [sv_maxclients->integer];
 
-	challenge_t challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
+	challenge_t challenges[ MAX_CHALLENGES ];	// to prevent invalid IPs from connecting
 
 	// Only QuakeWorld, HexenWorld, and Quake 2.
 	int spawncount;						// incremented each server start
@@ -459,15 +454,15 @@ struct serverStatic_t
 	int qh_heartbeat_sequence;
 	svstats_t qh_stats;
 
-	char qh_info[MAX_SERVERINFO_STRING];
+	char qh_info[ MAX_SERVERINFO_STRING ];
 
 	// log messages are used so that fraglog processes can get stats
 	int qh_logsequence;					// the message currently being filled
 	double qh_logtime;					// time of last swap
-	QMsg qh_log[2];
-	byte qh_log_buf[2][MAX_DATAGRAM];
+	QMsg qh_log[ 2 ];
+	byte qh_log_buf[ 2 ][ MAX_DATAGRAM ];
 
-	char q2_mapcmd[MAX_TOKEN_CHARS_Q2];	// ie: *intro.cin+base
+	char q2_mapcmd[ MAX_TOKEN_CHARS_Q2 ];	// ie: *intro.cin+base
 
 	int q2_num_client_entities;			// maxclients->value*UPDATE_BACKUP_Q2*MAX_PACKET_ENTITIES
 	int q2_next_client_entities;		// next client_entity to use
@@ -478,7 +473,7 @@ struct serverStatic_t
 	// serverrecord values
 	fileHandle_t q2_demofile;
 	QMsg q2_demo_multicast;
-	byte q2_demo_multicast_buf[MAX_MSGLEN_Q2];
+	byte q2_demo_multicast_buf[ MAX_MSGLEN_Q2 ];
 
 	int q3_time;						// will be strictly increasing across level changes
 
@@ -494,9 +489,9 @@ struct serverStatic_t
 
 	netadr_t q3_authorizeAddress;		// for rcon return messages
 
-	tempBan_t et_tempBanAddresses[MAX_TEMPBAN_ADDRESSES];
+	tempBan_t et_tempBanAddresses[ MAX_TEMPBAN_ADDRESSES ];
 
-	int et_sampleTimes[SERVER_PERFORMANCECOUNTER_SAMPLES];
+	int et_sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int et_currentSampleIndex;
 	int et_totalFrameTime;
 	int et_currentFrameIndex;
@@ -506,10 +501,9 @@ struct serverStatic_t
 extern serverStatic_t svs;					// persistant server info across maps
 extern server_t sv;							// cleared each map
 
-struct ucmd_t
-{
+struct ucmd_t {
 	const char* name;
-	void (*func)(client_t* cl);
+	void ( * func )( client_t* cl );
 	bool allowedpostmapchange;
 };
 
@@ -517,8 +511,8 @@ struct ucmd_t
 
 extern Cvar* sv_maxclients;
 
-extern netadr_t master_adr[MAX_MASTERS];		// address of the master server
+extern netadr_t master_adr[ MAX_MASTERS ];			// address of the master server
 
-void SV_ExecuteClientCommand(client_t* cl, const char* s, bool clientOK, bool preMapRestart);
+void SV_ExecuteClientCommand( client_t* cl, const char* s, bool clientOK, bool preMapRestart );
 
 #endif

@@ -21,37 +21,33 @@
 #ifndef _MD2FILE_H
 #define _MD2FILE_H
 
-#define IDMESH2HEADER       (('2' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define IDMESH2HEADER       ( ( '2' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MESH2_VERSION       8
 
 #define MAX_MD2_VERTS       2048
 #define MAX_MD2_SKINS       32
 #define MAX_MD2_SKINNAME    64
 
-struct dmd2_stvert_t
-{
+struct dmd2_stvert_t {
 	short s;
 	short t;
 };
 
-struct dmd2_triangle_t
-{
-	short index_xyz[3];
-	short index_st[3];
+struct dmd2_triangle_t {
+	short index_xyz[ 3 ];
+	short index_st[ 3 ];
 };
 
-struct dmd2_trivertx_t
-{
-	byte v[3];				// scaled byte to fit in frame mins/maxs
+struct dmd2_trivertx_t {
+	byte v[ 3 ];				// scaled byte to fit in frame mins/maxs
 	byte lightnormalindex;
 };
 
-struct dmd2_frame_t
-{
-	float scale[3];				// multiply byte verts by this
-	float translate[3];				// then add this
-	char name[16];				// frame name from grabbing
-	dmd2_trivertx_t verts[1];	// variable sized
+struct dmd2_frame_t {
+	float scale[ 3 ];				// multiply byte verts by this
+	float translate[ 3 ];				// then add this
+	char name[ 16 ];				// frame name from grabbing
+	dmd2_trivertx_t verts[ 1 ];		// variable sized
 };
 
 // the glcmd format:
@@ -62,8 +58,7 @@ struct dmd2_frame_t
 // a vertex consists of a floating point s, a floating point t,
 // and an integer vertex index.
 
-struct dmd2_t
-{
+struct dmd2_t {
 	int ident;
 	int version;
 

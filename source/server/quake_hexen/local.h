@@ -19,7 +19,7 @@
 
 #include "../global.h"
 
-#define QHEDICT_FROM_AREA(l) STRUCT_FROM_LINK(l, qhedict_t, area)
+#define QHEDICT_FROM_AREA( l ) STRUCT_FROM_LINK( l, qhedict_t, area )
 
 #define MULTICAST_ALL           0
 #define MULTICAST_PHS           1
@@ -35,10 +35,10 @@ extern int qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead;
 extern char qhw_fp_msg[];
 extern netadr_t rcon_from;
 
-void SVH2_SaveGamestate(bool clientsOnly);
+void SVH2_SaveGamestate( bool clientsOnly );
 void SVQH_InitOperatorCommands();
 void SVQHW_InitOperatorCommands();
-void SVQW_SendServerInfoChange(const char* key, const char* value);
+void SVQW_SendServerInfoChange( const char* key, const char* value );
 
 //
 //	Client
@@ -48,35 +48,35 @@ extern ucmd_t qw_ucmds[];
 extern ucmd_t h2_ucmds[];
 extern ucmd_t hw_ucmds[];
 
-void SVQH_DropClient(client_t* host_client, bool crash);
-void SVQHW_DropClient(client_t* drop);
-void SVQH_SetIdealPitch(qhedict_t* player);
-void SVQH_TogglePause(const char* msg);
-void SVQW_ExecuteClientMessage(client_t* cl, QMsg& message);
-void SVHW_ExecuteClientMessage(client_t* cl, QMsg& message);
-void SVQH_RunClients(float frametime);
+void SVQH_DropClient( client_t* host_client, bool crash );
+void SVQHW_DropClient( client_t* drop );
+void SVQH_SetIdealPitch( qhedict_t* player );
+void SVQH_TogglePause( const char* msg );
+void SVQW_ExecuteClientMessage( client_t* cl, QMsg& message );
+void SVHW_ExecuteClientMessage( client_t* cl, QMsg& message );
+void SVQH_RunClients( float frametime );
 
 //
 //	Entities
 //
-void SVQ1_WriteEntitiesToClient(qhedict_t* clent, QMsg* msg);
-void SVH2_PrepareClientEntities(client_t* client, qhedict_t* clent, QMsg* msg);
-void SVQW_WriteEntitiesToClient(client_t* client, QMsg* msg);
-void SVHW_WriteEntitiesToClient(client_t* client, QMsg* msg);
-void SVHW_WriteInventory(client_t* host_client, qhedict_t* ent, QMsg* msg);
+void SVQ1_WriteEntitiesToClient( qhedict_t* clent, QMsg* msg );
+void SVH2_PrepareClientEntities( client_t* client, qhedict_t* clent, QMsg* msg );
+void SVQW_WriteEntitiesToClient( client_t* client, QMsg* msg );
+void SVHW_WriteEntitiesToClient( client_t* client, QMsg* msg );
+void SVHW_WriteInventory( client_t* host_client, qhedict_t* ent, QMsg* msg );
 
 //
 //	Game
 //
-#define RETURN_EDICT(e) (((int*)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
-#define RETURN_STRING(s) (((int*)pr_globals)[OFS_RETURN] = PR_SetString(s))
+#define RETURN_EDICT( e ) ( ( ( int* )pr_globals )[ OFS_RETURN ] = EDICT_TO_PROG( e ) )
+#define RETURN_STRING( s ) ( ( ( int* )pr_globals )[ OFS_RETURN ] = PR_SetString( s ) )
 
 extern Cvar* svqh_aim;
 
 void PF_objerror();
 void PF_changeyaw();
 void PF_setorigin();
-void SetMinMaxSize(qhedict_t* e, const float* min, const float* max);
+void SetMinMaxSize( qhedict_t* e, const float* min, const float* max );
 void PF_setsize();
 void PFQ1_setmodel();
 void PFQW_setmodel();
@@ -90,7 +90,7 @@ void PFQ1_Remove();
 void PFH2_Remove();
 void PFHW_Remove();
 void PF_Find();
-void PR_CheckEmptyString(const char* s);
+void PR_CheckEmptyString( const char* s );
 void PF_precache_file();
 void PF_precache_sound();
 void PF_precache_model();
@@ -138,16 +138,16 @@ void PF_stuffcmd();
 //
 //	Init
 //
-extern char qhw_localinfo[QHMAX_LOCALINFO_STRING + 1];
+extern char qhw_localinfo[ QHMAX_LOCALINFO_STRING + 1 ];
 extern func_t qhw_SpectatorConnect;
 extern func_t qhw_SpectatorThink;
 extern func_t qhw_SpectatorDisconnect;
-extern char svqh_localmodels[BIGGEST_MAX_MODELS][5];			// inline model names for precache
+extern char svqh_localmodels[ BIGGEST_MAX_MODELS ][ 5 ];			// inline model names for precache
 
 void SVQH_FlushSignon();
-int SVQH_ModelIndex(const char* name);
+int SVQH_ModelIndex( const char* name );
 void SVQH_SaveSpawnparms();
-void SVQH_SpawnServer(const char* server, const char* startspot);
+void SVQH_SpawnServer( const char* server, const char* startspot );
 
 //
 //	Main
@@ -191,47 +191,47 @@ extern netadr_t hw_idmaster_adr;
 extern int svqhw_net_port;
 
 void SVQH_FreeMemory();
-int SVQH_CalcPing(client_t* cl);
-void SVQHW_FullClientUpdate(client_t* client, QMsg* buf);
-void SVQHW_FullClientUpdateToClient(client_t* client, client_t* cl);
-void SVQHW_ExtractFromUserinfo(client_t* cl);
+int SVQH_CalcPing( client_t* cl );
+void SVQHW_FullClientUpdate( client_t* client, QMsg* buf );
+void SVQHW_FullClientUpdateToClient( client_t* client, client_t* cl );
+void SVQHW_ExtractFromUserinfo( client_t* cl );
 const char* SVQ1_GetMapName();
 const char* SVH2_GetMapName();
-void SVQH_SendServerinfo(client_t* client);
+void SVQH_SendServerinfo( client_t* client );
 void SVQH_Shutdown();
-void SVQHW_Shutdown(const char* finalMessage);
-void SVQH_ServerFrame(float frametime);
-void SVQHW_ServerFrame(int msec);
+void SVQHW_Shutdown( const char* finalMessage );
+void SVQH_ServerFrame( float frametime );
+void SVQHW_ServerFrame( int msec );
 void SVQH_Init();
 
 //
 //	Move
 //
-bool SVQH_CheckBottom(qhedict_t* ent);
-void SVQH_SetMoveTrace(const q1trace_t& trace);
-bool SVQH_movestep(qhedict_t* ent, const vec3_t move, bool relink, bool noenemy, bool set_trace);
+bool SVQH_CheckBottom( qhedict_t* ent );
+void SVQH_SetMoveTrace( const q1trace_t& trace );
+bool SVQH_movestep( qhedict_t* ent, const vec3_t move, bool relink, bool noenemy, bool set_trace );
 void SVQH_MoveToGoal();
 
 //
 //	NChan
 //
-void SVQH_ClientReliableCheckBlock(client_t* cl, int maxsize);
-void SVQH_ClientReliableWrite_Begin(client_t* cl, int c, int maxsize);
-void SVQH_ClientReliable_FinishWrite(client_t* cl);
-void SVQH_ClientReliableWrite_Angle(client_t* cl, float f);
-void SVQH_ClientReliableWrite_Angle16(client_t* cl, float f);
-void SVQH_ClientReliableWrite_Byte(client_t* cl, int c);
-void SVQH_ClientReliableWrite_Char(client_t* cl, int c);
-void SVQH_ClientReliableWrite_Float(client_t* cl, float f);
-void SVQH_ClientReliableWrite_Coord(client_t* cl, float f);
-void SVQH_ClientReliableWrite_Long(client_t* cl, int c);
-void SVQH_ClientReliableWrite_Short(client_t* cl, int c);
-void SVQH_ClientReliableWrite_String(client_t* cl, const char* s);
-void SVQH_ClientReliableWrite_SZ(client_t* cl, const void* data, int len);
+void SVQH_ClientReliableCheckBlock( client_t* cl, int maxsize );
+void SVQH_ClientReliableWrite_Begin( client_t* cl, int c, int maxsize );
+void SVQH_ClientReliable_FinishWrite( client_t* cl );
+void SVQH_ClientReliableWrite_Angle( client_t* cl, float f );
+void SVQH_ClientReliableWrite_Angle16( client_t* cl, float f );
+void SVQH_ClientReliableWrite_Byte( client_t* cl, int c );
+void SVQH_ClientReliableWrite_Char( client_t* cl, int c );
+void SVQH_ClientReliableWrite_Float( client_t* cl, float f );
+void SVQH_ClientReliableWrite_Coord( client_t* cl, float f );
+void SVQH_ClientReliableWrite_Long( client_t* cl, int c );
+void SVQH_ClientReliableWrite_Short( client_t* cl, int c );
+void SVQH_ClientReliableWrite_String( client_t* cl, const char* s );
+void SVQH_ClientReliableWrite_SZ( client_t* cl, const void* data, int len );
 // returns a new connection number if there is one pending, else -1
-bool NET_CheckNewConnections(netadr_t* outaddr, int& outSocket);
+bool NET_CheckNewConnections( netadr_t* outaddr, int& outSocket );
 // This is a reliable *blocking* send to all attached clients.
-int NET_SendToAll(QMsg* data, int blocktime);
+int NET_SendToAll( QMsg* data, int blocktime );
 void MaxPlayers_f();
 
 //
@@ -242,12 +242,12 @@ extern Cvar* svqh_maxspeed;
 
 void SVQH_RegisterPhysicsCvars();
 void SVQH_SetMoveVars();
-bool SVQH_RunThink(qhedict_t* ent, float frametime);
+bool SVQH_RunThink( qhedict_t* ent, float frametime );
 void SVQH_ProgStartFrame();
-void SVQH_RunNewmis(float realtime);
-void SVQH_RunPhysicsAndUpdateTime(float frametime, float realtime);
-void SVQH_RunPhysicsForTime(float realtime);
-void SVQH_ClientThink(client_t* client, float frametime);
+void SVQH_RunNewmis( float realtime );
+void SVQH_RunPhysicsAndUpdateTime( float frametime, float realtime );
+void SVQH_RunPhysicsForTime( float realtime );
+void SVQH_ClientThink( client_t* client, float frametime );
 
 //
 //	Send
@@ -258,29 +258,29 @@ extern int svqw_nailmodel;
 extern int svqw_supernailmodel;
 extern int svqw_playermodel;
 extern int svhw_magicmissmodel;
-extern int svhw_playermodel[MAX_PLAYER_CLASS];
+extern int svhw_playermodel[ MAX_PLAYER_CLASS ];
 extern int svhw_ravenmodel;
 extern int svhw_raven2model;
 
-void SVQH_Multicast(const vec3_t origin, int to);
-void SVHW_MulticastSpecific(unsigned clients, bool reliable);
-void SVH2_StopSound(qhedict_t* entity, int channel);
-void SVQH_StartSound(qhedict_t* entity, int channel, const char* sample, int volume,
-	float attenuation);
-void SVH2_UpdateSoundPos(qhedict_t* entity, int channel);
-void SVQH_PrintToClient(client_t* cl, int level, char* string);
-void SVQH_ClientPrintf(client_t* cl, int level, const char* fmt, ...) id_attribute((format(printf, 3, 4)));
-void SVQH_BroadcastPrintf(int level, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
-void SVQH_SendClientCommand(client_t* cl, const char* fmt, ...) id_attribute((format(printf, 2, 3)));
-void SVQH_BroadcastCommand(const char* fmt, ...) id_attribute((format(printf, 1, 2)));
-void SVQH_StartParticle(const vec3_t org, const vec3_t dir, int color, int count);
-void SVH2_StartParticle2(const vec3_t org, const vec3_t dmin, const vec3_t dmax, int color, int effect, int count);
-void SVH2_StartParticle3(const vec3_t org, const vec3_t box, int color, int effect, int count);
-void SVH2_StartParticle4(const vec3_t org, float radius, int color, int effect, int count);
-void SVH2_StartRainEffect(const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count);
+void SVQH_Multicast( const vec3_t origin, int to );
+void SVHW_MulticastSpecific( unsigned clients, bool reliable );
+void SVH2_StopSound( qhedict_t* entity, int channel );
+void SVQH_StartSound( qhedict_t* entity, int channel, const char* sample, int volume,
+	float attenuation );
+void SVH2_UpdateSoundPos( qhedict_t* entity, int channel );
+void SVQH_PrintToClient( client_t* cl, int level, char* string );
+void SVQH_ClientPrintf( client_t* cl, int level, const char* fmt, ... ) id_attribute( ( format( printf, 3, 4 ) ) );
+void SVQH_BroadcastPrintf( int level, const char* fmt, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
+void SVQH_SendClientCommand( client_t* cl, const char* fmt, ... ) id_attribute( ( format( printf, 2, 3 ) ) );
+void SVQH_BroadcastCommand( const char* fmt, ... ) id_attribute( ( format( printf, 1, 2 ) ) );
+void SVQH_StartParticle( const vec3_t org, const vec3_t dir, int color, int count );
+void SVH2_StartParticle2( const vec3_t org, const vec3_t dmin, const vec3_t dmax, int color, int effect, int count );
+void SVH2_StartParticle3( const vec3_t org, const vec3_t box, int color, int effect, int count );
+void SVH2_StartParticle4( const vec3_t org, float radius, int color, int effect, int count );
+void SVH2_StartRainEffect( const vec3_t org, const vec3_t e_size, int x_dir, int y_dir, int color, int count );
 void SVQH_ClearDatagram();
-void SVQH_WriteClientdataToMessage(client_t* client, QMsg* msg);
-void SVQHW_BeginRedirect(const netadr_t& addr);
+void SVQH_WriteClientdataToMessage( client_t* client, QMsg* msg );
+void SVQHW_BeginRedirect( const netadr_t& addr );
 void SVQW_FindModelNumbers();
 void SVHW_FindModelNumbers();
 void SVQH_SendClientMessages();
@@ -295,16 +295,16 @@ extern Cvar* sys_quake2;
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 // flags ent->v.modified
-void SVQH_UnlinkEdict(qhedict_t* ent);
+void SVQH_UnlinkEdict( qhedict_t* ent );
 // Needs to be called any time an entity changes origin, mins, maxs, or solid
 // flags ent->v.modified
 // sets ent->v.absmin and ent->v.absmax
 // if touchtriggers, calls prog functions for the intersected triggers
-void SVQH_LinkEdict(qhedict_t* ent, bool touch_triggers);
+void SVQH_LinkEdict( qhedict_t* ent, bool touch_triggers );
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 // the non-true version remaps the water current contents to content_water
-int SVQH_PointContents(vec3_t p);
+int SVQH_PointContents( vec3_t p );
 //	mins and maxs are reletive
 //	if the entire move stays in a solid volume, trace.allsolid will be set
 //	if the starting point is in a solid, it will be allowed to move out
@@ -312,10 +312,10 @@ int SVQH_PointContents(vec3_t p);
 //	nomonsters is used for line of sight or edge testing, where mosnters
 // shouldn't be considered solid objects
 //	passedict is explicitly excluded from clipping checks (normally NULL)
-q1trace_t SVQH_Move(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int type, qhedict_t* passedict);
-q1trace_t SVQH_MoveHull0(const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
-	int type, qhedict_t* passedict);
-qhedict_t* SVQH_TestEntityPosition(qhedict_t* ent);
+q1trace_t SVQH_Move( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int type, qhedict_t* passedict );
+q1trace_t SVQH_MoveHull0( const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
+	int type, qhedict_t* passedict );
+qhedict_t* SVQH_TestEntityPosition( qhedict_t* ent );
 
 #endif
