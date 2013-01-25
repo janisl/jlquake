@@ -1059,7 +1059,9 @@ static void VQH_RenderScene() {
 
 	R_RenderScene( &cl.refdef );
 
+	R_VerifyNoRenderCommands();
 	VQH_DrawColourBlend();
+	R_SyncRenderThread();
 }
 
 static void VQH_DropPunchAngle() {

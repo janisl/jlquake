@@ -49,7 +49,6 @@ float CalcFov( float fovX, float width, float height ) {
 }
 
 void R_PolyBlend( refdef_t* fd, float* blendColour ) {
-	R_VerifyNoRenderCommands();
 	if ( !cl_polyblend->value ) {
 		return;
 	}
@@ -58,5 +57,4 @@ void R_PolyBlend( refdef_t* fd, float* blendColour ) {
 	}
 
 	R_Draw2DQuad( fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, blendColour[ 0 ], blendColour[ 1 ], blendColour[ 2 ], blendColour[ 3 ] );
-	R_SyncRenderThread();
 }
