@@ -643,15 +643,13 @@ static void SbarQ1_DrawFrags() {
 		if ( GGameType & GAME_QuakeWorld && s->spectator ) {
 			continue;
 		}
+		R_VerifyNoRenderCommands();
 
 		// draw background
 		int top = SbarQ1_ColorForMap( s->topcolor );
 		int bottom = SbarQ1_ColorForMap( s->bottomcolor );
 
-		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs + x * 8 + 10, y, 28, 4, top );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs + x * 8 + 10, y + 4, 28, 3, bottom );
 		R_SyncRenderThread();
 
@@ -693,8 +691,6 @@ static void SbarQ1_DrawFace() {
 		SbarQ1_DrawPic( 112, 0, rsbq1_teambord );
 		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 3, 22, 9, top );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 12, 22, 9, bottom );
 		R_SyncRenderThread();
 
@@ -947,30 +943,24 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			sprintf( num, "%4i", minutes );
 			UI_DrawString( x + 64, y, num );
 		}
+		R_VerifyNoRenderCommands();
 
 		// draw background
 		int top = SbarQ1_ColorForMap( s->topcolor );
 		int bottom = SbarQ1_ColorForMap( s->bottomcolor );
 
 		if ( GGameType & GAME_QuakeWorld ) {
-			R_VerifyNoRenderCommands();
 			if ( sbq1_largegame ) {
 				UI_FillPal( x + 104, y + 1, 40, 3, top );
 			} else   {
 				UI_FillPal( x + 104, y, 40, 4, top );
 			}
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_FillPal( x + 104, y + 4, 40, 4, bottom );
-			R_SyncRenderThread();
 		} else   {
-			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y, 40, 4, top );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y + 4, 40, 4, bottom );
-			R_SyncRenderThread();
 		}
+		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
@@ -1157,16 +1147,14 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 			continue;
 		}
 
+		R_VerifyNoRenderCommands();
 		// draw background
 		top = s->topcolor;
 		bottom = s->bottomcolor;
 		top = SbarQ1_ColorForMap( top );
 		bottom = SbarQ1_ColorForMap( bottom );
 
-		R_VerifyNoRenderCommands();
 		UI_FillPal( x, y + 1, 40, 3, top );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_FillPal( x, y + 4, 40, 4, bottom );
 		R_SyncRenderThread();
 
@@ -1310,6 +1298,7 @@ void SbarQ1_Draw() {
 }
 
 static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int color ) {
+	R_VerifyNoRenderCommands();
 	char str[ 12 ];
 	char* ptr;
 	int l, frame;
@@ -1324,7 +1313,6 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 	}
 
 	while ( *ptr ) {
-		R_VerifyNoRenderCommands();
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
 		} else   {
@@ -1334,8 +1322,8 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 		UI_DrawPic( x,y,sbq1_nums[ color ][ frame ] );
 		x += 24;
 		ptr++;
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 void SbarQ1_IntermissionOverlay() {
@@ -1356,9 +1344,7 @@ void SbarQ1_IntermissionOverlay() {
 	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/complete.lmp" );
 	UI_DrawPic( 64, 24, pic );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	pic = R_CachePic( "gfx/inter.lmp" );
 	UI_DrawPic( 0, 56, pic );
 	R_SyncRenderThread();
@@ -1366,14 +1352,10 @@ void SbarQ1_IntermissionOverlay() {
 	// time
 	int dig = cl.qh_completed_time / 60;
 	SbarQ1_IntermissionNumber( 160, 64, dig, 3, 0 );
+	R_VerifyNoRenderCommands();
 	int num = cl.qh_completed_time - dig * 60;
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( 234,64,sbq1_colon );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
 	R_SyncRenderThread();
 

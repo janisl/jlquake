@@ -137,6 +137,7 @@ void SCRH2_DrawCenterString( const char* message ) {
 }
 
 static void SCRH2_DrawPause() {
+	R_VerifyNoRenderCommands();
 	image_t* pic;
 	float delta;
 	static qboolean newdraw = false;
@@ -172,12 +173,12 @@ static void SCRH2_DrawPause() {
 	}
 
 	finaly = ( ( float )R_GetImageHeight( pic ) * LogoPercent ) - R_GetImageHeight( pic );
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, finaly, pic );
 	R_SyncRenderThread();
 }
 
 static void SCRH2_DrawLoading() {
+	R_VerifyNoRenderCommands();
 	int size, count, offset;
 	image_t* pic;
 
@@ -187,9 +188,7 @@ static void SCRH2_DrawLoading() {
 
 	pic = R_CachePic( "gfx/menu/loading.lmp" );
 	offset = ( viddef.width - R_GetImageWidth( pic ) ) / 2;
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( offset, 0, pic );
-	R_SyncRenderThread();
 
 	if ( clh2_loading_stage == 0 ) {
 		return;
@@ -207,15 +206,9 @@ static void SCRH2_DrawLoading() {
 		count = 106;
 	}
 
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87, count, 1, 136 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87 + 1, count, 4, 138 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87 + 5, count, 1, 136 );
-	R_SyncRenderThread();
 
 	if ( clh2_loading_stage == 2 ) {
 		count = size;
@@ -223,13 +216,8 @@ static void SCRH2_DrawLoading() {
 		count = 0;
 	}
 
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97, count, 1, 168 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97 + 1, count, 4, 170 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97 + 5, count, 1, 168 );
 	R_SyncRenderThread();
 }
@@ -331,6 +319,7 @@ static void SBH2_IntermissionOverlay() {
 		return;
 	}
 
+	R_VerifyNoRenderCommands();
 	switch ( cl.qh_intermission ) {
 	case 1:
 		pic = R_CachePic( "gfx/meso.lmp" );
@@ -374,7 +363,6 @@ static void SBH2_IntermissionOverlay() {
 		break;
 	}
 
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( ( ( viddef.width - 320 ) >> 1 ),( ( viddef.height - 200 ) >> 1 ), pic );
 	R_SyncRenderThread();
 

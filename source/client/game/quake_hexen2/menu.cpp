@@ -4556,20 +4556,17 @@ void MQH_FadeScreen() {
 	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		UI_Fill( 0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2 );
-		R_SyncRenderThread();
 		for ( int c = 0; c < 40; c++ ) {
-			R_VerifyNoRenderCommands();
 			int x = rand() % viddef.width - 20;
 			int y = rand() % viddef.height - 20;
 			int w = ( rand() % 40 ) + 20;
 			int h = ( rand() % 40 ) + 20;
 			UI_Fill( x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035 );
-			R_SyncRenderThread();
 		}
 	} else   {
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 void MQH_Draw() {

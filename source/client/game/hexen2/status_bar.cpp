@@ -694,6 +694,7 @@ static void DrawArtifactInventory() {
 }
 
 static void DrawActiveRings() {
+	R_VerifyNoRenderCommands();
 	ring_row = 1;
 
 	int flag = ( int )cl.h2_v.rings_active;
@@ -702,34 +703,30 @@ static void DrawActiveRings() {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngtrn%d.lmp", frame );
-		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
-		R_SyncRenderThread();
 	}
 
 	if ( flag & RING_WATER ) {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngwtr%d.lmp", frame );
-		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
-		R_SyncRenderThread();
 	}
 
 	if ( flag & RING_FLIGHT ) {
 		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		char tempStr[ 24 ];
 		sprintf( tempStr, "gfx/rngfly%d.lmp", frame );
-		R_VerifyNoRenderCommands();
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static void DrawActiveArtifacts() {
+	R_VerifyNoRenderCommands();
 	int flag;
 	static int oldflags = 0;
 	int frame;
@@ -743,33 +740,28 @@ static void DrawActiveArtifacts() {
 
 	flag = ( int )cl.h2_v.artifact_active;
 	if ( flag & H2ARTFLAG_TOMEOFPOWER ) {
-		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/pwrbook%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
 		art_col += 50;
-		R_SyncRenderThread();
 	}
 
 	if ( flag & H2ARTFLAG_HASTE ) {
-		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/durhst%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col,1, R_CachePic( tempStr ) );
 		art_col += 50;
-		R_SyncRenderThread();
 	}
 
 	if ( flag & H2ARTFLAG_INVINCIBILITY ) {
-		R_VerifyNoRenderCommands();
 		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
 		sprintf( tempStr, "gfx/durshd%d.lmp", frame );
 		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
 		art_col += 50;
-		R_SyncRenderThread();
 	}
 
 	oldflags = flag;
+	R_SyncRenderThread();
 }
 
 static void DrawNormalBar() {
@@ -1042,6 +1034,7 @@ void SbarH2_DeathmatchOverlay() {
 					}
 				}
 			}
+			R_VerifyNoRenderCommands();
 
 			// draw background
 			int top;
@@ -1049,20 +1042,13 @@ void SbarH2_DeathmatchOverlay() {
 			FindColor( k, &top, &bottom );
 
 			if ( GGameType & GAME_HexenWorld ) {
-				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 8, y, 28, 4, top );
-				R_SyncRenderThread();
-				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 8, y + 4, 28, 4, bottom );
-				R_SyncRenderThread();
 			} else   {
-				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 80, y, 40, 4, top );
-				R_SyncRenderThread();
-				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 80, y + 4, 40, 4, bottom );
-				R_SyncRenderThread();
 			}
+			R_SyncRenderThread();
 
 			// draw number
 			char num[ 40 ];
@@ -1216,14 +1202,12 @@ static void SbarH2_SmallDeathmatchOverlay() {
 				}
 			}
 		} else   {
+			R_VerifyNoRenderCommands();
 			// draw background
 			int top, bottom;
 			FindColor( k, &top, &bottom );
 
-			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y, 28, 4, top );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y + 4, 28, 4, bottom );
 			R_SyncRenderThread();
 

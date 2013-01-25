@@ -256,8 +256,10 @@ void Con_ConsolePrint( const char* txt ) {
 }
 
 static void Con_DrawBackground( float frac, int lines ) {
-	if ( GGameType & GAME_QuakeHexen ) {
+	if ( !( GGameType & GAME_Tech3 ) ) {
 		R_VerifyNoRenderCommands();
+	}
+	if ( GGameType & GAME_QuakeHexen ) {
 		int y = ( viddef.height * 3 ) >> 2;
 		if ( lines > y ) {
 			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback );
@@ -282,7 +284,6 @@ static void Con_DrawBackground( float frac, int lines ) {
 			UI_DrawString( x, y, version );
 		}
 	} else if ( GGameType & GAME_Quake2 )     {
-		R_VerifyNoRenderCommands();
 		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
 		R_SyncRenderThread();
 
@@ -469,6 +470,9 @@ static void Con_DrawDownloadBar( int lines ) {
 
 //	The input line scrolls horizontally if typing goes beyond the right edge
 static void Con_DrawInput( int lines ) {
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	if ( !( in_keyCatchers & KEYCATCH_CONSOLE ) ) {
 		if ( GGameType & GAME_Tech3 ) {
 			if ( cls.state != CA_DISCONNECTED ) {
@@ -503,14 +507,15 @@ static void Con_DrawInput( int lines ) {
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 2, 0, 0, 0, 0, cls.whiteShader );
 			} else   {
-				R_VerifyNoRenderCommands();
 				UI_Fill( con.xadjust + ( 2 + con.acLength ) * SMALLCHAR_WIDTH, y + 1,
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 1, console_highlightcolor[ 0 ],
 					console_highlightcolor[ 1 ], console_highlightcolor[ 2 ], console_highlightcolor[ 3 ] );
-				R_SyncRenderThread();
 			}
 		}
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
 	}
 
 	if ( GGameType & GAME_Tech3 ) {

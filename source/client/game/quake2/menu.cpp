@@ -71,9 +71,9 @@ static menulayer_t mq2_layers[ MAX_MENU_DEPTH ];
 static int mq2_menudepth;
 
 static void MQ2_Banner( const char* name ) {
+	R_VerifyNoRenderCommands();
 	int w, h;
 	R_GetPicSize( &w, &h, name );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, name );
 	R_SyncRenderThread();
 }
@@ -271,6 +271,7 @@ static void MQ2_Print( int cx, int cy, const char* str ) {
 // x,y.  The pic will extend to the left of x,
 // and both above and below y.
 static void MQ2_DrawCursor( int x, int y, int f ) {
+	R_VerifyNoRenderCommands();
 	static bool cached;
 	if ( !cached ) {
 		for ( int i = 0; i < NUM_CURSOR_FRAMES; i++ ) {
@@ -284,7 +285,6 @@ static void MQ2_DrawCursor( int x, int y, int f ) {
 
 	char cursorname[ 80 ];
 	String::Sprintf( cursorname, sizeof ( cursorname ), "m_cursor%d", f );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( x, y, cursorname );
 	R_SyncRenderThread();
 }
@@ -347,6 +347,7 @@ MAIN MENU
 static int m_main_cursor;
 
 static void M_Main_Draw() {
+	R_VerifyNoRenderCommands();
 	int i;
 	int w, h;
 	int ystart;
@@ -378,25 +379,20 @@ static void M_Main_Draw() {
 
 	for ( i = 0; names[ i ] != 0; i++ ) {
 		if ( i != m_main_cursor ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawNamedPic( xoffset, ystart + i * 40 + 13, names[ i ] );
-			R_SyncRenderThread();
 		}
 	}
 	String::Cpy( litname, names[ m_main_cursor ] );
 	String::Cat( litname, sizeof ( litname ), "_sel" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
 	R_SyncRenderThread();
 
 	MQ2_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, ( int )( cls.realtime / 100 ) % NUM_CURSOR_FRAMES );
 
+	R_VerifyNoRenderCommands();
 	R_GetPicSize( &w, &h, "m_main_plaque" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( xoffset - 30 - w, ystart + h + 5, "m_main_logo" );
 	R_SyncRenderThread();
 }
@@ -3475,10 +3471,10 @@ static void VID_MenuInit() {
 }
 
 static void VID_MenuDraw() {
+	R_VerifyNoRenderCommands();
 	//	draw the banner
 	int w, h;
 	R_GetPicSize( &w, &h, "m_banner_video" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, "m_banner_video" );
 	R_SyncRenderThread();
 
@@ -3560,9 +3556,9 @@ static const char* M_Quit_Key( int key ) {
 }
 
 static void M_Quit_Draw() {
+	R_VerifyNoRenderCommands();
 	int w, h;
 	R_GetPicSize( &w, &h, "quit" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "quit" );
 	R_SyncRenderThread();
 }
@@ -3594,12 +3590,12 @@ void MQ2_Init() {
 }
 
 void MQ2_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( !( in_keyCatchers & KEYCATCH_UI ) ) {
 		return;
 	}
 
 	// dim everything behind it down
-	R_VerifyNoRenderCommands();
 	UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
 	R_SyncRenderThread();
 

@@ -26,6 +26,7 @@
 #include "../../../common/strings.h"
 
 static void SCRQ2_DrawPause() {
+	R_VerifyNoRenderCommands();
 	if ( !scr_showpause->value ) {		// turn off for screenshots
 		return;
 	}
@@ -36,12 +37,12 @@ static void SCRQ2_DrawPause() {
 
 	int w, h;
 	R_GetPicSize( &w, &h, "pause" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, viddef.height / 2 + 8, "pause" );
 	R_SyncRenderThread();
 }
 
 static void SCRQ2_DrawLoading() {
+	R_VerifyNoRenderCommands();
 	if ( !scr_draw_loading ) {
 		return;
 	}
@@ -49,7 +50,6 @@ static void SCRQ2_DrawLoading() {
 	scr_draw_loading = false;
 	int w, h;
 	R_GetPicSize( &w, &h, "loading" );
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
 	R_SyncRenderThread();
 }
@@ -86,14 +86,12 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	R_SyncRenderThread();
 
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
+		R_VerifyNoRenderCommands();
 		int w, h;
 
-		R_VerifyNoRenderCommands();
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
-		R_SyncRenderThread();
 		scr_draw_loading = false;
 		R_GetPicSize( &w, &h, "loading" );
-		R_VerifyNoRenderCommands();
 		UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
 		R_SyncRenderThread();
 	}
