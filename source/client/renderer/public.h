@@ -500,7 +500,7 @@ void R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t* points, vec4_t pr
 void R_ClearDecals();
 
 void R_VerifyNoRenderCommands();
-void R_IssueRenderCommands( bool runPerformanceCounters = false );
+void R_SyncRenderThread();
 
 extern byte r_palette[ 256 ][ 4 ];
 

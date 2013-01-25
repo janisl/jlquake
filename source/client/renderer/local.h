@@ -766,7 +766,7 @@ RENDERER BACK END COMMAND QUEUE
 
 void R_InitCommandBuffers();
 void R_ShutdownCommandBuffers();
-void R_SyncRenderThread();
+void R_IssueRenderCommands( bool runPerformanceCounters );
 void* R_GetCommandBuffer( int bytes );
 void R_AddDrawSurfCmd( drawSurf_t* drawSurfs, int numDrawSurfs );
 

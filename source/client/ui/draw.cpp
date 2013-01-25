@@ -96,9 +96,11 @@ void UI_DrawNamedPic( int x, int y, const char* pic ) {
 static void DoQuad( float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a ) {
+	R_VerifyNoRenderCommands();
 	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 
 	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2, r, g, b, a );
+	R_SyncRenderThread();
 }
 
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic, float alpha ) {
