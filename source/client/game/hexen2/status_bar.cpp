@@ -1049,11 +1049,19 @@ void SbarH2_DeathmatchOverlay() {
 			FindColor( k, &top, &bottom );
 
 			if ( GGameType & GAME_HexenWorld ) {
+				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 8, y, 28, 4, top );
+				R_SyncRenderThread();
+				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 8, y + 4, 28, 4, bottom );
+				R_SyncRenderThread();
 			} else   {
+				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 80, y, 40, 4, top );
+				R_SyncRenderThread();
+				R_VerifyNoRenderCommands();
 				UI_FillPal( x + 80, y + 4, 40, 4, bottom );
+				R_SyncRenderThread();
 			}
 
 			// draw number
@@ -1212,8 +1220,12 @@ static void SbarH2_SmallDeathmatchOverlay() {
 			int top, bottom;
 			FindColor( k, &top, &bottom );
 
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y, 28, 4, top );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y + 4, 28, 4, bottom );
+			R_SyncRenderThread();
 
 			// draw number
 			sprintf( num, "%3i", s->frags );

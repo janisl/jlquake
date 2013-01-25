@@ -88,7 +88,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
 		int w, h;
 
+		R_VerifyNoRenderCommands();
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
+		R_SyncRenderThread();
 		scr_draw_loading = false;
 		R_GetPicSize( &w, &h, "loading" );
 		R_VerifyNoRenderCommands();

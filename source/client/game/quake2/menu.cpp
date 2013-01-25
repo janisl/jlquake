@@ -2512,8 +2512,10 @@ static void PlayerConfig_MenuDraw() {
 		Menu_Draw( &s_player_config_menu );
 
 		MQ2_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height ) - 77, refdef.width / 8, refdef.height / 8 );
+		R_VerifyNoRenderCommands();
 		refdef.height += 4;
 		UI_Fill( refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1 );
+		R_SyncRenderThread();
 
 		R_RenderScene( &refdef );
 
@@ -3597,7 +3599,9 @@ void MQ2_Draw() {
 	}
 
 	// dim everything behind it down
+	R_VerifyNoRenderCommands();
 	UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
+	R_SyncRenderThread();
 
 	mq2_drawfunc();
 

@@ -207,9 +207,15 @@ static void SCRH2_DrawLoading() {
 		count = 106;
 	}
 
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87, count, 1, 136 );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87 + 1, count, 4, 138 );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 87 + 5, count, 1, 136 );
+	R_SyncRenderThread();
 
 	if ( clh2_loading_stage == 2 ) {
 		count = size;
@@ -217,9 +223,15 @@ static void SCRH2_DrawLoading() {
 		count = 0;
 	}
 
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97, count, 1, 168 );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97 + 1, count, 4, 170 );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_FillPal( offset + 42, 97 + 5, count, 1, 168 );
+	R_SyncRenderThread();
 }
 
 static void SCRH2_UpdateInfoMessage() {

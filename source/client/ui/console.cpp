@@ -503,10 +503,12 @@ static void Con_DrawInput( int lines ) {
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 2, 0, 0, 0, 0, cls.whiteShader );
 			} else   {
+				R_VerifyNoRenderCommands();
 				UI_Fill( con.xadjust + ( 2 + con.acLength ) * SMALLCHAR_WIDTH, y + 1,
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 1, console_highlightcolor[ 0 ],
 					console_highlightcolor[ 1 ], console_highlightcolor[ 2 ], console_highlightcolor[ 3 ] );
+				R_SyncRenderThread();
 			}
 		}
 	}
@@ -697,7 +699,9 @@ void Con_DrawConsole() {
 	if ( GGameType & GAME_Quake2 && ( cls.state != CA_ACTIVE || !cl.q2_refresh_prepped ) ) {
 		// connected, but can't render
 		Con_DrawSolidConsole( 0.5 );
+		R_VerifyNoRenderCommands();
 		UI_Fill( 0, viddef.height / 2, viddef.width, viddef.height / 2, 0, 0, 0, 1 );
+		R_SyncRenderThread();
 		return;
 	}
 

@@ -258,15 +258,18 @@ void Menu_Center( menuframework_s* menu ) {
 }
 
 static void Menu_DrawStatusBar( const char* string ) {
+	R_VerifyNoRenderCommands();
 	if ( string ) {
 		int l = String::Length( string );
 		int maxcol = VID_WIDTH / 8;
 		int col = maxcol / 2 - l / 2;
 
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
+		R_SyncRenderThread();
 		UI_DrawString( col * 8, VID_HEIGHT - 8, string );
 	} else   {
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
+		R_SyncRenderThread();
 	}
 }
 

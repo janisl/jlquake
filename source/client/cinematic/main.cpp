@@ -459,8 +459,12 @@ void QCinematicPlayer::Draw( int handle ) {
 
 void QCinematicPlayer::DrawFullscreen( int handle ) {
 	if ( GGameType & GAME_Quake2 && XPos > 0 ) {
+		R_VerifyNoRenderCommands();
 		UI_Fill( 0, 0, XPos, viddef.height, 0, 0, 0, 1 );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		UI_Fill( XPos + Width, 0, viddef.width - XPos - Width, viddef.height, 0, 0, 0, 1 );
+		R_SyncRenderThread();
 	}
 
 	if ( GGameType & GAME_Tech3 && YPos > 0 ) {

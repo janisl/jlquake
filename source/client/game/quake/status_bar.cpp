@@ -257,7 +257,9 @@ static void SbarQ1_DrawPic( int x, int y, image_t* pic ) {
 }
 
 static void SbarQ1_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawSubPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), pic, srcx, srcy, width, height );
+	R_SyncRenderThread();
 }
 
 //	Draws one solid graphics character
@@ -646,8 +648,12 @@ static void SbarQ1_DrawFrags() {
 		int top = SbarQ1_ColorForMap( s->topcolor );
 		int bottom = SbarQ1_ColorForMap( s->bottomcolor );
 
+		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs + x * 8 + 10, y, 28, 4, top );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs + x * 8 + 10, y + 4, 28, 3, bottom );
+		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
@@ -685,8 +691,12 @@ static void SbarQ1_DrawFace() {
 		}
 
 		SbarQ1_DrawPic( 112, 0, rsbq1_teambord );
+		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 3, 22, 9, top );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 12, 22, 9, bottom );
+		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
@@ -943,15 +953,23 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 		int bottom = SbarQ1_ColorForMap( s->bottomcolor );
 
 		if ( GGameType & GAME_QuakeWorld ) {
+			R_VerifyNoRenderCommands();
 			if ( sbq1_largegame ) {
 				UI_FillPal( x + 104, y + 1, 40, 3, top );
 			} else   {
 				UI_FillPal( x + 104, y, 40, 4, top );
 			}
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x + 104, y + 4, 40, 4, bottom );
+			R_SyncRenderThread();
 		} else   {
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y, 40, 4, top );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x, y + 4, 40, 4, bottom );
+			R_SyncRenderThread();
 		}
 
 		// draw number
@@ -1145,8 +1163,12 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		top = SbarQ1_ColorForMap( top );
 		bottom = SbarQ1_ColorForMap( bottom );
 
+		R_VerifyNoRenderCommands();
 		UI_FillPal( x, y + 1, 40, 3, top );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		UI_FillPal( x, y + 4, 40, 4, bottom );
+		R_SyncRenderThread();
 
 		// draw number
 		f = s->frags;

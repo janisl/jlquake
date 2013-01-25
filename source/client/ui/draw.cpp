@@ -119,7 +119,6 @@ void UI_DrawStretchPicWithColour( int x, int y, int w, int h, image_t* pic, byte
 }
 
 void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
-	R_VerifyNoRenderCommands();
 	float newsl = ( float )srcx / ( float )R_GetImageWidth( pic );
 	float newsh = newsl + ( float )width / ( float )R_GetImageWidth( pic );
 
@@ -127,15 +126,12 @@ void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, i
 	float newth = newtl + ( float )height / ( float )R_GetImageHeight( pic );
 
 	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1 );
-	R_SyncRenderThread();
 }
 
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
 void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
-	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0, 1, 1, 1, 1 );
-	R_SyncRenderThread();
 }
 
 void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
@@ -148,9 +144,7 @@ void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
 }
 
 void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a ) {
-	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a );
-	R_SyncRenderThread();
 }
 
 void UI_FillPal( int x, int y, int w, int h, int c ) {

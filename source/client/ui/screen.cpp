@@ -149,8 +149,10 @@ void SCR_DrawDebugGraph() {
 			w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
 		R_SetColor( NULL );
 	} else   {
+		R_VerifyNoRenderCommands();
 		UI_FillPal( x, y - cl_graphheight->integer,
 			w, cl_graphheight->integer, 8 );
+		R_SyncRenderThread();
 	}
 
 	for ( int a = 0; a < w; a++ ) {
@@ -166,12 +168,16 @@ void SCR_DrawDebugGraph() {
 		if ( GGameType & GAME_Tech3 ) {
 			R_StretchPic( x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader );
 		} else if ( GGameType & GAME_Quake2 )     {
+			R_VerifyNoRenderCommands();
 			UI_FillPal( x + w - 1 - a, y - h, 1,  h, color );
+			R_SyncRenderThread();
 		} else   {
+			R_VerifyNoRenderCommands();
 			float r = ( color & 0xff ) / 255.0;
 			float g = ( ( color >> 8 ) & 0xff ) / 255.0;
 			float b = ( ( color >> 16 ) & 0xff ) / 255.0;
 			UI_Fill( x + w - 1 - a, y - h, 1, h, r, g, b, 1 );
+			R_SyncRenderThread();
 		}
 	}
 }
@@ -447,36 +453,44 @@ void SCR_TileClear() {
 	int right = left + scr_vrect.width;
 
 	if ( top > 0 ) {
+		R_VerifyNoRenderCommands();
 		// clear above view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, 0, viddef.width, top, "backtile" );
 		} else   {
 			UI_TileClear( 0, 0, viddef.width, top, draw_backtile );
 		}
+		R_SyncRenderThread();
 	}
 	if ( viddef.height > bottom ) {
+		R_VerifyNoRenderCommands();
 		// clear below view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, bottom, viddef.width, viddef.height - bottom, "backtile" );
 		} else   {
 			UI_TileClear( 0, bottom, viddef.width, viddef.height - bottom, draw_backtile );
 		}
+		R_SyncRenderThread();
 	}
 	if ( left > 0 ) {
+		R_VerifyNoRenderCommands();
 		// clear left of view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, top, left, scr_vrect.height, "backtile" );
 		} else   {
 			UI_TileClear( 0, top, left, scr_vrect.height, draw_backtile );
 		}
+		R_SyncRenderThread();
 	}
 	if ( viddef.width > right ) {
+		R_VerifyNoRenderCommands();
 		// clear left of view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( right, top, viddef.width - right, scr_vrect.height, "backtile" );
 		} else   {
 			UI_TileClear( right, top, viddef.width - right, scr_vrect.height, draw_backtile );
 		}
+		R_SyncRenderThread();
 	}
 }
 
