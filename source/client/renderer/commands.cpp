@@ -14,36 +14,10 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_InitCommandBuffers
-//
-//==========================================================================
 
 void R_InitCommandBuffers() {
 	glConfig.smpActive = false;
@@ -58,12 +32,6 @@ void R_InitCommandBuffers() {
 	}
 }
 
-//==========================================================================
-//
-//	R_ShutdownCommandBuffers
-//
-//==========================================================================
-
 void R_ShutdownCommandBuffers() {
 	// kill the rendering thread
 	if ( glConfig.smpActive ) {
@@ -71,12 +39,6 @@ void R_ShutdownCommandBuffers() {
 		glConfig.smpActive = false;
 	}
 }
-
-//==========================================================================
-//
-//	R_PerformanceCounters
-//
-//==========================================================================
 
 static void R_PerformanceCounters() {
 	if ( !r_speeds->integer ) {
@@ -146,11 +108,11 @@ static void R_PerformanceCounters() {
 	Com_Memset( &backEnd.pc, 0, sizeof ( backEnd.pc ) );
 }
 
-//==========================================================================
-//
-//	R_IssueRenderCommands
-//
-//==========================================================================
+void R_VerifyNoRenderCommands() {
+	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
+	if ( cmdList->cmds )
+		common->FatalError("Back end has commands pending\n");
+}
 
 void R_IssueRenderCommands( bool runPerformanceCounters ) {
 	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
@@ -195,17 +157,10 @@ void R_IssueRenderCommands( bool runPerformanceCounters ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_SyncRenderThread
-//
 //	Issue any pending commands and wait for them to complete. After exiting,
 // the render thread will have completed its work and will remain idle and
 // the main thread is free to issue OpenGL calls until R_IssueRenderCommands
 // is called.
-//
-//==========================================================================
-
 void R_SyncRenderThread() {
 	if ( !tr.registered ) {
 		return;
@@ -218,14 +173,7 @@ void R_SyncRenderThread() {
 	GLimp_FrontEndSleep();
 }
 
-//==========================================================================
-//
-//	R_GetCommandBuffer
-//
 //	make sure there is enough command space, waiting on the render thread if needed.
-//
-//==========================================================================
-
 void* R_GetCommandBuffer( int bytes ) {
 	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
 
@@ -243,12 +191,6 @@ void* R_GetCommandBuffer( int bytes ) {
 	return cmdList->cmds + cmdList->used - bytes;
 }
 
-//==========================================================================
-//
-//	R_AddDrawSurfCmd
-//
-//==========================================================================
-
 void R_AddDrawSurfCmd( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	drawSurfsCommand_t* cmd = ( drawSurfsCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
 	if ( !cmd ) {
@@ -263,14 +205,7 @@ void R_AddDrawSurfCmd( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	cmd->viewParms = tr.viewParms;
 }
 
-//==========================================================================
-//
-//	R_SetColor
-//
 //	Passing NULL will set the color to white
-//
-//==========================================================================
-
 void R_SetColor( const float* rgba ) {
 	if ( !tr.registered ) {
 		return;
@@ -291,12 +226,6 @@ void R_SetColor( const float* rgba ) {
 	cmd->color[ 2 ] = rgba[ 2 ];
 	cmd->color[ 3 ] = rgba[ 3 ];
 }
-
-//==========================================================================
-//
-//	R_StretchPic
-//
-//==========================================================================
 
 void R_StretchPic( float x, float y, float w, float h,
 	float s1, float t1, float s2, float t2, qhandle_t hShader ) {
@@ -406,15 +335,8 @@ void R_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader ) {
 	r_numpolyverts += numverts;
 }
 
-//==========================================================================
-//
-//	R_BeginFrame
-//
 //	If running in stereo, RE_BeginFrame will be called twice
 // for each R_EndFrame
-//
-//==========================================================================
-
 void R_BeginFrame( stereoFrame_t stereoFrame ) {
 	if ( !tr.registered ) {
 		return;
@@ -595,14 +517,7 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_EndFrame
-//
 //	Returns the number of msec spent in the back end
-//
-//==========================================================================
-
 void R_EndFrame( int* frontEndMsec, int* backEndMsec ) {
 	if ( !tr.registered ) {
 		return;
