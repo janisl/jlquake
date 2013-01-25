@@ -34,6 +34,7 @@ const char* sb_nums[ 2 ][ 11 ] =
 };
 
 static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
+	R_VerifyNoRenderCommands();
 	if ( width < 1 ) {
 		return;
 	}
@@ -60,13 +61,12 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 			frame = *ptr - '0';
 		}
 
-		R_VerifyNoRenderCommands();
 		UI_DrawNamedPic( x,y,sb_nums[ color ][ frame ] );
-		R_SyncRenderThread();
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
 	}
+	R_SyncRenderThread();
 }
 
 static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwidth, int _xor ) {
@@ -388,6 +388,7 @@ void CLQ2_ParseInventory( QMsg& message ) {
 }
 
 static void CLQ2_DrawInventory() {
+	R_VerifyNoRenderCommands();
 	enum { DISPLAY_ITEMS = 17 };
 	int selected = cl.q2_frame.playerstate.stats[ Q2STAT_SELECTED_ITEM ];
 
@@ -416,7 +417,6 @@ static void CLQ2_DrawInventory() {
 	int x = ( viddef.width - 256 ) / 2;
 	int y = ( viddef.height - 240 ) / 2;
 
-	R_VerifyNoRenderCommands();
 	UI_DrawNamedPic( x, y + 8, "inventory" );
 	R_SyncRenderThread();
 

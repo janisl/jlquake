@@ -194,14 +194,14 @@ static int MH2_DrawBigCharacter( int x, int y, int num, int numNext ) {
 }
 
 static void MH2_DrawBigString( int x, int y, const char* string ) {
+	R_VerifyNoRenderCommands();
 	x += ( ( viddef.width - 320 ) >> 1 );
 
 	int length = String::Length( string );
 	for ( int c = 0; c < length; c++ ) {
-		R_VerifyNoRenderCommands();
 		x += MH2_DrawBigCharacter( x, y, string[ c ], string[ c + 1 ] );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static void MH2_ScrollTitle( const char* name ) {

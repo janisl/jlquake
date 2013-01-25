@@ -1184,8 +1184,6 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		x -= 4;
 		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, 142 );	//sundial
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x + 32, y, 58 );	// ":"
 		R_SyncRenderThread();
 		if ( clhw_timelimit > cl.qh_serverTimeFloat + clhw_server_time_offset ) {
@@ -1227,16 +1225,14 @@ static void SbarH2_SmallDeathmatchOverlay() {
 
 			UI_FillPal( x, y, 28, 4, top );
 			UI_FillPal( x, y + 4, 28, 4, bottom );
-			R_SyncRenderThread();
 
 			// draw number
 			sprintf( num, "%3i", s->frags );
 
 			if ( k == cl.viewentity - 1 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( x - 8, y - 1, 13 );
-				R_SyncRenderThread();
 			}
+			R_SyncRenderThread();
 			UI_DrawString( x + 2, y - 1, num );
 			if ( !( GGameType & GAME_HexenWorld ) && k == svh2_kingofhill ) {
 				R_VerifyNoRenderCommands();
@@ -1246,24 +1242,18 @@ static void SbarH2_SmallDeathmatchOverlay() {
 			y += 10;
 		}
 	}
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_HexenWorld && clhw_siege ) {
 		if ( cl.playernum == clhw_keyholder ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x, y - 10, 145 );		//key
-			R_SyncRenderThread();
 		}
 		if ( cl.playernum == clhw_doc ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 8, y - 10, 130 );		//crown
-			R_SyncRenderThread();
 		}
 		if ( ( int )cl.h2_v.artifact_active & HWARTFLAG_BOOTS ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 16, y - 10, 146 );	//boots
-			R_SyncRenderThread();
 		}
 		//Print defender losses
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y + 10, 143 );		//shield
 		R_SyncRenderThread();
 		sprintf( num, S_COLOR_RED "%3i",clhw_defLosses );
@@ -1310,15 +1300,13 @@ static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
 			u += 8;
 		}
 		if ( Red > 0 && Red < 3 ) {	//def
+			R_VerifyNoRenderCommands();
 			if ( Red == true ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( u, v, 143 );	//shield
-				R_SyncRenderThread();
 			} else   {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( u, v, 130 );	//crown
-				R_SyncRenderThread();
 			}
+			R_SyncRenderThread();
 			UI_DrawString( u + 8, v, Name, 256 );
 		} else if ( !Red )     {
 			R_VerifyNoRenderCommands();

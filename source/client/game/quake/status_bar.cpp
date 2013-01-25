@@ -974,8 +974,6 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			if ( k == cl.playernum ) {
 				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 104, y, 16 );
-				R_SyncRenderThread();
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 136, y, 17 );
 				R_SyncRenderThread();
 			}
@@ -1086,8 +1084,6 @@ static void SbarQW_TeamOverlay() {
 					 "team" ), tm->team, 16 ) ) {
 			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 104 - 8, y, 16 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 104 + 32, y, 17 );
 			R_SyncRenderThread();
 		}
@@ -1179,8 +1175,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		if ( k == cl.viewentity - 1 ) {
 			R_VerifyNoRenderCommands();
 			UI_DrawChar( x, y, 16 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 32, y, 17 );
 			R_SyncRenderThread();
 		}
@@ -1206,6 +1200,7 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		}
 		y += 8;
 	}
+	R_VerifyNoRenderCommands();
 
 	// draw teams if room
 	if ( viddef.width < 640 || !teamplay ) {
@@ -1215,14 +1210,13 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 	// draw seperator
 	x += 208;
 	for ( y = viddef.height - sbqh_lines; y < ( int )viddef.height - 6; y += 2 ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, 14 );
-		R_SyncRenderThread();
 	}
 
 	x += 16;
 
 	y = viddef.height - sbqh_lines;
+	R_SyncRenderThread();
 	for ( i = 0; i < sbq1_scoreboardteams && y <= ( int )viddef.height; i++ ) {
 		k = sbq1_teamsort[ i ];
 		team_t* tm = sbq1_teams + k;
@@ -1241,8 +1235,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 					 "team" ), tm->team, 16 ) ) {
 			R_VerifyNoRenderCommands();
 			UI_DrawChar( x - 8, y, 16 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 32, y, 17 );
 			R_SyncRenderThread();
 		}

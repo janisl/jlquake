@@ -349,6 +349,9 @@ void Con_DrawFullBackground() {
 }
 
 static void Con_DrawText( int lines ) {
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
 	int rows = ( lines - charHeight ) / charHeight;			// rows of text to draw
@@ -366,9 +369,7 @@ static void Con_DrawText( int lines ) {
 		}
 		for ( int x = 0; x < con.linewidth; x += 4 ) {
 			if ( !( GGameType & GAME_Tech3 ) ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, '^', 1, 1, 1, 1 );
-				R_SyncRenderThread();
 			} else   {
 				SCR_DrawSmallChar( con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, '^' );
 			}
@@ -410,14 +411,15 @@ static void Con_DrawText( int lines ) {
 				}
 			}
 			if ( !( GGameType & GAME_Tech3 ) ) {
-				R_VerifyNoRenderCommands();
 				float* c = g_color_table[ currentColor ];
 				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff, c[ 0 ], c[ 1 ], c[ 2 ], c[ 3 ] );
-				R_SyncRenderThread();
 			} else   {
 				SCR_DrawSmallChar( con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
 			}
 		}
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
 	}
 }
 
@@ -568,6 +570,9 @@ static void Con_DrawSolidConsole( float frac ) {
 
 //	Draws the last few lines of output transparently over the game top
 static int Con_DrawNotify() {
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
 	int currentColor = 7;
@@ -603,10 +608,8 @@ static int Con_DrawNotify() {
 			if ( GGameType & GAME_Tech3 ) {
 				SCR_DrawSmallChar( cl_conXOffset->integer + con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
 			} else   {
-				R_VerifyNoRenderCommands();
 				float* c = g_color_table[ currentColor ];
 				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff, c[ 0 ], c[ 1 ], c[ 2 ], c[ 3 ] );
-				R_SyncRenderThread();
 			}
 		}
 
@@ -617,6 +620,9 @@ static int Con_DrawNotify() {
 		R_SetColor( NULL );
 	}
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 	return y;
 }
 

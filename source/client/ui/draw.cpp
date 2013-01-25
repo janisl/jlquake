@@ -192,6 +192,7 @@ void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
 }
 
 void UI_DrawString( int x, int y, const char* str, int mask ) {
+	R_VerifyNoRenderCommands();
 	vec4_t color;
 	Vector4Set( color, 1, 1, 1, 1 );
 	while ( *str ) {
@@ -204,12 +205,11 @@ void UI_DrawString( int x, int y, const char* str, int mask ) {
 			str += 2;
 			continue;
 		}
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, ( ( byte ) * str ) | mask, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
-		R_SyncRenderThread();
 		str++;
 		x += 8;
 	}
+	R_SyncRenderThread();
 }
 
 static void UI_SmallCharacter( int x, int y, int num, float r, float g, float b, float a ) {
@@ -231,6 +231,7 @@ static void UI_SmallCharacter( int x, int y, int num, float r, float g, float b,
 }
 
 void UI_DrawSmallString( int x, int y, const char* str ) {
+	R_VerifyNoRenderCommands();
 	vec4_t color;
 	Vector4Set( color, 1, 1, 1, 1 );
 	while ( *str ) {
@@ -243,12 +244,11 @@ void UI_DrawSmallString( int x, int y, const char* str ) {
 			str += 2;
 			continue;
 		}
-		R_VerifyNoRenderCommands();
 		UI_SmallCharacter( x, y, *str, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
-		R_SyncRenderThread();
 		str++;
 		x += 6;
 	}
+	R_SyncRenderThread();
 }
 
 void SCR_FillRect( float x, float y, float width, float height, const float* color ) {

@@ -79,26 +79,16 @@ static void M_Field_Draw( menufield_s* f ) {
 
 	R_VerifyNoRenderCommands();
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y - 4, 18 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y + 4, 24 );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y - 4, 20 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y + 4, 26 );
-	R_SyncRenderThread();
 
 	for ( i = 0; i < f->field.widthInChars; i++ ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y - 4, 19 );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25 );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 
 	Field_Draw( &f->field, f->generic.x + f->generic.parent->x + 24,
 		f->generic.y + f->generic.parent->y, Menu_ItemAtCursor( f->generic.parent ) == f );
@@ -143,6 +133,7 @@ static void Slider_Draw( menuslider_s* s ) {
 	Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x + LCOLUMN_OFFSET,
 		s->generic.y + s->generic.parent->y,
 		s->generic.name );
+	R_VerifyNoRenderCommands();
 
 	s->range = ( s->curvalue - s->minvalue ) / ( float )( s->maxvalue - s->minvalue );
 
@@ -152,18 +143,11 @@ static void Slider_Draw( menuslider_s* s ) {
 	if ( s->range > 1 ) {
 		s->range = 1;
 	}
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( s->generic.x + s->generic.parent->x + RCOLUMN_OFFSET, s->generic.y + s->generic.parent->y, 128 );
-	R_SyncRenderThread();
 	for ( i = 0; i < SLIDER_RANGE; i++ ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129 );
-		R_SyncRenderThread();
 	}
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( ( int )( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + ( SLIDER_RANGE - 1 ) * 8 * s->range ), s->generic.y + s->generic.parent->y, 131 );
 	R_SyncRenderThread();
 }

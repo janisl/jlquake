@@ -221,6 +221,9 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 		// draw big string with drop shadow
 		SCR_DrawBigString( x, y, str, 1.0 );
 	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 
 	// draw the cursor
 	if ( !showCursor ) {
@@ -245,8 +248,9 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 			SCR_DrawBigString( x + ( edit->cursor - prestep - i ) * size, y, str, 1.0 );
 		}
 	} else   {
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x + ( edit->cursor - edit->scroll ) * 8, y, cursorChar );
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
 		R_SyncRenderThread();
 	}
 }
