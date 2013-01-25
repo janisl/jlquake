@@ -14,27 +14,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client_main.h"
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 backEndData_t* backEndData[ SMP_FRAMES ];
 backEndState_t backEnd;
@@ -43,16 +27,6 @@ int max_polys;
 int max_polyverts;
 
 volatile bool renderThreadActive;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_InitBackEndData
-//
-//==========================================================================
 
 void R_InitBackEndData() {
 	max_polys = r_maxpolys->integer;
@@ -80,12 +54,6 @@ void R_InitBackEndData() {
 	R_ToggleSmpFrame();
 }
 
-//==========================================================================
-//
-//	R_FreeBackEndData
-//
-//==========================================================================
-
 void R_FreeBackEndData() {
 	Mem_Free( backEndData[ 0 ] );
 	backEndData[ 0 ] = NULL;
@@ -104,12 +72,6 @@ RENDER BACK END THREAD FUNCTIONS
 ============================================================================
 */
 
-//==========================================================================
-//
-//	RB_SetColor
-//
-//==========================================================================
-
 static const void* RB_SetColor( const void* data ) {
 	const setColorCommand_t* cmd = ( const setColorCommand_t* )data;
 
@@ -120,12 +82,6 @@ static const void* RB_SetColor( const void* data ) {
 
 	return ( const void* )( cmd + 1 );
 }
-
-//==========================================================================
-//
-//	RB_DrawBuffer
-//
-//==========================================================================
 
 static const void* RB_DrawBuffer( const void* data ) {
 	const drawBufferCommand_t* cmd = ( const drawBufferCommand_t* )data;
@@ -141,12 +97,6 @@ static const void* RB_DrawBuffer( const void* data ) {
 	return ( const void* )( cmd + 1 );
 }
 
-//==========================================================================
-//
-//	SetViewportAndScissor
-//
-//==========================================================================
-
 static void SetViewportAndScissor() {
 	qglMatrixMode( GL_PROJECTION );
 	qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
@@ -159,14 +109,7 @@ static void SetViewportAndScissor() {
 		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 }
 
-//==========================================================================
-//
-//	RB_Hyperspace
-//
 //	A player has predicted a teleport, but hasn't arrived yet
-//
-//==========================================================================
-
 static void RB_Hyperspace() {
 	if ( !backEnd.isHyperspace ) {
 		// do initialization shit
@@ -179,15 +122,8 @@ static void RB_Hyperspace() {
 	backEnd.isHyperspace = true;
 }
 
-//==========================================================================
-//
-//	RB_BeginDrawingView
-//
 //	Any mirrored or portaled views have already been drawn, so prepare
 // to actually render the visible surfaces for this view
-//
-//==========================================================================
-
 void RB_BeginDrawingView() {
 	// sync with gl if needed
 	if ( r_finish->integer == 1 && !glState.finishCalled ) {
@@ -369,12 +305,6 @@ void RB_BeginDrawingView() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_RenderDrawSurfList
-//
-//==========================================================================
-
 static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
@@ -525,12 +455,6 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	RB_RenderFlares();
 }
 
-//==========================================================================
-//
-//	RB_DrawSurfs
-//
-//==========================================================================
-
 static const void* RB_DrawSurfs( const void* data ) {
 	// finish any 2D drawing if needed
 	if ( tess.numIndexes ) {
@@ -546,12 +470,6 @@ static const void* RB_DrawSurfs( const void* data ) {
 
 	return ( const void* )( cmd + 1 );
 }
-
-//==========================================================================
-//
-//	RB_SetGL2D
-//
-//==========================================================================
 
 void RB_SetGL2D() {
 	backEnd.projection2D = true;
@@ -579,11 +497,34 @@ void RB_SetGL2D() {
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }
 
-//==========================================================================
-//
-//	RB_StretchPic
-//
-//==========================================================================
+static const void* RB_Draw2DQuad( const void* data ) {
+	const draw2DQuadCommand_t* cmd = ( const draw2DQuadCommand_t* )data;
+
+	if ( !backEnd.projection2D ) {
+		RB_SetGL2D();
+	}
+
+	if ( scrap_dirty ) {
+		R_ScrapUpload();
+	}
+	GL_Bind( cmd->image );
+	GL_TexEnv( GL_MODULATE );
+	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+	qglColor4f( cmd->r, cmd->g, cmd->b, cmd->a );
+	qglBegin( GL_QUADS );
+	qglTexCoord2f( cmd->s1, cmd->t1 );
+	qglVertex2f( cmd->x, cmd->y );
+	qglTexCoord2f( cmd->s2, cmd->t1 );
+	qglVertex2f( cmd->x + cmd->w, cmd->y );
+	qglTexCoord2f( cmd->s2, cmd->t2 );
+	qglVertex2f( cmd->x + cmd->w, cmd->y + cmd->h );
+	qglTexCoord2f( cmd->s1, cmd->t2 );
+	qglVertex2f( cmd->x, cmd->y + cmd->h );
+	qglEnd();
+
+	return ( const void* )( cmd + 1 );
+}
 
 static const void* RB_StretchPic( const void* data ) {
 	const stretchPicCommand_t* cmd = ( const stretchPicCommand_t* )data;
@@ -855,17 +796,9 @@ static const void* RB_Finish( const void* data ) {
 	return ( const void* )( cmd + 1 );
 }
 
-//==========================================================================
-//
-//	RB_ShowImages
-//
 //	Draw all the images to the screen, on top of whatever was there.  This
 // is used to test for texture thrashing.
-//
 //	Also called by RE_EndRegistration
-//
-//==========================================================================
-
 void RB_ShowImages() {
 	if ( !backEnd.projection2D ) {
 		RB_SetGL2D();
@@ -909,12 +842,6 @@ void RB_ShowImages() {
 	int end = CL_ScaledMilliseconds();
 	common->Printf( "%i msec to draw all images\n", end - start );
 }
-
-//==========================================================================
-//
-//	RB_SwapBuffers
-//
-//==========================================================================
 
 static const void* RB_SwapBuffers( const void* data ) {
 	// finish any 2D drawing if needed
@@ -981,15 +908,8 @@ static const void* RB_SwapBuffers( const void* data ) {
 	return ( const void* )( cmd + 1 );
 }
 
-//==========================================================================
-//
-//	RB_ExecuteRenderCommands
-//
 //	This function will be called synchronously if running without smp
 // extensions, or asynchronously by another thread.
-//
-//==========================================================================
-
 void RB_ExecuteRenderCommands( const void* data ) {
 	int t1 = CL_ScaledMilliseconds();
 
@@ -1003,6 +923,10 @@ void RB_ExecuteRenderCommands( const void* data ) {
 		switch ( *( const int* )data ) {
 		case RC_SET_COLOR:
 			data = RB_SetColor( data );
+			break;
+
+		case RC_DRAW_2D_QUAD:
+			data = RB_Draw2DQuad( data );
 			break;
 
 		case RC_STRETCH_PIC:
@@ -1055,12 +979,6 @@ void RB_ExecuteRenderCommands( const void* data ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_RenderThread
-//
-//==========================================================================
-
 void RB_RenderThread() {
 	// wait for either a rendering command or a quit command
 	while ( 1 ) {
@@ -1079,16 +997,9 @@ void RB_RenderThread() {
 	}
 }
 
-//==========================================================================
-//
-//	R_StretchRaw
-//
 //	FIXME: not exactly backend
 //	Stretches a raw 32 bit power of 2 bitmap image over the given screen rectangle.
 //	Used for cinematics.
-//
-//==========================================================================
-
 void R_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty ) {
 	if ( !tr.registered ) {
 		return;

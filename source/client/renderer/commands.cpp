@@ -109,9 +109,13 @@ static void R_PerformanceCounters() {
 }
 
 void R_VerifyNoRenderCommands() {
+	if ( !tr.registered ) {
+		return;
+	}
 	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
-	if ( cmdList->cmds )
-		common->FatalError("Back end has commands pending\n");
+	assert( cmdList );
+	if ( cmdList->used )
+		common->FatalError( "Back end has commands pending, %d used, first command %d\n", cmdList->used, *( int* )cmdList->cmds );
 }
 
 void R_IssueRenderCommands( bool runPerformanceCounters ) {
@@ -225,6 +229,50 @@ void R_SetColor( const float* rgba ) {
 	cmd->color[ 1 ] = rgba[ 1 ];
 	cmd->color[ 2 ] = rgba[ 2 ];
 	cmd->color[ 3 ] = rgba[ 3 ];
+}
+
+void R_Draw2DQuad( float x, float y, float width, float height,
+	image_t* image, float s1, float t1, float s2, float t2,
+	float r, float g, float b, float a ) {
+	R_VerifyNoRenderCommands();
+	if ( !tr.registered ) {
+		return;
+	}
+	if ( !image ) {
+		image = tr.whiteImage;
+	}
+	if ( image->sl != 0 || image->sh != 1 ) {
+		float glwidth = image->sh - image->sl;
+		s1 = image->sl + s1 * glwidth;
+		s2 = image->sl + s2 * glwidth;
+	}
+
+	if ( image->tl != 0 || image->th != 1 ) {
+		float glheight = image->th - image->tl;
+		t1 = image->tl + t1 * glheight;
+		t2 = image->tl + t2 * glheight;
+	}
+
+	draw2DQuadCommand_t* cmd = ( draw2DQuadCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
+	if ( !cmd ) {
+		return;
+	}
+	cmd->commandId = RC_DRAW_2D_QUAD;
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = width;
+	cmd->h = height;
+	cmd->image = image;
+	cmd->s1 = s1;
+	cmd->t1 = t1;
+	cmd->s2 = s2;
+	cmd->t2 = t2;
+	cmd->r = r;
+	cmd->g = g;
+	cmd->b = b;
+	cmd->a = a;
+
+	R_IssueRenderCommands();
 }
 
 void R_StretchPic( float x, float y, float w, float h,

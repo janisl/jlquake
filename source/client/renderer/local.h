@@ -480,6 +480,7 @@ enum renderCommand_t
 {
 	RC_END_OF_LIST,
 	RC_SET_COLOR,
+	RC_DRAW_2D_QUAD,
 	RC_STRETCH_PIC,
 	RC_STRETCH_PIC_GRADIENT,
 	RC_ROTATED_PIC,
@@ -513,6 +514,19 @@ struct stretchPicCommand_t {
 	byte gradientColor[ 4 ];	// color values 0-255
 	int gradientType;
 	float angle;
+};
+
+struct draw2DQuadCommand_t {
+	int commandId;
+	image_t* image;
+	float x, y;
+	float w, h;
+	float s1, t1;
+	float s2, t2;
+	float r;
+	float g;
+	float b;
+	float a;
 };
 
 struct drawSurfsCommand_t {
