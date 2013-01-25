@@ -257,12 +257,14 @@ void Con_ConsolePrint( const char* txt ) {
 
 static void Con_DrawBackground( float frac, int lines ) {
 	if ( GGameType & GAME_QuakeHexen ) {
+		R_VerifyNoRenderCommands();
 		int y = ( viddef.height * 3 ) >> 2;
 		if ( lines > y ) {
 			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback );
 		} else   {
 			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback, ( float )( 1.2 * lines ) / y );
 		}
+		R_SyncRenderThread();
 
 		if ( !clc.download ) {
 			const char* version;
@@ -280,7 +282,9 @@ static void Con_DrawBackground( float frac, int lines ) {
 			UI_DrawString( x, y, version );
 		}
 	} else if ( GGameType & GAME_Quake2 )     {
+		R_VerifyNoRenderCommands();
 		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
+		R_SyncRenderThread();
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );

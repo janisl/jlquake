@@ -81,7 +81,9 @@ void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h ) {
 }
 
 void UI_DrawPic( int x, int y, image_t* pic, float alpha ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic, alpha );
+	R_SyncRenderThread();
 }
 
 void UI_DrawNamedPic( int x, int y, const char* pic ) {
@@ -102,9 +104,7 @@ static void DoQuad( float x, float y, float width, float height,
 }
 
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic, float alpha ) {
-	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha );
-	R_SyncRenderThread();
 }
 
 void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
@@ -117,9 +117,7 @@ void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
 }
 
 void UI_DrawStretchPicWithColour( int x, int y, int w, int h, image_t* pic, byte* colour ) {
-	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, colour[ 0 ] / 255.0, colour[ 1 ] / 255.0, colour[ 2 ] / 255.0, colour[ 3 ] / 255.0 );
-	R_SyncRenderThread();
 }
 
 void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {

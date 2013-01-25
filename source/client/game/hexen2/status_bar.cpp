@@ -275,8 +275,10 @@ static void SbarH2_DrawPic( int x, int y, image_t* pic ) {
 }
 
 static void SbarH2_DrawSubPic( int x, int y, int h, image_t* pic ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawStretchPic( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), R_GetImageWidth( pic ), h, pic );
+	R_SyncRenderThread();
 }
 
 static void SbarH2_DrawSmallString( int x, int y, const char* str ) {
