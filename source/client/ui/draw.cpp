@@ -96,15 +96,15 @@ void UI_DrawNamedPic( int x, int y, const char* pic ) {
 static void DoQuad( float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a ) {
-	R_VerifyNoRenderCommands();
 	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 
 	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2, r, g, b, a );
-	R_SyncRenderThread();
 }
 
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic, float alpha ) {
+	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha );
+	R_SyncRenderThread();
 }
 
 void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
@@ -117,10 +117,13 @@ void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
 }
 
 void UI_DrawStretchPicWithColour( int x, int y, int w, int h, image_t* pic, byte* colour ) {
+	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, colour[ 0 ] / 255.0, colour[ 1 ] / 255.0, colour[ 2 ] / 255.0, colour[ 3 ] / 255.0 );
+	R_SyncRenderThread();
 }
 
 void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
+	R_VerifyNoRenderCommands();
 	float newsl = ( float )srcx / ( float )R_GetImageWidth( pic );
 	float newsh = newsl + ( float )width / ( float )R_GetImageWidth( pic );
 
@@ -128,12 +131,15 @@ void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, i
 	float newth = newtl + ( float )height / ( float )R_GetImageHeight( pic );
 
 	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1 );
+	R_SyncRenderThread();
 }
 
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
 void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
+	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0, 1, 1, 1, 1 );
+	R_SyncRenderThread();
 }
 
 void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
@@ -146,7 +152,9 @@ void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
 }
 
 void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a ) {
+	R_VerifyNoRenderCommands();
 	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a );
+	R_SyncRenderThread();
 }
 
 void UI_FillPal( int x, int y, int w, int h, int c ) {
@@ -158,6 +166,7 @@ void UI_FillPal( int x, int y, int w, int h, int c ) {
 
 void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
 	int numberOfRows, float r, float g, float b, float a ) {
+	R_VerifyNoRenderCommands();
 	if ( y <= -h || y >= viddef.height ) {
 		// Totally off screen
 		return;
@@ -172,6 +181,7 @@ void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int n
 	float frow = row * ysize;
 
 	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a );
+	R_SyncRenderThread();
 }
 
 void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
