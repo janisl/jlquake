@@ -182,21 +182,17 @@ static void SpinControl_Draw( menulist_s* s ) {
 			s->generic.y + s->generic.parent->y,
 			s->generic.name );
 	}
+	R_VerifyNoRenderCommands();
 	if ( !strchr( s->itemnames[ s->curvalue ], '\n' ) ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[ s->curvalue ] );
-		R_SyncRenderThread();
 	} else   {
 		String::Cpy( buffer, s->itemnames[ s->curvalue ] );
 		*strchr( buffer, '\n' ) = 0;
-		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
-		R_SyncRenderThread();
 		String::Cpy( buffer, strchr( s->itemnames[ s->curvalue ], '\n' ) + 1 );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 void Menu_AddItem( menuframework_s* menu, void* item ) {
@@ -284,14 +280,11 @@ static void Menu_DrawStatusBar( const char* string ) {
 		int col = maxcol / 2 - l / 2;
 
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawString( col * 8, VID_HEIGHT - 8, string );
-		R_SyncRenderThread();
 	} else   {
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 void Menu_Draw( menuframework_s* menu ) {

@@ -843,6 +843,7 @@ static void SbarQ1_DrawNormal() {
 }
 
 static void SbarQ1_DeathmatchOverlay( int start ) {
+	R_VerifyNoRenderCommands();
 	// request new ping times every two second
 	if ( cls.realtime - cl.qh_last_ping_request * 1000 > 2000 ) {
 		cl.qh_last_ping_request = cls.realtime * 0.001;
@@ -852,10 +853,8 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	int teamplay = GGameType & GAME_QuakeWorld && String::Atoi( Info_ValueForKey( cl.qh_serverinfo, "teamplay" ) );
 
 	if ( !start ) {
-		R_VerifyNoRenderCommands();
 		image_t* pic = R_CachePic( "gfx/ranking.lmp" );
 		UI_DrawPic( viddef.width / 2 - R_GetImageWidth( pic ) / 2, 8, pic );
-		R_SyncRenderThread();
 	}
 
 	// scores
@@ -877,24 +876,16 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 		if ( teamplay ) {
 			x = 4 + ( ( viddef.width - 320 ) >> 1 );
 			//                   0    40 64   104   152  192
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, "ping pl time frags team name" );
-			R_SyncRenderThread();
 			y += 8;
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, "\x1d\x1e\x1e\x1f \x1d\x1f \x1d\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1f \x1d\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f" );
-			R_SyncRenderThread();
 			y += 8;
-		} else   {
+		} else {
 			x = 16 + ( ( viddef.width - 320 ) >> 1 );
 			//                   0    40 64   104   152
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, "ping pl time frags name" );
-			R_SyncRenderThread();
 			y += 8;
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, "\x1d\x1e\x1e\x1f \x1d\x1f \x1d\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f" );
-			R_SyncRenderThread();
 			y += 8;
 		}
 	} else   {
@@ -921,36 +912,24 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			}
 			char num[ 12 ];
 			sprintf( num, "%4i", p );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, num );
-			R_SyncRenderThread();
 
 			// draw pl
 			p = s->pl;
 			sprintf( num, "%3i", p );
 			if ( p > 25 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 32, y, num, 0x80 );
-				R_SyncRenderThread();
 			} else   {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 32, y, num );
-				R_SyncRenderThread();
 			}
 
 			if ( s->spectator ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 40, y, "(spectator)" );
-				R_SyncRenderThread();
 				// draw name
 				if ( teamplay ) {
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 152 + 40, y, s->name );
-					R_SyncRenderThread();
 				} else   {
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 152, y, s->name );
-					R_SyncRenderThread();
 				}
 				y += skip;
 				continue;
@@ -965,11 +944,8 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			}
 			int minutes = ( int )total / 60;
 			sprintf( num, "%4i", minutes );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 64, y, num );
-			R_SyncRenderThread();
 		}
-		R_VerifyNoRenderCommands();
 
 		// draw background
 		int top = SbarQ1_ColorForMap( s->topcolor );
@@ -986,22 +962,17 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			UI_FillPal( x, y, 40, 4, top );
 			UI_FillPal( x, y + 4, 40, 4, bottom );
 		}
-		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
 		sprintf( num, "%3i", s->frags );
 
 		if ( GGameType & GAME_QuakeWorld ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 112, y, num );
-			R_SyncRenderThread();
 
 			if ( k == cl.playernum ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 104, y, 16 );
 				UI_DrawChar( x + 136, y, 17 );
-				R_SyncRenderThread();
 			}
 
 			// team
@@ -1009,36 +980,24 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 				char team[ 5 ];
 				team[ 4 ] = 0;
 				String::NCpy( team, Info_ValueForKey( s->userinfo, "team" ), 4 );
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 152, y, team );
-				R_SyncRenderThread();
 			}
 
 			// draw name
 			if ( teamplay ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 152 + 40, y, s->name );
-				R_SyncRenderThread();
-			} else   {
-				R_VerifyNoRenderCommands();
+			} else {
 				UI_DrawString( x + 152, y, s->name );
-				R_SyncRenderThread();
 			}
-		} else   {
-			R_VerifyNoRenderCommands();
+		} else {
 			UI_DrawString( x + 8, y, num );
-			R_SyncRenderThread();
 
 			if ( k == cl.viewentity - 1 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( x - 8, y, 12 );
-				R_SyncRenderThread();
 			}
 
 			// draw name
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 64, y, s->name );
-			R_SyncRenderThread();
 		}
 
 		y += skip;
@@ -1047,6 +1006,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	if ( y >= ( int )viddef.height - 10 ) {	// we ran over the screen size, squish
 		sbq1_largegame = true;
 	}
+	R_SyncRenderThread();
 }
 
 //	team frags
@@ -1058,21 +1018,16 @@ static void SbarQW_TeamOverlay() {
 		SbarQ1_DeathmatchOverlay( 0 );
 		return;
 	}
-
 	R_VerifyNoRenderCommands();
+
 	image_t* pic = R_CachePic( "gfx/ranking.lmp" );
 	UI_DrawPic( 160 - R_GetImageWidth( pic ) / 2, 8, pic );
-	R_SyncRenderThread();
 
 	int y = 32;
 	int x = 36 + ( ( viddef.width - 320 ) >> 1 );
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, "low/avg/high team total players" );
-	R_SyncRenderThread();
 	y += 8;
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, "\x1d\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f \x1d\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1e\x1e\x1f" );
-	R_SyncRenderThread();
 	y += 8;
 
 	// sort the teams
@@ -1104,41 +1059,32 @@ static void SbarQW_TeamOverlay() {
 
 		char num[ 12 ];
 		sprintf( num, "%3i/%3i/%3i", plow, pavg, phigh );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, num );
-		R_SyncRenderThread();
 
 		// draw team
 		char team[ 5 ];
 		team[ 4 ] = 0;
 		String::NCpy( team, tm->team, 4 );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 104, y, team );
-		R_SyncRenderThread();
 
 		// draw total
 		sprintf( num, "%5i", tm->frags );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 104 + 40, y, num );
-		R_SyncRenderThread();
 
 		// draw players
 		sprintf( num, "%5i", tm->players );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 104 + 88, y, num );
-		R_SyncRenderThread();
 
 		if ( !String::NCmp( Info_ValueForKey( cl.q1_players[ cl.playernum ].userinfo,
 					 "team" ), tm->team, 16 ) ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x + 104 - 8, y, 16 );
 			UI_DrawChar( x + 104 + 32, y, 17 );
-			R_SyncRenderThread();
 		}
 
 		y += 8;
 	}
 	y += 8;
+	R_SyncRenderThread();
 	SbarQ1_DeathmatchOverlay( y );
 }
 
@@ -1146,6 +1092,7 @@ static void SbarQW_TeamOverlay() {
 //	frags team name
 //	displayed to right of status bar if there's room
 static void SbarQ1_MiniDeathmatchOverlay() {
+	R_VerifyNoRenderCommands();
 	int i, k;
 	int top, bottom;
 	int x, y, f;
@@ -1203,7 +1150,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 			continue;
 		}
 
-		R_VerifyNoRenderCommands();
 		// draw background
 		top = s->topcolor;
 		bottom = s->bottomcolor;
@@ -1212,21 +1158,16 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 		UI_FillPal( x, y + 1, 40, 3, top );
 		UI_FillPal( x, y + 4, 40, 4, bottom );
-		R_SyncRenderThread();
 
 		// draw number
 		f = s->frags;
 		sprintf( num, "%3i",f );
 
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 8, y, num );
-		R_SyncRenderThread();
 
 		if ( k == cl.viewentity - 1 ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x, y, 16 );
 			UI_DrawChar( x + 32, y, 17 );
-			R_SyncRenderThread();
 		}
 
 		// team
@@ -1234,9 +1175,7 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 			char team[ 5 ];
 			team[ 4 ] = 0;
 			String::NCpy( team, Info_ValueForKey( s->userinfo, "team" ), 4 );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 48, y, team );
-			R_SyncRenderThread();
 		}
 
 		// draw name
@@ -1246,20 +1185,16 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 			name[ 16 ] = 0;
 		}
 		if ( teamplay ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 48 + 40, y, name );
-			R_SyncRenderThread();
 		} else   {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 48, y, name );
-			R_SyncRenderThread();
 		}
 		y += 8;
 	}
-	R_VerifyNoRenderCommands();
 
 	// draw teams if room
 	if ( viddef.width < 640 || !teamplay ) {
+		R_SyncRenderThread();
 		return;
 	}
 
@@ -1272,7 +1207,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 	x += 16;
 
 	y = viddef.height - sbqh_lines;
-	R_SyncRenderThread();
 	for ( i = 0; i < sbq1_scoreboardteams && y <= ( int )viddef.height; i++ ) {
 		k = sbq1_teamsort[ i ];
 		team_t* tm = sbq1_teams + k;
@@ -1281,26 +1215,21 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		char team[ 5 ];
 		team[ 4 ] = 0;
 		String::NCpy( team, tm->team, 4 );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, team );
-		R_SyncRenderThread();
 
 		// draw total
 		sprintf( num, "%5i", tm->frags );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y, num );
-		R_SyncRenderThread();
 
 		if ( !String::NCmp( Info_ValueForKey( cl.q1_players[ cl.playernum ].userinfo,
 					 "team" ), tm->team, 16 ) ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x - 8, y, 16 );
 			UI_DrawChar( x + 32, y, 17 );
-			R_SyncRenderThread();
 		}
 
 		y += 8;
 	}
+	R_SyncRenderThread();
 }
 
 void SbarQ1_Draw() {

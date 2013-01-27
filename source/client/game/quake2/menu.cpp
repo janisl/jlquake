@@ -1106,6 +1106,7 @@ static const char* roguecredits[] =
 };
 
 static void MQ2_Credits_MenuDraw() {
+	R_VerifyNoRenderCommands();
 	//	draw the credits
 	int y = viddef.height - ( ( cls.realtime - credits_start_time ) / 40.0F );
 	for ( int i = 0; credits[ i ] && y < viddef.height; y += 10, i++ ) {
@@ -1125,19 +1126,16 @@ static void MQ2_Credits_MenuDraw() {
 
 		int x = ( viddef.width - String::Length( &credits[ i ][ stringoffset ] ) * 8 ) / 2;
 		if ( bold ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, &credits[ i ][ stringoffset ], 128 );
-			R_SyncRenderThread();
 		} else   {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, &credits[ i ][ stringoffset ] );
-			R_SyncRenderThread();
 		}
 	}
 
 	if ( y < 0 ) {
 		credits_start_time = cls.realtime;
 	}
+	R_SyncRenderThread();
 }
 
 static const char* MQ2_Credits_Key( int key ) {
@@ -3018,6 +3016,7 @@ static void KeyCursorDrawFunc( menuframework_s* menu ) {
 }
 
 static void DrawKeyBindingFunc( void* self ) {
+	R_VerifyNoRenderCommands();
 	menuaction_s* a = ( menuaction_s* )self;
 
 	int key0;
@@ -3025,27 +3024,20 @@ static void DrawKeyBindingFunc( void* self ) {
 	Key_GetKeysForBinding( bindnames[ a->generic.localdata[ 0 ] ][ 0 ], &key0, &key1 );
 
 	if ( key0 == -1 ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, "???" );
-		R_SyncRenderThread();
 	} else   {
 		const char* name = Key_KeynumToString( key0, true );
 
-		R_VerifyNoRenderCommands();
 		UI_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name );
-		R_SyncRenderThread();
 
 		int x = String::Length( name ) * 8;
 
 		if ( key1 != -1 ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( a->generic.x + a->generic.parent->x + 24 + x, a->generic.y + a->generic.parent->y, "or" );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( a->generic.x + a->generic.parent->x + 48 + x, a->generic.y + a->generic.parent->y, Key_KeynumToString( key1, true ) );
-			R_SyncRenderThread();
 		}
 	}
+	R_SyncRenderThread();
 }
 
 static void KeyBindingFunc( void* self ) {

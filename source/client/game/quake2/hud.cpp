@@ -70,6 +70,7 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 }
 
 static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwidth, int _xor ) {
+	R_VerifyNoRenderCommands();
 	int margin = x;
 
 	while ( *string ) {
@@ -86,15 +87,14 @@ static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwid
 		} else   {
 			x = margin;
 		}
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, line, _xor );
-		R_SyncRenderThread();
 		if ( *string ) {
 			string++;	// skip the \n
 			x = margin;
 			y += 8;
 		}
 	}
+	R_SyncRenderThread();
 }
 
 static void SCRQ2_ExecuteLayoutString( const char* s ) {
@@ -159,6 +159,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 		}
 
 		if ( !String::Cmp( token, "client" ) ) {// draw a deathmatch client block
+			R_VerifyNoRenderCommands();
 			int score, ping, time;
 
 			token = String::Parse2( &s );
@@ -182,32 +183,22 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			token = String::Parse2( &s );
 			time = String::Atoi( token );
 
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y, ci->name, 0x80 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 8,  "Score: " );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32 + 7 * 8, y + 8,  va( "%i", score ), 0x80 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 16, va( "Ping:  %i", ping ) );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 24, va( "Time:  %i", time ) );
-			R_SyncRenderThread();
 
 			if ( !ci->icon ) {
 				ci = &cl.q2_baseclientinfo;
 			}
-			R_VerifyNoRenderCommands();
 			UI_DrawNamedPic( x, y, ci->iconname );
 			R_SyncRenderThread();
 			continue;
 		}
 
 		if ( !String::Cmp( token, "ctf" ) ) {	// draw a ctf client block
+			R_VerifyNoRenderCommands();
 			int score, ping;
 			char block[ 80 ];
 
@@ -235,20 +226,17 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			sprintf( block, "%3d %3d %-12.12s", score, ping, ci->name );
 
 			if ( value == cl.playernum ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x, y, block, 0x80 );
-				R_SyncRenderThread();
-			} else   {
-				R_VerifyNoRenderCommands();
+			} else {
 				UI_DrawString( x, y, block );
-				R_SyncRenderThread();
 			}
+			R_SyncRenderThread();
 			continue;
 		}
 
 		if ( !String::Cmp( token, "picn" ) ) {	// draw a pic from a name
-			token = String::Parse2( &s );
 			R_VerifyNoRenderCommands();
+			token = String::Parse2( &s );
 			UI_DrawNamedPic( x, y, token );
 			R_SyncRenderThread();
 			continue;
@@ -332,6 +320,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 
 		if ( !String::Cmp( token, "stat_string" ) ) {
+			R_VerifyNoRenderCommands();
 			token = String::Parse2( &s );
 			int index = String::Atoi( token );
 			if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q2 ) {
@@ -341,7 +330,6 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q2 ) {
 				common->Error( "Bad stat_string index" );
 			}
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, cl.q2_configstrings[ index ] );
 			R_SyncRenderThread();
 			continue;
@@ -368,8 +356,8 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 		}
 
 		if ( !String::Cmp( token, "string2" ) ) {
-			token = String::Parse2( &s );
 			R_VerifyNoRenderCommands();
+			token = String::Parse2( &s );
 			UI_DrawString( x, y, token, 0x80 );
 			R_SyncRenderThread();
 			continue;
@@ -440,16 +428,11 @@ static void CLQ2_DrawInventory() {
 	int y = ( viddef.height - 240 ) / 2;
 
 	UI_DrawNamedPic( x, y + 8, "inventory" );
-	R_SyncRenderThread();
 
 	y += 24;
 	x += 24;
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, "hotkey ### item" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y + 8, "------ --- ----" );
-	R_SyncRenderThread();
 	y += 16;
 	for ( int i = top; i < num && i < top + DISPLAY_ITEMS; i++ ) {
 		int item = index[ i ];
@@ -464,15 +447,12 @@ static void CLQ2_DrawInventory() {
 			bind, cl.q2_inventory[ item ], cl.q2_configstrings[ Q2CS_ITEMS + item ] );
 		// draw a blinky cursor by the selected item
 		if ( item == selected && ( cls.realtime * 10 ) & 1 ) {
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( x - 8, y, 15 );
-			R_SyncRenderThread();
 		}
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, string );
-		R_SyncRenderThread();
 		y += 8;
 	}
+	R_SyncRenderThread();
 }
 
 void SCRQ2_DrawHud() {

@@ -266,7 +266,6 @@ static void Con_DrawBackground( float frac, int lines ) {
 		} else   {
 			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback, ( float )( 1.2 * lines ) / y );
 		}
-		R_SyncRenderThread();
 
 		if ( !clc.download ) {
 			const char* version;
@@ -281,18 +280,13 @@ static void Con_DrawBackground( float frac, int lines ) {
 			}
 			int y = lines - 14;
 			int x = viddef.width - ( String::LengthWithoutColours( version ) * 8 + 11 );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, version );
-			R_SyncRenderThread();
 		}
 	} else if ( GGameType & GAME_Quake2 )     {
 		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
-		R_SyncRenderThread();
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
-		R_VerifyNoRenderCommands();
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );
-		R_SyncRenderThread();
 	} else   {
 		int y = frac * viddef.height - 2;
 		if ( y < 1 ) {
@@ -345,6 +339,9 @@ static void Con_DrawBackground( float frac, int lines ) {
 		int i = String::LengthWithoutColours( version );
 		SCR_DrawSmallString( cls.glconfig.vidWidth - i * SMALLCHAR_WIDTH,
 			( lines - ( SMALLCHAR_HEIGHT + SMALLCHAR_HEIGHT / 2 ) ), version );
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
 	}
 }
 

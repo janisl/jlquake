@@ -939,6 +939,7 @@ void SbarH2_DeathmatchOverlay() {
 
 	image_t* pic = R_CachePic( "gfx/menu/title8.lmp" );
 	MQH_DrawPic( ( 320 - R_GetImageWidth( pic ) ) / 2, 0, pic );
+	R_VerifyNoRenderCommands();
 
 	// scores
 	SbarH2_SortFrags( true );
@@ -950,18 +951,10 @@ void SbarH2_DeathmatchOverlay() {
 	int y = 62;
 
 	if ( GGameType & GAME_HexenWorld ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 4, y - 1, S_COLOR_RED "FRAG" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 48, y - 1, S_COLOR_RED "PING" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 88, y - 1, S_COLOR_RED "TIME" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 128, y - 1, S_COLOR_RED "NAME" );
-		R_SyncRenderThread();
 		y += 12;
 	}
 
@@ -981,112 +974,68 @@ void SbarH2_DeathmatchOverlay() {
 				//Print playerclass next to name
 				switch ( s->playerclass ) {
 				case 0:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(r   )" );
-					R_SyncRenderThread();
 					break;
 				case 1:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(P   )" );
-					R_SyncRenderThread();
 					break;
 				case 2:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(C   )" );
-					R_SyncRenderThread();
 					break;
 				case 3:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(N   )" );
-					R_SyncRenderThread();
 					break;
 				case 4:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(A   )" );
-					R_SyncRenderThread();
 					break;
 				case 5:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(S   )" );
-					R_SyncRenderThread();
 					break;
 				case 6:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(D   )" );
-					R_SyncRenderThread();
 					break;
 				default:
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 128, y, S_COLOR_RED "(?   )" );
-					R_SyncRenderThread();
 					break;
 				}
 
 				if ( clhw_siege ) {
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 160, y, S_COLOR_RED "6" );
-					R_SyncRenderThread();
 					if ( s->siege_team == 1 ) {
-						R_VerifyNoRenderCommands();
 						UI_DrawChar( x + 152, y, 143 );	//shield
-						R_SyncRenderThread();
 					} else if ( s->siege_team == 2 )     {
-						R_VerifyNoRenderCommands();
 						UI_DrawChar( x + 152, y, 144 );	//sword
-						R_SyncRenderThread();
 					} else   {
-						R_VerifyNoRenderCommands();
 						UI_DrawString( x + 152, y, S_COLOR_RED "?" );	//no team
-						R_SyncRenderThread();
 					}
 
 					if ( k == clhw_keyholder ) {
-						R_VerifyNoRenderCommands();
 						UI_DrawChar( x + 144, y, 145 );	//key
-						R_SyncRenderThread();
-					} else   {
-						R_VerifyNoRenderCommands();
+					} else {
 						UI_DrawString( x + 144, y, S_COLOR_RED "-" );
-						R_SyncRenderThread();
 					}
 
 					if ( k == clhw_doc ) {
-						R_VerifyNoRenderCommands();
 						UI_DrawChar( x + 160, y, 130 );	//crown
-						R_SyncRenderThread();
-					} else   {
-						R_VerifyNoRenderCommands();
+					} else {
 						UI_DrawString( x + 160, y, S_COLOR_RED "6" );
-						R_SyncRenderThread();
 					}
-
-				} else   {
-					R_VerifyNoRenderCommands();
+				} else {
 					UI_DrawString( x + 144, y, S_COLOR_RED "-" );
-					R_SyncRenderThread();
 					if ( !s->level ) {
-						R_VerifyNoRenderCommands();
 						UI_DrawString( x + 152, y, S_COLOR_RED "01" );
-						R_SyncRenderThread();
 					} else if ( ( int )s->level < 10 )       {
-						R_VerifyNoRenderCommands();
 						UI_DrawString( x + 152, y, S_COLOR_RED "0" );
-						R_SyncRenderThread();
 						char num[ 40 ];
 						sprintf( num, S_COLOR_RED "%1d",s->level );
-						R_VerifyNoRenderCommands();
 						UI_DrawString( x + 160, y, num );
-						R_SyncRenderThread();
-					} else   {
+					} else {
 						char num[ 40 ];
 						sprintf( num, S_COLOR_RED "%2d",s->level );
-						R_VerifyNoRenderCommands();
 						UI_DrawString( x + 152, y, num );
-						R_SyncRenderThread();
 					}
 				}
 			}
-			R_VerifyNoRenderCommands();
 
 			// draw background
 			int top;
@@ -1100,27 +1049,20 @@ void SbarH2_DeathmatchOverlay() {
 				UI_FillPal( x + 80, y, 40, 4, top );
 				UI_FillPal( x + 80, y + 4, 40, 4, bottom );
 			}
-			R_SyncRenderThread();
 
 			// draw number
 			char num[ 40 ];
 			sprintf( num, "%3i", s->frags );
 
 			if ( GGameType & GAME_HexenWorld ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 10, y - 1, num );
-				R_SyncRenderThread();
 
 				if ( k == cl.playernum ) {
-					R_VerifyNoRenderCommands();
 					UI_DrawChar( x, y - 1, 13 );
-					R_SyncRenderThread();
 				}
 
 				sprintf( num, "%4d",s->ping );
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 48, y, num );
-				R_SyncRenderThread();
 
 				float total;
 				if ( cl.qh_intermission ) {
@@ -1130,47 +1072,31 @@ void SbarH2_DeathmatchOverlay() {
 				}
 				int minutes = ( int )total / 60;
 				sprintf( num, "%4i", minutes );
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 88, y, num );
-				R_SyncRenderThread();
 
 				// draw name
 				if ( clhw_siege && s->siege_team == 2 ) {	//attacker
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 178, y, s->name );
-					R_SyncRenderThread();
 				} else   {
-					R_VerifyNoRenderCommands();
 					UI_DrawString( x + 178, y, va( S_COLOR_RED "%s", s->name ) );
-					R_SyncRenderThread();
 				}
-			} else   {
+			} else {
 				if ( k == svh2_kingofhill ) {
-					R_VerifyNoRenderCommands();
 					UI_DrawChar( x + 68, y - 1, 130 );
-					R_SyncRenderThread();
 				}
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 88, y - 1, num );
-				R_SyncRenderThread();
 
 				if ( k == cl.viewentity - 1 ) {
-					R_VerifyNoRenderCommands();
 					UI_DrawChar( x + 72, y - 1, 12 );
-					R_SyncRenderThread();
 				}
 
 				// draw name
-				R_VerifyNoRenderCommands();
 				UI_DrawString( x + 144, y, s->name );
-				R_SyncRenderThread();
 			}
-		} else   {
+		} else {
 			char num[ 40 ];
 			sprintf( num, S_COLOR_RED "%4d", s->ping );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 48, y, num );
-			R_SyncRenderThread();
 
 			float total;
 			if ( cl.qh_intermission ) {
@@ -1180,42 +1106,33 @@ void SbarH2_DeathmatchOverlay() {
 			}
 			int minutes = ( int )total / 60;
 			sprintf( num, S_COLOR_RED "%4i", minutes );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 88, y, num );
-			R_SyncRenderThread();
 
 			// draw name
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 128, y, va( S_COLOR_RED "%s", s->name ) );
-			R_SyncRenderThread();
 		}
 
 		y += 10;
 	}
+	R_SyncRenderThread();
 }
 
 static void DrawTime( int x, int y, int disp_time ) {
+	R_VerifyNoRenderCommands();
 	int show_min = disp_time;
 	int show_sec = show_min % 60;
 	show_min = ( show_min - show_sec ) / 60;
 	char num[ 40 ];
 	sprintf( num, S_COLOR_RED "%3d",show_min );
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x + 8, y, num );
-	R_SyncRenderThread();
 	sprintf( num, S_COLOR_RED "%2d",show_sec );
 	if ( show_sec >= 10 ) {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y, num );
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y, num );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y, S_COLOR_RED "0" );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarH2_SmallDeathmatchOverlay() {
@@ -1248,13 +1165,13 @@ static void SbarH2_SmallDeathmatchOverlay() {
 	}
 
 	if ( GGameType & GAME_HexenWorld && clhw_siege ) {
+		R_VerifyNoRenderCommands();
 		int i = ( viddef.height - 120 ) / 10;
 		if ( l > i ) {
 			l = i;
 		}
 		y = viddef.height - BAR_TOP_HEIGHT - 24;
 		x -= 4;
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y, 142 );	//sundial
 		UI_DrawChar( x + 32, y, 58 );	// ":"
 		R_SyncRenderThread();
@@ -1263,12 +1180,11 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		} else if ( ( int )cl.qh_serverTimeFloat % 2 )       {	//odd number, draw 00:00, this will make it flash every second
 			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 16, y, S_COLOR_RED "00" );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 40, y, S_COLOR_RED "00" );
 			R_SyncRenderThread();
 		}
 	}
+	R_VerifyNoRenderCommands();
 
 	int def_frags = 0;
 	int att_frags = 0;
@@ -1293,8 +1209,7 @@ static void SbarH2_SmallDeathmatchOverlay() {
 					def_frags -= s->frags;
 				}
 			}
-		} else   {
-			R_VerifyNoRenderCommands();
+		} else {
 			// draw background
 			int top, bottom;
 			FindColor( k, &top, &bottom );
@@ -1308,19 +1223,13 @@ static void SbarH2_SmallDeathmatchOverlay() {
 			if ( k == cl.viewentity - 1 ) {
 				UI_DrawChar( x - 8, y - 1, 13 );
 			}
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 2, y - 1, num );
-			R_SyncRenderThread();
 			if ( !( GGameType & GAME_HexenWorld ) && k == svh2_kingofhill ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawChar( x + 30, y - 1, 130 );
-				R_SyncRenderThread();
 			}
 			y += 10;
 		}
 	}
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_HexenWorld && clhw_siege ) {
 		if ( cl.playernum == clhw_keyholder ) {
 			UI_DrawChar( x, y - 10, 145 );		//key
@@ -1333,38 +1242,25 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		}
 		//Print defender losses
 		UI_DrawChar( x, y + 10, 143 );		//shield
-		R_SyncRenderThread();
 		sprintf( num, S_COLOR_RED "%3i",clhw_defLosses );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 8, y + 10, num );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x + 32, y + 10, 47 );		// "/"
-		R_SyncRenderThread();
 		sprintf( num, S_COLOR_RED "%3i",clhw_fraglimit );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y + 10, num );
-		R_SyncRenderThread();
 
 		//Print attacker losses
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x, y + 20, 144 );		//sword
-		R_SyncRenderThread();
 		sprintf( num, S_COLOR_RED "%3i",clhw_attLosses );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 8, y + 20, num );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_DrawChar( x + 32, y + 20, 47 );		// "/"
-		R_SyncRenderThread();
 		sprintf( num, S_COLOR_RED "%3i",clhw_fraglimit * 2 );
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x + 40, y + 20, num );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
+	R_VerifyNoRenderCommands();
 	if ( !Name ) {
 		return;
 	}
@@ -1380,31 +1276,23 @@ static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
 	if ( clhw_siege ) {
 		if ( Red > 10 ) {
 			Red -= 10;
-			R_VerifyNoRenderCommands();
 			UI_DrawChar( u, v, 145 );	//key
-			R_SyncRenderThread();
 			u += 8;
 		}
-		R_VerifyNoRenderCommands();
 		if ( Red > 0 && Red < 3 ) {	//def
 			if ( Red == true ) {
 				UI_DrawChar( u, v, 143 );	//shield
 			} else   {
 				UI_DrawChar( u, v, 130 );	//crown
 			}
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( u + 8, v, Name, 256 );
 		} else if ( !Red ) {
 			UI_DrawChar( u, v, 144 );	//sword
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			UI_DrawString( u + 8, v, Name );
 		} else {
 			UI_DrawString( u + 8, v, Name );
 		}
 	} else   {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( u, v, Name );
 	}
 	R_SyncRenderThread();

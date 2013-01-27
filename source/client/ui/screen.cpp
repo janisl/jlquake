@@ -255,6 +255,7 @@ static void SCR_DrawCenterString() {
 		return;
 	}
 
+	R_VerifyNoRenderCommands();
 	// the finale prints the characters one at a time
 	int remaining;
 	if ( GGameType & GAME_Quake && cl.qh_intermission ) {
@@ -288,10 +289,9 @@ static void SCR_DrawCenterString() {
 		}
 		buf[ l ] = 0;
 		int x = ( viddef.width - l * 8 ) / 2;
-		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, buf );
-		R_SyncRenderThread();
 		if ( !remaining ) {
+			R_SyncRenderThread();
 			return;
 		}
 
@@ -306,6 +306,7 @@ static void SCR_DrawCenterString() {
 		}
 		start++;		// skip the \n
 	} while ( 1 );
+	R_SyncRenderThread();
 }
 
 void SCR_CheckDrawCenterString() {
