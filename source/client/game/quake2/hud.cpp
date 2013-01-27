@@ -34,7 +34,6 @@ const char* sb_nums[ 2 ][ 11 ] =
 };
 
 static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
-	R_VerifyNoRenderCommands();
 	if ( width < 1 ) {
 		return;
 	}
@@ -66,11 +65,9 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 		ptr++;
 		l--;
 	}
-	R_SyncRenderThread();
 }
 
 static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwidth, int _xor ) {
-	R_VerifyNoRenderCommands();
 	int margin = x;
 
 	while ( *string ) {
@@ -94,7 +91,6 @@ static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwid
 			y += 8;
 		}
 	}
-	R_SyncRenderThread();
 }
 
 static void SCRQ2_ExecuteLayoutString( const char* s ) {
@@ -151,15 +147,12 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				common->Error( "Pic >= MAX_IMAGES_Q2" );
 			}
 			if ( cl.q2_configstrings[ Q2CS_IMAGES + value ] ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, cl.q2_configstrings[ Q2CS_IMAGES + value ] );
-				R_SyncRenderThread();
 			}
 			continue;
 		}
 
 		if ( !String::Cmp( token, "client" ) ) {// draw a deathmatch client block
-			R_VerifyNoRenderCommands();
 			int score, ping, time;
 
 			token = String::Parse2( &s );
@@ -193,12 +186,10 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				ci = &cl.q2_baseclientinfo;
 			}
 			UI_DrawNamedPic( x, y, ci->iconname );
-			R_SyncRenderThread();
 			continue;
 		}
 
 		if ( !String::Cmp( token, "ctf" ) ) {	// draw a ctf client block
-			R_VerifyNoRenderCommands();
 			int score, ping;
 			char block[ 80 ];
 
@@ -230,15 +221,12 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			} else {
 				UI_DrawString( x, y, block );
 			}
-			R_SyncRenderThread();
 			continue;
 		}
 
 		if ( !String::Cmp( token, "picn" ) ) {	// draw a pic from a name
-			R_VerifyNoRenderCommands();
 			token = String::Parse2( &s );
 			UI_DrawNamedPic( x, y, token );
-			R_SyncRenderThread();
 			continue;
 		}
 
@@ -265,9 +253,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			}
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 1 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
-				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -285,12 +271,10 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				color = ( cl.q2_frame.serverframe >> 2 ) & 1;			// flash
 			} else   {
 				continue;	// negative number = don't show
-
 			}
+
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 4 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
-				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -309,9 +293,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			color = 0;	// green
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 2 ) {
-				R_VerifyNoRenderCommands();
 				UI_DrawNamedPic( x, y, "field_3" );
-				R_SyncRenderThread();
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -320,7 +302,6 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 
 		if ( !String::Cmp( token, "stat_string" ) ) {
-			R_VerifyNoRenderCommands();
 			token = String::Parse2( &s );
 			int index = String::Atoi( token );
 			if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q2 ) {
@@ -331,7 +312,6 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				common->Error( "Bad stat_string index" );
 			}
 			UI_DrawString( x, y, cl.q2_configstrings[ index ] );
-			R_SyncRenderThread();
 			continue;
 		}
 
@@ -343,9 +323,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 		if ( !String::Cmp( token, "string" ) ) {
 			token = String::Parse2( &s );
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, token );
-			R_SyncRenderThread();
 			continue;
 		}
 
@@ -356,10 +334,8 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 		}
 
 		if ( !String::Cmp( token, "string2" ) ) {
-			R_VerifyNoRenderCommands();
 			token = String::Parse2( &s );
 			UI_DrawString( x, y, token, 0x80 );
-			R_SyncRenderThread();
 			continue;
 		}
 
@@ -398,7 +374,6 @@ void CLQ2_ParseInventory( QMsg& message ) {
 }
 
 static void CLQ2_DrawInventory() {
-	R_VerifyNoRenderCommands();
 	enum { DISPLAY_ITEMS = 17 };
 	int selected = cl.q2_frame.playerstate.stats[ Q2STAT_SELECTED_ITEM ];
 
@@ -452,10 +427,10 @@ static void CLQ2_DrawInventory() {
 		UI_DrawString( x, y, string );
 		y += 8;
 	}
-	R_SyncRenderThread();
 }
 
 void SCRQ2_DrawHud() {
+	R_VerifyNoRenderCommands();
 	SCRQ2_DrawStats();
 	if ( cl.q2_frame.playerstate.stats[ Q2STAT_LAYOUTS ] & 1 ) {
 		SCRQ2_DrawLayout();
@@ -463,6 +438,7 @@ void SCRQ2_DrawHud() {
 	if ( cl.q2_frame.playerstate.stats[ Q2STAT_LAYOUTS ] & 2 ) {
 		CLQ2_DrawInventory();
 	}
+	R_SyncRenderThread();
 
 	SCR_DrawNet();
 	SCR_CheckDrawCenterString();
