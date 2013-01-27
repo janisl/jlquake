@@ -270,23 +270,17 @@ void SbarH2_InitImages() {
 
 // Relative to the current status bar location.
 static void SbarH2_DrawPic( int x, int y, image_t* pic ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), pic );
-	R_SyncRenderThread();
 }
 
 static void SbarH2_DrawSubPic( int x, int y, int h, image_t* pic ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawStretchPic( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), R_GetImageWidth( pic ), h, pic );
-	R_SyncRenderThread();
 }
 
 static void SbarH2_DrawSmallString( int x, int y, const char* str ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawSmallString( x + ( ( viddef.width - 320 ) >> 1 ), y + viddef.height - ( int )BarHeight, str );
-	R_SyncRenderThread();
 }
 
 static void DrawBarArtifactNumber( int x, int y, int number ) {
@@ -294,17 +288,23 @@ static void DrawBarArtifactNumber( int x, int y, int number ) {
 
 	if ( number >= 10 ) {
 		artiNumName[ 11 ] = '0' + ( number % 100 ) / 10;
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( x, y, R_CachePic( artiNumName ) );
+		R_SyncRenderThread();
 	}
 	artiNumName[ 11 ] = '0' + number % 10;
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( x + 4, y, R_CachePic( artiNumName ) );
+	R_SyncRenderThread();
 }
 
 static void DrawBarArtifactIcon( int x, int y, int artifact ) {
 	if ( ( artifact < 0 ) || ( artifact > 14 ) ) {
 		return;
 	}
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( x, y, R_CachePic( va( "gfx/arti%02d.lmp", artifact ) ) );
+	R_SyncRenderThread();
 	int count = ( int )( &cl.h2_v.cnt_torch )[ artifact ];
 	if ( count > 0 ) {
 		DrawBarArtifactNumber( x + 20, y + 21, count );
@@ -329,7 +329,9 @@ static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
 		} else   {
 			frame = *ptr - '0';
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( x, y, sbh2_nums[ frame ] );
+		R_SyncRenderThread();
 		x += 13;
 		ptr++;
 	}
@@ -370,8 +372,12 @@ static void UpdateHeight() {
 
 static void DrawFullScreenInfo() {
 	int y = BarHeight - 37;
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 3, y, R_CachePic( "gfx/bmmana.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 3, y + 18, R_CachePic( "gfx/gmmana.lmp" ) );
+	R_SyncRenderThread();
 
 	int maxMana = ( int )cl.h2_v.max_mana;
 	// Blue mana
@@ -384,7 +390,9 @@ static void DrawFullScreenInfo() {
 	}
 	char tempStr[ 80 ];
 	sprintf( tempStr, "%03d", mana );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 10, y + 6, tempStr );
+	R_SyncRenderThread();
 
 	// Green mana
 	mana = ( int )cl.h2_v.greenmana;
@@ -395,7 +403,9 @@ static void DrawFullScreenInfo() {
 		mana = maxMana;
 	}
 	sprintf( tempStr, "%03d", mana );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 10, y + 18 + 6, tempStr );
+	R_SyncRenderThread();
 
 	// HP
 	SbarH2_DrawNum( 38, y + 18, cl.h2_v.health, 3 );
@@ -465,11 +475,21 @@ static int CalcAC() {
 }
 
 static void DrawTopBar() {
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 0, 0, R_CachePic( "gfx/topbar1.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 160, 0, R_CachePic( "gfx/topbar2.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 0, -23, R_CachePic( "gfx/topbumpl.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 138, -8, R_CachePic( "gfx/topbumpm.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 269, -23, R_CachePic( "gfx/topbumpr.lmp" ) );
+	R_SyncRenderThread();
 
 	int maxMana = ( int )cl.h2_v.max_mana;
 	// Blue mana
@@ -482,11 +502,17 @@ static void DrawTopBar() {
 	}
 	char tempStr[ 80 ];
 	sprintf( tempStr, "%03d", mana );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 201, 22, tempStr );
+	R_SyncRenderThread();
 	if ( mana ) {
 		int y = ( int )( ( mana * 18.0 ) / ( float )maxMana + 0.5 );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSubPic( 190, 26 - y, y + 1, R_CachePic( "gfx/bmana.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 190, 27, R_CachePic( "gfx/bmanacov.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	// Green mana
@@ -498,11 +524,17 @@ static void DrawTopBar() {
 		mana = maxMana;
 	}
 	sprintf( tempStr, "%03d", mana );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 243, 22, tempStr );
+	R_SyncRenderThread();
 	if ( mana ) {
 		int y = ( int )( ( mana * 18.0 ) / ( float )maxMana + 0.5 );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSubPic( 232, 26 - y, y + 1, R_CachePic( "gfx/gmana.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 232, 27, R_CachePic( "gfx/gmanacov.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	// HP
@@ -512,12 +544,20 @@ static void DrawTopBar() {
 		SbarH2_DrawNum( 58, 14, cl.h2_v.health, 3 );
 	}
 	SetChainPosition( cl.h2_v.health, cl.h2_v.max_health );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 45 + ( ( int )sbh2_ChainPosition & 7 ), 38,
 		R_CachePic( "gfx/hpchain.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 45 + ( int )sbh2_ChainPosition, 36,
 		R_CachePic( "gfx/hpgem.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 43, 36, R_CachePic( "gfx/chnlcov.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 267, 36, R_CachePic( "gfx/chnrcov.lmp" ) );
+	R_SyncRenderThread();
 
 	// AC
 	SbarH2_DrawNum( 105, 14, CalcAC(), 2 );
@@ -536,117 +576,195 @@ static void DrawLowerBar() {
 	}
 
 	// Backdrop
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 0, 46, R_CachePic( "gfx/btmbar1.lmp" ) );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 160, 46, R_CachePic( "gfx/btmbar2.lmp" ) );
+	R_SyncRenderThread();
 
 	// Stats
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 11, 48, GGameType & GAME_HexenWorld ? hw_ClassNames[ playerClass - 1 ] : h2_ClassNames[ playerClass - 1 ] );
+	R_SyncRenderThread();
 
 	char tempStr[ 80 ];
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 11, 58, "int" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%02d", ( int )cl.h2_v.intelligence );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 33, 58, tempStr );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 11, 64, "wis" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%02d", ( int )cl.h2_v.wisdom );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 33, 64, tempStr );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 11, 70, "dex" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%02d", ( int )cl.h2_v.dexterity );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 33, 70, tempStr );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 58, 58, "str" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%02d", ( int )cl.h2_v.strength );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 80, 58, tempStr );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 58, 64, "lvl" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%02d", ( int )cl.h2_v.level );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 80, 64, tempStr );
+	R_SyncRenderThread();
 
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 58, 70, "exp" );
+	R_SyncRenderThread();
 	sprintf( tempStr, "%06d", ( int )cl.h2_v.experience );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 80, 70, tempStr );
+	R_SyncRenderThread();
 
 	// Abilities
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawSmallString( 11, 79, "abilities" );
+	R_SyncRenderThread();
 	int i = GGameType & GAME_HexenWorld ? AbilityLineIndex[ ( playerClass - 1 ) ] : ABILITIES_STR_INDEX + ( playerClass - 1 ) * 2;
 	if ( i + 1 < prh2_string_count ) {
 		if ( ( ( int )cl.h2_v.flags ) & H2FL_SPECIAL_ABILITY1 ) {
+			R_VerifyNoRenderCommands();
 			SbarH2_DrawSmallString( 8, 89,
 				&prh2_global_strings[ prh2_string_index[ i ] ] );
+			R_SyncRenderThread();
 		}
 		if ( ( ( int )cl.h2_v.flags ) & H2FL_SPECIAL_ABILITY2 ) {
+			R_VerifyNoRenderCommands();
 			SbarH2_DrawSmallString( 8, 96,
 				&prh2_global_strings[ prh2_string_index[ i + 1 ] ] );
+			R_SyncRenderThread();
 		}
 	}
 
 	// Portrait
 	sprintf( tempStr, "gfx/cport%d.lmp", playerClass );
+	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 134, 50, R_CachePic( tempStr ) );
+	R_SyncRenderThread();
 
 	// Armor
 	if ( cl.h2_v.armor_helmet > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 164, 115, R_CachePic( "gfx/armor1.lmp" ) );
+		R_SyncRenderThread();
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_helmet );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSmallString( 168, 136, tempStr );
+		R_SyncRenderThread();
 	}
 	if ( cl.h2_v.armor_amulet > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 205, 115, R_CachePic( "gfx/armor2.lmp" ) );
+		R_SyncRenderThread();
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_amulet );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSmallString( 208, 136, tempStr );
+		R_SyncRenderThread();
 	}
 	if ( cl.h2_v.armor_breastplate > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 246, 115, R_CachePic( "gfx/armor3.lmp" ) );
+		R_SyncRenderThread();
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_breastplate );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSmallString( 249, 136, tempStr );
+		R_SyncRenderThread();
 	}
 	if ( cl.h2_v.armor_bracer > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 285, 115, R_CachePic( "gfx/armor4.lmp" ) );
+		R_SyncRenderThread();
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_bracer );
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawSmallString( 288, 136, tempStr );
+		R_SyncRenderThread();
 	}
 
 	// Rings
 	if ( cl.h2_v.ring_flight > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 6, 119, R_CachePic( "gfx/ring_f.lmp" ) );
+		R_SyncRenderThread();
 
 		int ringhealth = ( int )cl.h2_v.ring_flight;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 35 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 35, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	if ( cl.h2_v.ring_water > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 44, 119, R_CachePic( "gfx/ring_w.lmp" ) );
+		R_SyncRenderThread();
 		int ringhealth = ( int )cl.h2_v.ring_water;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 73 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 73, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	if ( cl.h2_v.ring_turning > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 81, 119, R_CachePic( "gfx/ring_t.lmp" ) );
+		R_SyncRenderThread();
 		int ringhealth = ( int )cl.h2_v.ring_turning;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 110 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 110, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	if ( cl.h2_v.ring_regeneration > 0 ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 119, 119, R_CachePic( "gfx/ring_r.lmp" ) );
+		R_SyncRenderThread();
 		int ringhealth = ( int )cl.h2_v.ring_regeneration;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 148 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
+		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 148, 142, R_CachePic( "gfx/rhlthcv2.lmp" ) );
+		R_SyncRenderThread();
 	}
 
 	// Puzzle pieces
@@ -655,8 +773,10 @@ static void DrawLowerBar() {
 		if ( cl.h2_puzzle_pieces[ i ][ 0 ] == 0 ) {
 			continue;
 		}
+		R_VerifyNoRenderCommands();
 		SbarH2_DrawPic( 194 + ( piece % 4 ) * 31, piece < 4 ? 51 : 82,
 			R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+		R_SyncRenderThread();
 		piece++;
 	}
 }
@@ -689,7 +809,9 @@ static void DrawArtifactInventory() {
 			break;
 		}
 		if ( cl.h2_inv_startpos + i == cl.h2_inv_selected ) {	// Highlight icon
+			R_VerifyNoRenderCommands();
 			SbarH2_DrawPic( x + 9, y - 12, R_CachePic( "gfx/artisel.lmp" ) );
+			R_SyncRenderThread();
 		}
 		DrawBarArtifactIcon( x, y, cl.h2_inv_order[ cl.h2_inv_startpos + i ] );
 	}
