@@ -214,7 +214,9 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 
 	// draw it
 	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, str );
+		R_SyncRenderThread();
 	} else if ( size == SMALLCHAR_WIDTH )     {
 		SCR_DrawSmallString( x, y, str );
 	} else   {

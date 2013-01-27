@@ -26,15 +26,21 @@
 #define VID_HEIGHT viddef.height
 
 static void Menu_DrawStringDark( int x, int y, const char* string ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, string, 128 );
+	R_SyncRenderThread();
 }
 
 static void Menu_DrawStringR2L( int x, int y, const char* string ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( ( x - ( String::Length( string ) - 1 ) * 8 ), y, string );
+	R_SyncRenderThread();
 }
 
 static void Menu_DrawStringR2LDark( int x, int y, const char* string ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( ( x - ( String::Length( string ) - 1 ) * 8 ), y, string, 128 );
+	R_SyncRenderThread();
 }
 
 static void Action_DoEnter( menuaction_s* a ) {
@@ -48,7 +54,9 @@ static void Action_Draw( menuaction_s* a ) {
 		if ( a->generic.flags & QMF_GRAYED ) {
 			Menu_DrawStringDark( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
 		} else   {
+			R_VerifyNoRenderCommands();
 			UI_DrawString( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
+			R_SyncRenderThread();
 		}
 	} else   {
 		if ( a->generic.flags & QMF_GRAYED ) {
@@ -175,13 +183,19 @@ static void SpinControl_Draw( menulist_s* s ) {
 			s->generic.name );
 	}
 	if ( !strchr( s->itemnames[ s->curvalue ], '\n' ) ) {
+		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[ s->curvalue ] );
+		R_SyncRenderThread();
 	} else   {
 		String::Cpy( buffer, s->itemnames[ s->curvalue ] );
 		*strchr( buffer, '\n' ) = 0;
+		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
+		R_SyncRenderThread();
 		String::Cpy( buffer, strchr( s->itemnames[ s->curvalue ], '\n' ) + 1 );
+		R_VerifyNoRenderCommands();
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
+		R_SyncRenderThread();
 	}
 }
 
@@ -271,7 +285,9 @@ static void Menu_DrawStatusBar( const char* string ) {
 
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
 		R_SyncRenderThread();
+		R_VerifyNoRenderCommands();
 		UI_DrawString( col * 8, VID_HEIGHT - 8, string );
+		R_SyncRenderThread();
 	} else   {
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
 		R_SyncRenderThread();

@@ -281,14 +281,18 @@ static void Con_DrawBackground( float frac, int lines ) {
 			}
 			int y = lines - 14;
 			int x = viddef.width - ( String::LengthWithoutColours( version ) * 8 + 11 );
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, version );
+			R_SyncRenderThread();
 		}
 	} else if ( GGameType & GAME_Quake2 )     {
 		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
 		R_SyncRenderThread();
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
+		R_VerifyNoRenderCommands();
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );
+		R_SyncRenderThread();
 	} else   {
 		int y = frac * viddef.height - 2;
 		if ( y < 1 ) {
@@ -427,6 +431,7 @@ static void Con_DrawDownloadBar( int lines ) {
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) ) ) {
 		return;
 	}
+	R_VerifyNoRenderCommands();
 	if ( !clc.download ) {
 		return;
 	}
@@ -472,6 +477,7 @@ static void Con_DrawDownloadBar( int lines ) {
 	// draw it
 	y = lines - 12;
 	UI_DrawString( 8, y, dlbar );
+	R_SyncRenderThread();
 }
 
 //	The input line scrolls horizontally if typing goes beyond the right edge
@@ -528,7 +534,9 @@ static void Con_DrawInput( int lines ) {
 		R_SetColor( con.color );
 		SCR_DrawSmallChar( con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']' );
 	} else   {
+		R_VerifyNoRenderCommands();
 		UI_DrawString( 8, y, "]" );
+		R_SyncRenderThread();
 	}
 
 	Field_Draw( &g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true );
@@ -649,7 +657,9 @@ static void Con_DrawChat( int y ) {
 		SCR_DrawBigString( 8, y, buf, 1.0f );
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, y, true );
 	} else   {
+		R_VerifyNoRenderCommands();
 		UI_DrawString( 8, y, buf );
+		R_SyncRenderThread();
 		Field_Draw( &chatField, skip << 3, y, true );
 	}
 }

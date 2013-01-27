@@ -95,7 +95,9 @@ static void SCRH2_FindTextBreaks( const char* message, int Width ) {
 }
 
 static void MH2_Print2( int cx, int cy, const char* str ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy + ( ( viddef.height - 200 ) >> 1 ), str, 256 );
+	R_SyncRenderThread();
 }
 
 static void SCRH2_Bottom_Plaque_Draw( const char* message ) {
@@ -305,7 +307,9 @@ static void SCRH2_Info_Plaque_Draw( const char* message ) {
 }
 
 static void I_Print( int cx, int cy, char* str ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy + ( ( viddef.height - 200 ) >> 1 ), str, 256 );
+	R_SyncRenderThread();
 }
 
 static void SBH2_IntermissionOverlay() {

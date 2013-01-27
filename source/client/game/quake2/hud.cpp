@@ -86,7 +86,9 @@ static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwid
 		} else   {
 			x = margin;
 		}
+		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, line, _xor );
+		R_SyncRenderThread();
 		if ( *string ) {
 			string++;	// skip the \n
 			x = margin;
@@ -180,11 +182,21 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			token = String::Parse2( &s );
 			time = String::Atoi( token );
 
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y, ci->name, 0x80 );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 8,  "Score: " );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32 + 7 * 8, y + 8,  va( "%i", score ), 0x80 );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 16, va( "Ping:  %i", ping ) );
+			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 32, y + 24, va( "Time:  %i", time ) );
+			R_SyncRenderThread();
 
 			if ( !ci->icon ) {
 				ci = &cl.q2_baseclientinfo;
@@ -223,9 +235,13 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			sprintf( block, "%3d %3d %-12.12s", score, ping, ci->name );
 
 			if ( value == cl.playernum ) {
+				R_VerifyNoRenderCommands();
 				UI_DrawString( x, y, block, 0x80 );
+				R_SyncRenderThread();
 			} else   {
+				R_VerifyNoRenderCommands();
 				UI_DrawString( x, y, block );
+				R_SyncRenderThread();
 			}
 			continue;
 		}
@@ -325,7 +341,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			if ( index < 0 || index >= MAX_CONFIGSTRINGS_Q2 ) {
 				common->Error( "Bad stat_string index" );
 			}
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, cl.q2_configstrings[ index ] );
+			R_SyncRenderThread();
 			continue;
 		}
 
@@ -337,7 +355,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 		if ( !String::Cmp( token, "string" ) ) {
 			token = String::Parse2( &s );
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, token );
+			R_SyncRenderThread();
 			continue;
 		}
 
@@ -349,7 +369,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 		if ( !String::Cmp( token, "string2" ) ) {
 			token = String::Parse2( &s );
+			R_VerifyNoRenderCommands();
 			UI_DrawString( x, y, token, 0x80 );
+			R_SyncRenderThread();
 			continue;
 		}
 
@@ -422,8 +444,12 @@ static void CLQ2_DrawInventory() {
 
 	y += 24;
 	x += 24;
+	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, "hotkey ### item" );
+	R_SyncRenderThread();
+	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y + 8, "------ --- ----" );
+	R_SyncRenderThread();
 	y += 16;
 	for ( int i = top; i < num && i < top + DISPLAY_ITEMS; i++ ) {
 		int item = index[ i ];
@@ -442,7 +468,9 @@ static void CLQ2_DrawInventory() {
 			UI_DrawChar( x - 8, y, 15 );
 			R_SyncRenderThread();
 		}
+		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, string );
+		R_SyncRenderThread();
 		y += 8;
 	}
 }

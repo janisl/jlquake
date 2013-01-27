@@ -288,7 +288,9 @@ static void SCR_DrawCenterString() {
 		}
 		buf[ l ] = 0;
 		int x = ( viddef.width - l * 8 ) / 2;
+		R_VerifyNoRenderCommands();
 		UI_DrawString( x, y, buf );
+		R_SyncRenderThread();
 		if ( !remaining ) {
 			return;
 		}
@@ -416,6 +418,7 @@ void SCR_DrawNet() {
 }
 
 void SCR_DrawFPS() {
+	R_VerifyNoRenderCommands();
 	static int lastframetime;
 	static int lastframecount;
 	static int lastfps;
@@ -436,6 +439,7 @@ void SCR_DrawFPS() {
 	int x = viddef.width - String::Length( st ) * 8 - 8;
 	int y = viddef.height - sbqh_lines - 8;
 	UI_DrawString( x, y, st );
+	R_SyncRenderThread();
 }
 
 //	Clear any parts of the tiled background that were drawn on last frame

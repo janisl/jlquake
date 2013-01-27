@@ -88,11 +88,15 @@ static void MQH_DrawCharacter( int cx, int line, int num ) {
 }
 
 void MQH_Print( int cx, int cy, const char* str ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy, str, GGameType & GAME_Hexen2 ? 256 : 128 );
+	R_SyncRenderThread();
 }
 
 void MQH_PrintWhite( int cx, int cy, const char* str ) {
+	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy, str );
+	R_SyncRenderThread();
 }
 
 void MQH_DrawTextBox( int x, int y, int width, int lines ) {
