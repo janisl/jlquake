@@ -284,7 +284,6 @@ static void SbarH2_DrawSmallString( int x, int y, const char* str ) {
 }
 
 static void DrawBarArtifactNumber( int x, int y, int number ) {
-	R_VerifyNoRenderCommands();
 	static char artiNumName[ 18 ] = "gfx/artinum0.lmp";
 
 	if ( number >= 10 ) {
@@ -293,24 +292,20 @@ static void DrawBarArtifactNumber( int x, int y, int number ) {
 	}
 	artiNumName[ 11 ] = '0' + number % 10;
 	SbarH2_DrawPic( x + 4, y, R_CachePic( artiNumName ) );
-	R_SyncRenderThread();
 }
 
 static void DrawBarArtifactIcon( int x, int y, int artifact ) {
-	R_VerifyNoRenderCommands();
 	if ( ( artifact < 0 ) || ( artifact > 14 ) ) {
 		return;
 	}
 	SbarH2_DrawPic( x, y, R_CachePic( va( "gfx/arti%02d.lmp", artifact ) ) );
 	int count = ( int )( &cl.h2_v.cnt_torch )[ artifact ];
-	R_SyncRenderThread();
 	if ( count > 0 ) {
 		DrawBarArtifactNumber( x + 20, y + 21, count );
 	}
 }
 
 static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
-	R_VerifyNoRenderCommands();
 	char str[ 12 ];
 	int l = SbarQH_itoa( number, str );
 	char* ptr = str;
@@ -332,7 +327,6 @@ static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
 		x += 13;
 		ptr++;
 	}
-	R_SyncRenderThread();
 }
 
 static void UpdateHeight() {
@@ -369,7 +363,6 @@ static void UpdateHeight() {
 }
 
 static void DrawFullScreenInfo() {
-	R_VerifyNoRenderCommands();
 	int y = BarHeight - 37;
 	SbarH2_DrawPic( 3, y, R_CachePic( "gfx/bmmana.lmp" ) );
 	SbarH2_DrawPic( 3, y + 18, R_CachePic( "gfx/gmmana.lmp" ) );
@@ -397,7 +390,6 @@ static void DrawFullScreenInfo() {
 	}
 	sprintf( tempStr, "%03d", mana );
 	SbarH2_DrawSmallString( 10, y + 18 + 6, tempStr );
-	R_SyncRenderThread();
 
 	// HP
 	SbarH2_DrawNum( 38, y + 18, cl.h2_v.health, 3 );
@@ -467,7 +459,6 @@ static int CalcAC() {
 }
 
 static void DrawTopBar() {
-	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 0, 0, R_CachePic( "gfx/topbar1.lmp" ) );
 	SbarH2_DrawPic( 160, 0, R_CachePic( "gfx/topbar2.lmp" ) );
 	SbarH2_DrawPic( 0, -23, R_CachePic( "gfx/topbumpl.lmp" ) );
@@ -507,7 +498,6 @@ static void DrawTopBar() {
 		SbarH2_DrawSubPic( 232, 26 - y, y + 1, R_CachePic( "gfx/gmana.lmp" ) );
 		SbarH2_DrawPic( 232, 27, R_CachePic( "gfx/gmanacov.lmp" ) );
 	}
-	R_SyncRenderThread();
 
 	// HP
 	if ( cl.h2_v.health < -99 ) {
@@ -516,14 +506,12 @@ static void DrawTopBar() {
 		SbarH2_DrawNum( 58, 14, cl.h2_v.health, 3 );
 	}
 	SetChainPosition( cl.h2_v.health, cl.h2_v.max_health );
-	R_VerifyNoRenderCommands();
 	SbarH2_DrawPic( 45 + ( ( int )sbh2_ChainPosition & 7 ), 38,
 		R_CachePic( "gfx/hpchain.lmp" ) );
 	SbarH2_DrawPic( 45 + ( int )sbh2_ChainPosition, 36,
 		R_CachePic( "gfx/hpgem.lmp" ) );
 	SbarH2_DrawPic( 43, 36, R_CachePic( "gfx/chnlcov.lmp" ) );
 	SbarH2_DrawPic( 267, 36, R_CachePic( "gfx/chnrcov.lmp" ) );
-	R_SyncRenderThread();
 
 	// AC
 	SbarH2_DrawNum( 105, 14, CalcAC(), 2 );
@@ -535,7 +523,6 @@ static void DrawTopBar() {
 }
 
 static void DrawLowerBar() {
-	R_VerifyNoRenderCommands();
 	int playerClass = GGameType & GAME_HexenWorld ? cl.h2_players[ cl.playernum ].playerclass : clh2_playerclass->value;
 	if ( playerClass < 1 || playerClass > MAX_PLAYER_CLASS ) {
 		// Default to paladin
@@ -666,7 +653,6 @@ static void DrawLowerBar() {
 			R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 		piece++;
 	}
-	R_SyncRenderThread();
 }
 
 static void DrawArtifactInventory() {
@@ -697,16 +683,13 @@ static void DrawArtifactInventory() {
 			break;
 		}
 		if ( cl.h2_inv_startpos + i == cl.h2_inv_selected ) {	// Highlight icon
-			R_VerifyNoRenderCommands();
 			SbarH2_DrawPic( x + 9, y - 12, R_CachePic( "gfx/artisel.lmp" ) );
-			R_SyncRenderThread();
 		}
 		DrawBarArtifactIcon( x, y, cl.h2_inv_order[ cl.h2_inv_startpos + i ] );
 	}
 }
 
 static void DrawActiveRings() {
-	R_VerifyNoRenderCommands();
 	ring_row = 1;
 
 	int flag = ( int )cl.h2_v.rings_active;
@@ -734,11 +717,9 @@ static void DrawActiveRings() {
 		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
 		ring_row += 33;
 	}
-	R_SyncRenderThread();
 }
 
 static void DrawActiveArtifacts() {
-	R_VerifyNoRenderCommands();
 	int flag;
 	static int oldflags = 0;
 	int frame;
@@ -773,7 +754,6 @@ static void DrawActiveArtifacts() {
 	}
 
 	oldflags = flag;
-	R_SyncRenderThread();
 }
 
 static void DrawNormalBar() {
@@ -1128,7 +1108,6 @@ void SbarH2_DeathmatchOverlay() {
 }
 
 static void DrawTime( int x, int y, int disp_time ) {
-	R_VerifyNoRenderCommands();
 	int show_min = disp_time;
 	int show_sec = show_min % 60;
 	show_min = ( show_min - show_sec ) / 60;
@@ -1142,7 +1121,6 @@ static void DrawTime( int x, int y, int disp_time ) {
 		UI_DrawString( x + 40, y, num );
 		UI_DrawString( x + 40, y, S_COLOR_RED "0" );
 	}
-	R_SyncRenderThread();
 }
 
 static void SbarH2_SmallDeathmatchOverlay() {
@@ -1175,7 +1153,6 @@ static void SbarH2_SmallDeathmatchOverlay() {
 	}
 
 	if ( GGameType & GAME_HexenWorld && clhw_siege ) {
-		R_VerifyNoRenderCommands();
 		int i = ( viddef.height - 120 ) / 10;
 		if ( l > i ) {
 			l = i;
@@ -1184,17 +1161,13 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		x -= 4;
 		UI_DrawChar( x, y, 142 );	//sundial
 		UI_DrawChar( x + 32, y, 58 );	// ":"
-		R_SyncRenderThread();
 		if ( clhw_timelimit > cl.qh_serverTimeFloat + clhw_server_time_offset ) {
 			DrawTime( x,y,( int )( clhw_timelimit - ( cl.qh_serverTimeFloat + clhw_server_time_offset ) ) );
 		} else if ( ( int )cl.qh_serverTimeFloat % 2 )       {	//odd number, draw 00:00, this will make it flash every second
-			R_VerifyNoRenderCommands();
 			UI_DrawString( x + 16, y, S_COLOR_RED "00" );
 			UI_DrawString( x + 40, y, S_COLOR_RED "00" );
-			R_SyncRenderThread();
 		}
 	}
-	R_VerifyNoRenderCommands();
 
 	int def_frags = 0;
 	int att_frags = 0;
@@ -1266,11 +1239,9 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		sprintf( num, S_COLOR_RED "%3i",clhw_fraglimit * 2 );
 		UI_DrawString( x + 40, y + 20, num );
 	}
-	R_SyncRenderThread();
 }
 
 static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
-	R_VerifyNoRenderCommands();
 	if ( !Name ) {
 		return;
 	}
@@ -1305,7 +1276,6 @@ static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
 	} else   {
 		UI_DrawString( u, v, Name );
 	}
-	R_SyncRenderThread();
 }
 
 static void SB_PlacePlayerNames() {
@@ -1342,6 +1312,7 @@ static void SB_PlacePlayerNames() {
 }
 
 void SbarH2_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( h2intro_playing ) {
 		return;
 	}
@@ -1352,6 +1323,7 @@ void SbarH2_Draw() {
 
 	if ( cls.state != CA_ACTIVE || ( !( GGameType & GAME_HexenWorld ) && clc.qh_signon != SIGNONS ) || con.displayFrac == 1 ) {
 		// console is full screen
+		R_SyncRenderThread();
 		return;
 	}
 
@@ -1359,6 +1331,7 @@ void SbarH2_Draw() {
 		DrawNormalBar();
 	}
 
+	R_SyncRenderThread();
 	if ( sbh2_ShowDM ) {
 		if ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) {
 			SbarH2_DeathmatchOverlay();
@@ -1366,7 +1339,9 @@ void SbarH2_Draw() {
 			SbarH2_NormalOverlay();
 		}
 	} else if ( ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) && DMMode->value )       {
+		R_VerifyNoRenderCommands();
 		SbarH2_SmallDeathmatchOverlay();
+		R_SyncRenderThread();
 	}
 }
 
