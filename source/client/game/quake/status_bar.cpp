@@ -427,11 +427,11 @@ static int SbarQ1_ColorForMap( int m ) {
 }
 
 static void SbarQ1_DrawInventory() {
+	R_VerifyNoRenderCommands();
 	bool headsup = GGameType & GAME_QuakeWorld && !( clqh_sbar->value || scr_viewsize->value < 100 );
 	bool hudswap = GGameType & GAME_QuakeWorld && !!clqw_hudswap->value;// Get that nasty float out :)
 
 	if ( !headsup ) {
-		R_VerifyNoRenderCommands();
 		if ( q1_rogue ) {
 			if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] >= Q1RIT_LAVA_NAILGUN ) {
 				SbarQ1_DrawPic( 0, -24, rsbq1_invbar[ 0 ] );
@@ -441,7 +441,6 @@ static void SbarQ1_DrawInventory() {
 		} else {
 			SbarQ1_DrawPic( 0, -24, sbq1_ibar );
 		}
-		R_SyncRenderThread();
 	}
 
 	// weapons
@@ -464,14 +463,10 @@ static void SbarQ1_DrawInventory() {
 
 			if ( headsup ) {
 				if ( i || viddef.height > 200 ) {
-					R_VerifyNoRenderCommands();
 					SbarQ1_DrawSubPic( ( hudswap ) ? 0 : ( viddef.width - 24 ),-68 - ( 7 - i ) * 16, sbq1_weapons[ flashon ][ i ],0,0,24,16 );
-					R_SyncRenderThread();
 				}
 			} else   {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( i * 24, -16, sbq1_weapons[ flashon ][ i ] );
-				R_SyncRenderThread();
 			}
 		}
 	}
@@ -482,7 +477,6 @@ static void SbarQ1_DrawInventory() {
 		int grenadeflashing = 0;
 		for ( int i = 0; i < 4; i++ ) {
 			if ( cl.q1_items & ( 1 << hipweapons[ i ] ) ) {
-				R_VerifyNoRenderCommands();
 				float time = cl.q1_item_gettime[ hipweapons[ i ] ];
 				int flashon = ( int )( ( cl.qh_serverTimeFloat - time ) * 10 );
 				if ( flashon >= 10 ) {
@@ -516,7 +510,6 @@ static void SbarQ1_DrawInventory() {
 				} else   {
 					SbarQ1_DrawPic( 176 + ( i * 24 ), -16, hsbq1_weapons[ flashon ][ i ] );
 				}
-				R_SyncRenderThread();
 			}
 		}
 	}
@@ -526,9 +519,7 @@ static void SbarQ1_DrawInventory() {
 		if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] >= Q1RIT_LAVA_NAILGUN ) {
 			for ( int i = 0; i < 5; i++ ) {
 				if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] == ( Q1RIT_LAVA_NAILGUN << i ) ) {
-					R_VerifyNoRenderCommands();
 					SbarQ1_DrawPic( ( i + 2 ) * 24, -16, rsbq1_weapons[ i ] );
-					R_SyncRenderThread();
 				}
 			}
 		}
@@ -539,39 +530,25 @@ static void SbarQ1_DrawInventory() {
 		char num[ 6 ];
 		sprintf( num, "%3i",cl.qh_stats[ Q1STAT_SHELLS + i ] );
 		if ( headsup ) {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawSubPic( ( hudswap ) ? 0 : ( viddef.width - 42 ), -24 - ( 4 - i ) * 11, sbq1_ibar, 3 + ( i * 48 ), 0, 42, 11 );
-			R_SyncRenderThread();
 			if ( num[ 0 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( hudswap ) ? 3 : ( viddef.width - 39 ), -24 - ( 4 - i ) * 11, 18 + num[ 0 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 1 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( hudswap ) ? 11 : ( viddef.width - 31 ), -24 - ( 4 - i ) * 11, 18 + num[ 1 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 2 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( hudswap ) ? 19 : ( viddef.width - 23 ), -24 - ( 4 - i ) * 11, 18 + num[ 2 ] - '0' );
-				R_SyncRenderThread();
 			}
 		} else   {
 			if ( num[ 0 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( 6 * i + 1 ) * 8 - 2, -24, 18 + num[ 0 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 1 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( 6 * i + 2 ) * 8 - 2, -24, 18 + num[ 1 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 2 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( ( 6 * i + 3 ) * 8 - 2, -24, 18 + num[ 2 ] - '0' );
-				R_SyncRenderThread();
 			}
 		}
 	}
@@ -581,9 +558,7 @@ static void SbarQ1_DrawInventory() {
 		if ( ( GGameType & GAME_QuakeWorld ? cl.qh_stats[ QWSTAT_ITEMS ] : cl.q1_items ) & ( 1 << ( 17 + i ) ) ) {
 			//MED 01/04/97 changed keys
 			if ( !q1_hipnotic || ( i > 1 ) ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 192 + i * 16, -16, sbq1_items[ i ] );
-				R_SyncRenderThread();
 			}
 		}
 	}
@@ -593,9 +568,7 @@ static void SbarQ1_DrawInventory() {
 	if ( q1_hipnotic ) {
 		for ( int i = 0; i < 2; i++ ) {
 			if ( cl.q1_items & ( 1 << ( 24 + i ) ) ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 288 + i * 16, -16, hsbq1_items[ i ] );
-				R_SyncRenderThread();
 			}
 		}
 	}
@@ -604,38 +577,30 @@ static void SbarQ1_DrawInventory() {
 		// new rogue items
 		for ( int i = 0; i < 2; i++ ) {
 			if ( cl.q1_items & ( 1 << ( 29 + i ) ) ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 288 + i * 16, -16, rsbq1_items[ i ] );
-				R_SyncRenderThread();
 			}
 		}
 	} else   {
 		// sigils
 		for ( int i = 0; i < 4; i++ ) {
 			if ( ( GGameType & GAME_QuakeWorld ? cl.qh_stats[ QWSTAT_ITEMS ] : cl.q1_items ) & ( 1 << ( 28 + i ) ) ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 320 - 32 + i * 8, -16, sbq1_sigil[ i ] );
-				R_SyncRenderThread();
 			}
 		}
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarQ1_SoloScoreboard() {
 	R_VerifyNoRenderCommands();
 	SbarQ1_DrawPic( 0, 0, sbq1_scorebar );
-	R_SyncRenderThread();
 	char str[ 80 ];
 	if ( !( GGameType & GAME_QuakeWorld ) ) {
 		sprintf( str, "Monsters:%3i /%3i", cl.qh_stats[ Q1STAT_MONSTERS ], cl.qh_stats[ Q1STAT_TOTALMONSTERS ] );
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawString( 8, 4, str );
-		R_SyncRenderThread();
 
 		sprintf( str, "Secrets :%3i /%3i", cl.qh_stats[ Q1STAT_SECRETS ], cl.qh_stats[ Q1STAT_TOTALSECRETS ] );
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawString( 8, 12, str );
-		R_SyncRenderThread();
 	}
 
 	// time
@@ -644,20 +609,18 @@ static void SbarQ1_SoloScoreboard() {
 	int tens = seconds / 10;
 	int units = seconds - 10 * tens;
 	sprintf( str, "Time :%3i:%i%i", minutes, tens, units );
-	R_VerifyNoRenderCommands();
 	SbarQ1_DrawString( 184, 4, str );
-	R_SyncRenderThread();
 
 	if ( !( GGameType & GAME_QuakeWorld ) ) {
 		// draw level name
 		int l = String::Length( cl.qh_levelname );
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawString( 232 - l * 4, 12, cl.qh_levelname );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawFrags() {
+	R_VerifyNoRenderCommands();
 	SbarQ1_SortFrags( false );
 
 	// draw the text
@@ -681,7 +644,6 @@ static void SbarQ1_DrawFrags() {
 		if ( GGameType & GAME_QuakeWorld && s->spectator ) {
 			continue;
 		}
-		R_VerifyNoRenderCommands();
 
 		// draw background
 		int top = SbarQ1_ColorForMap( s->topcolor );
@@ -689,35 +651,26 @@ static void SbarQ1_DrawFrags() {
 
 		UI_FillPal( xofs + x * 8 + 10, y, 28, 4, top );
 		UI_FillPal( xofs + x * 8 + 10, y + 4, 28, 3, bottom );
-		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
 		sprintf( num, "%3i", s->frags );
 
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawCharacter( ( x + 1 ) * 8, -24, num[ 0 ] );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawCharacter( ( x + 2 ) * 8, -24, num[ 1 ] );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawCharacter( ( x + 3 ) * 8, -24, num[ 2 ] );
-		R_SyncRenderThread();
 
 		if ( k == cl.viewentity - 1 ) {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawCharacter( x * 8 + 2, -24, 16 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawCharacter( ( x + 4 ) * 8 - 4, -24, 17 );
-			R_SyncRenderThread();
 		}
 		x += 4;
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawFace() {
+	R_VerifyNoRenderCommands();
 	// PGM 01/19/97 - team color drawing
 	// PGM 03/02/97 - fixed so color swatch only appears in CTF modes
 	if ( q1_rogue &&
@@ -736,13 +689,9 @@ static void SbarQ1_DrawFace() {
 			xofs = ( ( viddef.width - 320 ) >> 1 ) + 113;
 		}
 
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 112, 0, rsbq1_teambord );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 3, 22, 9, top );
 		UI_FillPal( xofs, viddef.height - Q1SBAR_HEIGHT + 12, 22, 9, bottom );
-		R_SyncRenderThread();
 
 		// draw number
 		char num[ 12 ];
@@ -750,31 +699,20 @@ static void SbarQ1_DrawFace() {
 
 		if ( top == 8 ) {
 			if ( num[ 0 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( 109, 3, 18 + num[ 0 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 1 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( 116, 3, 18 + num[ 1 ] - '0' );
-				R_SyncRenderThread();
 			}
 			if ( num[ 2 ] != ' ' ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawCharacter( 123, 3, 18 + num[ 2 ] - '0' );
-				R_SyncRenderThread();
 			}
-		} else   {
-			R_VerifyNoRenderCommands();
+		} else {
 			SbarQ1_DrawCharacter( 109, 3, num[ 0 ] );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawCharacter( 116, 3, num[ 1 ] );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawCharacter( 123, 3, num[ 2 ] );
-			R_SyncRenderThread();
 		}
+		R_SyncRenderThread();
 
 		return;
 	}
@@ -782,25 +720,21 @@ static void SbarQ1_DrawFace() {
 	int items = GGameType & GAME_QuakeWorld ? cl.qh_stats[ QWSTAT_ITEMS ] : cl.q1_items;
 	if ( ( items & ( Q1IT_INVISIBILITY | Q1IT_INVULNERABILITY ) )
 		 == ( Q1IT_INVISIBILITY | Q1IT_INVULNERABILITY ) ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invis_invuln );
 		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_QUAD ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 112, 0, sbq1_face_quad );
 		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_INVISIBILITY ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invis );
 		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_INVULNERABILITY ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invuln );
 		R_SyncRenderThread();
 		return;
@@ -819,16 +753,14 @@ static void SbarQ1_DrawFace() {
 	} else   {
 		anim = 0;
 	}
-	R_VerifyNoRenderCommands();
 	SbarQ1_DrawPic( 112, 0, sbq1_faces[ f ][ anim ] );
 	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawNormal() {
+	R_VerifyNoRenderCommands();
 	if ( !( GGameType & GAME_QuakeWorld ) || clqh_sbar->value || scr_viewsize->value < 100 ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 0, 0, sbq1_sbar );
-		R_SyncRenderThread();
 	}
 
 	int items = GGameType & GAME_QuakeWorld ? cl.qh_stats[ QWSTAT_ITEMS ] : cl.q1_items;
@@ -837,31 +769,21 @@ static void SbarQ1_DrawNormal() {
 	//MED 01/04/97 moved keys here so they would not be overwritten
 	if ( q1_hipnotic ) {
 		if ( items & Q1IT_KEY1 ) {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawPic( 209, 3, sbq1_items[ 0 ] );
-			R_SyncRenderThread();
 		}
 		if ( items & Q1IT_KEY2 ) {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawPic( 209, 12, sbq1_items[ 1 ] );
-			R_SyncRenderThread();
 		}
 	}
 
 	// armor
 	if ( items & Q1IT_INVULNERABILITY ) {
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawNum( 24, 0, 666, 3, 1 );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		SbarQ1_DrawPic( 0, 0, sbq1_disc );
 	} else   {
 		if ( q1_rogue ) {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawNum( 24, 0, cl.qh_stats[ Q1STAT_ARMOR ], 3,
 				cl.qh_stats[ Q1STAT_ARMOR ] <= 25 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			if ( items & Q1RIT_ARMOR3 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 2 ] );
 			} else if ( items & Q1RIT_ARMOR2 )     {
@@ -870,11 +792,8 @@ static void SbarQ1_DrawNormal() {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 0 ] );
 			}
 		} else   {
-			R_VerifyNoRenderCommands();
 			SbarQ1_DrawNum( 24, 0, cl.qh_stats[ Q1STAT_ARMOR ], 3,
 				cl.qh_stats[ Q1STAT_ARMOR ] <= 25 );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			if ( items & Q1IT_ARMOR3 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 2 ] );
 			} else if ( items & Q1IT_ARMOR2 )     {
@@ -893,9 +812,7 @@ static void SbarQ1_DrawNormal() {
 	R_VerifyNoRenderCommands();
 	SbarQ1_DrawNum( 136, 0, cl.qh_stats[ Q1STAT_HEALTH ], 3,
 		cl.qh_stats[ Q1STAT_HEALTH ] <= 25 );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	// ammo icon
 	if ( q1_rogue ) {
 		if ( items & Q1RIT_SHELLS ) {
@@ -924,9 +841,7 @@ static void SbarQ1_DrawNormal() {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 3 ] );
 		}
 	}
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	SbarQ1_DrawNum( 248, 0, cl.qh_stats[ Q1STAT_AMMO ], 3,
 		cl.qh_stats[ Q1STAT_AMMO ] <= 10 );
 	R_SyncRenderThread();
@@ -1347,11 +1262,7 @@ void SbarQ1_Draw() {
 			if ( autocam != CAM_TRACK ) {
 				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 0, 0, sbq1_scorebar );
-				R_SyncRenderThread();
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawString( 160 - 7 * 8,4, "SPECTATOR MODE" );
-				R_SyncRenderThread();
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawString( 160 - 14 * 8 + 4, 12, "Press [ATTACK] for AutoCamera" );
 				R_SyncRenderThread();
 			} else   {
@@ -1360,11 +1271,11 @@ void SbarQ1_Draw() {
 				} else   {
 					SbarQ1_DrawNormal();
 				}
+				R_VerifyNoRenderCommands();
 
 				char st[ 512 ];
 				sprintf( st, "Tracking %-.13s, [JUMP] for next",
 					cl.q1_players[ spec_track ].name );
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawString( 0, -8, st );
 				R_SyncRenderThread();
 			}
