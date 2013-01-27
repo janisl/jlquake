@@ -96,10 +96,10 @@ static void M_Field_Draw( menufield_s* f ) {
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y - 4, 19 );
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25 );
 	}
-	R_SyncRenderThread();
 
 	Field_Draw( &f->field, f->generic.x + f->generic.parent->x + 24,
 		f->generic.y + f->generic.parent->y, Menu_ItemAtCursor( f->generic.parent ) == f );
+	R_SyncRenderThread();
 }
 
 bool MQ2_Field_Key( menufield_s* f, int key ) {

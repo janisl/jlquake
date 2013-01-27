@@ -152,7 +152,9 @@ void MQH_DrawTextBox2( int x, int y, int width, int lines ) {
 
 static void MQH_DrawField( int x, int y, field_t* edit, bool showCursor ) {
 	MQH_DrawTextBox( x - 8, y - 8, edit->widthInChars, 1 );
+	R_VerifyNoRenderCommands();
 	Field_Draw( edit, x + ( ( viddef.width - 320 ) >> 1 ), y, showCursor );
+	R_SyncRenderThread();
 }
 
 static void MH2_ReadBigCharWidth() {

@@ -523,20 +523,18 @@ static void Con_DrawInput( int lines ) {
 			}
 		}
 	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 
 	if ( GGameType & GAME_Tech3 ) {
 		R_SetColor( con.color );
 		SCR_DrawSmallChar( con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']' );
 	} else   {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( 8, y, "]" );
-		R_SyncRenderThread();
 	}
 
 	Field_Draw( &g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 }
 
 static void Con_DrawSolidConsole( float frac ) {
@@ -656,8 +654,8 @@ static void Con_DrawChat( int y ) {
 	} else   {
 		R_VerifyNoRenderCommands();
 		UI_DrawString( 8, y, buf );
-		R_SyncRenderThread();
 		Field_Draw( &chatField, skip << 3, y, true );
+		R_SyncRenderThread();
 	}
 }
 
