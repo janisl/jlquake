@@ -427,7 +427,6 @@ static int SbarQ1_ColorForMap( int m ) {
 }
 
 static void SbarQ1_DrawInventory() {
-	R_VerifyNoRenderCommands();
 	bool headsup = GGameType & GAME_QuakeWorld && !( clqh_sbar->value || scr_viewsize->value < 100 );
 	bool hudswap = GGameType & GAME_QuakeWorld && !!clqw_hudswap->value;// Get that nasty float out :)
 
@@ -588,11 +587,9 @@ static void SbarQ1_DrawInventory() {
 			}
 		}
 	}
-	R_SyncRenderThread();
 }
 
 static void SbarQ1_SoloScoreboard() {
-	R_VerifyNoRenderCommands();
 	SbarQ1_DrawPic( 0, 0, sbq1_scorebar );
 	char str[ 80 ];
 	if ( !( GGameType & GAME_QuakeWorld ) ) {
@@ -616,11 +613,9 @@ static void SbarQ1_SoloScoreboard() {
 		int l = String::Length( cl.qh_levelname );
 		SbarQ1_DrawString( 232 - l * 4, 12, cl.qh_levelname );
 	}
-	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawFrags() {
-	R_VerifyNoRenderCommands();
 	SbarQ1_SortFrags( false );
 
 	// draw the text
@@ -666,11 +661,9 @@ static void SbarQ1_DrawFrags() {
 		}
 		x += 4;
 	}
-	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawFace() {
-	R_VerifyNoRenderCommands();
 	// PGM 01/19/97 - team color drawing
 	// PGM 03/02/97 - fixed so color swatch only appears in CTF modes
 	if ( q1_rogue &&
@@ -712,7 +705,6 @@ static void SbarQ1_DrawFace() {
 			SbarQ1_DrawCharacter( 116, 3, num[ 1 ] );
 			SbarQ1_DrawCharacter( 123, 3, num[ 2 ] );
 		}
-		R_SyncRenderThread();
 
 		return;
 	}
@@ -721,22 +713,18 @@ static void SbarQ1_DrawFace() {
 	if ( ( items & ( Q1IT_INVISIBILITY | Q1IT_INVULNERABILITY ) )
 		 == ( Q1IT_INVISIBILITY | Q1IT_INVULNERABILITY ) ) {
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invis_invuln );
-		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_QUAD ) {
 		SbarQ1_DrawPic( 112, 0, sbq1_face_quad );
-		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_INVISIBILITY ) {
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invis );
-		R_SyncRenderThread();
 		return;
 	}
 	if ( items & Q1IT_INVULNERABILITY ) {
 		SbarQ1_DrawPic( 112, 0, sbq1_face_invuln );
-		R_SyncRenderThread();
 		return;
 	}
 
@@ -754,11 +742,9 @@ static void SbarQ1_DrawFace() {
 		anim = 0;
 	}
 	SbarQ1_DrawPic( 112, 0, sbq1_faces[ f ][ anim ] );
-	R_SyncRenderThread();
 }
 
 static void SbarQ1_DrawNormal() {
-	R_VerifyNoRenderCommands();
 	if ( !( GGameType & GAME_QuakeWorld ) || clqh_sbar->value || scr_viewsize->value < 100 ) {
 		SbarQ1_DrawPic( 0, 0, sbq1_sbar );
 	}
@@ -803,13 +789,11 @@ static void SbarQ1_DrawNormal() {
 			}
 		}
 	}
-	R_SyncRenderThread();
 
 	// face
 	SbarQ1_DrawFace();
 
 	// health
-	R_VerifyNoRenderCommands();
 	SbarQ1_DrawNum( 136, 0, cl.qh_stats[ Q1STAT_HEALTH ], 3,
 		cl.qh_stats[ Q1STAT_HEALTH ] <= 25 );
 
@@ -844,11 +828,9 @@ static void SbarQ1_DrawNormal() {
 
 	SbarQ1_DrawNum( 248, 0, cl.qh_stats[ Q1STAT_AMMO ], 3,
 		cl.qh_stats[ Q1STAT_AMMO ] <= 10 );
-	R_SyncRenderThread();
 }
 
 static void SbarQ1_DeathmatchOverlay( int start ) {
-	R_VerifyNoRenderCommands();
 	// request new ping times every two second
 	if ( cls.realtime - cl.qh_last_ping_request * 1000 > 2000 ) {
 		cl.qh_last_ping_request = cls.realtime * 0.001;
@@ -1011,7 +993,6 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	if ( y >= ( int )viddef.height - 10 ) {	// we ran over the screen size, squish
 		sbq1_largegame = true;
 	}
-	R_SyncRenderThread();
 }
 
 //	team frags
@@ -1023,7 +1004,6 @@ static void SbarQW_TeamOverlay() {
 		SbarQ1_DeathmatchOverlay( 0 );
 		return;
 	}
-	R_VerifyNoRenderCommands();
 
 	image_t* pic = R_CachePic( "gfx/ranking.lmp" );
 	UI_DrawPic( 160 - R_GetImageWidth( pic ) / 2, 8, pic );
@@ -1089,7 +1069,6 @@ static void SbarQW_TeamOverlay() {
 		y += 8;
 	}
 	y += 8;
-	R_SyncRenderThread();
 	SbarQ1_DeathmatchOverlay( y );
 }
 
@@ -1097,7 +1076,6 @@ static void SbarQW_TeamOverlay() {
 //	frags team name
 //	displayed to right of status bar if there's room
 static void SbarQ1_MiniDeathmatchOverlay() {
-	R_VerifyNoRenderCommands();
 	int i, k;
 	int top, bottom;
 	int x, y, f;
@@ -1234,7 +1212,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 		y += 8;
 	}
-	R_SyncRenderThread();
 }
 
 void SbarQ1_Draw() {
@@ -1257,31 +1234,27 @@ void SbarQ1_Draw() {
 	// main area
 	if ( !( GGameType & GAME_QuakeWorld ) && ( sbq1_showscores || cl.qh_stats[ Q1STAT_HEALTH ] <= 0 ) ) {
 		SbarQ1_SoloScoreboard();
-	} else if ( sbqh_lines > 0 )     {
+	} else if ( sbqh_lines > 0 ) {
 		if ( GGameType & GAME_QuakeWorld && cl.qh_spectator ) {
 			if ( autocam != CAM_TRACK ) {
-				R_VerifyNoRenderCommands();
 				SbarQ1_DrawPic( 0, 0, sbq1_scorebar );
 				SbarQ1_DrawString( 160 - 7 * 8,4, "SPECTATOR MODE" );
 				SbarQ1_DrawString( 160 - 14 * 8 + 4, 12, "Press [ATTACK] for AutoCamera" );
-				R_SyncRenderThread();
-			} else   {
+			} else {
 				if ( sbq1_showscores || cl.qh_stats[ Q1STAT_HEALTH ] <= 0 ) {
 					SbarQ1_SoloScoreboard();
-				} else   {
+				} else {
 					SbarQ1_DrawNormal();
 				}
-				R_VerifyNoRenderCommands();
 
 				char st[ 512 ];
 				sprintf( st, "Tracking %-.13s, [JUMP] for next",
 					cl.q1_players[ spec_track ].name );
 				SbarQ1_DrawString( 0, -8, st );
-				R_SyncRenderThread();
 			}
-		} else if ( sbq1_showscores || cl.qh_stats[ Q1STAT_HEALTH ] <= 0 )       {
+		} else if ( sbq1_showscores || cl.qh_stats[ Q1STAT_HEALTH ] <= 0 ) {
 			SbarQ1_SoloScoreboard();
-		} else   {
+		} else {
 			SbarQ1_DrawNormal();
 		}
 	}
@@ -1292,14 +1265,14 @@ void SbarQ1_Draw() {
 		if ( GGameType & GAME_QuakeWorld && String::Atoi( Info_ValueForKey( cl.qh_serverinfo, "teamplay" ) ) > 0 &&
 			 !sbq1_showscores ) {
 			SbarQW_TeamOverlay();
-		} else if ( GGameType & GAME_QuakeWorld || cl.qh_gametype == QHGAME_DEATHMATCH )     {
+		} else if ( GGameType & GAME_QuakeWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) {
 			SbarQ1_DeathmatchOverlay( 0 );
 		}
-	} else if ( sbq1_showscores )     {
+	} else if ( sbq1_showscores ) {
 		if ( GGameType & GAME_QuakeWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) {
 			SbarQ1_DeathmatchOverlay( 0 );
 		}
-	} else if ( GGameType & GAME_QuakeWorld && sbq1_showteamscores )     {
+	} else if ( GGameType & GAME_QuakeWorld && sbq1_showteamscores ) {
 		SbarQW_TeamOverlay();
 	}
 
@@ -1311,7 +1284,6 @@ void SbarQ1_Draw() {
 }
 
 static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int color ) {
-	R_VerifyNoRenderCommands();
 	char str[ 12 ];
 	char* ptr;
 	int l, frame;
@@ -1336,14 +1308,13 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 		x += 24;
 		ptr++;
 	}
-	R_SyncRenderThread();
 }
 
 void SbarQ1_IntermissionOverlay() {
 	if ( GGameType & GAME_QuakeWorld ) {
 		if ( String::Atoi( Info_ValueForKey( cl.qh_serverinfo, "teamplay" ) ) > 0 && !sbq1_showscores ) {
 			SbarQW_TeamOverlay();
-		} else   {
+		} else {
 			SbarQ1_DeathmatchOverlay( 0 );
 		}
 		return;
@@ -1354,40 +1325,30 @@ void SbarQ1_IntermissionOverlay() {
 		return;
 	}
 
-	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/complete.lmp" );
 	UI_DrawPic( 64, 24, pic );
 
 	pic = R_CachePic( "gfx/inter.lmp" );
 	UI_DrawPic( 0, 56, pic );
-	R_SyncRenderThread();
 
 	// time
 	int dig = cl.qh_completed_time / 60;
 	SbarQ1_IntermissionNumber( 160, 64, dig, 3, 0 );
-	R_VerifyNoRenderCommands();
 	int num = cl.qh_completed_time - dig * 60;
 	UI_DrawPic( 234,64,sbq1_colon );
 	UI_DrawPic( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
 	UI_DrawPic( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
-	R_SyncRenderThread();
 
 	SbarQ1_IntermissionNumber( 160, 104, cl.qh_stats[ Q1STAT_SECRETS ], 3, 0 );
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( 232,104,sbq1_slash );
-	R_SyncRenderThread();
 	SbarQ1_IntermissionNumber( 240, 104, cl.qh_stats[ Q1STAT_TOTALSECRETS ], 3, 0 );
 
 	SbarQ1_IntermissionNumber( 160, 144, cl.qh_stats[ Q1STAT_MONSTERS ], 3, 0 );
-	R_VerifyNoRenderCommands();
 	UI_DrawPic( 232,144,sbq1_slash );
-	R_SyncRenderThread();
 	SbarQ1_IntermissionNumber( 240, 144, cl.qh_stats[ Q1STAT_TOTALMONSTERS ], 3, 0 );
 }
 
 void SbarQ1_FinaleOverlay() {
-	R_VerifyNoRenderCommands();
 	image_t* pic = R_CachePic( "gfx/finale.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, 16, pic );
-	R_SyncRenderThread();
 }

@@ -132,11 +132,17 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 
 	if ( scr_draw_loading ) {
 		SCRQ1_DrawLoading();
+		R_VerifyNoRenderCommands();
 		SbarQ1_Draw();
+		R_SyncRenderThread();
 	} else if ( cl.qh_intermission == 1 && in_keyCatchers == 0 )     {
+		R_VerifyNoRenderCommands();
 		SbarQ1_IntermissionOverlay();
+		R_SyncRenderThread();
 	} else if ( cl.qh_intermission == 2 && in_keyCatchers == 0 )     {
+		R_VerifyNoRenderCommands();
 		SbarQ1_FinaleOverlay();
+		R_SyncRenderThread();
 		SCR_CheckDrawCenterString();
 	} else   {
 		SCR_DrawNet();
@@ -144,7 +150,9 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCRQH_DrawTurtle();
 		SCRQ1_DrawPause();
 		SCR_CheckDrawCenterString();
+		R_VerifyNoRenderCommands();
 		SbarQ1_Draw();
+		R_SyncRenderThread();
 		Con_DrawConsole();
 		UI_DrawMenu();
 	}
