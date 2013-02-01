@@ -256,9 +256,6 @@ void Con_ConsolePrint( const char* txt ) {
 }
 
 static void Con_DrawBackground( float frac, int lines ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	if ( GGameType & GAME_QuakeHexen ) {
 		int y = ( viddef.height * 3 ) >> 2;
 		if ( lines > y ) {
@@ -340,9 +337,6 @@ static void Con_DrawBackground( float frac, int lines ) {
 		SCR_DrawSmallString( cls.glconfig.vidWidth - i * SMALLCHAR_WIDTH,
 			( lines - ( SMALLCHAR_HEIGHT + SMALLCHAR_HEIGHT / 2 ) ), version );
 	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 }
 
 void Con_DrawFullBackground() {
@@ -350,9 +344,6 @@ void Con_DrawFullBackground() {
 }
 
 static void Con_DrawText( int lines ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
 	int rows = ( lines - charHeight ) / charHeight;			// rows of text to draw
@@ -419,16 +410,12 @@ static void Con_DrawText( int lines ) {
 			}
 		}
 	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 }
 
 static void Con_DrawDownloadBar( int lines ) {
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) ) ) {
 		return;
 	}
-	R_VerifyNoRenderCommands();
 	if ( !clc.download ) {
 		return;
 	}
@@ -474,14 +461,10 @@ static void Con_DrawDownloadBar( int lines ) {
 	// draw it
 	y = lines - 12;
 	UI_DrawString( 8, y, dlbar );
-	R_SyncRenderThread();
 }
 
 //	The input line scrolls horizontally if typing goes beyond the right edge
 static void Con_DrawInput( int lines ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	if ( !( in_keyCatchers & KEYCATCH_CONSOLE ) ) {
 		if ( GGameType & GAME_Tech3 ) {
 			if ( cls.state != CA_DISCONNECTED ) {
@@ -532,9 +515,6 @@ static void Con_DrawInput( int lines ) {
 	}
 
 	Field_Draw( &g_consoleField, con.xadjust + 2 * SMALLCHAR_WIDTH, y, true );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 }
 
 static void Con_DrawSolidConsole( float frac ) {
@@ -558,13 +538,37 @@ static void Con_DrawSolidConsole( float frac ) {
 	con.xadjust = 0;
 	UI_AdjustFromVirtualScreen( &con.xadjust, NULL, NULL, NULL );
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	Con_DrawBackground( frac, lines );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	Con_DrawText( lines );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	Con_DrawDownloadBar( lines );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	Con_DrawInput( lines );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 
 	if ( GGameType & GAME_Tech3 ) {
 		R_SetColor( NULL );

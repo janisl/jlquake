@@ -4573,8 +4573,10 @@ void MQH_Draw() {
 	}
 
 	if ( con.displayFrac ) {
+		R_VerifyNoRenderCommands();
 		Con_DrawFullBackground();
 		S_ExtraUpdate();
+		R_SyncRenderThread();
 	} else   {
 		R_VerifyNoRenderCommands();
 		MQH_FadeScreen();
