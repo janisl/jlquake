@@ -497,7 +497,6 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 
 	}
 	R_BeginFrame( stereoFrame );
-	R_SyncRenderThread();
 
 	//
 	// determine size of refresh window
@@ -512,7 +511,6 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	// draw any areas not covered by the refresh
 	//
-	R_VerifyNoRenderCommands();
 	SCR_TileClear();
 
 	if ( GGameType & GAME_HexenWorld && scr_netgraph->value ) {

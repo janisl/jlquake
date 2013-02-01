@@ -105,11 +105,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 
 		// clear any dirty part of the background
 		SCR_TileClear();
-		R_SyncRenderThread();
 
 		VQ2_RenderView( separation );
 
-		R_VerifyNoRenderCommands();
 		SCRQ2_DrawHud();
 
 		if ( cl_timegraph->value ) {

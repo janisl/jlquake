@@ -104,7 +104,6 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 
 	}
 	R_BeginFrame( stereoFrame );
-	R_SyncRenderThread();
 
 	//
 	// determine size of refresh window
@@ -119,7 +118,6 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	// draw any areas not covered by the refresh
 	//
-	R_VerifyNoRenderCommands();
 	SCR_TileClear();
 
 	if ( GGameType & GAME_QuakeWorld && scr_netgraph->value ) {

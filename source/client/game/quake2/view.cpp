@@ -390,12 +390,10 @@ void VQ2_RenderView( float stereo_separation ) {
 	}
 
 	R_RenderScene( &cl.refdef );
-	R_VerifyNoRenderCommands();
 
 	R_PolyBlend( &cl.refdef, v_blend );
 
 	VQ2_DrawCrosshair();
-	R_SyncRenderThread();
 }
 
 // gun frame debugging functions
@@ -457,13 +455,11 @@ static void SCRQ2_TimeRefresh_f() {
 		// run without page flipping
 		R_VerifyNoRenderCommands();
 		R_BeginFrame( STEREO_CENTER );
-		R_SyncRenderThread();
 		for ( int i = 0; i < 128; i++ ) {
 			viewangles[ 1 ] = i / 128.0 * 360.0;
 			AnglesToAxis( viewangles, cl.refdef.viewaxis );
 			VQ2_TimeRefreshScene();
 		}
-		R_VerifyNoRenderCommands();
 		R_EndFrame( NULL, NULL );
 	} else   {
 		for ( int i = 0; i < 128; i++ ) {
@@ -472,9 +468,7 @@ static void SCRQ2_TimeRefresh_f() {
 
 			R_VerifyNoRenderCommands();
 			R_BeginFrame( STEREO_CENTER );
-			R_SyncRenderThread();
 			VQ2_TimeRefreshScene();
-			R_VerifyNoRenderCommands();
 			R_EndFrame( NULL, NULL );
 		}
 	}

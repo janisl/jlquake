@@ -501,6 +501,9 @@ static void R_SetLightLevel() {
 //==========================================================================
 
 void R_RenderScene( const refdef_t* fd ) {
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 	if ( !tr.registered ) {
 		return;
 	}
@@ -651,6 +654,9 @@ void R_RenderScene( const refdef_t* fd ) {
 	}
 
 	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 }
 
 //	Save out the old render info to a temp place so we don't kill the LOD system

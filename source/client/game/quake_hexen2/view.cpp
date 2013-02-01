@@ -1059,9 +1059,7 @@ static void VQH_RenderScene() {
 
 	R_RenderScene( &cl.refdef );
 
-	R_VerifyNoRenderCommands();
 	VQH_DrawColourBlend();
-	R_SyncRenderThread();
 }
 
 static void VQH_DropPunchAngle() {
@@ -1072,7 +1070,6 @@ static void VQH_DropPunchAngle() {
 }
 
 static void VQH_DrawCrosshair() {
-	R_VerifyNoRenderCommands();
 	if ( cl.qh_intermission ) {
 		return;
 	}
@@ -1086,7 +1083,6 @@ static void VQH_DrawCrosshair() {
 		UI_DrawChar( scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+' );
 	}
-	R_SyncRenderThread();
 }
 
 //	The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
@@ -1177,9 +1173,7 @@ static void VQH_TimeRefresh_f() {
 		viewangles[ 1 ] = i / 128.0 * 360.0;
 		AnglesToAxis( viewangles, cl.refdef.viewaxis );
 		R_BeginFrame( STEREO_CENTER );
-		R_SyncRenderThread();
 		VQH_RenderScene();
-		R_VerifyNoRenderCommands();
 		R_EndFrame( NULL, NULL );
 	}
 

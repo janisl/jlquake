@@ -2502,11 +2502,9 @@ static void PlayerConfig_MenuDraw() {
 		MQ2_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height ) - 77, refdef.width / 8, refdef.height / 8 );
 		refdef.height += 4;
 		UI_Fill( refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1 );
-		R_SyncRenderThread();
 
 		R_RenderScene( &refdef );
 
-		R_VerifyNoRenderCommands();
 		String::Sprintf( scratch, sizeof ( scratch ), "/players/%s/%s_i.pcx",
 			s_pmi[ s_player_model_box.curvalue ].directory,
 			s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
