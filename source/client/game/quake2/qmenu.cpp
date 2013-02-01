@@ -26,21 +26,15 @@
 #define VID_HEIGHT viddef.height
 
 static void Menu_DrawStringDark( int x, int y, const char* string ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawString( x, y, string, 128 );
-	R_SyncRenderThread();
 }
 
 static void Menu_DrawStringR2L( int x, int y, const char* string ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawString( ( x - ( String::Length( string ) - 1 ) * 8 ), y, string );
-	R_SyncRenderThread();
 }
 
 static void Menu_DrawStringR2LDark( int x, int y, const char* string ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawString( ( x - ( String::Length( string ) - 1 ) * 8 ), y, string, 128 );
-	R_SyncRenderThread();
 }
 
 static void Action_DoEnter( menuaction_s* a ) {
@@ -54,9 +48,7 @@ static void Action_Draw( menuaction_s* a ) {
 		if ( a->generic.flags & QMF_GRAYED ) {
 			Menu_DrawStringDark( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
 		} else   {
-			R_VerifyNoRenderCommands();
 			UI_DrawString( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
-			R_SyncRenderThread();
 		}
 	} else   {
 		if ( a->generic.flags & QMF_GRAYED ) {
@@ -79,27 +71,23 @@ static bool Field_DoEnter( menufield_s* f ) {
 }
 
 static void M_Field_Draw( menufield_s* f ) {
-	int i;
-
 	if ( f->generic.name ) {
 		Menu_DrawStringR2LDark( f->generic.x + f->generic.parent->x + LCOLUMN_OFFSET, f->generic.y + f->generic.parent->y, f->generic.name );
 	}
 
-	R_VerifyNoRenderCommands();
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y - 4, 18 );
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y + 4, 24 );
 
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y - 4, 20 );
 	UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + f->field.widthInChars * 8, f->generic.y + f->generic.parent->y + 4, 26 );
 
-	for ( i = 0; i < f->field.widthInChars; i++ ) {
+	for ( int i = 0; i < f->field.widthInChars; i++ ) {
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y - 4, 19 );
 		UI_DrawChar( f->generic.x + f->generic.parent->x + 24 + i * 8, f->generic.y + f->generic.parent->y + 4, 25 );
 	}
 
 	Field_Draw( &f->field, f->generic.x + f->generic.parent->x + 24,
 		f->generic.y + f->generic.parent->y, Menu_ItemAtCursor( f->generic.parent ) == f );
-	R_SyncRenderThread();
 }
 
 bool MQ2_Field_Key( menufield_s* f, int key ) {
@@ -136,12 +124,9 @@ static void Slider_DoSlide( menuslider_s* s, int dir ) {
 #define SLIDER_RANGE 10
 
 static void Slider_Draw( menuslider_s* s ) {
-	int i;
-
 	Menu_DrawStringR2LDark( s->generic.x + s->generic.parent->x + LCOLUMN_OFFSET,
 		s->generic.y + s->generic.parent->y,
 		s->generic.name );
-	R_VerifyNoRenderCommands();
 
 	s->range = ( s->curvalue - s->minvalue ) / ( float )( s->maxvalue - s->minvalue );
 
@@ -152,12 +137,12 @@ static void Slider_Draw( menuslider_s* s ) {
 		s->range = 1;
 	}
 	UI_DrawChar( s->generic.x + s->generic.parent->x + RCOLUMN_OFFSET, s->generic.y + s->generic.parent->y, 128 );
+	int i;
 	for ( i = 0; i < SLIDER_RANGE; i++ ) {
 		UI_DrawChar( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 129 );
 	}
 	UI_DrawChar( RCOLUMN_OFFSET + s->generic.x + i * 8 + s->generic.parent->x + 8, s->generic.y + s->generic.parent->y, 130 );
 	UI_DrawChar( ( int )( 8 + RCOLUMN_OFFSET + s->generic.parent->x + s->generic.x + ( SLIDER_RANGE - 1 ) * 8 * s->range ), s->generic.y + s->generic.parent->y, 131 );
-	R_SyncRenderThread();
 }
 
 static void SpinControl_DoSlide( menulist_s* s, int dir ) {
@@ -182,7 +167,6 @@ static void SpinControl_Draw( menulist_s* s ) {
 			s->generic.y + s->generic.parent->y,
 			s->generic.name );
 	}
-	R_VerifyNoRenderCommands();
 	if ( !strchr( s->itemnames[ s->curvalue ], '\n' ) ) {
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[ s->curvalue ] );
 	} else   {
@@ -192,7 +176,6 @@ static void SpinControl_Draw( menulist_s* s ) {
 		String::Cpy( buffer, strchr( s->itemnames[ s->curvalue ], '\n' ) + 1 );
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
 	}
-	R_SyncRenderThread();
 }
 
 void Menu_AddItem( menuframework_s* menu, void* item ) {
@@ -273,7 +256,6 @@ void Menu_Center( menuframework_s* menu ) {
 }
 
 static void Menu_DrawStatusBar( const char* string ) {
-	R_VerifyNoRenderCommands();
 	if ( string ) {
 		int l = String::Length( string );
 		int maxcol = VID_WIDTH / 8;
@@ -284,7 +266,6 @@ static void Menu_DrawStatusBar( const char* string ) {
 	} else   {
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
 	}
-	R_SyncRenderThread();
 }
 
 void Menu_Draw( menuframework_s* menu ) {
@@ -321,13 +302,11 @@ void Menu_Draw( menuframework_s* menu ) {
 	} else if ( menu->cursordraw )     {
 		menu->cursordraw( menu );
 	} else if ( item && item->type != MTYPE_FIELD )     {
-		R_VerifyNoRenderCommands();
 		if ( item->flags & QMF_LEFT_JUSTIFY ) {
 			UI_DrawChar( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int )( Sys_Milliseconds() / 250 ) & 1 ) );
 		} else   {
 			UI_DrawChar( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int )( Sys_Milliseconds() / 250 ) & 1 ) );
 		}
-		R_SyncRenderThread();
 	}
 
 	if ( item ) {
@@ -338,7 +317,6 @@ void Menu_Draw( menuframework_s* menu ) {
 		} else   {
 			Menu_DrawStatusBar( menu->statusbar );
 		}
-
 	} else   {
 		Menu_DrawStatusBar( menu->statusbar );
 	}
