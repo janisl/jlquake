@@ -78,10 +78,8 @@ void CLQ2_AddNetgraph() {
 
 void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	R_BeginFrame( stereoFrame );
-	R_SyncRenderThread();
 
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
-		R_VerifyNoRenderCommands();
 		int w, h;
 
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
@@ -92,14 +90,12 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	// if a cinematic is supposed to be running, handle menus
 	// and console specially
 	else if ( SCR_DrawCinematic() ) {
-		R_VerifyNoRenderCommands();
 		if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_DrawMenu();
 		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
 			Con_DrawConsole();
 		}
 	} else   {
-		R_VerifyNoRenderCommands();
 		// do 3D refresh drawing, and then update the screen
 		SCR_CalcVrect();
 
