@@ -430,7 +430,6 @@ static void CLQ2_DrawInventory() {
 }
 
 void SCRQ2_DrawHud() {
-	R_VerifyNoRenderCommands();
 	SCRQ2_DrawStats();
 	if ( cl.q2_frame.playerstate.stats[ Q2STAT_LAYOUTS ] & 1 ) {
 		SCRQ2_DrawLayout();
@@ -440,6 +439,5 @@ void SCRQ2_DrawHud() {
 	}
 
 	SCR_DrawNet();
-	R_SyncRenderThread();
 	SCR_CheckDrawCenterString();
 }

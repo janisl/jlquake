@@ -249,7 +249,6 @@ static void SCR_DrawCenterString() {
 		return;
 	}
 
-	R_VerifyNoRenderCommands();
 	// the finale prints the characters one at a time
 	int remaining;
 	if ( GGameType & GAME_Quake && cl.qh_intermission ) {
@@ -285,7 +284,6 @@ static void SCR_DrawCenterString() {
 		int x = ( viddef.width - l * 8 ) / 2;
 		UI_DrawString( x, y, buf );
 		if ( !remaining ) {
-			R_SyncRenderThread();
 			return;
 		}
 
@@ -300,7 +298,6 @@ static void SCR_DrawCenterString() {
 		}
 		start++;		// skip the \n
 	} while ( 1 );
-	R_SyncRenderThread();
 }
 
 void SCR_CheckDrawCenterString() {
@@ -485,10 +482,13 @@ void SCR_TileClear() {
 // text to the screen.
 void SCR_UpdateScreen() {
 	if ( GGameType & GAME_Quake ) {
+		R_VerifyNoRenderCommands();
 		SCRQ1_DrawScreen( STEREO_CENTER );
 	} else if ( GGameType & GAME_Hexen2 )     {
+		R_VerifyNoRenderCommands();
 		SCRH2_DrawScreen( STEREO_CENTER );
 	} else if ( GGameType & GAME_Quake2 )     {
+		R_VerifyNoRenderCommands();
 		// if the screen is disabled (loading plaque is up, or vid mode changing)
 		// do nothing at all
 		if ( cls.disable_screen ) {
@@ -520,7 +520,6 @@ void SCR_UpdateScreen() {
 			SCRQ2_DrawScreen( STEREO_CENTER, 0 );
 		}
 
-		R_VerifyNoRenderCommands();
 		R_EndFrame( NULL, NULL );
 
 		if ( cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid ) {

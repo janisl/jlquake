@@ -275,7 +275,6 @@ static void VQ2_TestLights() {
 }
 
 static void VQ2_DrawCrosshair() {
-	R_VerifyNoRenderCommands();
 	if ( !crosshair->value ) {
 		return;
 	}
@@ -291,7 +290,6 @@ static void VQ2_DrawCrosshair() {
 
 	UI_DrawNamedPic( scr_vrect.x + ( ( scr_vrect.width - crosshair_width ) >> 1 ),
 		scr_vrect.y + ( ( scr_vrect.height - crosshair_height ) >> 1 ), crosshair_pic );
-	R_SyncRenderThread();
 }
 
 void VQ2_RenderView( float stereo_separation ) {
@@ -392,12 +390,12 @@ void VQ2_RenderView( float stereo_separation ) {
 	}
 
 	R_RenderScene( &cl.refdef );
-
 	R_VerifyNoRenderCommands();
+
 	R_PolyBlend( &cl.refdef, v_blend );
-	R_SyncRenderThread();
 
 	VQ2_DrawCrosshair();
+	R_SyncRenderThread();
 }
 
 // gun frame debugging functions

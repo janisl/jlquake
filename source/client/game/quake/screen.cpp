@@ -28,7 +28,6 @@
 static Cvar* scrqw_allowsnap;
 
 static void SCRQ1_DrawPause() {
-	R_VerifyNoRenderCommands();
 	if ( !scr_showpause->value ) {		// turn off for screenshots
 		return;
 	}
@@ -40,11 +39,9 @@ static void SCRQ1_DrawPause() {
 	image_t* pic = R_CachePic( "gfx/pause.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
 		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
-	R_SyncRenderThread();
 }
 
 static void SCRQ1_DrawLoading() {
-	R_VerifyNoRenderCommands();
 	if ( !scr_draw_loading ) {
 		return;
 	}
@@ -52,7 +49,6 @@ static void SCRQ1_DrawLoading() {
 	image_t* pic = R_CachePic( "gfx/loading.lmp" );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
 		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
-	R_SyncRenderThread();
 }
 
 #define NET_GRAPHHEIGHT 32
@@ -81,7 +77,6 @@ static void R_LineGraph( int h ) {
 }
 
 static void CLQW_NetGraph() {
-	R_VerifyNoRenderCommands();
 	static int lastOutgoingSequence = 0;
 
 	CLQW_CalcNet();
@@ -92,7 +87,6 @@ static void CLQW_NetGraph() {
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
-	R_SyncRenderThread();
 }
 
 void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
@@ -109,7 +103,6 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		return;				// not initialized yet
 
 	}
-	R_VerifyNoRenderCommands();
 	R_BeginFrame( stereoFrame );
 	R_SyncRenderThread();
 
@@ -128,7 +121,6 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	R_VerifyNoRenderCommands();
 	SCR_TileClear();
-	R_SyncRenderThread();
 
 	if ( GGameType & GAME_QuakeWorld && scr_netgraph->value ) {
 		CLQW_NetGraph();
@@ -136,34 +128,23 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 
 	if ( scr_draw_loading ) {
 		SCRQ1_DrawLoading();
-		R_VerifyNoRenderCommands();
 		SbarQ1_Draw();
-		R_SyncRenderThread();
 	} else if ( cl.qh_intermission == 1 && in_keyCatchers == 0 )     {
-		R_VerifyNoRenderCommands();
 		SbarQ1_IntermissionOverlay();
-		R_SyncRenderThread();
 	} else if ( cl.qh_intermission == 2 && in_keyCatchers == 0 )     {
-		R_VerifyNoRenderCommands();
 		SbarQ1_FinaleOverlay();
-		R_SyncRenderThread();
 		SCR_CheckDrawCenterString();
 	} else   {
-		R_VerifyNoRenderCommands();
 		SCR_DrawNet();
 		SCR_DrawFPS();
-		R_SyncRenderThread();
 		SCRQH_DrawTurtle();
 		SCRQ1_DrawPause();
 		SCR_CheckDrawCenterString();
-		R_VerifyNoRenderCommands();
 		SbarQ1_Draw();
 		Con_DrawConsole();
 		UI_DrawMenu();
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	R_EndFrame( NULL, NULL );
 }
 

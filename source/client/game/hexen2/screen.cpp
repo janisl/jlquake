@@ -95,32 +95,26 @@ static void SCRH2_FindTextBreaks( const char* message, int Width ) {
 }
 
 static void MH2_Print2( int cx, int cy, const char* str ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy + ( ( viddef.height - 200 ) >> 1 ), str, 256 );
-	R_SyncRenderThread();
 }
 
 static void SCRH2_Bottom_Plaque_Draw( const char* message ) {
 	if ( !*message ) {
 		return;
 	}
-	R_VerifyNoRenderCommands();
 
 	SCRH2_FindTextBreaks( message, PLAQUE_WIDTH );
 
 	int by = ( ( ( viddef.height ) / 8 ) - scrh2_lines - 2 ) * 8;
 
 	MQH_DrawTextBox( 32, by - 16, 30, scrh2_lines + 2 );
-	R_SyncRenderThread();
 
 	for ( int i = 0; i < scrh2_lines; i++, by += 8 ) {
 		char temp[ 80 ];
 		String::NCpy( temp, &message[ scrh2_StartC[ i ] ],scrh2_EndC[ i ] - scrh2_StartC[ i ] );
 		temp[ scrh2_EndC[ i ] - scrh2_StartC[ i ] ] = 0;
 		int bx = ( ( 40 - String::Length( temp ) ) * 8 ) / 2;
-		R_VerifyNoRenderCommands();
 		MQH_Print( bx, by, temp );
-		R_SyncRenderThread();
 	}
 }
 
@@ -143,7 +137,6 @@ void SCRH2_DrawCenterString( const char* message ) {
 }
 
 static void SCRH2_DrawPause() {
-	R_VerifyNoRenderCommands();
 	image_t* pic;
 	float delta;
 	static qboolean newdraw = false;
@@ -180,11 +173,9 @@ static void SCRH2_DrawPause() {
 
 	finaly = ( ( float )R_GetImageHeight( pic ) * LogoPercent ) - R_GetImageHeight( pic );
 	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, finaly, pic );
-	R_SyncRenderThread();
 }
 
 static void SCRH2_DrawLoading() {
-	R_VerifyNoRenderCommands();
 	int size, count, offset;
 	image_t* pic;
 
@@ -225,7 +216,6 @@ static void SCRH2_DrawLoading() {
 	UI_FillPal( offset + 42, 97, count, 1, 168 );
 	UI_FillPal( offset + 42, 97 + 1, count, 4, 170 );
 	UI_FillPal( offset + 42, 97 + 5, count, 1, 168 );
-	R_SyncRenderThread();
 }
 
 static void SCRH2_UpdateInfoMessage() {
@@ -268,13 +258,11 @@ static void SCRH2_Plaque_Draw( const char* message, bool AlwaysDraw ) {
 	if ( !*message ) {
 		return;
 	}
-	R_VerifyNoRenderCommands();
 
 	SCRH2_FindTextBreaks( message, PLAQUE_WIDTH );
 
 	by = ( ( 25 - scrh2_lines ) * 8 ) / 2;
 	MQH_DrawTextBox2( 32, by - 16, 30, scrh2_lines + 2 );
-	R_SyncRenderThread();
 
 	for ( i = 0; i < scrh2_lines; i++,by += 8 ) {
 		String::NCpy( temp,&message[ scrh2_StartC[ i ] ],scrh2_EndC[ i ] - scrh2_StartC[ i ] );
@@ -301,9 +289,7 @@ static void SCRH2_Info_Plaque_Draw( const char* message ) {
 	}
 
 	int by = ( ( 25 - scrh2_lines ) * 8 ) / 2;
-	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox2( 15, by - 16, PLAQUE_WIDTH + 4 + 4, scrh2_lines + 2 );
-	R_SyncRenderThread();
 
 	for ( int i = 0; i < scrh2_lines; i++,by += 8 ) {
 		char temp[ 80 ];
@@ -315,9 +301,7 @@ static void SCRH2_Info_Plaque_Draw( const char* message ) {
 }
 
 static void I_Print( int cx, int cy, char* str ) {
-	R_VerifyNoRenderCommands();
 	UI_DrawString( cx + ( ( viddef.width - 320 ) >> 1 ), cy + ( ( viddef.height - 200 ) >> 1 ), str, 256 );
-	R_SyncRenderThread();
 }
 
 static void SBH2_IntermissionOverlay() {
@@ -327,13 +311,10 @@ static void SBH2_IntermissionOverlay() {
 	char temp[ 80 ];
 
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH ) {
-		R_VerifyNoRenderCommands();
 		SbarH2_DeathmatchOverlay();
-		R_SyncRenderThread();
 		return;
 	}
 
-	R_VerifyNoRenderCommands();
 	switch ( cl.qh_intermission ) {
 	case 1:
 		pic = R_CachePic( "gfx/meso.lmp" );
@@ -378,7 +359,6 @@ static void SBH2_IntermissionOverlay() {
 	}
 
 	UI_DrawPic( ( ( viddef.width - 320 ) >> 1 ),( ( viddef.height - 200 ) >> 1 ), pic );
-	R_SyncRenderThread();
 
 	if ( cl.qh_intermission >= 6 && cl.qh_intermission <= 8 ) {
 		elapsed = ( cl.qh_serverTimeFloat - cl.qh_completed_time ) * 20;
@@ -436,9 +416,7 @@ static void SBH2_IntermissionOverlay() {
 		if ( cl.qh_intermission < 6 || cl.qh_intermission > 9 ) {
 			I_Print( bx, by, temp );
 		} else   {
-			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( bx, by, temp );
-			R_SyncRenderThread();
 		}
 
 		elapsed -= size;
@@ -479,7 +457,6 @@ static void CLHW_LineGraph( int h ) {
 }
 
 static void CLHW_NetGraph() {
-	R_VerifyNoRenderCommands();
 	static int lastOutgoingSequence = 0;
 
 	for ( int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++ ) {
@@ -501,7 +478,6 @@ static void CLHW_NetGraph() {
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
-	R_SyncRenderThread();
 }
 
 void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
@@ -520,7 +496,6 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		return;				// not initialized yet
 
 	}
-	R_VerifyNoRenderCommands();
 	R_BeginFrame( stereoFrame );
 	R_SyncRenderThread();
 
@@ -539,42 +514,31 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	R_VerifyNoRenderCommands();
 	SCR_TileClear();
-	R_SyncRenderThread();
 
 	if ( GGameType & GAME_HexenWorld && scr_netgraph->value ) {
 		CLHW_NetGraph();
 	}
 
 	if ( scr_draw_loading ) {
-		R_VerifyNoRenderCommands();
 		SbarH2_Draw();
 		MQH_FadeScreen();
-		R_SyncRenderThread();
 		SCRH2_DrawLoading();
 	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
 		SBH2_IntermissionOverlay();
-		R_VerifyNoRenderCommands();
 		if ( cl.qh_intermission < 12 ) {
 			Con_DrawConsole();
 			UI_DrawMenu();
 		}
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		SCR_DrawFPS();
-		R_SyncRenderThread();
 		SCRQH_DrawTurtle();
 		SCRH2_DrawPause();
 		SCR_CheckDrawCenterString();
-		R_VerifyNoRenderCommands();
 		SbarH2_Draw();
-		R_SyncRenderThread();
 		SCRH2_Plaque_Draw( clh2_plaquemessage,0 );
-		R_VerifyNoRenderCommands();
 		SCR_DrawNet();
 		Con_DrawConsole();
 		UI_DrawMenu();
-		R_SyncRenderThread();
 
 		if ( GGameType & GAME_H2Portals && clh2_info_up ) {
 			SCRH2_UpdateInfoMessage();
@@ -586,7 +550,6 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCRH2_DrawLoading();
 	}
 
-	R_VerifyNoRenderCommands();
 	R_EndFrame( NULL, NULL );
 }
 

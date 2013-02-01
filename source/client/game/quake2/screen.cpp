@@ -26,7 +26,6 @@
 #include "../../../common/strings.h"
 
 static void SCRQ2_DrawPause() {
-	R_VerifyNoRenderCommands();
 	if ( !scr_showpause->value ) {		// turn off for screenshots
 		return;
 	}
@@ -38,11 +37,9 @@ static void SCRQ2_DrawPause() {
 	int w, h;
 	R_GetPicSize( &w, &h, "pause" );
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, viddef.height / 2 + 8, "pause" );
-	R_SyncRenderThread();
 }
 
 static void SCRQ2_DrawLoading() {
-	R_VerifyNoRenderCommands();
 	if ( !scr_draw_loading ) {
 		return;
 	}
@@ -51,7 +48,6 @@ static void SCRQ2_DrawLoading() {
 	int w, h;
 	R_GetPicSize( &w, &h, "loading" );
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
-	R_SyncRenderThread();
 }
 
 //	A new packet was just parsed
@@ -81,7 +77,6 @@ void CLQ2_AddNetgraph() {
 }
 
 void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
-	R_VerifyNoRenderCommands();
 	R_BeginFrame( stereoFrame );
 	R_SyncRenderThread();
 
@@ -93,7 +88,6 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 		scr_draw_loading = false;
 		R_GetPicSize( &w, &h, "loading" );
 		UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
-		R_SyncRenderThread();
 	}
 	// if a cinematic is supposed to be running, handle menus
 	// and console specially
@@ -104,7 +98,6 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
 			Con_DrawConsole();
 		}
-		R_SyncRenderThread();
 	} else   {
 		R_VerifyNoRenderCommands();
 		// do 3D refresh drawing, and then update the screen
@@ -116,31 +109,26 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 
 		VQ2_RenderView( separation );
 
+		R_VerifyNoRenderCommands();
 		SCRQ2_DrawHud();
 
 		if ( cl_timegraph->value ) {
 			SCR_DebugGraph( cls.frametime * 0.25, 0 );
 		}
 
-		R_VerifyNoRenderCommands();
 		if ( cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value ) {
 			SCR_DrawDebugGraph();
 		}
-		R_SyncRenderThread();
 
 		SCRQ2_DrawPause();
 
-		R_VerifyNoRenderCommands();
 		Con_DrawConsole();
 
 		UI_DrawMenu();
-		R_SyncRenderThread();
 
 		SCRQ2_DrawLoading();
 	}
-	R_VerifyNoRenderCommands();
 	SCR_DrawFPS();
-	R_SyncRenderThread();
 }
 
 //	Set a specific sky and rotation speed

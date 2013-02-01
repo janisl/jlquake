@@ -1138,7 +1138,6 @@ void VQH_RenderView() {
 }
 
 void SCRQH_DrawTurtle() {
-	R_VerifyNoRenderCommands();
 	static int count;
 
 	if ( !scr_showturtle->value ) {
@@ -1156,7 +1155,6 @@ void SCRQH_DrawTurtle() {
 	}
 
 	UI_DrawPic( scr_vrect.x, scr_vrect.y, scr_turtle );
-	R_SyncRenderThread();
 }
 
 //	For program optimization
