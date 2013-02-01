@@ -381,13 +381,9 @@ static void M_Main_Draw() {
 	String::Cpy( litname, names[ m_main_cursor ] );
 	String::Cat( litname, sizeof ( litname ), "_sel" );
 	UI_DrawNamedPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	MQ2_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, ( int )( cls.realtime / 100 ) % NUM_CURSOR_FRAMES );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	R_GetPicSize( &w, &h, "m_main_plaque" );
 	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
 
@@ -573,8 +569,6 @@ static void Game_MenuInit() {
 static void Game_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_game" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	Menu_AdjustCursor( &s_game_menu, 1 );
 	Menu_Draw( &s_game_menu );
 	R_SyncRenderThread();
@@ -662,8 +656,6 @@ static void LoadGame_MenuInit() {
 static void LoadGame_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_load_game" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 //	Menu_AdjustCursor( &s_loadgame_menu, 1 );
 	Menu_Draw( &s_loadgame_menu );
 	R_SyncRenderThread();
@@ -704,8 +696,6 @@ static void SaveGameCallback( void* self ) {
 static void SaveGame_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_save_game" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	Menu_AdjustCursor( &s_savegame_menu, 1 );
 	Menu_Draw( &s_savegame_menu );
 	R_SyncRenderThread();
@@ -1218,8 +1208,6 @@ static menuaction_s s_player_setup_action;
 static void Multiplayer_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_multiplayer" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 
 	Menu_AdjustCursor( &s_multiplayer_menu, 1 );
 	Menu_Draw( &s_multiplayer_menu );
@@ -1347,26 +1335,18 @@ static void AddressBookFunc( void* self ) {
 }
 
 static void SearchLocalGames() {
+	R_VerifyNoRenderCommands();
 	mq2_num_servers = 0;
 	for ( int i = 0; i < MAX_LOCAL_SERVERS; i++ ) {
 		String::Cpy( local_server_names[ i ], NO_SERVER_STRING );
 	}
 
-	R_VerifyNoRenderCommands();
 	MQ2_DrawTextBox( 8, 120 - 48, 36, 3 );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQ2_Print( 16 + 16, 120 - 48 + 8,  "Searching for local servers, this" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQ2_Print( 16 + 16, 120 - 48 + 16, "could take up to a minute, so" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQ2_Print( 16 + 16, 120 - 48 + 24, "please be patient." );
-	R_SyncRenderThread();
 
 	// the text box won't show up unless we do a buffer swap
-	R_VerifyNoRenderCommands();
 	R_EndFrame( NULL, NULL );
 
 	// send out info packets
@@ -1428,8 +1408,6 @@ static void JoinServer_MenuInit() {
 static void JoinServer_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_join_server" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	Menu_Draw( &s_joinserver_menu );
 	R_SyncRenderThread();
 }
@@ -1497,8 +1475,6 @@ static const char* AddressBook_MenuKey( int key ) {
 static void AddressBook_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_addressbook" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	Menu_Draw( &s_addressbook_menu );
 	R_SyncRenderThread();
 }
@@ -2500,6 +2476,7 @@ static bool PlayerConfig_MenuInit() {
 }
 
 static void PlayerConfig_MenuDraw() {
+	R_VerifyNoRenderCommands();
 	refdef_t refdef;
 	Com_Memset( &refdef, 0, sizeof ( refdef ) );
 
@@ -2541,14 +2518,9 @@ static void PlayerConfig_MenuDraw() {
 		Com_Memset( refdef.areamask, 0, sizeof ( refdef.areamask ) );
 		refdef.rdflags = RDF_NOWORLDMODEL;
 
-		R_VerifyNoRenderCommands();
 		Menu_Draw( &s_player_config_menu );
-		R_SyncRenderThread();
 
-		R_VerifyNoRenderCommands();
 		MQ2_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height ) - 77, refdef.width / 8, refdef.height / 8 );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		refdef.height += 4;
 		UI_Fill( refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1 );
 		R_SyncRenderThread();
@@ -2560,8 +2532,8 @@ static void PlayerConfig_MenuDraw() {
 			s_pmi[ s_player_model_box.curvalue ].directory,
 			s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
 		UI_DrawNamedPic( s_player_config_menu.x - 40, refdef.y, scratch );
-		R_SyncRenderThread();
 	}
+	R_SyncRenderThread();
 }
 
 static const char* PlayerConfig_MenuKey( int key ) {
@@ -2964,8 +2936,6 @@ static void Options_MenuInit() {
 static void Options_MenuDraw() {
 	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_options" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	Menu_AdjustCursor( &s_options_menu, 1 );
 	Menu_Draw( &s_options_menu );
 	R_SyncRenderThread();
