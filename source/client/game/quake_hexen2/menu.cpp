@@ -280,11 +280,9 @@ void MQH_Menu_Main_f() {
 }
 
 static void MQH_Main_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title0.lmp" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		if ( GGameType & GAME_HexenWorld ) {
 			MH2_DrawBigString( 72, 60 + ( 0 * 20 ), "MULTIPLAYER" );
 			MH2_DrawBigString( 72, 60 + ( 1 * 20 ), "OPTIONS" );
@@ -301,7 +299,6 @@ static void MQH_Main_Draw() {
 		int f = ( cls.realtime / 100 ) % 8;
 		MQH_DrawPic( 43, 54 + mqh_main_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/ttl_main.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
@@ -411,12 +408,10 @@ static void MQH_Menu_SinglePlayer_f() {
 }
 
 static void MQH_SinglePlayer_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title1.lmp" );
-		R_SyncRenderThread();
 
-		R_VerifyNoRenderCommands();
 		if ( GGameType & GAME_HexenWorld ) {
 			MQH_DrawTextBox( 60, 10 * 8, 23, 4 );
 			MQH_PrintWhite( 92, 12 * 8, "HexenWorld is for" );
@@ -436,7 +431,6 @@ static void MQH_SinglePlayer_Draw() {
 			MQH_DrawPic( 43, 54 + mqh_singleplayer_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
 		}
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/ttl_sgl.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
@@ -605,9 +599,7 @@ static void MH2_Menu_Class2_f() {
 static void MH2_Class_Draw() {
 	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title2.lmp" );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	for ( int i = 0; i < ( GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ); i++ ) {
 		MH2_DrawBigString( 72, 60 + ( i * 20 ), GGameType & GAME_HexenWorld ? hw_ClassNamesU[ i ] : h2_ClassNamesU[ i ] );
 	}
@@ -710,8 +702,6 @@ static void MH2_Menu_Difficulty_f() {
 static void MH2_Difficulty_Draw() {
 	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title5.lmp" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 
 	setup_class = clh2_playerclass->value;
 
@@ -857,21 +847,17 @@ static void MQH_Menu_Save_f() {
 }
 
 static void MQH_Load_Draw() {
+	R_VerifyNoRenderCommands();
 	int y;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/load.lmp" );
-		R_SyncRenderThread();
 		y = 60;
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/p_load.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		y = 32;
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	for ( int i = 0; i < MAX_SAVEGAMES; i++ ) {
 		MQH_Print( 16, y + 8 * i, mqh_filenames[ i ] );
 	}
@@ -882,21 +868,17 @@ static void MQH_Load_Draw() {
 }
 
 static void MQH_Save_Draw() {
+	R_VerifyNoRenderCommands();
 	int y;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/save.lmp" );
-		R_SyncRenderThread();
 		y = 60;
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/p_save.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		y = 32;
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	for ( int i = 0; i < MAX_SAVEGAMES; i++ ) {
 		MQH_Print( 16, y + 8 * i, mqh_filenames[ i ] );
 	}
@@ -1000,12 +982,10 @@ static void MQH_Menu_MultiPlayer_f() {
 }
 
 static void MQH_MultiPlayer_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-		R_SyncRenderThread();
 
-		R_VerifyNoRenderCommands();
 		MH2_DrawBigString( 72,60 + ( 0 * 20 ),"JOIN A GAME" );
 		if ( GGameType & GAME_HexenWorld ) {
 			MH2_DrawBigString( 72,60 + ( 1 * 20 ),"SETUP" );
@@ -1033,7 +1013,6 @@ static void MQH_MultiPlayer_Draw() {
 		}
 		MQH_PrintWhite( ( 320 / 2 ) - ( ( 27 * 8 ) / 2 ), 160, "No Communications Available" );
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
@@ -1170,32 +1149,24 @@ static void MQH_Menu_LanConfig_f() {
 }
 
 static void MQH_LanConfig_Draw() {
+	R_VerifyNoRenderCommands();
 	int basex;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-		R_SyncRenderThread();
 		basex = 48;
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		basex = ( 320 - R_GetImageWidth( p ) ) / 2;
 		MQH_DrawPic( basex, 4, p );
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( basex, GGameType & GAME_Hexen2 ? 60 : 32, "Join Game - TCP/IP" );
 	basex += 8;
 
 	MQH_Print( basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[ 0 ] : lanConfig_cursor_table_q1[ 0 ], "Port" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawField( basex + 9 * 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[ 0 ] : lanConfig_cursor_table_q1[ 0 ], &lanConfig_portname, mqh_lanConfig_cursor == 0 );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MQH_Print( basex, lanConfig_cursor_table_h2[ 1 ], "Class:" );
 		MQH_Print( basex + 8 * 7, lanConfig_cursor_table_h2[ 1 ], h2_ClassNames[ setup_class ] );
@@ -1203,12 +1174,8 @@ static void MQH_LanConfig_Draw() {
 
 	MQH_Print( basex, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[ 2 ] : lanConfig_cursor_table_q1[ 1 ], "Search for local games..." );
 	MQH_Print( basex, GGameType & GAME_Hexen2 ? 136 : 88, "Join game at:" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawField( basex + 16, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[ 3 ] : lanConfig_cursor_table_q1[ 2 ], &lanConfig_joinname, mqh_lanConfig_cursor == ( GGameType & GAME_Hexen2 ? 3 : 2 ) );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	MQH_DrawCharacter( basex - 8, GGameType & GAME_Hexen2 ? lanConfig_cursor_table_h2[ mqh_lanConfig_cursor ] : lanConfig_cursor_table_q1[ mqh_lanConfig_cursor ], 12 + ( ( cls.realtime / 250 ) & 1 ) );
 
 	if ( *m_return_reason ) {
@@ -1350,25 +1317,21 @@ static void MQH_Menu_Search_f() {
 }
 
 static void MQH_Search_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
-		R_SyncRenderThread();
 	}
 
 	int x = ( 320 / 2 ) - ( ( 12 * 8 ) / 2 ) + 4;
-	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( x - 8, GGameType & GAME_Hexen2 ? 60 : 32, 12, 1 );
 	MQH_Print( x, GGameType & GAME_Hexen2 ? 68 : 40, "Searching..." );
-	R_SyncRenderThread();
 
 	if ( slistInProgress ) {
 		NET_Poll();
+		R_SyncRenderThread();
 		return;
 	}
 
@@ -1379,10 +1342,10 @@ static void MQH_Search_Draw() {
 
 	if ( hostCacheCount ) {
 		MQH_Menu_ServerList_f();
+		R_SyncRenderThread();
 		return;
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_PrintWhite( ( 320 / 2 ) - ( ( 22 * 8 ) / 2 ), GGameType & GAME_Hexen2 ? 92 : 64, GGameType & GAME_Hexen2 ? "No Hexen II servers found" : "No Quake servers found" );
 	R_SyncRenderThread();
 	if ( cls.realtime - searchCompleteTime < 3000 ) {
@@ -1412,6 +1375,7 @@ static void MQH_Menu_ServerList_f() {
 }
 
 static void MQH_ServerList_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( !mqh_slist_sorted ) {
 		if ( hostCacheCount > 1 ) {
 			for ( int i = 0; i < hostCacheCount; i++ ) {
@@ -1429,16 +1393,11 @@ static void MQH_ServerList_Draw() {
 	}
 
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
-		R_SyncRenderThread();
 	}
-	R_VerifyNoRenderCommands();
 	for ( int n = 0; n < hostCacheCount; n++ ) {
 		char string [ 64 ];
 		if ( hostcache[ n ].maxusers ) {
@@ -1561,14 +1520,10 @@ static void MHW_Menu_Connect_f() {
 static void MHW_Connect_Draw() {
 	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-	R_SyncRenderThread();
 
 	if ( connect_cursor < MAX_HOST_NAMES ) {
-		R_VerifyNoRenderCommands();
 		MQH_DrawField( 24, 56, &save_names[ connect_cursor ], true );
-		R_SyncRenderThread();
 	}
-	R_VerifyNoRenderCommands();
 
 	int y = 72;
 	for ( int i = 0; i < MAX_HOST_NAMES; i++,y += 8 ) {
@@ -1962,36 +1917,28 @@ static void MQH_Menu_GameOptions_f() {
 }
 
 static void MQH_GameOptions_Draw() {
+	R_VerifyNoRenderCommands();
 	int startx;
 	int starty;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 		startx = 8;
 		starty = 60;
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		startx = 0;
 		starty = 32;
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( startx + 152, starty, 10, 1 );
 	MQH_Print( startx + 160, starty + 8, "begin game" );
 
 	MQH_Print( startx + 0, starty + 24, "             Port" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawField( startx + 160, starty + 24, &lanConfig_portname, mqh_gameoptions_cursor == 1 );
-	R_SyncRenderThread();
 	starty += 10;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( startx + 0, starty + 24, "      Max players" );
 	MQH_Print( startx + 160, starty + 24, va( "%i", mqh_maxplayers ) );
 
@@ -2547,37 +2494,25 @@ static void MQH_Menu_Setup_f() {
 }
 
 static void MQH_Setup_Draw() {
+	R_VerifyNoRenderCommands();
 	static bool wait;
 
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
-		R_SyncRenderThread();
 	}
 
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) ) {
-		R_VerifyNoRenderCommands();
 		MQH_Print( 64, 40, "Hostname" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		MQH_DrawField( 168, 40, &setup_hostname, mqh_setup_cursor == 0 );
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 64, 56, "Your name" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawField( 168, 56, &setup_myname, mqh_setup_cursor == 1 );
-	R_SyncRenderThread();
 
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( GGameType & GAME_HexenWorld ) {
 			MQH_Print( 64, 72, "Spectator: " );
@@ -3044,22 +2979,18 @@ static void MQH_DrawCheckbox( int x, int y, int on ) {
 }
 
 static void MQH_Options_Draw() {
+	R_VerifyNoRenderCommands();
 	int itemsStartY;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title3.lmp" );
-		R_SyncRenderThread();
 		itemsStartY = 60;
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
 		image_t* p = R_CachePic( "gfx/p_option.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		itemsStartY = 32;
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	int y = itemsStartY;
 	MQH_Print( 16, y, "    Customize controls" );
 	y += 8;
@@ -3069,32 +3000,20 @@ static void MQH_Options_Draw() {
 	y += 8;
 
 	MQH_Print( 16, y, "           Screen size" );
-	R_SyncRenderThread();
 	float r = ( scr_viewsize->value - 30 ) / ( 120 - 30 );
-	R_VerifyNoRenderCommands();
 	MQH_DrawSlider( 220, y, r );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "            Brightness" );
-	R_SyncRenderThread();
 	r = ( r_gamma->value - 1 );
-	R_VerifyNoRenderCommands();
 	MQH_DrawSlider( 220, y, r );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "           Mouse Speed" );
-	R_SyncRenderThread();
 	r = ( cl_sensitivity->value - 1 ) / 10;
-	R_VerifyNoRenderCommands();
 	MQH_DrawSlider( 220, y, r );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MQH_Print( 16, y, "            Music Type" );
 		if ( String::ICmp( bgmtype->string,"midi" ) == 0 ) {
@@ -3108,83 +3027,47 @@ static void MQH_Options_Draw() {
 	}
 
 	MQH_Print( 16, y, "          Music Volume" );
-	R_SyncRenderThread();
 	r = bgmvolume->value;
-	R_VerifyNoRenderCommands();
 	MQH_DrawSlider( 220, y, r );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "          Sound Volume" );
-	R_SyncRenderThread();
 	r = s_volume->value;
-	R_VerifyNoRenderCommands();
 	MQH_DrawSlider( 220, y, r );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "            Always Run" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawCheckbox( 220, y, cl_forwardspeed->value > 200 );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "          Invert Mouse" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawCheckbox( 220, y, m_pitch->value < 0 );
-	R_SyncRenderThread();
 	y += 8;
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "            Lookspring" );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 	MQH_DrawCheckbox( 220, y, lookspring->value );
-	R_SyncRenderThread();
 	y += 8;
 
 	if ( GGameType & GAME_QuakeWorld ) {
-		R_VerifyNoRenderCommands();
 		MQH_Print( 16, y, "    Use old status bar" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		MQH_DrawCheckbox( 220, y, clqh_sbar->value );
-		R_SyncRenderThread();
 		y += 8;
 
-		R_VerifyNoRenderCommands();
 		MQH_Print( 16, y, "      HUD on left side" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		MQH_DrawCheckbox( 220, y, clqw_hudswap->value );
-		R_SyncRenderThread();
 		y += 8;
 	}
 
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MQH_Print( 16, y, "        Show Crosshair" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		MQH_DrawCheckbox( 220, y, crosshair->value );
-		R_SyncRenderThread();
 		y += 8;
 
-		R_VerifyNoRenderCommands();
 		MQH_Print( 16, y, "            Mouse Look" );
-		R_SyncRenderThread();
-		R_VerifyNoRenderCommands();
 		MQH_DrawCheckbox( 220, y, cl_freelook->value );
-		R_SyncRenderThread();
 		y += 8;
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 16, y, "         Video Options" );
 
 	// cursor
@@ -3555,21 +3438,17 @@ static void MQH_Menu_Keys_f() {
 }
 
 static void MQH_Keys_Draw() {
+	R_VerifyNoRenderCommands();
 	int topy;
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title6.lmp" );
-		R_SyncRenderThread();
 		topy = 64;
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/ttl_cstm.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		topy = 32;
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	if ( mqh_bind_grab ) {
 		MQH_Print( 12, topy, "Press a key or button for this action" );
 	} else   {
@@ -3694,18 +3573,14 @@ static void MQH_Menu_Video_f() {
 }
 
 static void MQH_Video_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
-		R_VerifyNoRenderCommands();
 		MH2_ScrollTitle( "gfx/menu/title7.lmp" );
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		image_t* p = R_CachePic( "gfx/vidmodes.lmp" );
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	MQH_Print( 3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
 		"Video modes must be set from the" );
 	MQH_Print( 3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 3,
