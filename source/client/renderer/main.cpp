@@ -1786,6 +1786,9 @@ void R_RenderView( viewParms_t* parms ) {
 		R_SetupFrustum();
 	}
 
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
+	}
 	R_GenerateDrawSurfs();
 
 	if ( GGameType & GAME_Tech3 ) {
@@ -1794,6 +1797,9 @@ void R_RenderView( viewParms_t* parms ) {
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 }
 
 bool R_GetScreenPosFromWorldPos( vec3_t origin, int& u, int& v ) {
