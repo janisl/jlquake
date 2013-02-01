@@ -343,7 +343,6 @@ MAIN MENU
 static int m_main_cursor;
 
 static void M_Main_Draw() {
-	R_VerifyNoRenderCommands();
 	int i;
 	int w, h;
 	int ystart;
@@ -388,7 +387,6 @@ static void M_Main_Draw() {
 	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
 
 	UI_DrawNamedPic( xoffset - 30 - w, ystart + h + 5, "m_main_logo" );
-	R_SyncRenderThread();
 }
 
 static const char* M_Main_Key( int key ) {
@@ -567,11 +565,9 @@ static void Game_MenuInit() {
 }
 
 static void Game_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_game" );
 	Menu_AdjustCursor( &s_game_menu, 1 );
 	Menu_Draw( &s_game_menu );
-	R_SyncRenderThread();
 }
 
 static const char* Game_MenuKey( int key ) {
@@ -654,11 +650,9 @@ static void LoadGame_MenuInit() {
 }
 
 static void LoadGame_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_load_game" );
 //	Menu_AdjustCursor( &s_loadgame_menu, 1 );
 	Menu_Draw( &s_loadgame_menu );
-	R_SyncRenderThread();
 }
 
 static const char* LoadGame_MenuKey( int key ) {
@@ -694,11 +688,9 @@ static void SaveGameCallback( void* self ) {
 }
 
 static void SaveGame_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_save_game" );
 	Menu_AdjustCursor( &s_savegame_menu, 1 );
 	Menu_Draw( &s_savegame_menu );
-	R_SyncRenderThread();
 }
 
 static void SaveGame_MenuInit() {
@@ -1102,7 +1094,6 @@ static const char* roguecredits[] =
 };
 
 static void MQ2_Credits_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	//	draw the credits
 	int y = viddef.height - ( ( cls.realtime - credits_start_time ) / 40.0F );
 	for ( int i = 0; credits[ i ] && y < viddef.height; y += 10, i++ ) {
@@ -1131,7 +1122,6 @@ static void MQ2_Credits_MenuDraw() {
 	if ( y < 0 ) {
 		credits_start_time = cls.realtime;
 	}
-	R_SyncRenderThread();
 }
 
 static const char* MQ2_Credits_Key( int key ) {
@@ -1206,12 +1196,10 @@ static menuaction_s s_start_network_server_action;
 static menuaction_s s_player_setup_action;
 
 static void Multiplayer_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_multiplayer" );
 
 	Menu_AdjustCursor( &s_multiplayer_menu, 1 );
 	Menu_Draw( &s_multiplayer_menu );
-	R_SyncRenderThread();
 }
 
 static void PlayerSetupFunc( void* unused ) {
@@ -1406,10 +1394,8 @@ static void JoinServer_MenuInit() {
 }
 
 static void JoinServer_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_join_server" );
 	Menu_Draw( &s_joinserver_menu );
-	R_SyncRenderThread();
 }
 
 static const char* JoinServer_MenuKey( int key ) {
@@ -1473,10 +1459,8 @@ static const char* AddressBook_MenuKey( int key ) {
 }
 
 static void AddressBook_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_addressbook" );
 	Menu_Draw( &s_addressbook_menu );
-	R_SyncRenderThread();
 }
 
 static void AddressBook_MenuChar( int key ) {
@@ -1763,9 +1747,7 @@ static void StartServer_MenuInit() {
 }
 
 static void StartServer_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	Menu_Draw( &s_startserver_menu );
-	R_SyncRenderThread();
 }
 
 static const char* StartServer_MenuKey( int key ) {
@@ -2124,9 +2106,7 @@ static void DMOptions_MenuInit() {
 }
 
 static void DMOptions_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	Menu_Draw( &s_dmoptions_menu );
-	R_SyncRenderThread();
 }
 
 static const char* DMOptions_MenuKey( int key ) {
@@ -2476,7 +2456,6 @@ static bool PlayerConfig_MenuInit() {
 }
 
 static void PlayerConfig_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	refdef_t refdef;
 	Com_Memset( &refdef, 0, sizeof ( refdef ) );
 
@@ -2533,7 +2512,6 @@ static void PlayerConfig_MenuDraw() {
 			s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
 		UI_DrawNamedPic( s_player_config_menu.x - 40, refdef.y, scratch );
 	}
-	R_SyncRenderThread();
 }
 
 static const char* PlayerConfig_MenuKey( int key ) {
@@ -2678,9 +2656,7 @@ static void DownloadOptions_MenuInit() {
 }
 
 static void DownloadOptions_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	Menu_Draw( &s_downloadoptions_menu );
-	R_SyncRenderThread();
 }
 
 static const char* DownloadOptions_MenuKey( int key ) {
@@ -2934,11 +2910,9 @@ static void Options_MenuInit() {
 }
 
 static void Options_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	MQ2_Banner( "m_banner_options" );
 	Menu_AdjustCursor( &s_options_menu, 1 );
 	Menu_Draw( &s_options_menu );
-	R_SyncRenderThread();
 }
 
 static const char* Options_MenuKey( int key ) {
@@ -3276,10 +3250,8 @@ static void Keys_MenuInit() {
 }
 
 static void Keys_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	Menu_AdjustCursor( &s_keys_menu, 1 );
 	Menu_Draw( &s_keys_menu );
-	R_SyncRenderThread();
 }
 
 static const char* Keys_MenuKey( int key ) {
@@ -3489,7 +3461,6 @@ static void VID_MenuInit() {
 }
 
 static void VID_MenuDraw() {
-	R_VerifyNoRenderCommands();
 	//	draw the banner
 	int w, h;
 	R_GetPicSize( &w, &h, "m_banner_video" );
@@ -3500,7 +3471,6 @@ static void VID_MenuDraw() {
 
 	//	draw the menu
 	Menu_Draw( &s_opengl_menu );
-	R_SyncRenderThread();
 }
 
 static const char* VID_MenuKey( int key ) {
@@ -3574,11 +3544,9 @@ static const char* M_Quit_Key( int key ) {
 }
 
 static void M_Quit_Draw() {
-	R_VerifyNoRenderCommands();
 	int w, h;
 	R_GetPicSize( &w, &h, "quit" );
 	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "quit" );
-	R_SyncRenderThread();
 }
 
 static void MQ2_Menu_Quit_f() {
@@ -3608,14 +3576,12 @@ void MQ2_Init() {
 }
 
 void MQ2_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( !( in_keyCatchers & KEYCATCH_UI ) ) {
 		return;
 	}
 
 	// dim everything behind it down
 	UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
-	R_SyncRenderThread();
 
 	mq2_drawfunc();
 

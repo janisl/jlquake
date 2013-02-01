@@ -70,7 +70,9 @@ void UI_DrawMenu() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Draw();
 	} else if ( GGameType & GAME_Quake2 )     {
+		R_VerifyNoRenderCommands();
 		MQ2_Draw();
+		R_SyncRenderThread();
 	} else   {
 		UIT3_Refresh( cls.realtime );
 	}
