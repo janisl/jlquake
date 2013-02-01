@@ -824,6 +824,7 @@ static void FindName( const char* which, char* name ) {
 }
 
 static void SbarH2_NormalOverlay() {
+	R_VerifyNoRenderCommands();
 	int piece = 0;
 	int y = 40;
 	for ( int i = 0; i < 8; i++ ) {
@@ -838,24 +839,18 @@ static void SbarH2_NormalOverlay() {
 		char name[ 40 ];
 		FindName( cl.h2_puzzle_pieces[ i ], name );
 
-		R_VerifyNoRenderCommands();
 		if ( piece < 4 ) {
 			MQH_DrawPic( 10, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 45, y, name );
-			R_SyncRenderThread();
 		} else   {
 			MQH_DrawPic( 310 - 32, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
-			R_SyncRenderThread();
-			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
-			R_SyncRenderThread();
 		}
 
 		y += 32;
 		piece++;
 	}
+	R_SyncRenderThread();
 }
 
 static void SbarH2_SortFrags( bool includespec ) {
@@ -929,16 +924,14 @@ static void FindColor( int slot, int* color1, int* color2 ) {
 }
 
 void SbarH2_DeathmatchOverlay() {
+	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_HexenWorld && cls.realtime - cl.qh_last_ping_request * 1000 > 2000 ) {
 		cl.qh_last_ping_request = cls.realtime * 0.001;
 		CL_AddReliableCommand( "pings" );
 	}
 
 	image_t* pic = R_CachePic( "gfx/menu/title8.lmp" );
-	R_VerifyNoRenderCommands();
 	MQH_DrawPic( ( 320 - R_GetImageWidth( pic ) ) / 2, 0, pic );
-	R_SyncRenderThread();
-	R_VerifyNoRenderCommands();
 
 	// scores
 	SbarH2_SortFrags( true );
