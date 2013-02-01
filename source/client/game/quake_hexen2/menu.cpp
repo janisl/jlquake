@@ -280,7 +280,6 @@ void MQH_Menu_Main_f() {
 }
 
 static void MQH_Main_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title0.lmp" );
 		if ( GGameType & GAME_HexenWorld ) {
@@ -308,7 +307,6 @@ static void MQH_Main_Draw() {
 
 		MQH_DrawPic( 54, 32 + mqh_main_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_Main_Key( int key ) {
@@ -408,7 +406,6 @@ static void MQH_Menu_SinglePlayer_f() {
 }
 
 static void MQH_SinglePlayer_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title1.lmp" );
 
@@ -445,7 +442,6 @@ static void MQH_SinglePlayer_Draw() {
 			MQH_DrawPic( 54, 32 + mqh_singleplayer_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
 		}
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_NewGameConfirmed() {
@@ -538,12 +534,10 @@ static void MQH_Menu_SinglePlayerConfirm_f() {
 }
 
 static void MQH_SinglePlayerConfirm_Draw() {
-	R_VerifyNoRenderCommands();
 	int y = viddef.height * 0.35;
 	MQH_DrawTextBox( 32, y - 16, 30, 4 );
 	MQH_PrintWhite( 64, y, "Are you sure you want to" );
 	MQH_PrintWhite( 92, y + 8, "start a new game?" );
-	R_SyncRenderThread();
 }
 
 static void MQH_SinglePlayerConfirm_Key( int key ) {
@@ -597,7 +591,6 @@ static void MH2_Menu_Class2_f() {
 }
 
 static void MH2_Class_Draw() {
-	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title2.lmp" );
 
 	for ( int i = 0; i < ( GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ); i++ ) {
@@ -609,7 +602,6 @@ static void MH2_Class_Draw() {
 
 	MQH_DrawPic( 251,54 + 21, R_CachePic( va( "gfx/cport%d.lmp", mqh_class_cursor + 1 ) ) );
 	MQH_DrawPic( 242,54, R_CachePic( "gfx/menu/frame.lmp" ) );
-	R_SyncRenderThread();
 }
 
 static void MH2_Class_Key( int key ) {
@@ -700,7 +692,6 @@ static void MH2_Menu_Difficulty_f() {
 }
 
 static void MH2_Difficulty_Draw() {
-	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title5.lmp" );
 
 	setup_class = clh2_playerclass->value;
@@ -716,7 +707,6 @@ static void MH2_Difficulty_Draw() {
 
 	int f = ( int )( cls.realtime / 100 ) % 8;
 	MQH_DrawPic( 43, 54 + mh2_diff_cursor * 20, R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
-	R_SyncRenderThread();
 }
 
 static void MH2_Difficulty_Key( int key ) {
@@ -847,7 +837,6 @@ static void MQH_Menu_Save_f() {
 }
 
 static void MQH_Load_Draw() {
-	R_VerifyNoRenderCommands();
 	int y;
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/load.lmp" );
@@ -864,11 +853,9 @@ static void MQH_Load_Draw() {
 
 	// line cursor
 	MQH_DrawCharacter( 8, y + mqh_load_cursor * 8, 12 + ( ( cls.realtime / 250 ) & 1 ) );
-	R_SyncRenderThread();
 }
 
 static void MQH_Save_Draw() {
-	R_VerifyNoRenderCommands();
 	int y;
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/save.lmp" );
@@ -885,7 +872,6 @@ static void MQH_Save_Draw() {
 
 	// line cursor
 	MQH_DrawCharacter( 8, y + mqh_load_cursor * 8, 12 + ( ( cls.realtime / 250 ) & 1 ) );
-	R_SyncRenderThread();
 }
 
 static void MQH_Load_Key( int k ) {
@@ -982,7 +968,6 @@ static void MQH_Menu_MultiPlayer_f() {
 }
 
 static void MQH_MultiPlayer_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 
@@ -1008,7 +993,6 @@ static void MQH_MultiPlayer_Draw() {
 		}
 
 		if ( GGameType & GAME_HexenWorld || tcpipAvailable ) {
-			R_SyncRenderThread();
 			return;
 		}
 		MQH_PrintWhite( ( 320 / 2 ) - ( ( 27 * 8 ) / 2 ), 160, "No Communications Available" );
@@ -1032,13 +1016,11 @@ static void MQH_MultiPlayer_Draw() {
 			MQH_DrawPic( 54, 32 + mqh_multiplayer_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
 
 			if ( tcpipAvailable ) {
-				R_SyncRenderThread();
 				return;
 			}
 			MQH_PrintWhite( ( 320 / 2 ) - ( ( 27 * 8 ) / 2 ), 148, "No Communications Available" );
 		}
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_MultiPlayer_Key( int key ) {
@@ -1149,7 +1131,6 @@ static void MQH_Menu_LanConfig_f() {
 }
 
 static void MQH_LanConfig_Draw() {
-	R_VerifyNoRenderCommands();
 	int basex;
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
@@ -1181,7 +1162,6 @@ static void MQH_LanConfig_Draw() {
 	if ( *m_return_reason ) {
 		MQH_PrintWhite( basex, GGameType & GAME_Hexen2 ? 172 : 128, m_return_reason );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_ConfigureNetSubsystem() {
@@ -1317,7 +1297,6 @@ static void MQH_Menu_Search_f() {
 }
 
 static void MQH_Search_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 	} else   {
@@ -1331,7 +1310,6 @@ static void MQH_Search_Draw() {
 
 	if ( slistInProgress ) {
 		NET_Poll();
-		R_SyncRenderThread();
 		return;
 	}
 
@@ -1342,12 +1320,10 @@ static void MQH_Search_Draw() {
 
 	if ( hostCacheCount ) {
 		MQH_Menu_ServerList_f();
-		R_SyncRenderThread();
 		return;
 	}
 
 	MQH_PrintWhite( ( 320 / 2 ) - ( ( 22 * 8 ) / 2 ), GGameType & GAME_Hexen2 ? 92 : 64, GGameType & GAME_Hexen2 ? "No Hexen II servers found" : "No Quake servers found" );
-	R_SyncRenderThread();
 	if ( cls.realtime - searchCompleteTime < 3000 ) {
 		return;
 	}
@@ -1375,7 +1351,6 @@ static void MQH_Menu_ServerList_f() {
 }
 
 static void MQH_ServerList_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( !mqh_slist_sorted ) {
 		if ( hostCacheCount > 1 ) {
 			for ( int i = 0; i < hostCacheCount; i++ ) {
@@ -1412,7 +1387,6 @@ static void MQH_ServerList_Draw() {
 	if ( *m_return_reason ) {
 		MQH_PrintWhite( 16, GGameType & GAME_Hexen2 ? 176 : 148, m_return_reason );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_ServerList_Key( int k ) {
@@ -1518,7 +1492,6 @@ static void MHW_Menu_Connect_f() {
 }
 
 static void MHW_Connect_Draw() {
-	R_VerifyNoRenderCommands();
 	MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 
 	if ( connect_cursor < MAX_HOST_NAMES ) {
@@ -1547,7 +1520,6 @@ static void MHW_Connect_Draw() {
 	MQH_Print( 24, y + 8, "Save Changes" );
 
 	MQH_DrawCharacter( 8, connect_cursor_table[ connect_cursor ], 12 + ( ( cls.realtime / 250 ) & 1 ) );
-	R_SyncRenderThread();
 }
 
 static void MHW_Connect_Key( int k ) {
@@ -1917,7 +1889,6 @@ static void MQH_Menu_GameOptions_f() {
 }
 
 static void MQH_GameOptions_Draw() {
-	R_VerifyNoRenderCommands();
 	int startx;
 	int starty;
 	if ( GGameType & GAME_Hexen2 ) {
@@ -2062,7 +2033,6 @@ static void MQH_GameOptions_Draw() {
 			}
 		}
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_ChangeMaxPlayers( int dir ) {
@@ -2494,7 +2464,6 @@ static void MQH_Menu_Setup_f() {
 }
 
 static void MQH_Setup_Draw() {
-	R_VerifyNoRenderCommands();
 	static bool wait;
 
 	if ( GGameType & GAME_Hexen2 ) {
@@ -2615,7 +2584,6 @@ static void MQH_Setup_Draw() {
 
 	MQH_DrawCharacter( 56, GGameType & GAME_HexenWorld ? setup_cursor_table_hw[ mqh_setup_cursor ] : GGameType & GAME_Hexen2 ? setup_cursor_table_h2[ mqh_setup_cursor ] :
 		setup_cursor_table_q1[ mqh_setup_cursor ], 12 + ( ( cls.realtime / 250 ) & 1 ) );
-	R_SyncRenderThread();
 }
 
 static void MQH_Setup_Key( int k ) {
@@ -2979,7 +2947,6 @@ static void MQH_DrawCheckbox( int x, int y, int on ) {
 }
 
 static void MQH_Options_Draw() {
-	R_VerifyNoRenderCommands();
 	int itemsStartY;
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title3.lmp" );
@@ -3072,7 +3039,6 @@ static void MQH_Options_Draw() {
 
 	// cursor
 	MQH_DrawCharacter( 200, itemsStartY + mqh_options_cursor * 8, 12 + ( ( cls.realtime / 250 ) & 1 ) );
-	R_SyncRenderThread();
 }
 
 static void MQH_AdjustSliders( int dir ) {
@@ -3438,7 +3404,6 @@ static void MQH_Menu_Keys_f() {
 }
 
 static void MQH_Keys_Draw() {
-	R_VerifyNoRenderCommands();
 	int topy;
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title6.lmp" );
@@ -3492,7 +3457,6 @@ static void MQH_Keys_Draw() {
 	} else   {
 		MQH_DrawCharacter( 130, topy + 16 + ( mqh_keys_cursor - mqh_keys_top ) * 8, 12 + ( ( cls.realtime / 250 ) & 1 ) );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_Keys_Key( int k ) {
@@ -3573,7 +3537,6 @@ static void MQH_Menu_Video_f() {
 }
 
 static void MQH_Video_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title7.lmp" );
 	} else   {
@@ -3589,7 +3552,6 @@ static void MQH_Video_Draw() {
 		"and set r_colorbits <bits-per-pixel>" );
 	MQH_Print( 3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 6,
 		"Select windowed mode with set r_fullscreen 0" );
-	R_SyncRenderThread();
 }
 
 static void MQH_Video_Key( int key ) {
@@ -3621,7 +3583,6 @@ static void MQH_Menu_Help_f() {
 }
 
 static void MQH_Help_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( GGameType & GAME_HexenWorld && clhw_siege ) {
 			MQH_DrawPic( 0, 0, R_CachePic( va( "gfx/menu/sghelp%02i.lmp", mqh_help_page + 1 ) ) );
@@ -3631,7 +3592,6 @@ static void MQH_Help_Draw() {
 	} else   {
 		MQH_DrawPic( 0, 0, R_CachePic( va( "gfx/help%i.lmp", mqh_help_page ) ) );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_Help_Key( int key ) {
@@ -4372,7 +4332,6 @@ void MQH_Menu_Quit_f() {
 }
 
 static void MQH_Quit_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		LinePos += cls.frametime * 0.001 * 1.75;
 		if ( LinePos > MaxLines + QUIT_SIZE_H2 + 2 ) {
@@ -4494,7 +4453,6 @@ static void MQH_Quit_Draw() {
 		MQH_PrintWhite( 16, 172, "Nothing Interactive, Inc. All rights\n" );
 		MQH_PrintWhite( 16, 180, "reserved. Press y to exit\n" );
 	}
-	R_SyncRenderThread();
 }
 
 static void MQH_Quit_Key( int key ) {
@@ -4595,7 +4553,6 @@ void MQH_InitImages() {
 }
 
 void MQH_FadeScreen() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Hexen2 ) {
 		UI_Fill( 0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2 );
 		for ( int c = 0; c < 40; c++ ) {
@@ -4608,7 +4565,6 @@ void MQH_FadeScreen() {
 	} else   {
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
 	}
-	R_SyncRenderThread();
 }
 
 void MQH_Draw() {
@@ -4620,9 +4576,12 @@ void MQH_Draw() {
 		Con_DrawFullBackground();
 		S_ExtraUpdate();
 	} else   {
+		R_VerifyNoRenderCommands();
 		MQH_FadeScreen();
+		R_SyncRenderThread();
 	}
 
+	R_VerifyNoRenderCommands();
 	switch ( m_state ) {
 	case m_none:
 		break;
@@ -4712,6 +4671,7 @@ void MQH_Draw() {
 	}
 
 	S_ExtraUpdate();
+	R_SyncRenderThread();
 }
 
 void MQH_Keydown( int key ) {

@@ -544,8 +544,8 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	if ( scr_draw_loading ) {
 		R_VerifyNoRenderCommands();
 		SbarH2_Draw();
-		R_SyncRenderThread();
 		MQH_FadeScreen();
+		R_SyncRenderThread();
 		SCRH2_DrawLoading();
 	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
 		SBH2_IntermissionOverlay();
