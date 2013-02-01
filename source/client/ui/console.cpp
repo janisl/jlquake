@@ -518,6 +518,9 @@ static void Con_DrawInput( int lines ) {
 }
 
 static void Con_DrawSolidConsole( float frac ) {
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+	}
 	int lines;
 	if ( GGameType & GAME_Tech3 ) {
 		lines = cls.glconfig.vidHeight * frac;
@@ -538,40 +541,19 @@ static void Con_DrawSolidConsole( float frac ) {
 	con.xadjust = 0;
 	UI_AdjustFromVirtualScreen( &con.xadjust, NULL, NULL, NULL );
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	Con_DrawBackground( frac, lines );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	Con_DrawText( lines );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	Con_DrawDownloadBar( lines );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	Con_DrawInput( lines );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 
 	if ( GGameType & GAME_Tech3 ) {
 		R_SetColor( NULL );
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_SyncRenderThread();
 	}
 }
 

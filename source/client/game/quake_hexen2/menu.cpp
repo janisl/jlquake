@@ -4568,22 +4568,18 @@ void MQH_FadeScreen() {
 }
 
 void MQH_Draw() {
+	R_VerifyNoRenderCommands();
 	if ( m_state == m_none || !( in_keyCatchers & KEYCATCH_UI ) ) {
 		return;
 	}
 
 	if ( con.displayFrac ) {
-		R_VerifyNoRenderCommands();
 		Con_DrawFullBackground();
 		S_ExtraUpdate();
-		R_SyncRenderThread();
 	} else   {
-		R_VerifyNoRenderCommands();
 		MQH_FadeScreen();
-		R_SyncRenderThread();
 	}
 
-	R_VerifyNoRenderCommands();
 	switch ( m_state ) {
 	case m_none:
 		break;
