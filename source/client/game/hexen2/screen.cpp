@@ -550,7 +550,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
 		SBH2_IntermissionOverlay();
 		if ( cl.qh_intermission < 12 ) {
+			R_VerifyNoRenderCommands();
 			Con_DrawConsole();
+			R_SyncRenderThread();
 			UI_DrawMenu();
 		}
 	} else   {
@@ -563,7 +565,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		R_SyncRenderThread();
 		SCRH2_Plaque_Draw( clh2_plaquemessage,0 );
 		SCR_DrawNet();
+		R_VerifyNoRenderCommands();
 		Con_DrawConsole();
+		R_SyncRenderThread();
 		UI_DrawMenu();
 
 		if ( GGameType & GAME_H2Portals && clh2_info_up ) {

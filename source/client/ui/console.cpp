@@ -518,9 +518,6 @@ static void Con_DrawInput( int lines ) {
 }
 
 static void Con_DrawSolidConsole( float frac ) {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	int lines;
 	if ( GGameType & GAME_Tech3 ) {
 		lines = cls.glconfig.vidHeight * frac;
@@ -552,16 +549,10 @@ static void Con_DrawSolidConsole( float frac ) {
 	if ( GGameType & GAME_Tech3 ) {
 		R_SetColor( NULL );
 	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 }
 
 //	Draws the last few lines of output transparently over the game top
 static int Con_DrawNotify() {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
 	int currentColor = 7;
@@ -609,9 +600,6 @@ static int Con_DrawNotify() {
 		R_SetColor( NULL );
 	}
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 	return y;
 }
 
@@ -638,10 +626,8 @@ static void Con_DrawChat( int y ) {
 		SCR_DrawBigString( 8, y, buf, 1.0f );
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, y, true );
 	} else   {
-		R_VerifyNoRenderCommands();
 		UI_DrawString( 8, y, buf );
 		Field_Draw( &chatField, skip << 3, y, true );
-		R_SyncRenderThread();
 	}
 }
 
@@ -690,16 +676,19 @@ void Con_DrawConsole() {
 		if ( cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING ) {
 			// forced full screen console
 			Con_DrawSolidConsole( 1.0 );
+			R_SyncRenderThread();
 			return;
 		}
 	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) )       {
 		if ( cls.state != CA_ACTIVE ) {
 			Con_DrawSolidConsole( 1.0 );
+			R_SyncRenderThread();
 			return;
 		}
 	} else   {
 		if ( cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS ) {
 			Con_DrawSolidConsole( 1.0 );
+			R_SyncRenderThread();
 			return;
 		}
 	}
@@ -707,7 +696,6 @@ void Con_DrawConsole() {
 	if ( GGameType & GAME_Quake2 && ( cls.state != CA_ACTIVE || !cl.q2_refresh_prepped ) ) {
 		// connected, but can't render
 		Con_DrawSolidConsole( 0.5 );
-		R_VerifyNoRenderCommands();
 		UI_Fill( 0, viddef.height / 2, viddef.width, viddef.height / 2, 0, 0, 0, 1 );
 		R_SyncRenderThread();
 		return;

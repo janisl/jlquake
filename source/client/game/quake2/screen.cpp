@@ -101,7 +101,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 		if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_DrawMenu();
 		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
+			R_VerifyNoRenderCommands();
 			Con_DrawConsole();
+			R_SyncRenderThread();
 		}
 	} else   {
 		// do 3D refresh drawing, and then update the screen
@@ -124,7 +126,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 
 		SCRQ2_DrawPause();
 
+		R_VerifyNoRenderCommands();
 		Con_DrawConsole();
+		R_SyncRenderThread();
 
 		UI_DrawMenu();
 

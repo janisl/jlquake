@@ -152,8 +152,8 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCR_CheckDrawCenterString();
 		R_VerifyNoRenderCommands();
 		SbarQ1_Draw();
-		R_SyncRenderThread();
 		Con_DrawConsole();
+		R_SyncRenderThread();
 		UI_DrawMenu();
 	}
 
