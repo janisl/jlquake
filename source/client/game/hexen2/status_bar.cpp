@@ -838,11 +838,14 @@ static void SbarH2_NormalOverlay() {
 		char name[ 40 ];
 		FindName( cl.h2_puzzle_pieces[ i ], name );
 
+		R_VerifyNoRenderCommands();
 		if ( piece < 4 ) {
 			MQH_DrawPic( 10, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			R_SyncRenderThread();
 			MQH_PrintWhite( 45, y, name );
 		} else   {
 			MQH_DrawPic( 310 - 32, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			R_SyncRenderThread();
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
 		}
 
@@ -928,7 +931,9 @@ void SbarH2_DeathmatchOverlay() {
 	}
 
 	image_t* pic = R_CachePic( "gfx/menu/title8.lmp" );
+	R_VerifyNoRenderCommands();
 	MQH_DrawPic( ( 320 - R_GetImageWidth( pic ) ) / 2, 0, pic );
+	R_SyncRenderThread();
 	R_VerifyNoRenderCommands();
 
 	// scores
