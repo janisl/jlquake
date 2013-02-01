@@ -549,12 +549,12 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCRH2_DrawLoading();
 	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
 		SBH2_IntermissionOverlay();
+		R_VerifyNoRenderCommands();
 		if ( cl.qh_intermission < 12 ) {
-			R_VerifyNoRenderCommands();
 			Con_DrawConsole();
-			R_SyncRenderThread();
 			UI_DrawMenu();
 		}
+		R_SyncRenderThread();
 	} else   {
 		SCR_DrawFPS();
 		SCRQH_DrawTurtle();
@@ -567,8 +567,8 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCR_DrawNet();
 		R_VerifyNoRenderCommands();
 		Con_DrawConsole();
-		R_SyncRenderThread();
 		UI_DrawMenu();
+		R_SyncRenderThread();
 
 		if ( GGameType & GAME_H2Portals && clh2_info_up ) {
 			SCRH2_UpdateInfoMessage();

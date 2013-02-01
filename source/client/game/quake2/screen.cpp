@@ -98,13 +98,13 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	// if a cinematic is supposed to be running, handle menus
 	// and console specially
 	else if ( SCR_DrawCinematic() ) {
+		R_VerifyNoRenderCommands();
 		if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_DrawMenu();
 		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
-			R_VerifyNoRenderCommands();
 			Con_DrawConsole();
-			R_SyncRenderThread();
 		}
+		R_SyncRenderThread();
 	} else   {
 		// do 3D refresh drawing, and then update the screen
 		SCR_CalcVrect();
@@ -128,9 +128,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 
 		R_VerifyNoRenderCommands();
 		Con_DrawConsole();
-		R_SyncRenderThread();
 
 		UI_DrawMenu();
+		R_SyncRenderThread();
 
 		SCRQ2_DrawLoading();
 	}

@@ -4568,7 +4568,6 @@ void MQH_FadeScreen() {
 }
 
 void MQH_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( m_state == m_none || !( in_keyCatchers & KEYCATCH_UI ) ) {
 		return;
 	}
@@ -4669,7 +4668,6 @@ void MQH_Draw() {
 	}
 
 	S_ExtraUpdate();
-	R_SyncRenderThread();
 }
 
 void MQH_Keydown( int key ) {
