@@ -116,7 +116,9 @@ static void SCRH2_Bottom_Plaque_Draw( const char* message ) {
 		String::NCpy( temp, &message[ scrh2_StartC[ i ] ],scrh2_EndC[ i ] - scrh2_StartC[ i ] );
 		temp[ scrh2_EndC[ i ] - scrh2_StartC[ i ] ] = 0;
 		int bx = ( ( 40 - String::Length( temp ) ) * 8 ) / 2;
+		R_VerifyNoRenderCommands();
 		MQH_Print( bx, by, temp );
+		R_SyncRenderThread();
 	}
 }
 
@@ -426,7 +428,9 @@ static void SBH2_IntermissionOverlay() {
 		if ( cl.qh_intermission < 6 || cl.qh_intermission > 9 ) {
 			I_Print( bx, by, temp );
 		} else   {
+			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( bx, by, temp );
+			R_SyncRenderThread();
 		}
 
 		elapsed -= size;

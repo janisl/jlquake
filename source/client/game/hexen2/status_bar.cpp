@@ -842,11 +842,15 @@ static void SbarH2_NormalOverlay() {
 		if ( piece < 4 ) {
 			MQH_DrawPic( 10, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 45, y, name );
+			R_SyncRenderThread();
 		} else   {
 			MQH_DrawPic( 310 - 32, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			R_SyncRenderThread();
+			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
+			R_SyncRenderThread();
 		}
 
 		y += 32;
