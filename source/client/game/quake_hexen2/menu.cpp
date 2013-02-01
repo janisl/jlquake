@@ -92,7 +92,6 @@ void MQH_PrintWhite( int cx, int cy, const char* str ) {
 }
 
 void MQH_DrawTextBox( int x, int y, int width, int lines ) {
-	R_VerifyNoRenderCommands();
 	// draw left side
 	int cx = x;
 	int cy = y;
@@ -137,7 +136,6 @@ void MQH_DrawTextBox( int x, int y, int width, int lines ) {
 	}
 	p = R_CachePic( "gfx/box_br.lmp" );
 	MQH_DrawPic( cx, cy + 8, p );
-	R_SyncRenderThread();
 }
 
 void MQH_DrawTextBox2( int x, int y, int width, int lines ) {
@@ -145,7 +143,9 @@ void MQH_DrawTextBox2( int x, int y, int width, int lines ) {
 }
 
 static void MQH_DrawField( int x, int y, field_t* edit, bool showCursor ) {
+	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( x - 8, y - 8, edit->widthInChars, 1 );
+	R_SyncRenderThread();
 	R_VerifyNoRenderCommands();
 	Field_Draw( edit, x + ( ( viddef.width - 320 ) >> 1 ), y, showCursor );
 	R_SyncRenderThread();
@@ -419,7 +419,9 @@ static void MQH_SinglePlayer_Draw() {
 		MH2_ScrollTitle( "gfx/menu/title1.lmp" );
 
 		if ( GGameType & GAME_HexenWorld ) {
+			R_VerifyNoRenderCommands();
 			MQH_DrawTextBox( 60, 10 * 8, 23, 4 );
+			R_SyncRenderThread();
 			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 92, 12 * 8, "HexenWorld is for" );
 			MQH_PrintWhite( 88, 13 * 8, "Internet play only" );
@@ -445,7 +447,9 @@ static void MQH_SinglePlayer_Draw() {
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		R_SyncRenderThread();
 		if ( GGameType & GAME_QuakeWorld ) {
+			R_VerifyNoRenderCommands();
 			MQH_DrawTextBox( 60, 10 * 8, 23, 4 );
+			R_SyncRenderThread();
 			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 92, 12 * 8, "QuakeWorld is for" );
 			MQH_PrintWhite( 88, 13 * 8, "Internet play only" );
@@ -551,7 +555,9 @@ static void MQH_Menu_SinglePlayerConfirm_f() {
 
 static void MQH_SinglePlayerConfirm_Draw() {
 	int y = viddef.height * 0.35;
+	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( 32, y - 16, 30, 4 );
+	R_SyncRenderThread();
 	R_VerifyNoRenderCommands();
 	MQH_PrintWhite( 64, y, "Are you sure you want to" );
 	MQH_PrintWhite( 92, y + 8, "start a new game?" );
@@ -1035,7 +1041,9 @@ static void MQH_MultiPlayer_Draw() {
 		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
 		R_SyncRenderThread();
 		if ( GGameType & GAME_QuakeWorld ) {
+			R_VerifyNoRenderCommands();
 			MQH_DrawTextBox( 46, 8 * 8, 27, 9 );
+			R_SyncRenderThread();
 			R_VerifyNoRenderCommands();
 			MQH_PrintWhite( 72, 10 * 8, "If you want to find QW  " );
 			MQH_PrintWhite( 72, 11 * 8, "games, head on over to: " );
@@ -1353,7 +1361,9 @@ static void MQH_Search_Draw() {
 	}
 
 	int x = ( 320 / 2 ) - ( ( 12 * 8 ) / 2 ) + 4;
+	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( x - 8, GGameType & GAME_Hexen2 ? 60 : 32, 12, 1 );
+	R_SyncRenderThread();
 	R_VerifyNoRenderCommands();
 	MQH_Print( x, GGameType & GAME_Hexen2 ? 68 : 40, "Searching..." );
 	R_SyncRenderThread();
@@ -1963,7 +1973,9 @@ static void MQH_GameOptions_Draw() {
 		R_SyncRenderThread();
 	}
 
+	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox( startx + 152, starty, 10, 1 );
+	R_SyncRenderThread();
 	R_VerifyNoRenderCommands();
 	MQH_Print( startx + 160, starty + 8, "begin game" );
 
@@ -2086,8 +2098,10 @@ static void MQH_GameOptions_Draw() {
 
 		if ( mqh_serverInfoMessage ) {
 			if ( ( cls.realtime - mqh_serverInfoMessageTime ) < 5000 ) {
+				R_VerifyNoRenderCommands();
 				int x = ( 320 - 26 * 8 ) / 2;
 				MQH_DrawTextBox( x, 138, 24, 4 );
+				R_SyncRenderThread();
 				R_VerifyNoRenderCommands();
 				x += 8;
 				MQH_Print( x, 146, "  More than 4 players   " );
@@ -2595,7 +2609,9 @@ static void MQH_Setup_Draw() {
 			MQH_Print( 64, 136, "Second color patch" );
 			R_SyncRenderThread();
 
+			R_VerifyNoRenderCommands();
 			MQH_DrawTextBox( 64, 164 - 8, 14, 1 );
+			R_SyncRenderThread();
 			R_VerifyNoRenderCommands();
 			MQH_Print( 72, 164, "Accept Changes" );
 
@@ -2634,7 +2650,9 @@ static void MQH_Setup_Draw() {
 			MQH_Print( 64, 128, "Second color patch" );
 			R_SyncRenderThread();
 
+			R_VerifyNoRenderCommands();
 			MQH_DrawTextBox( 64, 156 - 8, 14, 1 );
+			R_SyncRenderThread();
 			R_VerifyNoRenderCommands();
 			MQH_Print( 72, 156, "Accept Changes" );
 
@@ -2650,7 +2668,9 @@ static void MQH_Setup_Draw() {
 		MQH_Print( 64, 104, "Pants color" );
 		R_SyncRenderThread();
 
+		R_VerifyNoRenderCommands();
 		MQH_DrawTextBox( 64, 140 - 8, 14, 1 );
+		R_SyncRenderThread();
 		R_VerifyNoRenderCommands();
 		MQH_Print( 72, 140, "Accept Changes" );
 
@@ -4474,7 +4494,9 @@ static void MQH_Quit_Draw() {
 		}
 
 		int y = 12;
+		R_VerifyNoRenderCommands();
 		MQH_DrawTextBox( 0, 0, 38, 23 );
+		R_SyncRenderThread();
 		R_VerifyNoRenderCommands();
 		if ( GGameType & GAME_HexenWorld ) {
 			MQH_PrintWhite( 16, y,  "      Hexen2World version " VSTR2( VERSION ) "      " );    y += 8;
@@ -4544,7 +4566,9 @@ static void MQH_Quit_Draw() {
 			NULL
 		};
 
+		R_VerifyNoRenderCommands();
 		MQH_DrawTextBox( 0, 0, 38, 23 );
+		R_SyncRenderThread();
 		R_VerifyNoRenderCommands();
 		int y = 12;
 		for ( const char** p = cmsg; *p; p++, y += 8 ) {
@@ -4555,7 +4579,9 @@ static void MQH_Quit_Draw() {
 			}
 		}
 	} else   {
+		R_VerifyNoRenderCommands();
 		MQH_DrawTextBox( 0, 0, 38, 23 );
+		R_SyncRenderThread();
 		R_VerifyNoRenderCommands();
 		MQH_PrintWhite( 16, 12,  "  Quake version 1.09 by id Software\n\n" );
 		MQH_PrintWhite( 16, 28,  "Programming        Art \n" );

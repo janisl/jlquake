@@ -104,12 +104,14 @@ static void SCRH2_Bottom_Plaque_Draw( const char* message ) {
 	if ( !*message ) {
 		return;
 	}
+	R_VerifyNoRenderCommands();
 
 	SCRH2_FindTextBreaks( message, PLAQUE_WIDTH );
 
 	int by = ( ( ( viddef.height ) / 8 ) - scrh2_lines - 2 ) * 8;
 
 	MQH_DrawTextBox( 32, by - 16, 30, scrh2_lines + 2 );
+	R_SyncRenderThread();
 
 	for ( int i = 0; i < scrh2_lines; i++, by += 8 ) {
 		char temp[ 80 ];
@@ -266,11 +268,13 @@ static void SCRH2_Plaque_Draw( const char* message, bool AlwaysDraw ) {
 	if ( !*message ) {
 		return;
 	}
+	R_VerifyNoRenderCommands();
 
 	SCRH2_FindTextBreaks( message, PLAQUE_WIDTH );
 
 	by = ( ( 25 - scrh2_lines ) * 8 ) / 2;
 	MQH_DrawTextBox2( 32, by - 16, 30, scrh2_lines + 2 );
+	R_SyncRenderThread();
 
 	for ( i = 0; i < scrh2_lines; i++,by += 8 ) {
 		String::NCpy( temp,&message[ scrh2_StartC[ i ] ],scrh2_EndC[ i ] - scrh2_StartC[ i ] );
@@ -297,7 +301,9 @@ static void SCRH2_Info_Plaque_Draw( const char* message ) {
 	}
 
 	int by = ( ( 25 - scrh2_lines ) * 8 ) / 2;
+	R_VerifyNoRenderCommands();
 	MQH_DrawTextBox2( 15, by - 16, PLAQUE_WIDTH + 4 + 4, scrh2_lines + 2 );
+	R_SyncRenderThread();
 
 	for ( int i = 0; i < scrh2_lines; i++,by += 8 ) {
 		char temp[ 80 ];
