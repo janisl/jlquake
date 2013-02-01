@@ -81,6 +81,7 @@ static void R_LineGraph( int h ) {
 }
 
 static void CLQW_NetGraph() {
+	R_VerifyNoRenderCommands();
 	static int lastOutgoingSequence = 0;
 
 	CLQW_CalcNet();
@@ -91,6 +92,7 @@ static void CLQW_NetGraph() {
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
+	R_SyncRenderThread();
 }
 
 void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
@@ -124,7 +126,9 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	// draw any areas not covered by the refresh
 	//
+	R_VerifyNoRenderCommands();
 	SCR_TileClear();
+	R_SyncRenderThread();
 
 	if ( GGameType & GAME_QuakeWorld && scr_netgraph->value ) {
 		CLQW_NetGraph();
@@ -145,8 +149,10 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		R_SyncRenderThread();
 		SCR_CheckDrawCenterString();
 	} else   {
+		R_VerifyNoRenderCommands();
 		SCR_DrawNet();
 		SCR_DrawFPS();
+		R_SyncRenderThread();
 		SCRQH_DrawTurtle();
 		SCRQ1_DrawPause();
 		SCR_CheckDrawCenterString();

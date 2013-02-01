@@ -106,11 +106,13 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 		}
 		R_SyncRenderThread();
 	} else   {
+		R_VerifyNoRenderCommands();
 		// do 3D refresh drawing, and then update the screen
 		SCR_CalcVrect();
 
 		// clear any dirty part of the background
 		SCR_TileClear();
+		R_SyncRenderThread();
 
 		VQ2_RenderView( separation );
 
@@ -120,9 +122,11 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 			SCR_DebugGraph( cls.frametime * 0.25, 0 );
 		}
 
+		R_VerifyNoRenderCommands();
 		if ( cl_debuggraph->value || cl_timegraph->value || scr_netgraph->value ) {
 			SCR_DrawDebugGraph();
 		}
+		R_SyncRenderThread();
 
 		SCRQ2_DrawPause();
 
@@ -134,7 +138,9 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 
 		SCRQ2_DrawLoading();
 	}
+	R_VerifyNoRenderCommands();
 	SCR_DrawFPS();
+	R_SyncRenderThread();
 }
 
 //	Set a specific sky and rotation speed

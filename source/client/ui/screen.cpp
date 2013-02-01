@@ -131,9 +131,6 @@ void SCR_DebugGraph( float value, int color ) {
 }
 
 void SCR_DrawDebugGraph() {
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 	//
 	// draw the graph
 	//
@@ -176,9 +173,6 @@ void SCR_DrawDebugGraph() {
 			float b = ( ( color >> 16 ) & 0xff ) / 255.0;
 			UI_Fill( x + w - 1 - a, y - h, 1, h, r, g, b, 1 );
 		}
-	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
 	}
 }
 
@@ -392,7 +386,6 @@ static void SCR_SizeDown_f() {
 }
 
 void SCR_DrawNet() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_Quake2 ) {
 		if ( clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1 ) {
 			return;
@@ -415,11 +408,9 @@ void SCR_DrawNet() {
 	} else   {
 		UI_DrawPic( scr_vrect.x + 64, scr_vrect.y, scr_net );
 	}
-	R_SyncRenderThread();
 }
 
 void SCR_DrawFPS() {
-	R_VerifyNoRenderCommands();
 	static int lastframetime;
 	static int lastframecount;
 	static int lastfps;
@@ -440,12 +431,10 @@ void SCR_DrawFPS() {
 	int x = viddef.width - String::Length( st ) * 8 - 8;
 	int y = viddef.height - sbqh_lines - 8;
 	UI_DrawString( x, y, st );
-	R_SyncRenderThread();
 }
 
 //	Clear any parts of the tiled background that were drawn on last frame
 void SCR_TileClear() {
-	R_VerifyNoRenderCommands();
 	if ( con.displayFrac == 1.0 ) {
 		return;		// full screen console
 	}
@@ -490,7 +479,6 @@ void SCR_TileClear() {
 			UI_TileClear( right, top, viddef.width - right, scr_vrect.height, draw_backtile );
 		}
 	}
-	R_SyncRenderThread();
 }
 
 //	This is called every frame, and can also be called explicitly to flush

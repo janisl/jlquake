@@ -438,8 +438,8 @@ void SCRQ2_DrawHud() {
 	if ( cl.q2_frame.playerstate.stats[ Q2STAT_LAYOUTS ] & 2 ) {
 		CLQ2_DrawInventory();
 	}
-	R_SyncRenderThread();
 
 	SCR_DrawNet();
+	R_SyncRenderThread();
 	SCR_CheckDrawCenterString();
 }

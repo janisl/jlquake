@@ -479,6 +479,7 @@ static void CLHW_LineGraph( int h ) {
 }
 
 static void CLHW_NetGraph() {
+	R_VerifyNoRenderCommands();
 	static int lastOutgoingSequence = 0;
 
 	for ( int i = clc.netchan.outgoingSequence - UPDATE_BACKUP_HW + 1; i <= clc.netchan.outgoingSequence; i++ ) {
@@ -500,6 +501,7 @@ static void CLHW_NetGraph() {
 	}
 	lastOutgoingSequence = clc.netchan.outgoingSequence;
 	SCR_DrawDebugGraph();
+	R_SyncRenderThread();
 }
 
 void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
@@ -535,7 +537,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	//
 	// draw any areas not covered by the refresh
 	//
+	R_VerifyNoRenderCommands();
 	SCR_TileClear();
+	R_SyncRenderThread();
 
 	if ( GGameType & GAME_HexenWorld && scr_netgraph->value ) {
 		CLHW_NetGraph();
@@ -556,7 +560,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		}
 		R_SyncRenderThread();
 	} else   {
+		R_VerifyNoRenderCommands();
 		SCR_DrawFPS();
+		R_SyncRenderThread();
 		SCRQH_DrawTurtle();
 		SCRH2_DrawPause();
 		SCR_CheckDrawCenterString();
@@ -564,8 +570,8 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SbarH2_Draw();
 		R_SyncRenderThread();
 		SCRH2_Plaque_Draw( clh2_plaquemessage,0 );
-		SCR_DrawNet();
 		R_VerifyNoRenderCommands();
+		SCR_DrawNet();
 		Con_DrawConsole();
 		UI_DrawMenu();
 		R_SyncRenderThread();
