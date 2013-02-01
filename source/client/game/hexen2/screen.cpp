@@ -321,7 +321,9 @@ static void SBH2_IntermissionOverlay() {
 	char temp[ 80 ];
 
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_DeathmatchOverlay();
+		R_SyncRenderThread();
 		return;
 	}
 
@@ -534,7 +536,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 	}
 
 	if ( scr_draw_loading ) {
+		R_VerifyNoRenderCommands();
 		SbarH2_Draw();
+		R_SyncRenderThread();
 		MQH_FadeScreen();
 		SCRH2_DrawLoading();
 	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
@@ -548,7 +552,9 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SCRQH_DrawTurtle();
 		SCRH2_DrawPause();
 		SCR_CheckDrawCenterString();
+		R_VerifyNoRenderCommands();
 		SbarH2_Draw();
+		R_SyncRenderThread();
 		SCRH2_Plaque_Draw( clh2_plaquemessage,0 );
 		SCR_DrawNet();
 		Con_DrawConsole();

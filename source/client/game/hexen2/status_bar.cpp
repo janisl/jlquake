@@ -824,7 +824,6 @@ static void FindName( const char* which, char* name ) {
 }
 
 static void SbarH2_NormalOverlay() {
-	R_VerifyNoRenderCommands();
 	int piece = 0;
 	int y = 40;
 	for ( int i = 0; i < 8; i++ ) {
@@ -850,7 +849,6 @@ static void SbarH2_NormalOverlay() {
 		y += 32;
 		piece++;
 	}
-	R_SyncRenderThread();
 }
 
 static void SbarH2_SortFrags( bool includespec ) {
@@ -924,7 +922,6 @@ static void FindColor( int slot, int* color1, int* color2 ) {
 }
 
 void SbarH2_DeathmatchOverlay() {
-	R_VerifyNoRenderCommands();
 	if ( GGameType & GAME_HexenWorld && cls.realtime - cl.qh_last_ping_request * 1000 > 2000 ) {
 		cl.qh_last_ping_request = cls.realtime * 0.001;
 		CL_AddReliableCommand( "pings" );
@@ -1106,7 +1103,6 @@ void SbarH2_DeathmatchOverlay() {
 
 		y += 10;
 	}
-	R_SyncRenderThread();
 }
 
 static void DrawTime( int x, int y, int disp_time ) {
@@ -1314,7 +1310,6 @@ static void SB_PlacePlayerNames() {
 }
 
 void SbarH2_Draw() {
-	R_VerifyNoRenderCommands();
 	if ( h2intro_playing ) {
 		return;
 	}
@@ -1325,7 +1320,6 @@ void SbarH2_Draw() {
 
 	if ( cls.state != CA_ACTIVE || ( !( GGameType & GAME_HexenWorld ) && clc.qh_signon != SIGNONS ) || con.displayFrac == 1 ) {
 		// console is full screen
-		R_SyncRenderThread();
 		return;
 	}
 
@@ -1333,17 +1327,14 @@ void SbarH2_Draw() {
 		DrawNormalBar();
 	}
 
-	R_SyncRenderThread();
 	if ( sbh2_ShowDM ) {
 		if ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) {
 			SbarH2_DeathmatchOverlay();
-		} else   {
+		} else {
 			SbarH2_NormalOverlay();
 		}
 	} else if ( ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) && DMMode->value )       {
-		R_VerifyNoRenderCommands();
 		SbarH2_SmallDeathmatchOverlay();
-		R_SyncRenderThread();
 	}
 }
 
