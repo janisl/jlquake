@@ -19,6 +19,7 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/content_types.h"
+static void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs );
 
 struct sortedent_t {
 	trRefEntity_t* ent;
@@ -866,7 +867,8 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				} else   {
 					R_DrawNullModel();
 				}
-			} else   {
+			} else {
+				int firstDrawSurf = tr.refdef.numDrawSurfs;
 				switch ( tr.currentModel->type ) {
 				case MOD_BAD:
 					if ( GGameType & GAME_Tech3 ) {
@@ -917,26 +919,56 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 				case MOD_MESH3:
 					R_AddMD3Surfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				case MOD_MD4:
 					R_AddAnimSurfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				case MOD_MDC:
 					R_AddMDCSurfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				case MOD_MDS:
 					R_AddMdsAnimSurfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				case MOD_MDM:
 					R_MDM_AddAnimSurfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				case MOD_BRUSH46:
 					R_AddBrushModelSurfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+					}
 					break;
 
 				default:

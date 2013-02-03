@@ -19,6 +19,31 @@
 
 #define SHADEDOT_QUANT  16
 
+// any changes in surfaceType must be mirrored in rb_surfaceTable[]
+enum surfaceType_t
+{
+	SF_BAD,
+	SF_SKIP,				// ignore
+	SF_FACE,
+	SF_GRID,
+	SF_TRIANGLES,
+	SF_FOLIAGE,
+	SF_POLY,
+	SF_MD3,
+	SF_MD4,
+	SF_MDC,
+	SF_MDS,
+	SF_MDM,
+	SF_FLARE,
+	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
+	SF_DISPLAY_LIST,
+	SF_POLYBUFFER,
+	SF_DECAL,				// ydnar: decal surfaces
+
+	SF_NUM_SURFACE_TYPES,
+	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
+};
+
 //==============================================================================
 //
 //	QUAKE BRUSH MODELS
@@ -302,31 +327,6 @@ the bits are allocated as follows:
 #define MAX_GRID_SIZE       65			// max dimensions of a grid mesh in memory
 
 #define MAX_DECAL_VERTS     10	// worst case is triangle clipped by 6 planes
-
-// any changes in surfaceType must be mirrored in rb_surfaceTable[]
-enum surfaceType_t
-{
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-	SF_POLY,
-	SF_MD3,
-	SF_MD4,
-	SF_MDC,
-	SF_MDS,
-	SF_MDM,
-	SF_FLARE,
-	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_DISPLAY_LIST,
-	SF_POLYBUFFER,
-	SF_DECAL,				// ydnar: decal surfaces
-
-	SF_NUM_SURFACE_TYPES,
-	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
-};
 
 struct drawSurf_t {
 	unsigned sort;						// bit combination for fast compares
