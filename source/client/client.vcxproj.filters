@@ -358,9 +358,6 @@
     <ClCompile Include="splines\splines.cpp">
       <Filter>splines</Filter>
     </ClCompile>
-    <ClCompile Include="splines\util_str.cpp">
-      <Filter>splines</Filter>
-    </ClCompile>
     <ClCompile Include="game\quake_hexen2\predict.cpp">
       <Filter>game\quake_hexen2</Filter>
     </ClCompile>
@@ -598,16 +595,12 @@
     <ClInclude Include="game\quake2\local.h">
       <Filter>game\quake2</Filter>
     </ClInclude>
-    <ClInclude Include="client.h" />
     <ClInclude Include="windows_shared.h" />
     <ClInclude Include="hexen2clientdefs.h" />
     <ClInclude Include="quake2clientdefs.h" />
     <ClInclude Include="quake3clientdefs.h" />
     <ClInclude Include="quakeclientdefs.h" />
     <ClInclude Include="wolfclientdefs.h" />
-    <ClInclude Include="splines\math_vector.h">
-      <Filter>splines</Filter>
-    </ClInclude>
     <ClInclude Include="splines\public.h">
       <Filter>splines</Filter>
     </ClInclude>
@@ -615,12 +608,6 @@
       <Filter>splines</Filter>
     </ClInclude>
     <ClInclude Include="splines\splines.h">
-      <Filter>splines</Filter>
-    </ClInclude>
-    <ClInclude Include="splines\util_list.h">
-      <Filter>splines</Filter>
-    </ClInclude>
-    <ClInclude Include="splines\util_str.h">
       <Filter>splines</Filter>
     </ClInclude>
     <ClInclude Include="game\quake_hexen2\predict.h">

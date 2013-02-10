@@ -414,7 +414,7 @@ inline idStr::idStr( const idStr& text, int start, int end ) {
 inline idStr::idStr( const char* text ) {
 	Init();
 	if ( text ) {
-		int l = strlen( text );
+		int l = static_cast<int>( strlen( text ) );
 		EnsureAlloced( l + 1 );
 		strcpy( data, text );
 		len = l;
@@ -422,7 +422,7 @@ inline idStr::idStr( const char* text ) {
 }
 
 inline idStr::idStr( const char* text, int start, int end ) {
-	int l = strlen( text );
+	int l = static_cast<int>( strlen( text ) );
 
 	Init();
 	if ( end > l ) {
@@ -787,7 +787,7 @@ inline void idStr::Append( const char* text ) {
 	if ( !text ) {
 		return;
 	}
-	int newLen = len + strlen( text );
+	int newLen = len + static_cast<int>( strlen( text ) );
 	EnsureAlloced( newLen + 1 );
 	for ( int i = 0; text[ i ]; i++ ) {
 		data[ len + i ] = text[ i ];

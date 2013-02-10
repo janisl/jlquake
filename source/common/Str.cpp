@@ -137,7 +137,7 @@ void idStr::operator=( const char* text ) {
 		return;
 	}
 
-	int l = strlen( text );
+	int l = static_cast<int>( strlen( text ) );
 	EnsureAlloced( l + 1, false );
 	strcpy( data, text );
 	len = l;
