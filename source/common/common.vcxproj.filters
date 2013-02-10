@@ -19,6 +19,12 @@
     <Filter Include="virtual_machine">
       <UniqueIdentifier>{3c51eabe-da80-4113-8f3a-ad041c1fda45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{f51f0146-47d5-418c-8b3a-d01b74ccc811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="containers">
+      <UniqueIdentifier>{df60c8be-149b-47e0-a2b9-2c1111a06b8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clip_map\local.h">
@@ -72,7 +78,6 @@
     <ClInclude Include="virtual_machine\public.h">
       <Filter>virtual_machine</Filter>
     </ClInclude>
-    <ClInclude Include="array.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="common_defs.h" />
@@ -102,6 +107,16 @@
     <ClInclude Include="network_channel.h" />
     <ClInclude Include="hexen2strings.h" />
     <ClInclude Include="command_line_args.h" />
+    <ClInclude Include="math\Math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Vec3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Str.h" />
+    <ClInclude Include="containers\List.h">
+      <Filter>containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clip_map\main.cpp">
@@ -198,5 +213,12 @@
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="command_line_args.cpp" />
     <ClCompile Include="qcommon.cpp" />
+    <ClCompile Include="math\Math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Vec3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="Str.cpp" />
   </ItemGroup>
 </Project>

@@ -96,6 +96,7 @@
     <ClInclude Include="clip_map\bsp38\local.h" />
     <ClInclude Include="clip_map\bsp46\local.h" />
     <ClInclude Include="command_line_args.h" />
+    <ClInclude Include="containers\List.h" />
     <ClInclude Include="file_formats\bsp29.h" />
     <ClInclude Include="file_formats\bsp38.h" />
     <ClInclude Include="file_formats\bsp46.h" />
@@ -108,13 +109,15 @@
     <ClInclude Include="file_formats\spr.h" />
     <ClInclude Include="game_utils.h" />
     <ClInclude Include="hexen2strings.h" />
+    <ClInclude Include="math\Math.h" />
+    <ClInclude Include="math\Vec3.h" />
     <ClInclude Include="message_utils.h" />
     <ClInclude Include="network_channel.h" />
     <ClInclude Include="precompiler.h" />
     <ClInclude Include="script.h" />
+    <ClInclude Include="Str.h" />
     <ClInclude Include="virtual_machine\local.h" />
     <ClInclude Include="virtual_machine\public.h" />
-    <ClInclude Include="array.h" />
     <ClInclude Include="command_buffer.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="common_defs.h" />
@@ -239,6 +242,8 @@
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="game_utils1.cpp" />
     <ClCompile Include="hexen2strings.cpp" />
+    <ClCompile Include="math\Math.cpp" />
+    <ClCompile Include="math\Vec3.cpp" />
     <ClCompile Include="message_utils1.cpp" />
     <ClCompile Include="message_utils2.cpp" />
     <ClCompile Include="message_utils3.cpp" />
@@ -248,6 +253,7 @@
     <ClCompile Include="precompiler.cpp" />
     <ClCompile Include="qcommon.cpp" />
     <ClCompile Include="script.cpp" />
+    <ClCompile Include="Str.cpp" />
     <ClCompile Include="virtual_machine\interpreted.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)virtual_machine\</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)virtual_machine\</ObjectFileName>

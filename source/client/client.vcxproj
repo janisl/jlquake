@@ -722,12 +722,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)splines/</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)splines/</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="splines\util_str.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)splines/</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)splines/</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)splines/</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)splines/</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="translate.cpp" />
     <ClCompile Include="ui\console.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)ui\</ObjectFileName>
@@ -1045,13 +1039,9 @@
     <ClInclude Include="sound\public.h" />
     <ClInclude Include="sound\midi\midi.h" />
     <ClInclude Include="sound\midi\midstuff.h" />
-    <ClInclude Include="splines\math_vector.h" />
     <ClInclude Include="splines\public.h" />
     <ClInclude Include="splines\q_parse.h" />
     <ClInclude Include="splines\splines.h" />
-    <ClInclude Include="splines\util_str.h" />
-    <ClInclude Include="splines\util_list.h" />
-    <ClInclude Include="splines\util_str.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="translate.h" />
     <ClInclude Include="ui\console.h" />
@@ -1067,7 +1057,6 @@
     <ClInclude Include="game\particles.h" />
     <ClInclude Include="game\quake\local.h" />
     <ClInclude Include="game\quake2\local.h" />
-    <ClInclude Include="client.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="windows_shared.h" />
     <ClInclude Include="wolfclientdefs.h" />
