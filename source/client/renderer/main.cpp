@@ -923,6 +923,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
@@ -932,6 +933,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
@@ -941,6 +943,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
@@ -950,6 +953,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
@@ -959,6 +963,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
@@ -968,6 +973,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						R_VerifyNoRenderCommands();
 						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 

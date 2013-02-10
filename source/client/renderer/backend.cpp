@@ -309,8 +309,10 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
 
-	// clear the z buffer, set the modelview, etc
-	RB_BeginDrawingView();
+	if ( GGameType & GAME_Tech3 ) {
+		// clear the z buffer, set the modelview, etc
+		RB_BeginDrawingView();
+	}
 
 	// draw everything
 	int oldEntityNum = -1;
