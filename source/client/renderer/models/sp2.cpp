@@ -97,22 +97,22 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	qglBegin( GL_QUADS );
 
 	qglTexCoord2f( 0, 1 );
-	VectorMA( tr.currentEntity->e.origin, -frame->origin_y, up, point );
+	VectorScale( up, -frame->origin_y, point );
 	VectorMA( point, frame->origin_x, left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 0, 0 );
-	VectorMA( tr.currentEntity->e.origin, frame->height - frame->origin_y, up, point );
+	VectorScale( up, frame->height - frame->origin_y, point );
 	VectorMA( point, frame->origin_x, left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 0 );
-	VectorMA( tr.currentEntity->e.origin, frame->height - frame->origin_y, up, point );
+	VectorScale( up, frame->height - frame->origin_y, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 1 );
-	VectorMA( tr.currentEntity->e.origin, -frame->origin_y, up, point );
+	VectorScale( up, -frame->origin_y, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	qglVertex3fv( point );
 

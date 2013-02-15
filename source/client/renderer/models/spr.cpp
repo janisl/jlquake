@@ -205,8 +205,6 @@ void R_AddSprSurfaces( trRefEntity_t* e ) {
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {
-	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-
 	vec3_t point;
 
 	// don't even bother culling, because it's just a single
@@ -308,22 +306,22 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	qglBegin( GL_QUADS );
 
 	qglTexCoord2f( 0, 1 );
-	VectorMA( tr.currentEntity->e.origin, frame->down, up, point );
+	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->left, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 0, 0 );
-	VectorMA( tr.currentEntity->e.origin, frame->up, up, point );
+	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->left, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 0 );
-	VectorMA( tr.currentEntity->e.origin, frame->up, up, point );
+	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->right, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 1 );
-	VectorMA( tr.currentEntity->e.origin, frame->down, up, point );
+	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->right, right, point );
 	qglVertex3fv( point );
 
