@@ -1011,10 +1011,18 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 	if ( GGameType & GAME_Quake ) {
 		for ( tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++ ) {
+			tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 			tr.currentEntity = &tr.refdef.entities[ tr.currentEntityNum ];
 			tr.currentModel = R_GetModelByHandle( tr.currentEntity->e.hModel );
 			if ( tr.currentModel->type == MOD_SPRITE ) {
-				R_DrawSprModel( tr.currentEntity );
+				int firstDrawSurf = tr.refdef.numDrawSurfs;
+				R_AddSprSurfaces( tr.currentEntity );
+				if ( !( GGameType & GAME_Tech3 ) ) {
+					R_VerifyNoRenderCommands();
+					R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+					R_SyncRenderThread();
+					GL_State(GLS_DEFAULT);
+				}
 			}
 		}
 	}
@@ -1042,6 +1050,8 @@ static void R_DrawTransEntitiesOnList( bool inwater ) {
 	for ( int i = 0; i < numents; i++ ) {
 		tr.currentEntity = theents[ i ].ent;
 		tr.currentModel = R_GetModelByHandle( tr.currentEntity->e.hModel );
+		tr.currentEntityNum = tr.currentEntity - tr.refdef.entities;
+		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 		R_RotateForEntity( tr.currentEntity, &tr.viewParms, &tr.orient );
 		int firstDrawSurf = tr.refdef.numDrawSurfs;
 
@@ -1059,7 +1069,13 @@ static void R_DrawTransEntitiesOnList( bool inwater ) {
 			R_DrawBrushModelQ1( tr.currentEntity,true );
 			break;
 		case MOD_SPRITE:
-			R_DrawSprModel( tr.currentEntity );
+			R_AddSprSurfaces( tr.currentEntity );
+			if ( !( GGameType & GAME_Tech3 ) ) {
+				R_VerifyNoRenderCommands();
+				R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+				R_SyncRenderThread();
+				GL_State(GLS_DEFAULT);
+			}
 			break;
 		default:
 			break;

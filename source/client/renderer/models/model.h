@@ -29,6 +29,7 @@ enum surfaceType_t
 	SF_TRIANGLES,
 	SF_FOLIAGE,
 	SF_POLY,
+	SF_SPR,
 	SF_MDL,
 	SF_MD2,
 	SF_MD3,
@@ -711,6 +712,7 @@ struct msprite1framedesc_t {
 };
 
 struct msprite1_t {
+	surfaceType_t surfaceType;
 	int type;
 	int maxwidth;
 	int maxheight;
@@ -895,7 +897,8 @@ void R_BackupModels();
 
 void Mod_LoadSpriteModel( model_t* mod, void* buffer );
 void Mod_FreeSpriteModel( model_t* mod );
-void R_DrawSprModel( trRefEntity_t* e );
+void R_AddSprSurfaces( trRefEntity_t* e );
+void RB_SurfaceSpr( msprite1_t* psprite );
 
 void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen );
 void Mod_FreeSprite2Model( model_t* mod );

@@ -14,35 +14,9 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Mod_LoadSpriteFrame
-//
-//==========================================================================
 
 static void* Mod_LoadSpriteFrame( void* pin, msprite1frame_t** ppframe, int framenum ) {
 	dsprite1frame_t* pinframe = ( dsprite1frame_t* )pin;
@@ -76,12 +50,6 @@ static void* Mod_LoadSpriteFrame( void* pin, msprite1frame_t** ppframe, int fram
 
 	return ( void* )( ( byte* )pinframe + sizeof ( dsprite1frame_t ) + size );
 }
-
-//==========================================================================
-//
-//	Mod_LoadSpriteGroup
-//
-//==========================================================================
 
 static void* Mod_LoadSpriteGroup( void* pin, msprite1frame_t** ppframe, int framenum ) {
 	dsprite1group_t* pingroup = ( dsprite1group_t* )pin;
@@ -120,12 +88,6 @@ static void* Mod_LoadSpriteGroup( void* pin, msprite1frame_t** ppframe, int fram
 	return ptemp;
 }
 
-//==========================================================================
-//
-//	Mod_LoadSpriteModel
-//
-//==========================================================================
-
 void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
 	dsprite1_t* pin = ( dsprite1_t* )buffer;
 
@@ -143,6 +105,7 @@ void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
 
 	mod->q1_cache = psprite;
 
+	psprite->surfaceType = SF_SPR;
 	psprite->type = LittleLong( pin->type );
 	psprite->maxwidth = LittleLong( pin->width );
 	psprite->maxheight = LittleLong( pin->height );
@@ -182,12 +145,6 @@ void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
 	mod->type = MOD_SPRITE;
 }
 
-//==========================================================================
-//
-//	Mod_LoadSpriteModel
-//
-//==========================================================================
-
 void Mod_FreeSpriteModel( model_t* mod ) {
 	msprite1_t* psprite = ( msprite1_t* )mod->q1_cache;
 	for ( int i = 0; i < psprite->numframes; i++ ) {
@@ -204,12 +161,6 @@ void Mod_FreeSpriteModel( model_t* mod ) {
 	}
 	Mem_Free( psprite );
 }
-
-//==========================================================================
-//
-//	R_GetSpriteFrame
-//
-//==========================================================================
 
 static msprite1frame_t* R_GetSpriteFrame( msprite1_t* psprite, trRefEntity_t* currententity ) {
 	int frame = currententity->e.frame;
@@ -244,16 +195,17 @@ static msprite1frame_t* R_GetSpriteFrame( msprite1_t* psprite, trRefEntity_t* cu
 	}
 }
 
-//==========================================================================
-//
-//	R_DrawSprModel
-//
-//==========================================================================
-
-void R_DrawSprModel( trRefEntity_t* e ) {
+void R_AddSprSurfaces( trRefEntity_t* e ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
+
+	msprite1_t* psprite = ( msprite1_t* )R_GetModelByHandle( tr.currentEntity->e.hModel )->q1_cache;
+	R_AddDrawSurf(( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE);
+}
+
+void RB_SurfaceSpr( msprite1_t* psprite ) {
+	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 
 	vec3_t point;
 
@@ -268,9 +220,7 @@ void R_DrawSprModel( trRefEntity_t* e ) {
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
-	msprite1_t* psprite = ( msprite1_t* )R_GetModelByHandle( tr.currentEntity->e.hModel )->q1_cache;
-
-	msprite1frame_t* frame = R_GetSpriteFrame( psprite, e );
+	msprite1frame_t* frame = R_GetSpriteFrame( psprite, tr.currentEntity );
 
 	vec3_t up;
 	vec3_t right;
@@ -333,16 +283,16 @@ void R_DrawSprModel( trRefEntity_t* e ) {
 		// angle. So vpn stays the same, but vright and vup rotate
 		float sr;
 		float cr;
-		if ( e->e.axis[ 0 ][ 2 ] == 1 ) {
-			sr = -e->e.axis[ 1 ][ 0 ];
-			cr = e->e.axis[ 1 ][ 1 ];
-		} else if ( e->e.axis[ 0 ][ 2 ] == -1 )         {
-			sr = e->e.axis[ 1 ][ 0 ];
-			cr = e->e.axis[ 1 ][ 1 ];
+		if ( tr.currentEntity->e.axis[ 0 ][ 2 ] == 1 ) {
+			sr = -tr.currentEntity->e.axis[ 1 ][ 0 ];
+			cr = tr.currentEntity->e.axis[ 1 ][ 1 ];
+		} else if ( tr.currentEntity->e.axis[ 0 ][ 2 ] == -1 )         {
+			sr = tr.currentEntity->e.axis[ 1 ][ 0 ];
+			cr = tr.currentEntity->e.axis[ 1 ][ 1 ];
 		} else   {
-			float cp = sqrt( 1 - e->e.axis[ 0 ][ 2 ] * e->e.axis[ 0 ][ 2 ] );
-			sr = e->e.axis[ 1 ][ 2 ] / cp;
-			cr = e->e.axis[ 2 ][ 2 ] / cp;
+			float cp = sqrt( 1 - tr.currentEntity->e.axis[ 0 ][ 2 ] * tr.currentEntity->e.axis[ 0 ][ 2 ] );
+			sr = tr.currentEntity->e.axis[ 1 ][ 2 ] / cp;
+			cr = tr.currentEntity->e.axis[ 2 ][ 2 ] / cp;
 		}
 
 		for ( int i = 0; i < 3; i++ ) {
@@ -358,26 +308,24 @@ void R_DrawSprModel( trRefEntity_t* e ) {
 	qglBegin( GL_QUADS );
 
 	qglTexCoord2f( 0, 1 );
-	VectorMA( e->e.origin, frame->down, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->down, up, point );
 	VectorMA( point, frame->left, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 0, 0 );
-	VectorMA( e->e.origin, frame->up, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->up, up, point );
 	VectorMA( point, frame->left, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 0 );
-	VectorMA( e->e.origin, frame->up, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->up, up, point );
 	VectorMA( point, frame->right, right, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 1 );
-	VectorMA( e->e.origin, frame->down, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->down, up, point );
 	VectorMA( point, frame->right, right, point );
 	qglVertex3fv( point );
 
 	qglEnd();
-
-	GL_State( GLS_DEFAULT );
 }
