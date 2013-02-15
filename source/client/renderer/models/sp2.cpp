@@ -92,8 +92,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	GL_Bind( tr.currentModel->q2_skins[ tr.currentEntity->e.frame ] );
 
-	GL_TexEnv( GL_MODULATE );
-
 	qglBegin( GL_QUADS );
 
 	qglTexCoord2f( 0, 1 );
@@ -117,8 +115,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	qglVertex3fv( point );
 
 	qglEnd();
-
-	GL_TexEnv( GL_REPLACE );
 
 	qglColor4f( 1, 1, 1, 1 );
 }

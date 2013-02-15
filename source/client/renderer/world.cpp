@@ -470,7 +470,6 @@ static void R_DrawInlineBModel() {
 
 	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		qglColor4f( 1, 1, 1, 0.25 );
-		GL_TexEnv( GL_MODULATE );
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else   {
 		GL_State( GLS_DEFAULT );
@@ -507,7 +506,6 @@ static void R_DrawInlineBModel() {
 	} else   {
 		GL_State( GLS_DEFAULT );
 		qglColor4f( 1, 1, 1, 1 );
-		GL_TexEnv( GL_REPLACE );
 	}
 }
 

@@ -510,7 +510,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 		R_ScrapUpload();
 	}
 	GL_Bind( cmd->image );
-	GL_TexEnv( GL_MODULATE );
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	qglColor4f( cmd->r, cmd->g, cmd->b, cmd->a );

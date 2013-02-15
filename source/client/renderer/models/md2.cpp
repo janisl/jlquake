@@ -548,7 +548,6 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 	// draw it
 
-	GL_TexEnv( GL_MODULATE );
 	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else   {
@@ -574,8 +573,6 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		tr.currentEntity->e.backlerp = 0;
 	}
 	GL_DrawMd2FrameLerp( paliashdr, tr.currentEntity->e.backlerp );
-
-	GL_TexEnv( GL_REPLACE );
 
 	qglPopMatrix();
 

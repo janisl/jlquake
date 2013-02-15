@@ -119,7 +119,6 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 static void R_DrawParticleTriangles() {
 	GL_Bind( tr.particleImage );
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );		// no z buffering
-	GL_TexEnv( GL_MODULATE );
 	qglBegin( GL_TRIANGLES );
 
 	vec3_t up, right;
@@ -153,7 +152,6 @@ static void R_DrawParticleTriangles() {
 
 	qglEnd();
 	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
-	GL_TexEnv( GL_REPLACE );
 	qglColor4f( 1, 1, 1, 1 );
 }
 

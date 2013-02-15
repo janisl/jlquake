@@ -1135,16 +1135,12 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		GL_Bind( paliashdr->gl_texture[ tr.currentEntity->e.skinNum ][ anim ] );
 	}
 
-	GL_TexEnv( GL_MODULATE );
-
 	R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, false, false );
 
 	if ( doOverBright ) {
 		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 		R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, false, true );
 	}
-
-	GL_TexEnv( GL_REPLACE );
 
 	if ( !tr.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] ) {
 		GL_Bind( paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] );

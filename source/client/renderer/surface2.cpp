@@ -14,25 +14,9 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 gllightmapstate_t gl_lms;
 
@@ -40,11 +24,7 @@ mbrush38_surface_t* r_alpha_surfaces;
 
 int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static float s_blocklights_q2[ 34 * 34 * 3 ];
-
-// CODE --------------------------------------------------------------------
 
 /*
 =============================================================================
@@ -54,24 +34,11 @@ static float s_blocklights_q2[ 34 * 34 * 3 ];
 =============================================================================
 */
 
-//==========================================================================
-//
-//	LM_InitBlock
-//
-//==========================================================================
-
 static void LM_InitBlock() {
 	Com_Memset( gl_lms.allocated, 0, sizeof ( gl_lms.allocated ) );
 }
 
-//==========================================================================
-//
-//	LM_AllocBlock
-//
 //	Returns a texture number and the position inside it
-//
-//==========================================================================
-
 static bool LM_AllocBlock( int w, int h, int* x, int* y ) {
 	int best = BLOCK_HEIGHT;
 
@@ -105,17 +72,11 @@ static bool LM_AllocBlock( int w, int h, int* x, int* y ) {
 	return true;
 }
 
-//==========================================================================
-//
-//	LM_UploadBlock
-//
-//==========================================================================
-
 static void LM_UploadBlock( bool dynamic ) {
 	int texture;
 	if ( dynamic ) {
 		texture = 0;
-	} else   {
+	} else {
 		texture = gl_lms.current_lightmap_texture;
 	}
 
@@ -131,7 +92,7 @@ static void LM_UploadBlock( bool dynamic ) {
 
 		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, height,
 			GL_RGBA, GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer );
-	} else   {
+	} else {
 		R_ReUploadImage( tr.lightmaps[ texture ], gl_lms.lightmap_buffer );
 		if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS ) {
 			common->Error( "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
@@ -147,23 +108,11 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-//==========================================================================
-//
-//	R_SetCacheState
-//
-//==========================================================================
-
 static void R_SetCacheState( mbrush38_surface_t* surf ) {
 	for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
 		surf->cached_light[ maps ] = tr.refdef.lightstyles[ surf->styles[ maps ] ].white;
 	}
 }
-
-//==========================================================================
-//
-//	R_AddDynamicLightsQ2
-//
-//==========================================================================
 
 static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
 	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
@@ -214,7 +163,7 @@ static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
 
 				if ( sd > td ) {
 					fdist = sd + ( td >> 1 );
-				} else   {
+				} else {
 					fdist = td + ( sd >> 1 );
 				}
 
@@ -228,14 +177,7 @@ static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_BuildLightMapQ2
-//
 //	Combine and scale multiple lightmaps into the floating format in blocklights
-//
-//==========================================================================
-
 static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride ) {
 	if ( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
 		common->Error( "R_BuildLightMapQ2 called for non-lit surface" );
@@ -253,7 +195,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 		for ( int i = 0; i < size * 3; i++ ) {
 			s_blocklights_q2[ i ] = 255;
 		}
-	} else   {
+	} else {
 		// count the # of maps
 		int nummaps = 0;
 		while ( nummaps < BSP38_MAXLIGHTMAPS && surf->styles[ nummaps ] != 255 ) {
@@ -278,7 +220,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 						bl[ 1 ] = lightmap[ i * 3 + 1 ];
 						bl[ 2 ] = lightmap[ i * 3 + 2 ];
 					}
-				} else   {
+				} else {
 					for ( int i = 0; i < size; i++, bl += 3 ) {
 						bl[ 0 ] = lightmap[ i * 3 + 0 ] * scale[ 0 ];
 						bl[ 1 ] = lightmap[ i * 3 + 1 ] * scale[ 1 ];
@@ -287,7 +229,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 				}
 				lightmap += size * 3;		// skip to next lightmap
 			}
-		} else   {
+		} else {
 			Com_Memset( s_blocklights_q2, 0, sizeof ( s_blocklights_q2[ 0 ] ) * size * 3 );
 
 			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
@@ -304,7 +246,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 						bl[ 1 ] += lightmap[ i * 3 + 1 ];
 						bl[ 2 ] += lightmap[ i * 3 + 2 ];
 					}
-				} else   {
+				} else {
 					for ( int i = 0; i < size; i++, bl += 3 ) {
 						bl[ 0 ] += lightmap[ i * 3 + 0 ] * scale[ 0 ];
 						bl[ 1 ] += lightmap[ i * 3 + 1 ] * scale[ 1 ];
@@ -348,7 +290,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 			int max;
 			if ( r > g ) {
 				max = r;
-			} else   {
+			} else {
 				max = g;
 			}
 			if ( b > max ) {
@@ -377,12 +319,6 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 		}
 	}
 }
-
-//==========================================================================
-//
-//	GL_BeginBuildingLightmaps
-//
-//==========================================================================
 
 void GL_BeginBuildingLightmaps( model_t* m ) {
 	Com_Memset( gl_lms.allocated, 0, sizeof ( gl_lms.allocated ) );
@@ -416,12 +352,6 @@ void GL_BeginBuildingLightmaps( model_t* m ) {
 	R_ReUploadImage( tr.lightmaps[ 0 ], dummy );
 }
 
-//==========================================================================
-//
-//	GL_CreateSurfaceLightmapQ2
-//
-//==========================================================================
-
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
 	if ( surf->flags & ( BRUSH38_SURF_DRAWSKY | BRUSH38_SURF_DRAWTURB ) ) {
 		return;
@@ -447,29 +377,16 @@ void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
 	R_BuildLightMapQ2( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
 }
 
-//==========================================================================
-//
-//	GL_EndBuildingLightmaps
-//
-//==========================================================================
-
 void GL_EndBuildingLightmaps() {
 	LM_UploadBlock( false );
 }
 
-//==========================================================================
-//
-//	EmitWaterPolysQ2
-//
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
-//
-//==========================================================================
-
 static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 	float scroll;
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		scroll = -64 * ( ( tr.refdef.floatTime * 0.5 ) - ( int )( tr.refdef.floatTime * 0.5 ) );
-	} else   {
+	} else {
 		scroll = 0;
 	}
 	for ( mbrush38_glpoly_t* bp = fa->polys; bp; bp = bp->next ) {
@@ -495,14 +412,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_TextureAnimationQ2
-//
 //	Returns the proper texture for a given time and base texture
-//
-//==========================================================================
-
 image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	if ( !tex->next ) {
 		return tex->image;
@@ -517,12 +427,6 @@ image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	return tex->image;
 }
 
-//==========================================================================
-//
-//	DrawGLPolyQ2
-//
-//==========================================================================
-
 static void DrawGLPolyQ2( mbrush38_glpoly_t* p ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
@@ -533,14 +437,7 @@ static void DrawGLPolyQ2( mbrush38_glpoly_t* p ) {
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	DrawGLFlowingPoly
-//
 //	Version of DrawGLPolyQ2 that handles scrolling texture
-//
-//==========================================================================
-
 static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	mbrush38_glpoly_t* p = fa->polys;
 
@@ -558,12 +455,6 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	R_RenderBrushPolyQ2
-//
-//==========================================================================
-
 void R_RenderBrushPolyQ2( mbrush38_surface_t* fa ) {
 	c_brush_polys++;
 
@@ -573,21 +464,18 @@ void R_RenderBrushPolyQ2( mbrush38_surface_t* fa ) {
 		GL_Bind( image );
 
 		// warp texture, no lightmaps
-		GL_TexEnv( GL_MODULATE );
 		qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
 		EmitWaterPolysQ2( fa );
-		GL_TexEnv( GL_REPLACE );
+		qglColor4f( 1, 1, 1, 1.0f );
 
 		return;
-	} else   {
+	} else {
 		GL_Bind( image );
-
-		GL_TexEnv( GL_REPLACE );
 	}
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		DrawGLFlowingPoly( fa );
-	} else   {
+	} else {
 		DrawGLPolyQ2( fa->polys );
 	}
 
@@ -627,21 +515,15 @@ dynamic:
 
 			fa->lightmapchain = gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ];
 			gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ] = fa;
-		} else   {
+		} else {
 			fa->lightmapchain = gl_lms.lightmap_surfaces[ 0 ];
 			gl_lms.lightmap_surfaces[ 0 ] = fa;
 		}
-	} else   {
+	} else {
 		fa->lightmapchain = gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ];
 		gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ] = fa;
 	}
 }
-
-//==========================================================================
-//
-//	DrawTextureChainsQ2
-//
-//==========================================================================
 
 void DrawTextureChainsQ2() {
 	int i;
@@ -662,7 +544,7 @@ void DrawTextureChainsQ2() {
 
 			tr.images[ i ]->texturechain = NULL;
 		}
-	} else   {
+	} else {
 		for ( i = 0; i < tr.numImages; i++ ) {
 			if ( !tr.images[ i ]->texturechain ) {
 				continue;
@@ -691,15 +573,7 @@ void DrawTextureChainsQ2() {
 			tr.images[ i ]->texturechain = NULL;
 		}
 	}
-
-	GL_TexEnv( GL_REPLACE );
 }
-
-//==========================================================================
-//
-//	DrawGLPolyChainQ2
-//
-//==========================================================================
 
 static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffset ) {
 	if ( soffset == 0 && toffset == 0 ) {
@@ -712,7 +586,7 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 			}
 			qglEnd();
 		}
-	} else   {
+	} else {
 		for (; p != 0; p = p->chain ) {
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
@@ -725,15 +599,8 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 	}
 }
 
-//==========================================================================
-//
-//	R_BlendLightmapsQ2
-//
 //	This routine takes all the given light mapped surfaces in the world and
 // blends them into the framebuffer.
-//
-//==========================================================================
-
 void R_BlendLightmapsQ2() {
 	// don't bother if we're set to fullbright
 	if ( r_fullbright->value ) {
@@ -751,10 +618,10 @@ void R_BlendLightmapsQ2() {
 	if ( !r_lightmap->value ) {
 		if ( r_saturatelighting->value ) {
 			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		} else   {
+		} else {
 			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 		}
-	} else   {
+	} else {
 		GL_State( 0 );
 	}
 
@@ -803,7 +670,7 @@ void R_BlendLightmapsQ2() {
 				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
 
 				R_BuildLightMapQ2( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
-			} else   {
+			} else {
 				// upload what we have so far
 				LM_UploadBlock( true );
 
@@ -854,22 +721,10 @@ void R_BlendLightmapsQ2() {
 	GL_State( GLS_DEPTHMASK_TRUE );
 }
 
-//==========================================================================
-//
-//	GL_MBind
-//
-//==========================================================================
-
 static void GL_MBind( int target, image_t* image ) {
 	GL_SelectTexture( target );
 	GL_Bind( image );
 }
-
-//==========================================================================
-//
-//	GL_RenderLightmappedPoly
-//
-//==========================================================================
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	int i, nv = surf->polys->numverts;
@@ -880,16 +735,12 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	unsigned lmtex = surf->lightmaptexturenum;
 	mbrush38_glpoly_t* p;
 
-	GL_SelectTexture( 0 );
-	GL_TexEnv( GL_REPLACE );
-	GL_SelectTexture( 1 );
-
 	GL_SelectTexture( 1 );
 	qglEnable( GL_TEXTURE_2D );
 
 	if ( r_lightmap->value ) {
 		GL_TexEnv( GL_REPLACE );
-	} else   {
+	} else {
 		GL_TexEnv( GL_MODULATE );
 	}
 
@@ -926,7 +777,7 @@ dynamic:
 
 			qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
 				GL_RGBA, GL_UNSIGNED_BYTE, temp );
-		} else   {
+		} else {
 			smax = ( surf->extents[ 0 ] >> 4 ) + 1;
 			tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
 
@@ -961,7 +812,7 @@ dynamic:
 				}
 				qglEnd();
 			}
-		} else   {
+		} else {
 			for ( p = surf->polys; p; p = p->chain ) {
 				v = p->verts[ 0 ];
 				qglBegin( GL_POLYGON );
@@ -973,7 +824,7 @@ dynamic:
 				qglEnd();
 			}
 		}
-	} else   {
+	} else {
 		c_brush_polys++;
 
 		GL_MBind( 0, image );
@@ -995,7 +846,7 @@ dynamic:
 				}
 				qglEnd();
 			}
-		} else   {
+		} else {
 			for ( p = surf->polys; p; p = p->chain ) {
 				v = p->verts[ 0 ];
 				qglBegin( GL_POLYGON );
@@ -1011,21 +862,12 @@ dynamic:
 
 	GL_SelectTexture( 1 );
 	qglDisable( GL_TEXTURE_2D );
-	GL_TexEnv( GL_REPLACE );
 	GL_SelectTexture( 0 );
-	GL_TexEnv( GL_REPLACE );
 }
 
-//==========================================================================
-//
-//	R_DrawAlphaSurfaces
-//
 //	Draw water surfaces and windows.
 //	The BSP tree is waled front to back, so unwinding the chain of
 // alpha_surfaces will draw back to front, giving proper ordering.
-//
-//==========================================================================
-
 void R_DrawAlphaSurfaces() {
 	//
 	// go back to the world matrix
@@ -1033,7 +875,6 @@ void R_DrawAlphaSurfaces() {
 	qglLoadMatrixf( tr.viewParms.world.modelMatrix );
 
 	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	GL_TexEnv( GL_MODULATE );
 
 	// the textures are prescaled up for a better lighting range,
 	// so scale it back down
@@ -1046,28 +887,21 @@ void R_DrawAlphaSurfaces() {
 			qglColor4f( intens, intens, intens, 0.33 );
 		} else if ( s->texinfo->flags & BSP38SURF_TRANS66 )     {
 			qglColor4f( intens, intens, intens, 0.66 );
-		} else   {
+		} else {
 			qglColor4f( intens, intens, intens, 1 );
 		}
 		if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
 			EmitWaterPolysQ2( s );
-		} else   {
+		} else {
 			DrawGLPolyQ2( s->polys );
 		}
 	}
 
-	GL_TexEnv( GL_REPLACE );
 	qglColor4f( 1, 1, 1, 1 );
 	GL_State( GLS_DEFAULT );
 
 	r_alpha_surfaces = NULL;
 }
-
-//==========================================================================
-//
-//	R_DrawTriangleOutlines
-//
-//==========================================================================
 
 void R_DrawTriangleOutlines() {
 	if ( !r_showtris->value ) {

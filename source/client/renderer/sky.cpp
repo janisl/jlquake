@@ -14,14 +14,10 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define ON_EPSILON      0.1f			// point on plane side epsilon
 
@@ -34,21 +30,7 @@
 #define SKY_SUBDIVISIONS        8
 #define HALF_SKY_SUBDIVISIONS   ( SKY_SUBDIVISIONS / 2 )
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 float speedscale;					// for top sky and bottom sky
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static char skyname[ MAX_QPATH ];
 static float skyrotate;
@@ -107,16 +89,7 @@ static int vec_to_st[ 6 ][ 3 ] =
 
 static int sky_texorder[ 6 ] = {0, 2, 1, 3, 4, 5};
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_InitSky
-//
 //	A sky texture is 256*128, with the right side being a masked overlay
-//
-//==========================================================================
-
 void R_InitSky( mbrush29_texture_t* mt ) {
 	byte* src = ( byte* )mt + mt->offsets[ 0 ];
 
@@ -149,7 +122,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 
 	if ( !tr.solidskytexture ) {
 		tr.solidskytexture = R_CreateImage( "*solidsky", trans, 128, 128, false, false, GL_REPEAT, false );
-	} else   {
+	} else {
 		R_ReUploadImage( tr.solidskytexture, trans );
 	}
 
@@ -159,7 +132,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 			byte* rgba;
 			if ( p == 0 ) {
 				rgba = transpix;
-			} else   {
+			} else {
 				rgba = r_palette[ p ];
 			}
 			trans[ ( i * 128 + j ) * 4 + 0 ] = rgba[ 0 ];
@@ -171,16 +144,10 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 
 	if ( !tr.alphaskytexture ) {
 		tr.alphaskytexture = R_CreateImage( "*alphasky", trans, 128, 128, false, false, GL_REPEAT, false );
-	} else   {
+	} else {
 		R_ReUploadImage( tr.alphaskytexture, trans );
 	}
 }
-
-//==========================================================================
-//
-//	EmitSkyPolys
-//
-//==========================================================================
 
 void EmitSkyPolys( mbrush29_surface_t* fa ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
@@ -208,15 +175,8 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 	}
 }
 
-//==========================================================================
-//
-//	EmitBothSkyLayers
-//
 //	Does a sky warp on the pre-fragmented mbrush29_glpoly_t chain
 //	This will be called for brushmodels, the world will have them chained together.
-//
-//==========================================================================
-
 void EmitBothSkyLayers( mbrush29_surface_t* fa ) {
 	GL_Bind( tr.solidskytexture );
 	speedscale = tr.refdef.floatTime * 8;
@@ -233,12 +193,6 @@ void EmitBothSkyLayers( mbrush29_surface_t* fa ) {
 
 	GL_State( GLS_DEFAULT );
 }
-
-//==========================================================================
-//
-//	R_DrawSkyChain
-//
-//==========================================================================
 
 void R_DrawSkyChain( mbrush29_surface_t* s ) {
 	// used when r_texsort is on
@@ -261,12 +215,6 @@ void R_DrawSkyChain( mbrush29_surface_t* s ) {
 
 	GL_State( GLS_DEFAULT );
 }
-
-//==========================================================================
-//
-//	R_SetSky
-//
-//==========================================================================
 
 void R_SetSky( const char* name, float rotate, vec3_t axis ) {
 	String::NCpy( skyname, name, sizeof ( skyname ) - 1 );
@@ -292,7 +240,7 @@ void R_SetSky( const char* name, float rotate, vec3_t axis ) {
 			r_picmip->value--;
 			sky_min = 1.0 / 256;
 			sky_max = 255.0 / 256;
-		} else   {
+		} else {
 			sky_min = 1.0 / 512;
 			sky_max = 511.0 / 512;
 		}
@@ -306,12 +254,6 @@ POLYGON TO BOX SIDE PROJECTION
 
 ===================================================================================
 */
-
-//==========================================================================
-//
-//	AddSkyPolygon
-//
-//==========================================================================
 
 static void AddSkyPolygon( int nump, vec3_t vecs ) {
 	// decide which face it maps to
@@ -329,19 +271,19 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 	if ( av[ 0 ] > av[ 1 ] && av[ 0 ] > av[ 2 ] ) {
 		if ( v[ 0 ] < 0 ) {
 			axis = 1;
-		} else   {
+		} else {
 			axis = 0;
 		}
 	} else if ( av[ 1 ] > av[ 2 ] && av[ 1 ] > av[ 0 ] )             {
 		if ( v[ 1 ] < 0 ) {
 			axis = 3;
-		} else   {
+		} else {
 			axis = 2;
 		}
-	} else   {
+	} else {
 		if ( v[ 2 ] < 0 ) {
 			axis = 5;
-		} else   {
+		} else {
 			axis = 4;
 		}
 	}
@@ -352,7 +294,7 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 		float dv;
 		if ( j > 0 ) {
 			dv = vecs[ j - 1 ];
-		} else   {
+		} else {
 			dv = -vecs[ -j - 1 ];
 		}
 		if ( dv < 0.001 ) {
@@ -362,14 +304,14 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 		float s;
 		if ( j < 0 ) {
 			s = -vecs[ -j - 1 ] / dv;
-		} else   {
+		} else {
 			s = vecs[ j - 1 ] / dv;
 		}
 		j = vec_to_st[ axis ][ 1 ];
 		float t;
 		if ( j < 0 ) {
 			t = -vecs[ -j - 1 ] / dv;
-		} else   {
+		} else {
 			t = vecs[ j - 1 ] / dv;
 		}
 
@@ -387,12 +329,6 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 		}
 	}
 }
-
-//==========================================================================
-//
-//	ClipSkyPolygon
-//
-//==========================================================================
 
 static void ClipSkyPolygon( int nump, vec3_t vecs, int stage ) {
 	if ( nump > MAX_CLIP_VERTS - 2 ) {
@@ -418,7 +354,7 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage ) {
 		} else if ( d < -ON_EPSILON )     {
 			back = true;
 			sides[ i ] = SIDE_BACK;
-		} else   {
+		} else {
 			sides[ i ] = SIDE_ON;
 		}
 		dists[ i ] = d;
@@ -478,24 +414,12 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage ) {
 	ClipSkyPolygon( newc[ 1 ], newv[ 1 ][ 0 ], stage + 1 );
 }
 
-//==========================================================================
-//
-//	R_ClearSkyBox
-//
-//==========================================================================
-
 void R_ClearSkyBox() {
 	for ( int i = 0; i < 6; i++ ) {
 		sky_mins[ 0 ][ i ] = sky_mins[ 1 ][ i ] = 9999;
 		sky_maxs[ 0 ][ i ] = sky_maxs[ 1 ][ i ] = -9999;
 	}
 }
-
-//==========================================================================
-//
-//	R_AddSkySurface
-//
-//==========================================================================
 
 void R_AddSkySurface( mbrush38_surface_t* fa ) {
 	// calculate vertex values for sky box
@@ -507,12 +431,6 @@ void R_AddSkySurface( mbrush38_surface_t* fa ) {
 		ClipSkyPolygon( p->numverts, verts[ 0 ], 0 );
 	}
 }
-
-//==========================================================================
-//
-//	RB_ClipSkyPolygons
-//
-//==========================================================================
 
 static void RB_ClipSkyPolygons( shaderCommands_t* input ) {
 	R_ClearSkyBox();
@@ -526,19 +444,12 @@ static void RB_ClipSkyPolygons( shaderCommands_t* input ) {
 	}
 }
 
-//==========================================================================
-//
-//	MakeSkyVec
-//
 //	Parms: s, t range from -1 to 1
-//
-//==========================================================================
-
 static void MakeSkyVec( float s, float t, int axis, float outSt[ 2 ], vec3_t outXYZ ) {
 	float boxSize;
 	if ( glfogsettings[ FOG_SKY ].registered ) {
 		boxSize = glfogsettings[ FOG_SKY ].end;
-	} else   {
+	} else {
 		boxSize = ( GGameType & GAME_Tech3 ) ? backEnd.viewParms.zFar / 1.75 : 2300;		// div sqrt(3)
 	}
 	// make sure the sky is not near clipped
@@ -555,7 +466,7 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[ 2 ], vec3_t out
 		int k = st_to_vec[ axis ][ j ];
 		if ( k < 0 ) {
 			outXYZ[ j ] = -b[ -k - 1 ];
-		} else   {
+		} else {
 			outXYZ[ j ] = b[ k - 1 ];
 		}
 	}
@@ -583,12 +494,6 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[ 2 ], vec3_t out
 	}
 }
 
-//==========================================================================
-//
-//	EmitSkyVertex
-//
-//==========================================================================
-
 static void EmitSkyVertex( float s, float t, int axis ) {
 	vec3_t v;
 	float St[ 2 ];
@@ -596,12 +501,6 @@ static void EmitSkyVertex( float s, float t, int axis ) {
 	qglTexCoord2f( St[ 0 ], St[ 1 ] );
 	qglVertex3fv( v );
 }
-
-//==========================================================================
-//
-//	R_DrawSkyBoxQ2
-//
-//==========================================================================
 
 void R_DrawSkyBoxQ2() {
 	if ( skyrotate ) {
@@ -648,12 +547,6 @@ void R_DrawSkyBoxQ2() {
 	qglPopMatrix();
 }
 
-//==========================================================================
-//
-//	DrawSkySide
-//
-//==========================================================================
-
 static void DrawSkySide( image_t* image, const int mins[ 2 ], const int maxs[ 2 ] ) {
 	GL_Bind( image );
 
@@ -676,7 +569,6 @@ static void DrawSkySideInner( image_t* image, const int mins[ 2 ], const int max
 	GL_Bind( image );
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	GL_TexEnv( GL_MODULATE );
 
 	for ( int t = mins[ 1 ] + HALF_SKY_SUBDIVISIONS; t < maxs[ 1 ] + HALF_SKY_SUBDIVISIONS; t++ ) {
 		qglBegin( GL_TRIANGLE_STRIP );
@@ -692,12 +584,6 @@ static void DrawSkySideInner( image_t* image, const int mins[ 2 ], const int max
 		qglEnd();
 	}
 }
-
-//==========================================================================
-//
-//	DrawSkyBox
-//
-//==========================================================================
 
 static void DrawSkyBox( shader_t* shader ) {
 	sky_min = 0;
@@ -823,14 +709,7 @@ CLOUD VERTEX GENERATION
 ===================================================================================
 */
 
-//==========================================================================
-//
-//	R_InitSkyTexCoords
-//
 //	Called when a sky shader is parsed
-//
-//==========================================================================
-
 void R_InitSkyTexCoords( float heightCloud ) {
 	float radiusWorld = 4096;
 
@@ -874,12 +753,6 @@ void R_InitSkyTexCoords( float heightCloud ) {
 		}
 	}
 }
-
-//==========================================================================
-//
-//	FillCloudySkySide
-//
-//==========================================================================
 
 static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool addIndexes ) {
 	int vertexStart = tess.numVertexes;
@@ -925,12 +798,6 @@ static void FillCloudySkySide( const int mins[ 2 ], const int maxs[ 2 ], bool ad
 	}
 }
 
-//==========================================================================
-//
-//	FillCloudBox
-//
-//==========================================================================
-
 static void FillCloudBox( const shader_t* shader, int stage ) {
 	for ( int i = 0; i < 6; i++ ) {
 		float MIN_T;
@@ -941,7 +808,7 @@ static void FillCloudBox( const shader_t* shader, int stage ) {
 			if ( i == 5 ) {
 				continue;
 			}
-		} else   {
+		} else {
 			switch ( i ) {
 			case 0:
 			case 1:
@@ -1017,12 +884,6 @@ static void FillCloudBox( const shader_t* shader, int stage ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_BuildCloudData
-//
-//==========================================================================
-
 static void R_BuildCloudData( shaderCommands_t* input ) {
 	shader_t* shader = input->shader;
 
@@ -1041,7 +902,7 @@ static void R_BuildCloudData( shaderCommands_t* input ) {
 			// which is unecessary for a multi-stage sky shader, as far as i can tell
 			// nuking this
 			FillCloudBox( input->shader, 0 );
-		} else   {
+		} else {
 			for ( int i = 0; i < MAX_SHADER_STAGES; i++ ) {
 				if ( !tess.xstages[ i ] ) {
 					break;
@@ -1052,16 +913,9 @@ static void R_BuildCloudData( shaderCommands_t* input ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_StageIteratorSky
-//
 //	All of the visible sky triangles are in tess
 //
 //	Other things could be stuck in here, like birds in the sky, etc
-//
-//==========================================================================
-
 void RB_StageIteratorSky() {
 	if ( r_fastsky->integer ) {
 		return;
@@ -1095,7 +949,7 @@ void RB_StageIteratorSky() {
 	// much sky is getting sucked in
 	if ( r_showsky->integer ) {
 		qglDepthRange( 0.0, 0.0 );
-	} else   {
+	} else {
 		qglDepthRange( 1.0, 1.0 );
 	}
 
@@ -1140,14 +994,7 @@ void RB_StageIteratorSky() {
 	backEnd.skyRenderedThisView = true;
 }
 
-//==========================================================================
-//
-//	RB_DrawSun
-//
 //	(SA) FIXME: sun should render behind clouds, so passing dark areas cover it up
-//
-//==========================================================================
-
 void RB_DrawSun() {
 	if ( !tr.sunShader ) {
 		return;
@@ -1182,7 +1029,7 @@ void RB_DrawSun() {
 		byte color[ 4 ];
 		color[ 0 ] = color[ 1 ] = color[ 2 ] = color[ 3 ] = 255;
 		RB_AddQuadStamp( origin, vec1, vec2, color );
-	} else   {
+	} else {
 		// FIXME: use quad stamp
 
 		vec3_t temp;

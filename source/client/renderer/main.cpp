@@ -121,7 +121,7 @@ void R_DecomposeSort( unsigned sort, int* entityNum, shader_t** shader,
 	if ( GGameType & GAME_ET ) {
 		*frontFace = ( sort >> QSORT_FRONTFACE_SHIFT ) & 1;
 		*dlightMap = sort & 1;
-	} else   {
+	} else {
 		*frontFace = 0;
 		*dlightMap = sort & 3;
 	}
@@ -148,7 +148,7 @@ static void R_SetFrameFog() {
 
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque = tr.world->globalTransStartFog[ 3 ] + ( ( tr.world->globalTransEndFog[ 3 ] - tr.world->globalTransStartFog[ 3 ] ) * lerpPos );
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.tcScale = 1.0f / ( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque * 8 );
-		} else   {
+		} else {
 			// transition complete
 			VectorCopy( tr.world->globalTransEndFog, tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color );
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.colorInt = ColorBytes4( tr.world->globalTransEndFog[ 0 ] * tr.identityLight,
@@ -215,7 +215,7 @@ static void R_SetFrameFog() {
 		}
 
 		glfogsettings[ FOG_CURRENT ].dirty = 1;
-	} else   {
+	} else {
 		// probably usually not necessary to copy the whole thing.
 		// potential FIXME: since this is the most common occurance, diff first and only set changes
 		Com_Memcpy( &glfogsettings[ FOG_CURRENT ], &glfogsettings[ FOG_TARGET ], sizeof ( glfog_t ) );
@@ -238,7 +238,7 @@ static void R_SetFrameFog() {
 	if ( r_speeds->integer == 5 ) {
 		if ( glfogsettings[ FOG_CURRENT ].mode == GL_LINEAR ) {
 			common->Printf( "farclip fog - den: %0.1f  calc zFar: %0.1f  fog zfar: %0.1f\n", glfogsettings[ FOG_CURRENT ].density, tr.viewParms.zFar, glfogsettings[ FOG_CURRENT ].end );
-		} else   {
+		} else {
 			common->Printf( "density fog - den: %0.6f  calc zFar: %0.1f  fog zFar: %0.1f\n", glfogsettings[ FOG_CURRENT ].density, tr.viewParms.zFar, glfogsettings[ FOG_CURRENT ].end );
 		}
 	}
@@ -276,19 +276,19 @@ static void SetFarClip() {
 		vec3_t v;
 		if ( i & 1 ) {
 			v[ 0 ] = tr.viewParms.visBounds[ 0 ][ 0 ];
-		} else   {
+		} else {
 			v[ 0 ] = tr.viewParms.visBounds[ 1 ][ 0 ];
 		}
 
 		if ( i & 2 ) {
 			v[ 1 ] = tr.viewParms.visBounds[ 0 ][ 1 ];
-		} else   {
+		} else {
 			v[ 1 ] = tr.viewParms.visBounds[ 1 ][ 1 ];
 		}
 
 		if ( i & 4 ) {
 			v[ 2 ] = tr.viewParms.visBounds[ 0 ][ 2 ];
-		} else   {
+		} else {
 			v[ 2 ] = tr.viewParms.visBounds[ 1 ][ 2 ];
 		}
 
@@ -520,7 +520,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 			} else {
 				fvaxis[ 2 ][ 0 ] = 1;
 			}
-		} else   {
+		} else {
 			fvaxis[ 2 ][ 0 ] = 0;
 			fvaxis[ 2 ][ 1 ] = 0;
 			fvaxis[ 2 ][ 2 ] = 1;
@@ -531,7 +531,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 		}
 
 		MatrixMultiply( ent->e.axis, fvaxis, orient->axis );
-	} else   {
+	} else {
 		AxisCopy( ent->e.axis, orient->axis );
 	}
 
@@ -571,12 +571,12 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 			float axisLength = VectorLength( ent->e.axis[ i ] );
 			if ( !axisLength ) {
 				axisLength = 0;
-			} else   {
+			} else {
 				axisLength = 1.0f / axisLength;
 			}
 			orient->viewOrigin[ i ] = DotProduct( delta, orient->axis[ i ] ) * axisLength;
 		}
-	} else   {
+	} else {
 		orient->viewOrigin[ 0 ] = DotProduct( delta, orient->axis[ 0 ] );
 		orient->viewOrigin[ 1 ] = DotProduct( delta, orient->axis[ 1 ] );
 		orient->viewOrigin[ 2 ] = DotProduct( delta, orient->axis[ 2 ] );
@@ -617,7 +617,7 @@ int R_CullLocalBox( vec3_t bounds[ 2 ] ) {
 				if ( back ) {
 					break;		// a point is in front
 				}
-			} else   {
+			} else {
 				back = true;
 			}
 		}
@@ -771,7 +771,7 @@ static void R_DrawNullModel() {
 	vec3_t shadelight;
 	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		shadelight[ 0 ] = shadelight[ 1 ] = shadelight[ 2 ] = tr.currentEntity->e.absoluteLight;
-	} else   {
+	} else {
 		R_LightPointQ2( tr.currentEntity->e.origin, shadelight );
 	}
 
@@ -853,7 +853,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				}
 				shader_t* shader = R_GetShaderByHandle( ent->e.customShader );
 				R_AddDrawSurf( &entitySurface, shader, R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
-			} else   {
+			} else {
 				R_DrawBeam( tr.currentEntity );
 			}
 			break;
@@ -866,7 +866,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 			if ( !tr.currentModel ) {
 				if ( GGameType & GAME_Tech3 ) {
 					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-				} else   {
+				} else {
 					R_DrawNullModel();
 				}
 			} else {
@@ -878,7 +878,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 							break;
 						}
 						R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-					} else   {
+					} else {
 						R_DrawNullModel();
 					}
 					break;
@@ -1012,7 +1012,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 			mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1( tr.currentEntity->e.origin, tr.worldModel );
 			if ( pLeaf->contents != BSP29CONTENTS_WATER ) {
 				cl_transvisedicts[ cl_numtransvisedicts++ ].ent = tr.currentEntity;
-			} else   {
+			} else {
 				cl_transwateredicts[ cl_numtranswateredicts++ ].ent = tr.currentEntity;
 			}
 		}
@@ -1135,7 +1135,7 @@ static void R_GenerateDrawSurfs() {
 		if ( tr.refdef.rdflags & RDF_NOWORLDMODEL || tr.world == NULL ) {
 			VectorSet( tr.viewParms.visBounds[ 0 ], MIN_WORLD_COORD, MIN_WORLD_COORD, MIN_WORLD_COORD );
 			VectorSet( tr.viewParms.visBounds[ 1 ], MAX_WORLD_COORD, MAX_WORLD_COORD, MAX_WORLD_COORD );
-		} else   {
+		} else {
 			VectorCopy( tr.world->nodes->mins, tr.viewParms.visBounds[ 0 ] );
 			VectorCopy( tr.world->nodes->maxs, tr.viewParms.visBounds[ 1 ] );
 		}
@@ -1250,7 +1250,7 @@ static bool IsMirror( const drawSurf_t* drawSurf, int entityNum ) {
 
 		// translate the original plane
 		originalPlane.dist = originalPlane.dist + DotProduct( originalPlane.normal, tr.orient.origin );
-	} else   {
+	} else {
 		plane = originalPlane;
 	}
 
@@ -1389,7 +1389,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 
 		// translate the original plane
 		originalPlane.dist = originalPlane.dist + DotProduct( originalPlane.normal, tr.orient.origin );
-	} else   {
+	} else {
 		plane = originalPlane;
 	}
 
@@ -1449,7 +1449,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 				VectorCopy( camera->axis[ 1 ], transformed );
 				RotatePointAroundVector( camera->axis[ 1 ], camera->axis[ 0 ], transformed, d );
 				CrossProduct( camera->axis[ 0 ], camera->axis[ 1 ], camera->axis[ 2 ] );
-			} else   {
+			} else {
 				// bobbing rotate, with skinNum being the rotation offset
 				d = sin( tr.refdef.time * 0.003f );
 				d = e->e.skinNum + d * 4;
@@ -1622,7 +1622,7 @@ recurse:
 	/* below a certain size, it is faster to use a O(n^2) sorting method */
 	if ( size <= CUTOFF ) {
 		shortsort( ( drawSurf_t* )lo, ( drawSurf_t* )hi );
-	} else   {
+	} else {
 		/* First we pick a partititioning element.  The efficiency of the
 		    algorithm demands that we find one that is approximately the
 		    median of the values, but also that we select one fast.  Using
@@ -1710,7 +1710,7 @@ recurse:
 				lo = loguy;
 				goto recurse;			/* do small recursion */
 			}
-		} else   {
+		} else {
 			if ( loguy < hi ) {
 				lostk[ stkptr ] = loguy;
 				histk[ stkptr ] = hi;
@@ -1972,18 +1972,18 @@ void R_Fog( glfog_t* curfog ) {
 	qglHint( GL_FOG_HINT, curfog->hint );
 	if ( GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW ) {
 		qglFogf( GL_FOG_START, curfog->end );		// snooper starts GL fog out further
-	} else   {
+	} else {
 		qglFogf( GL_FOG_START, curfog->start );
 	}
 
 	if ( r_zfar->value ) {
 		//	Allow override for helping level designers test fog distances
 		qglFogf( GL_FOG_END, r_zfar->value );
-	} else   {
+	} else {
 		if ( GGameType & GAME_WolfSP && backEnd.refdef.rdflags & RDF_SNOOPERVIEW ) {
 			// snooper ends GL fog out further.  this works fine with our maps, but could be 'funky' with later maps
 			qglFogf( GL_FOG_END, curfog->end + 1000 );
-		} else   {
+		} else {
 			qglFogf( GL_FOG_END, curfog->end );
 		}
 	}
@@ -2030,7 +2030,7 @@ void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float 
 			glfogsettings[ fogvar ].drawsky = false;
 			glfogsettings[ fogvar ].clearscreen = true;
 			glfogsettings[ fogvar ].density = 1.0;
-		} else   {
+		} else {
 			glfogsettings[ fogvar ].mode = GL_EXP;
 			glfogsettings[ fogvar ].drawsky = true;
 			glfogsettings[ fogvar ].clearscreen = false;
@@ -2068,7 +2068,7 @@ void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float 
 
 	if ( glfogsettings[ FOG_CURRENT ].registered ) {
 		memcpy( &glfogsettings[ FOG_LAST ], &glfogsettings[ FOG_CURRENT ], sizeof ( glfog_t ) );
-	} else   {
+	} else {
 		// if no current fog fall back to world fog
 		// FIXME: handle transition if there is no FOG_MAP fog
 		memcpy( &glfogsettings[ FOG_LAST ], &glfogsettings[ GGameType & GAME_WolfSP ? glfogNum : FOG_MAP ], sizeof ( glfog_t ) );
@@ -2082,7 +2082,7 @@ void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float 
 		glfogsettings[ FOG_TARGET ].finishTime = 0;
 		glfogsettings[ FOG_TARGET ].dirty = 1;
 		glfogsettings[ FOG_CURRENT ].dirty = 1;
-	} else   {
+	} else {
 		// setup transition times
 		glfogsettings[ FOG_TARGET ].startTime = tr.refdef.time;
 		glfogsettings[ FOG_TARGET ].finishTime = tr.refdef.time + var2;
