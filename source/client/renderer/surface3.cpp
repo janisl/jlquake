@@ -27,35 +27,9 @@ It is safe to actually issue drawing commands here if you don't want to
 use the shader system.
 */
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	RB_CheckOverflow
-//
-//==========================================================================
 
 void RB_CheckOverflow( int verts, int indexes ) {
 	if ( tess.numVertexes + verts < SHADER_MAX_VERTEXES &&
@@ -74,12 +48,6 @@ void RB_CheckOverflow( int verts, int indexes ) {
 
 	RB_BeginSurface( tess.shader, tess.fogNum );
 }
-
-//==========================================================================
-//
-//	RB_AddQuadStampExt
-//
-//==========================================================================
 
 void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2 ) {
 	RB_CHECKOVERFLOW( 4, 6 );
@@ -144,40 +112,16 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, flo
 	tess.numIndexes += 6;
 }
 
-//==========================================================================
-//
-//	RB_AddQuadStamp
-//
-//==========================================================================
-
 void RB_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, byte* color ) {
 	RB_AddQuadStampExt( origin, left, up, color, 0, 0, 1, 1 );
 }
-
-//==========================================================================
-//
-//	RB_SurfaceBad
-//
-//==========================================================================
 
 static void RB_SurfaceBad( surfaceType_t* surfType ) {
 	common->Printf( "Bad surface tesselated.\n" );
 }
 
-//==========================================================================
-//
-//	RB_SurfaceBad
-//
-//==========================================================================
-
 static void RB_SurfaceSkip( void* ) {
 }
-
-//==========================================================================
-//
-//	RB_SurfaceFace
-//
-//==========================================================================
 
 static void RB_SurfaceFace( srfSurfaceFace_t* surf ) {
 	RB_CHECKOVERFLOW( surf->numPoints, surf->numIndices );
@@ -220,12 +164,6 @@ static void RB_SurfaceFace( srfSurfaceFace_t* surf ) {
 	tess.numVertexes += surf->numPoints;
 }
 
-//==========================================================================
-//
-//	LodErrorForVolume
-//
-//==========================================================================
-
 static float LodErrorForVolume( vec3_t local, float radius ) {
 	// never let it go negative
 	if ( r_lodCurveError->value < 0 ) {
@@ -254,14 +192,7 @@ static float LodErrorForVolume( vec3_t local, float radius ) {
 	return r_lodCurveError->value / d;
 }
 
-//==========================================================================
-//
-//	RB_SurfaceGrid
-//
 //	Just copy the grid of points and triangulate
-//
-//==========================================================================
-
 static void RB_SurfaceGrid( srfGridMesh_t* cv ) {
 	int dlightBits = cv->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
@@ -388,12 +319,6 @@ static void RB_SurfaceGrid( srfGridMesh_t* cv ) {
 		used += rows - 1;
 	}
 }
-
-//==========================================================================
-//
-//	RB_SurfaceTriangles
-//
-//==========================================================================
 
 static void RB_SurfaceTriangles( srfTriangles_t* srf ) {
 	// ydnar: moved before overflow so dlights work properly
@@ -563,12 +488,6 @@ static void RB_SurfaceFoliage( srfFoliage_t* srf ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_SurfacePolychain
-//
-//==========================================================================
-
 static void RB_SurfacePolychain( srfPoly_t* p ) {
 	RB_CHECKOVERFLOW( p->numVerts, 3 * ( p->numVerts - 2 ) );
 
@@ -593,12 +512,6 @@ static void RB_SurfacePolychain( srfPoly_t* p ) {
 
 	tess.numVertexes = numv;
 }
-
-//==========================================================================
-//
-//	RB_SurfaceFlare
-//
-//==========================================================================
 
 static void RB_SurfaceFlare( srfFlare_t* surf ) {
 #if 0
@@ -651,12 +564,6 @@ static void RB_SurfaceFlare( srfFlare_t* surf ) {
 #endif
 }
 
-//==========================================================================
-//
-//	RB_SurfaceSprite
-//
-//==========================================================================
-
 static void RB_SurfaceSprite() {
 	// calculate the xyz locations for the four corners
 	float radius = backEnd.currentEntity->e.radius;
@@ -681,12 +588,6 @@ static void RB_SurfaceSprite() {
 
 	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
 }
-
-//==========================================================================
-//
-//	RB_SurfaceBeam
-//
-//==========================================================================
 
 static void RB_SurfaceBeam() {
 	refEntity_t* e = &backEnd.currentEntity->e;
@@ -736,11 +637,66 @@ static void RB_SurfaceBeam() {
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	DoRailCore
-//
-//==========================================================================
+static void RB_SurfaceBeamQ2() {
+	refEntity_t* e = &backEnd.currentEntity->e;
+
+	enum { NUM_BEAM_SEGS = 6 };
+
+	vec3_t oldorigin;
+	oldorigin[ 0 ] = e->oldorigin[ 0 ];
+	oldorigin[ 1 ] = e->oldorigin[ 1 ];
+	oldorigin[ 2 ] = e->oldorigin[ 2 ];
+
+	vec3_t origin;
+	origin[ 0 ] = e->origin[ 0 ];
+	origin[ 1 ] = e->origin[ 1 ];
+	origin[ 2 ] = e->origin[ 2 ];
+
+	vec3_t direction, normalized_direction;
+	normalized_direction[ 0 ] = direction[ 0 ] = oldorigin[ 0 ] - origin[ 0 ];
+	normalized_direction[ 1 ] = direction[ 1 ] = oldorigin[ 1 ] - origin[ 1 ];
+	normalized_direction[ 2 ] = direction[ 2 ] = oldorigin[ 2 ] - origin[ 2 ];
+
+	if ( VectorNormalize( normalized_direction ) == 0 ) {
+		return;
+	}
+
+	vec3_t perpvec;
+	PerpendicularVector( perpvec, normalized_direction );
+	VectorScale( perpvec, e->frame / 2, perpvec );
+
+	vec3_t start_points[ NUM_BEAM_SEGS ], end_points[ NUM_BEAM_SEGS ];
+	for ( int i = 0; i < 6; i++ ) {
+		RotatePointAroundVector( start_points[ i ], normalized_direction, perpvec, ( 360.0 / NUM_BEAM_SEGS ) * i );
+		VectorAdd( start_points[ i ], origin, start_points[ i ] );
+		VectorAdd( start_points[ i ], direction, end_points[ i ] );
+	}
+
+	qglDisable( GL_TEXTURE_2D );
+	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+	float r = ( d_8to24table[ e->skinNum & 0xFF ] ) & 0xFF;
+	float g = ( d_8to24table[ e->skinNum & 0xFF ] >> 8 ) & 0xFF;
+	float b = ( d_8to24table[ e->skinNum & 0xFF ] >> 16 ) & 0xFF;
+
+	r *= 1 / 255.0F;
+	g *= 1 / 255.0F;
+	b *= 1 / 255.0F;
+
+	qglColor4f( r, g, b, e->shaderRGBA[ 3 ] / 255.0 );
+
+	qglBegin( GL_TRIANGLE_STRIP );
+	for ( int i = 0; i < NUM_BEAM_SEGS; i++ ) {
+		qglVertex3fv( start_points[ i ] );
+		qglVertex3fv( end_points[ i ] );
+		qglVertex3fv( start_points[ ( i + 1 ) % NUM_BEAM_SEGS ] );
+		qglVertex3fv( end_points[ ( i + 1 ) % NUM_BEAM_SEGS ] );
+	}
+	qglEnd();
+
+	qglEnable( GL_TEXTURE_2D );
+	GL_State( GLS_DEPTHMASK_TRUE );
+}
 
 static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth ) {
 	// Gordon: configurable tile
@@ -803,12 +759,6 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 	tess.indexes[ tess.numIndexes++ ] = vbase + 3;
 }
 
-//==========================================================================
-//
-//	RB_SurfaceBeam
-//
-//==========================================================================
-
 static void RB_SurfaceRailCore() {
 	refEntity_t* e = &backEnd.currentEntity->e;
 
@@ -837,12 +787,6 @@ static void RB_SurfaceRailCore() {
 		DoRailCore( start, end, right, len, r_railCoreWidth->integer );
 	}
 }
-
-//==========================================================================
-//
-//	RB_SurfaceBeam
-//
-//==========================================================================
 
 static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up ) {
 	if ( numSegs > 1 ) {
@@ -895,12 +839,6 @@ static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, cons
 	}
 }
 
-//==========================================================================
-//
-//	RB_SurfaceBeam
-//
-//==========================================================================
-
 static void RB_SurfaceRailRings() {
 	refEntity_t* e = &backEnd.currentEntity->e;
 
@@ -923,12 +861,6 @@ static void RB_SurfaceRailRings() {
 
 	DoRailDiscs( numSegs, start, vec, right, up );
 }
-
-//==========================================================================
-//
-//	RB_SurfaceLightningBolt
-//
-//==========================================================================
 
 static void RB_SurfaceLightningBolt() {
 	refEntity_t* e = &backEnd.currentEntity->e;
@@ -977,14 +909,7 @@ static void RB_SurfaceSplash() {
 	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
 }
 
-//==========================================================================
-//
-//	RB_SurfaceAxis
-//
 //	Draws x/y/z lines from the origin for orientation debugging
-//
-//==========================================================================
-
 static void RB_SurfaceAxis() {
 	GL_Bind( tr.whiteImage );
 	qglLineWidth( 3 );
@@ -1002,14 +927,7 @@ static void RB_SurfaceAxis() {
 	qglLineWidth( 1 );
 }
 
-//==========================================================================
-//
-//	RB_SurfaceEntity
-//
 //	Entities that have a single procedurally generated surface
-//
-//==========================================================================
-
 static void RB_SurfaceEntity( surfaceType_t* surfType ) {
 	switch ( backEnd.currentEntity->e.reType ) {
 	case RT_SPRITE:
@@ -1018,6 +936,10 @@ static void RB_SurfaceEntity( surfaceType_t* surfType ) {
 
 	case RT_BEAM:
 		RB_SurfaceBeam();
+		break;
+
+	case RT_BEAM_Q2:
+		RB_SurfaceBeamQ2();
 		break;
 
 	case RT_RAIL_CORE:
@@ -1041,12 +963,6 @@ static void RB_SurfaceEntity( surfaceType_t* surfType ) {
 		break;
 	}
 }
-
-//==========================================================================
-//
-//	RB_SurfaceDisplayList
-//
-//==========================================================================
 
 static void RB_SurfaceDisplayList( srfDisplayList_t* surf ) {
 	// all apropriate state must be set in RB_BeginSurface
