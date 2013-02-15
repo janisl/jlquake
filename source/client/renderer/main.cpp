@@ -881,6 +881,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					} else   {
 						R_DrawNullModel();
 					}
+					break;
 
 				case MOD_MESH1:
 					if ( GGameType & GAME_Hexen2 ) {
