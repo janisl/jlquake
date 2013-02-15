@@ -513,10 +513,6 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	//
 	// draw all the triangles
 	//
-	if ( tr.currentEntity->e.renderfx & RF_DEPTHHACK ) {// hack the depth range to prevent view model from poking into walls
-		qglDepthRange( 0, 0.3 );
-	}
-
 	if ( tr.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPushMatrix();
@@ -590,14 +586,6 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		GL_State( GLS_DEFAULT );
-	}
-
-	if ( tr.currentEntity->e.renderfx & RF_DEPTHHACK ) {
-		qglDepthRange( 0, 1 );
-	}
-
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		qglPushMatrix();
 		qglLoadMatrixf( tr.orient.modelMatrix );
@@ -606,7 +594,6 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		qglColor4f( 0, 0, 0, 0.5 );
 		GL_DrawMd2Shadow( paliashdr, tr.currentEntity->e.frame );
 		qglEnable( GL_TEXTURE_2D );
-		GL_State( GLS_DEFAULT );
 		qglPopMatrix();
 	}
 	qglColor4f( 1, 1, 1, 1 );
