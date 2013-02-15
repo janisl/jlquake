@@ -30,6 +30,7 @@ enum surfaceType_t
 	SF_FOLIAGE,
 	SF_POLY,
 	SF_SPR,
+	SF_SP2,
 	SF_MDL,
 	SF_MD2,
 	SF_MD3,
@@ -902,7 +903,8 @@ void RB_SurfaceSpr( msprite1_t* psprite );
 
 void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen );
 void Mod_FreeSprite2Model( model_t* mod );
-void R_DrawSp2Model( trRefEntity_t* e );
+void R_AddSp2Surfaces( trRefEntity_t* e );
+void RB_SurfaceSp2( dsprite2_t* psprite );
 
 void Mod_LoadMdlModel( model_t* mod, const void* buffer );
 void Mod_LoadMdlModelNew( model_t* mod, const void* buffer );

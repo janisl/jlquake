@@ -499,7 +499,11 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 
 	VectorCopy( ent->e.origin, orient->origin );
 
-	if ( ( GGameType & GAME_Hexen2 ) && ( R_GetModelByHandle( ent->e.hModel )->q1_flags & H2EF_FACE_VIEW ) ) {
+	model_t* model = R_GetModelByHandle( ent->e.hModel );
+	if ( model->type == MOD_SPRITE || model->type == MOD_SPRITE2 ) {
+		//	Sprites handle orientation in drawing code.
+		AxisClear( orient->axis );
+	} else if ( ( GGameType & GAME_Hexen2 ) && ( model->q1_flags & H2EF_FACE_VIEW ) ) {
 		float fvaxis[ 3 ][ 3 ];
 
 		VectorSubtract( viewParms->orient.origin, ent->e.origin, fvaxis[ 0 ] );
@@ -513,7 +517,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 			fvaxis[ 2 ][ 2 ] = 0;
 			if ( fvaxis[ 0 ][ 2 ] > 0 ) {
 				fvaxis[ 2 ][ 0 ] = -1;
-			} else   {
+			} else {
 				fvaxis[ 2 ][ 0 ] = 1;
 			}
 		} else   {
@@ -528,9 +532,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 
 		MatrixMultiply( ent->e.axis, fvaxis, orient->axis );
 	} else   {
-		VectorCopy( ent->e.axis[ 0 ], orient->axis[ 0 ] );
-		VectorCopy( ent->e.axis[ 1 ], orient->axis[ 1 ] );
-		VectorCopy( ent->e.axis[ 2 ], orient->axis[ 2 ] );
+		AxisCopy( ent->e.axis, orient->axis );
 	}
 
 	float glMatrix[ 16 ];
@@ -926,7 +928,13 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					break;
 
 				case MOD_SPRITE2:
-					R_DrawSp2Model( ent );
+					R_AddSp2Surfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
+					}
 					break;
 
 				case MOD_MESH3:

@@ -14,35 +14,9 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Mod_LoadSprite2Model
-//
-//==========================================================================
 
 void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
 	dsprite2_t* sprin = ( dsprite2_t* )buffer;
@@ -77,44 +51,35 @@ void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
 	mod->type = MOD_SPRITE2;
 }
 
-//==========================================================================
-//
-//	Mod_FreeSprite2Model
-//
-//==========================================================================
-
 void Mod_FreeSprite2Model( model_t* mod ) {
 	Mem_Free( mod->q2_extradata );
 }
 
-//==========================================================================
-//
-//	R_DrawSp2Model
-//
-//==========================================================================
-
-void R_DrawSp2Model( trRefEntity_t* e ) {
+void R_AddSp2Surfaces( trRefEntity_t* e ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
-
-	vec3_t point;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
 	dsprite2_t* psprite = ( dsprite2_t* )tr.currentModel->q2_extradata;
+	R_AddDrawSurf(( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE);
+}
 
-	e->e.frame %= psprite->numframes;
+void RB_SurfaceSp2( dsprite2_t* psprite ) {
+	vec3_t point;
 
-	dsp2_frame_t* frame = &psprite->frames[ e->e.frame ];
+	tr.currentEntity->e.frame %= psprite->numframes;
+
+	dsp2_frame_t* frame = &psprite->frames[ tr.currentEntity->e.frame ];
 
 	float* up = tr.viewParms.orient.axis[ 2 ];
 	float* left = tr.viewParms.orient.axis[ 1 ];
 
 	float alpha = 1.0F;
-	if ( e->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = e->e.shaderRGBA[ 3 ] / 255.0;
+	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = tr.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
 	}
 
 	if ( alpha != 1.0F ) {
@@ -125,29 +90,29 @@ void R_DrawSp2Model( trRefEntity_t* e ) {
 
 	qglColor4f( 1, 1, 1, alpha );
 
-	GL_Bind( tr.currentModel->q2_skins[ e->e.frame ] );
+	GL_Bind( tr.currentModel->q2_skins[ tr.currentEntity->e.frame ] );
 
 	GL_TexEnv( GL_MODULATE );
 
 	qglBegin( GL_QUADS );
 
 	qglTexCoord2f( 0, 1 );
-	VectorMA( e->e.origin, -frame->origin_y, up, point );
+	VectorMA( tr.currentEntity->e.origin, -frame->origin_y, up, point );
 	VectorMA( point, frame->origin_x, left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 0, 0 );
-	VectorMA( e->e.origin, frame->height - frame->origin_y, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->height - frame->origin_y, up, point );
 	VectorMA( point, frame->origin_x, left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 0 );
-	VectorMA( e->e.origin, frame->height - frame->origin_y, up, point );
+	VectorMA( tr.currentEntity->e.origin, frame->height - frame->origin_y, up, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	qglVertex3fv( point );
 
 	qglTexCoord2f( 1, 1 );
-	VectorMA( e->e.origin, -frame->origin_y, up, point );
+	VectorMA( tr.currentEntity->e.origin, -frame->origin_y, up, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	qglVertex3fv( point );
 
