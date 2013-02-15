@@ -30,6 +30,7 @@ enum surfaceType_t
 	SF_FOLIAGE,
 	SF_POLY,
 	SF_MDL,
+	SF_MD2,
 	SF_MD3,
 	SF_MD4,
 	SF_MDC,
@@ -909,7 +910,8 @@ bool R_MdlHasHexen2Transparency( model_t* Model );
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer );
 void Mod_FreeMd2Model( model_t* mod );
-void R_DrawMd2Model( trRefEntity_t* e );
+void R_AddMd2Surfaces( trRefEntity_t* e );
+void RB_SurfaceMd2( dmd2_t* paliashdr );
 
 bool R_LoadMd3( model_t* mod, void* buffer );
 void R_FreeMd3( model_t* mod );

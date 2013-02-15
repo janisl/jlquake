@@ -912,7 +912,13 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					break;
 
 				case MOD_MESH2:
-					R_DrawMd2Model( ent );
+					R_AddMd2Surfaces( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
+					}
 					break;
 
 				case MOD_BRUSH38:

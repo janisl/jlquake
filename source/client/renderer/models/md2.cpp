@@ -14,40 +14,14 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define POWERSUIT_SCALE         4.0F
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static float md2_shadelight[ 3 ];
 static vec4_t s_lerped[ MAX_MD2_VERTS ];
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Mod_LoadMd2Model
-//
-//==========================================================================
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	const dmd2_t* pinmodel = ( const dmd2_t* )buffer;
@@ -64,6 +38,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	for ( int i = 0; i < ( int )sizeof ( dmd2_t ) / 4; i++ ) {
 		( ( int* )pheader )[ i ] = LittleLong( ( ( int* )buffer )[ i ] );
 	}
+	pheader->ident = SF_MD2;
 
 	if ( pheader->num_xyz <= 0 ) {
 		common->Error( "model %s has no vertices", mod->name );
@@ -157,21 +132,9 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	mod->q2_maxs[ 2 ] = 32;
 }
 
-//==========================================================================
-//
-//	Mod_FreeMd2Model
-//
-//==========================================================================
-
 void Mod_FreeMd2Model( model_t* mod ) {
 	Mem_Free( mod->q2_extradata );
 }
-
-//==========================================================================
-//
-//	GL_LerpVerts
-//
-//==========================================================================
 
 static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dmd2_trivertx_t* verts,
 	float* lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
@@ -192,15 +155,8 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, d
 	}
 }
 
-//==========================================================================
-//
-//	GL_DrawMd2FrameLerp
-//
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-//
-//==========================================================================
-
 static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( ( byte* )paliashdr + paliashdr->ofs_frames +
 											 tr.currentEntity->e.frame * paliashdr->framesize );
@@ -361,12 +317,6 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 	}
 }
 
-//==========================================================================
-//
-//	GL_DrawMd2Shadow
-//
-//==========================================================================
-
 static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 	float lheight = tr.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
@@ -402,12 +352,6 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 		qglEnd();
 	}
 }
-
-//==========================================================================
-//
-//	R_CullMd2Model
-//
-//==========================================================================
 
 static bool R_CullMd2Model( trRefEntity_t* e ) {
 	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
@@ -465,13 +409,7 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 	return R_CullLocalBox( bounds ) == CULL_OUT;
 }
 
-//==========================================================================
-//
-//	R_DrawMd2Model
-//
-//==========================================================================
-
-void R_DrawMd2Model( trRefEntity_t* e ) {
+void R_AddMd2Surfaces( trRefEntity_t* e ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -483,6 +421,10 @@ void R_DrawMd2Model( trRefEntity_t* e ) {
 	}
 
 	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
+	R_AddDrawSurf(( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE);
+}
+
+void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 	//
 	// get lighting information
@@ -493,7 +435,7 @@ void R_DrawMd2Model( trRefEntity_t* e ) {
 		}
 	} else if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT )     {
 		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = e->e.absoluteLight;
+			md2_shadelight[ i ] = tr.currentEntity->e.absoluteLight;
 		}
 	} else   {
 		R_LightPointQ2( tr.currentEntity->e.origin, md2_shadelight );
@@ -555,10 +497,10 @@ void R_DrawMd2Model( trRefEntity_t* e ) {
 	// PGM
 	// =================
 
-	float tmp_yaw = VecToYaw( e->e.axis[ 0 ] );
+	float tmp_yaw = VecToYaw( tr.currentEntity->e.axis[ 0 ] );
 	shadedots = r_avertexnormal_dots[ ( ( int )( tmp_yaw * ( SHADEDOT_QUANT / 360.0 ) ) ) & ( SHADEDOT_QUANT - 1 ) ];
 
-	VectorCopy( e->e.axis[ 0 ], shadevector );
+	VectorCopy( tr.currentEntity->e.axis[ 0 ], shadevector );
 	shadevector[ 2 ] = 1;
 	VectorNormalize( shadevector );
 
@@ -619,14 +561,14 @@ void R_DrawMd2Model( trRefEntity_t* e ) {
 
 
 	if ( ( tr.currentEntity->e.frame >= paliashdr->num_frames ) || ( tr.currentEntity->e.frame < 0 ) ) {
-		common->Printf( "R_DrawMd2Model %s: no such frame %d\n",
+		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
 			tr.currentModel->name, tr.currentEntity->e.frame );
 		tr.currentEntity->e.frame = 0;
 		tr.currentEntity->e.oldframe = 0;
 	}
 
 	if ( ( tr.currentEntity->e.oldframe >= paliashdr->num_frames ) || ( tr.currentEntity->e.oldframe < 0 ) ) {
-		common->Printf( "R_DrawMd2Model %s: no such oldframe %d\n",
+		common->Printf( "R_AddMd2Surfaces %s: no such oldframe %d\n",
 			tr.currentModel->name, tr.currentEntity->e.oldframe );
 		tr.currentEntity->e.frame = 0;
 		tr.currentEntity->e.oldframe = 0;
