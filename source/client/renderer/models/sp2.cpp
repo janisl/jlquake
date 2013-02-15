@@ -118,12 +118,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	qglEnd();
 
-	GL_State( GLS_DEFAULT );
 	GL_TexEnv( GL_REPLACE );
-
-	if ( alpha != 1.0F ) {
-		GL_State( GLS_DEFAULT );
-	}
 
 	qglColor4f( 1, 1, 1, 1 );
 }
