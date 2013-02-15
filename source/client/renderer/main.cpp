@@ -767,39 +767,6 @@ static void R_DrawBeam( trRefEntity_t* e ) {
 	GL_State( GLS_DEPTHMASK_TRUE );
 }
 
-static void R_DrawNullModel() {
-	vec3_t shadelight;
-	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		shadelight[ 0 ] = shadelight[ 1 ] = shadelight[ 2 ] = tr.currentEntity->e.absoluteLight;
-	} else {
-		R_LightPointQ2( tr.currentEntity->e.origin, shadelight );
-	}
-
-	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
-
-	qglDisable( GL_TEXTURE_2D );
-	qglColor3fv( shadelight );
-
-	qglBegin( GL_TRIANGLE_FAN );
-	qglVertex3f( 0, 0, -16 );
-	for ( int i = 0; i <= 4; i++ ) {
-		qglVertex3f( 16 * cos( i * idMath::HALF_PI ), 16 * sin( i * idMath::HALF_PI ), 0 );
-	}
-	qglEnd();
-
-	qglBegin( GL_TRIANGLE_FAN );
-	qglVertex3f( 0, 0, 16 );
-	for ( int i = 4; i >= 0; i-- ) {
-		qglVertex3f( 16 * cos( i * idMath::HALF_PI ), 16 * sin( i * idMath::HALF_PI ), 0 );
-	}
-	qglEnd();
-
-	qglColor3f( 1, 1, 1 );
-	qglPopMatrix();
-	qglEnable( GL_TEXTURE_2D );
-}
-
 static void R_AddEntitySurfaces( bool TranslucentPass ) {
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
@@ -832,6 +799,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 		bool item_trans = false;
 
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		// simple generated models, like sprites and beams, are not culled
 		switch ( ent->e.reType ) {
 		case RT_PORTALSURFACE:
@@ -864,22 +832,25 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
-				if ( GGameType & GAME_Tech3 ) {
-					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-				} else {
-					R_DrawNullModel();
+				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
+				if ( !( GGameType & GAME_Tech3 ) ) {
+					R_VerifyNoRenderCommands();
+					R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+					R_SyncRenderThread();
+					GL_State(GLS_DEFAULT);
 				}
 			} else {
-				int firstDrawSurf = tr.refdef.numDrawSurfs;
 				switch ( tr.currentModel->type ) {
 				case MOD_BAD:
-					if ( GGameType & GAME_Tech3 ) {
-						if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
-							break;
-						}
-						R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-					} else {
-						R_DrawNullModel();
+					if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+						break;
+					}
+					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
 					}
 					break;
 
