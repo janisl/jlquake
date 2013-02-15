@@ -625,6 +625,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 	//
 	int size = sizeof ( mesh1hdr_t ) + ( LittleLong( pinmodel->numframes ) - 1 ) * sizeof ( pheader->frames[ 0 ] );
 	pheader = ( mesh1hdr_t* )Mem_Alloc( size );
+	pheader->ident = SF_MDL;
 
 	mod->q1_flags = LittleLong( pinmodel->flags );
 
@@ -761,6 +762,7 @@ void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
 	//
 	int size = sizeof ( mesh1hdr_t ) + ( LittleLong( pinmodel->numframes ) - 1 ) * sizeof ( pheader->frames[ 0 ] );
 	pheader = ( mesh1hdr_t* )Mem_Alloc( size );
+	pheader->ident = SF_MDL;
 
 	mod->q1_flags = LittleLong( pinmodel->flags );
 
@@ -1033,7 +1035,7 @@ float R_CalcEntityLight( refEntity_t* e ) {
 	return light;
 }
 
-void R_DrawMdlModel( trRefEntity_t* e ) {
+void R_AddMdlSurfaces( trRefEntity_t* e ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -1043,18 +1045,17 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 	if ( R_CullLocalBox( &clmodel->q1_mins ) == CULL_OUT ) {
 		return;
 	}
+	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )clmodel->q1_cache;
+	R_AddDrawSurf(( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE);
+}
 
-	// hack the depth range to prevent view model from poking into walls
-	if ( e->e.renderfx & RF_DEPTHHACK ) {
-		qglDepthRange( 0, 0.3 );
-	}
-
+void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	//
 	// get lighting information
 	//
-	ambientlight = shadelight = R_CalcEntityLight( &e->e );
+	ambientlight = shadelight = R_CalcEntityLight( &tr.currentEntity->e );
 
-	if ( e->e.renderfx & RF_FIRST_PERSON ) {
+	if ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
 		r_lightlevel->value = ambientlight;
 	}
 
@@ -1066,6 +1067,8 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 		shadelight = 192 - ambientlight;
 	}
 
+	model_t* clmodel = R_GetModelByHandle( tr.currentEntity->e.hModel );
+
 	// ZOID: never allow players to go totally black
 	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
 		if ( ambientlight < 8 ) {
@@ -1073,22 +1076,17 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 		}
 	}
 
-	if ( e->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		ambientlight = shadelight = tr.currentEntity->e.absoluteLight * 256.0;
 	}
 
-	float tmp_yaw = VecToYaw( e->e.axis[ 0 ] );
+	float tmp_yaw = VecToYaw( tr.currentEntity->e.axis[ 0 ] );
 	shadedots = r_avertexnormal_dots[ ( ( int )( tmp_yaw * ( SHADEDOT_QUANT / 360.0 ) ) ) & ( SHADEDOT_QUANT - 1 ) ];
 	shadelight = shadelight / 200.0;
 
-	VectorCopy( e->e.axis[ 0 ], shadevector );
+	VectorCopy( tr.currentEntity->e.axis[ 0 ], shadevector );
 	shadevector[ 2 ] = 1;
 	VectorNormalize( shadevector );
-
-	//
-	// locate the proper data
-	//
-	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )clmodel->q1_cache;
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -1109,31 +1107,32 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 			GL_Cull( CT_TWO_SIDED );
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA );
 			doOverBright = false;
-		} else if ( tr.currentEntity->e.renderfx & RF_WATERTRANS )     {
+		} else if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
 			model_constant_alpha = r_wateralpha->value;
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 			doOverBright = false;
-		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT )     {
+		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT ) {
 			model_constant_alpha = 1.0f;
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 			doOverBright = false;
-		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY )     {
+		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY ) {
 			model_constant_alpha = 1.0f;
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 			doOverBright = false;
-		} else   {
+		} else {
 			model_constant_alpha = 1.0f;
 			GL_State( GLS_DEPTHMASK_TRUE );
 		}
 	} else   {
 		model_constant_alpha = 1.0f;
+		GL_State( GLS_DEFAULT );
 	}
 
 	int anim = ( int )( tr.refdef.floatTime * 10 ) & 3;
-	if ( e->e.customSkin ) {
-		GL_Bind( tr.images[ e->e.customSkin ] );
+	if ( tr.currentEntity->e.customSkin ) {
+		GL_Bind( tr.images[ tr.currentEntity->e.customSkin ] );
 	} else   {
-		GL_Bind( paliashdr->gl_texture[ e->e.skinNum ][ anim ] );
+		GL_Bind( paliashdr->gl_texture[ tr.currentEntity->e.skinNum ][ anim ] );
 	}
 
 	GL_TexEnv( GL_MODULATE );
@@ -1147,23 +1146,17 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 
 	GL_TexEnv( GL_REPLACE );
 
-	if ( !e->e.customSkin && paliashdr->fullBrightTexture[ e->e.skinNum ][ anim ] ) {
-		GL_Bind( paliashdr->fullBrightTexture[ e->e.skinNum ][ anim ] );
+	if ( !tr.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] ) {
+		GL_Bind( paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] );
 		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, true, false );
 	}
-
-	GL_State( GLS_DEFAULT );
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
 
 	qglPopMatrix();
-
-	if ( e->e.renderfx & RF_DEPTHHACK ) {
-		qglDepthRange( 0, 1 );
-	}
 
 	if ( r_shadows->value ) {
 		qglPushMatrix();
@@ -1173,7 +1166,6 @@ void R_DrawMdlModel( trRefEntity_t* e ) {
 		qglColor4f( 0, 0, 0, 0.5 );
 		GL_DrawAliasShadow( paliashdr, lastposenum );
 		qglEnable( GL_TEXTURE_2D );
-		GL_State( GLS_DEFAULT );
 		qglColor4f( 1,1,1,1 );
 		qglPopMatrix();
 	}

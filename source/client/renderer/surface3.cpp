@@ -1109,6 +1109,7 @@ void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* ) =
 	( void ( * )( void* ) )RB_SurfaceTriangles,		// SF_TRIANGLES,
 	( void ( * )( void* ) )RB_SurfaceFoliage,		// SF_FOLIAGE,
 	( void ( * )( void* ) )RB_SurfacePolychain,		// SF_POLY,
+	( void ( * )( void* ) )RB_SurfaceMdl,			// SF_MDL,
 	( void ( * )( void* ) )RB_SurfaceMesh,			// SF_MD3,
 	( void ( * )( void* ) )RB_SurfaceAnim,			// SF_MD4,
 	( void ( * )( void* ) )RB_SurfaceCMesh,			// SF_MDC,

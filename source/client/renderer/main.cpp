@@ -886,7 +886,13 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 									 R_MdlHasHexen2Transparency( tr.currentModel );
 					}
 					if ( !item_trans ) {
-						R_DrawMdlModel( ent );
+						R_AddMdlSurfaces( ent );
+						if ( !( GGameType & GAME_Tech3 ) ) {
+							R_VerifyNoRenderCommands();
+							R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+							R_SyncRenderThread();
+							GL_State(GLS_DEFAULT);
+						}
 					}
 					break;
 
@@ -1031,10 +1037,17 @@ static void R_DrawTransEntitiesOnList( bool inwater ) {
 		tr.currentEntity = theents[ i ].ent;
 		tr.currentModel = R_GetModelByHandle( tr.currentEntity->e.hModel );
 		R_RotateForEntity( tr.currentEntity, &tr.viewParms, &tr.orient );
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 
 		switch ( tr.currentModel->type ) {
 		case MOD_MESH1:
-			R_DrawMdlModel( tr.currentEntity );
+			R_AddMdlSurfaces( tr.currentEntity );
+			if ( !( GGameType & GAME_Tech3 ) ) {
+				R_VerifyNoRenderCommands();
+				R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+				R_SyncRenderThread();
+				GL_State(GLS_DEFAULT);
+			}
 			break;
 		case MOD_BRUSH29:
 			R_DrawBrushModelQ1( tr.currentEntity,true );
