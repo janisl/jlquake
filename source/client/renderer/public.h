@@ -209,6 +209,7 @@ enum refEntityType_t
 	RT_SPRITE,
 	RT_SPLASH,	// ripple effect
 	RT_BEAM,
+	RT_BEAM_Q2,
 	RT_RAIL_CORE,
 	RT_RAIL_CORE_TAPER,	// a modified core that creates a properly texture mapped core that's wider at one end
 	RT_RAIL_RINGS,

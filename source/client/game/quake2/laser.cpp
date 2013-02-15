@@ -35,7 +35,7 @@ void CLQ2_NewLaser( vec3_t start, vec3_t end, int colors ) {
 	for ( int i = 0; i < MAX_LASERS_Q2; i++, laser++ ) {
 		if ( laser->endTime < cl.serverTime ) {
 			Com_Memset( laser, 0, sizeof ( *laser ) );
-			laser->entity.reType = RT_BEAM;
+			laser->entity.reType = RT_BEAM_Q2;
 			laser->entity.renderfx = RF_TRANSLUCENT;
 			VectorCopy( start, laser->entity.origin );
 			VectorCopy( end, laser->entity.oldorigin );

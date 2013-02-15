@@ -812,18 +812,17 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 		case RT_RAIL_CORE:
 		case RT_RAIL_CORE_TAPER:
 		case RT_RAIL_RINGS:
-			if ( GGameType & GAME_Tech3 ) {
-				// self blood sprites, talk balloons, etc should not be drawn in the primary
-				// view.  We can't just do this check for all entities, because md3
-				// entities may still want to cast shadows from them
-				if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
-					continue;
-				}
-				shader_t* shader = R_GetShaderByHandle( ent->e.customShader );
-				R_AddDrawSurf( &entitySurface, shader, R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
-			} else {
-				R_DrawBeam( tr.currentEntity );
+			// self blood sprites, talk balloons, etc should not be drawn in the primary
+			// view.  We can't just do this check for all entities, because md3
+			// entities may still want to cast shadows from them
+			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+				continue;
 			}
+			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
+			break;
+
+		case RT_BEAM_Q2:
+			R_DrawBeam( tr.currentEntity );
 			break;
 
 		case RT_MODEL:

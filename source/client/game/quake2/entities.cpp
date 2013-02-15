@@ -642,7 +642,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 		// tweak the color of beams
 		if ( renderfx_old & Q2RF_BEAM ) {
 			// the four beam colors are encoded in 32 bits of skinnum (hack)
-			ent.reType = RT_BEAM;
+			ent.reType = RT_BEAM_Q2;
 			ent.shaderRGBA[ 3 ] = 76;
 			ent.skinNum = ( s1->skinnum >> ( ( rand() % 4 ) * 8 ) ) & 0xff;
 			ent.hModel = 0;
