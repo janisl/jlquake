@@ -25,7 +25,6 @@ mbrush29_glpoly_t* lightmap_polys[ MAX_LIGHTMAPS ];
 mbrush29_leaf_t* r_viewleaf;
 mbrush29_leaf_t* r_oldviewleaf;
 
-mbrush29_surface_t* skychain = NULL;
 mbrush29_surface_t* waterchain = NULL;
 
 int skytexturenum;
@@ -791,13 +790,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		DrawGLWaterPoly( p );
 		GL_State( GLS_DEFAULT );
-	}
-}
-
-void DrawTextureChainsQ1() {
-	if ( skychain ) {
-		R_DrawSkyChain( skychain );
-		skychain = NULL;
 	}
 }
 

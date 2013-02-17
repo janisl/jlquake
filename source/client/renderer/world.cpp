@@ -700,10 +700,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 			}
 
 			// if sorting by texture, just store it out
-			if ( surf->flags & BRUSH29_SURF_DRAWSKY ) {
-				surf->texturechain = skychain;
-				skychain = surf;
-			} else if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
+			if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
 			} else {
@@ -760,16 +757,7 @@ void R_DrawWorldQ1() {
 
 	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
 
-	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
-	}
-
-	DrawTextureChainsQ1();
 }
 
 static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {

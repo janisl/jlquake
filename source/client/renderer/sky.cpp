@@ -175,27 +175,6 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 	}
 }
 
-void R_DrawSkyChain( mbrush29_surface_t* s ) {
-	GL_Bind( tr.solidskytexture );
-	speedscale = tr.refdef.floatTime * 8;
-	speedscale -= ( int )speedscale & ~127;
-
-	for ( mbrush29_surface_t* fa = s; fa; fa = fa->texturechain ) {
-		EmitSkyPolys( fa );
-	}
-
-	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	GL_Bind( tr.alphaskytexture );
-	speedscale = tr.refdef.floatTime * 16;
-	speedscale -= ( int )speedscale & ~127;
-
-	for ( mbrush29_surface_t* fa = s; fa; fa = fa->texturechain ) {
-		EmitSkyPolys( fa );
-	}
-
-	GL_State( GLS_DEFAULT );
-}
-
 void R_SetSky( const char* name, float rotate, vec3_t axis ) {
 	String::NCpy( skyname, name, sizeof ( skyname ) - 1 );
 	skyrotate = rotate;

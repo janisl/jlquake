@@ -868,7 +868,6 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, flo
 extern mbrush29_glpoly_t* lightmap_polys[ MAX_LIGHTMAPS ];
 extern mbrush29_leaf_t* r_viewleaf;
 extern mbrush29_leaf_t* r_oldviewleaf;
-extern mbrush29_surface_t* skychain;
 extern mbrush29_surface_t* waterchain;
 extern int skytexturenum;		// index in cl.loadmodel, not gl texture object
 
@@ -888,7 +887,6 @@ Skies
 
 void R_InitSky( mbrush29_texture_t* mt );
 void EmitSkyPolys( mbrush29_surface_t* fa );
-void R_DrawSkyChain( mbrush29_surface_t* s );
 void R_ClearSkyBox();
 void R_AddSkySurface( mbrush38_surface_t* fa );
 void R_DrawSkyBoxQ2();
