@@ -175,27 +175,7 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 	}
 }
 
-//	Does a sky warp on the pre-fragmented mbrush29_glpoly_t chain
-//	This will be called for brushmodels, the world will have them chained together.
-void EmitBothSkyLayers( mbrush29_surface_t* fa ) {
-	GL_Bind( tr.solidskytexture );
-	speedscale = tr.refdef.floatTime * 8;
-	speedscale -= ( int )speedscale & ~127;
-
-	EmitSkyPolys( fa );
-
-	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	GL_Bind( tr.alphaskytexture );
-	speedscale = tr.refdef.floatTime * 16;
-	speedscale -= ( int )speedscale & ~127;
-
-	EmitSkyPolys( fa );
-
-	GL_State( GLS_DEFAULT );
-}
-
 void R_DrawSkyChain( mbrush29_surface_t* s ) {
-	// used when r_texsort is on
 	GL_Bind( tr.solidskytexture );
 	speedscale = tr.refdef.floatTime * 8;
 	speedscale -= ( int )speedscale & ~127;

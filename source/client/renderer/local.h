@@ -844,7 +844,6 @@ void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
 void R_DrawFullBrightPoly( mbrush29_surface_t* s );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
-void R_BlendLightmapsQ1();
 void EmitWaterPolysQ1( mbrush29_surface_t* fa );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces();
@@ -888,7 +887,6 @@ Skies
 
 void R_InitSky( mbrush29_texture_t* mt );
 void EmitSkyPolys( mbrush29_surface_t* fa );
-void EmitBothSkyLayers( mbrush29_surface_t* fa );
 void R_DrawSkyChain( mbrush29_surface_t* s );
 void R_ClearSkyBox();
 void R_AddSkySurface( mbrush38_surface_t* fa );

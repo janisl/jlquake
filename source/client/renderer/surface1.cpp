@@ -25,7 +25,6 @@ mbrush29_glpoly_t* lightmap_polys[ MAX_LIGHTMAPS ];
 mbrush29_leaf_t* r_viewleaf;
 mbrush29_leaf_t* r_oldviewleaf;
 
-// For r_texsort 0
 mbrush29_surface_t* skychain = NULL;
 mbrush29_surface_t* waterchain = NULL;
 
@@ -535,102 +534,6 @@ void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	}
 }
 
-void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override ) {
-	c_brush_polys++;
-
-	if ( fa->flags & BRUSH29_SURF_DRAWSKY ) {
-		// warp texture, no lightmaps
-		EmitBothSkyLayers( fa );
-		return;
-	}
-
-	float intensity = 1.0f, alpha_val = 1.0f;
-	if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		alpha_val = r_wateralpha->value;
-		intensity = 1.0;
-	}
-
-	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		// tr.currentEntity->abslight   0 - 255
-		intensity = tr.currentEntity->e.absoluteLight;
-	}
-
-	if ( !override ) {
-		qglColor4f( intensity, intensity, intensity, alpha_val );
-	}
-
-	mbrush29_texture_t* t = R_TextureAnimationQ1( fa->texinfo->texture );
-	GL_Bind( t->gl_texture );
-
-	if ( fa->flags & BRUSH29_SURF_DRAWTURB ) {
-		// warp texture, no lightmaps
-		EmitWaterPolysQ1( fa );
-		qglColor4f( 1, 1, 1, 1 );
-		return;
-	}
-
-	if ( ( ( r_viewleaf->contents == BSP29CONTENTS_EMPTY && ( fa->flags & BRUSH29_SURF_UNDERWATER ) ) ||
-		   ( r_viewleaf->contents != BSP29CONTENTS_EMPTY && !( fa->flags & BRUSH29_SURF_UNDERWATER ) ) ) &&
-		 !( fa->flags & BRUSH29_SURF_DONTWARP ) ) {
-		DrawGLWaterPoly( fa->polys );
-	} else {
-		DrawGLPolyQ1( fa->polys );
-	}
-	qglColor4f( 1, 1, 1, 1 );
-
-	// add the poly to the proper lightmap chain
-
-	fa->polys->chain = lightmap_polys[ fa->lightmaptexturenum ];
-	lightmap_polys[ fa->lightmaptexturenum ] = fa->polys;
-
-	// check for lightmap modification
-	for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && fa->styles[ maps ] != 255; maps++ ) {
-		if ( tr.refdef.lightstyles[ fa->styles[ maps ] ].rgb[ 0 ] * 256 != fa->cached_light[ maps ] ) {
-			goto dynamic;
-		}
-	}
-
-	if ( fa->dlightframe == tr.frameCount ||// dynamic this frame
-		 fa->cached_dlight ) {				// dynamic previously
-dynamic:
-		if ( r_dynamic->value ) {
-			lightmap_modified[ fa->lightmaptexturenum ] = true;
-			lightmap_modified[ fa->lightmaptexturenum + MAX_LIGHTMAPS / 2 ] = true;
-			glRect_t* theRect = &lightmap_rectchange[ fa->lightmaptexturenum ];
-			if ( fa->light_t < theRect->t ) {
-				if ( theRect->h ) {
-					theRect->h += theRect->t - fa->light_t;
-				}
-				theRect->t = fa->light_t;
-			}
-			if ( fa->light_s < theRect->l ) {
-				if ( theRect->w ) {
-					theRect->w += theRect->l - fa->light_s;
-				}
-				theRect->l = fa->light_s;
-			}
-			int smax = ( fa->extents[ 0 ] >> 4 ) + 1;
-			int tmax = ( fa->extents[ 1 ] >> 4 ) + 1;
-			if ( ( theRect->w + theRect->l ) < ( fa->light_s + smax ) ) {
-				theRect->w = ( fa->light_s - theRect->l ) + smax;
-			}
-			if ( ( theRect->h + theRect->t ) < ( fa->light_t + tmax ) ) {
-				theRect->h = ( fa->light_t - theRect->t ) + tmax;
-			}
-			byte* base = lightmaps + fa->lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
-			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			byte* overbrightBase = lightmaps + ( fa->lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
-			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			R_BuildLightMapQ1( fa, base, overbrightBase, BLOCK_WIDTH * 4 );
-		}
-	}
-
-	if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		GL_State( GLS_DEFAULT );
-	}
-}
-
 void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	mbrush29_glpoly_t* p = s->polys;
 
@@ -890,100 +793,19 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	}
 }
 
-void R_BlendLightmapsQ1() {
-	if ( r_fullbright->value ) {
-		return;
-	}
-	if ( !r_texsort->value ) {
-		return;
-	}
-
-	int NewState = 0;		// don't bother writing Z
-	if ( !r_lightmap->value ) {
-		NewState |= GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-	}
-	GL_State( NewState );
-
-	for ( int i = 0; i < MAX_LIGHTMAPS; i++ ) {
-		mbrush29_glpoly_t* p = lightmap_polys[ i ];
-		if ( !p ) {
-			continue;
-		}
-		GL_Bind( tr.lightmaps[ i ] );
-		if ( lightmap_modified[ i ] ) {
-			lightmap_modified[ i ] = false;
-			glRect_t* theRect = &lightmap_rectchange[ i ];
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-				BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-				lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-			theRect->l = BLOCK_WIDTH;
-			theRect->t = BLOCK_HEIGHT;
-			theRect->h = 0;
-			theRect->w = 0;
-		}
-		for (; p; p = p->chain ) {
-			if ( ( ( r_viewleaf->contents == BSP29CONTENTS_EMPTY && ( p->flags & BRUSH29_SURF_UNDERWATER ) ) ||
-				   ( r_viewleaf->contents != BSP29CONTENTS_EMPTY && !( p->flags & BRUSH29_SURF_UNDERWATER ) ) ) &&
-				 !( p->flags & BRUSH29_SURF_DONTWARP ) ) {
-				DrawGLWaterPolyLightmap( p );
-			} else {
-				qglBegin( GL_POLYGON );
-				float* v = p->verts[ 0 ];
-				for ( int j = 0; j < p->numverts; j++, v += BRUSH29_VERTEXSIZE ) {
-					qglTexCoord2f( v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
-				}
-				qglEnd();
-			}
-		}
-	}
-
-	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
-}
-
 void DrawTextureChainsQ1() {
-	if ( !r_texsort->value ) {
-		if ( skychain ) {
-			R_DrawSkyChain( skychain );
-			skychain = NULL;
-		}
-
-		return;
-	}
-
-	for ( int i = 0; i < tr.worldModel->brush29_numtextures; i++ ) {
-		mbrush29_texture_t* t = tr.worldModel->brush29_textures[ i ];
-		if ( !t ) {
-			continue;
-		}
-		mbrush29_surface_t* s = t->texturechain;
-		if ( !s ) {
-			continue;
-		}
-		if ( i == skytexturenum ) {
-			R_DrawSkyChain( s );
-		} else {
-			if ( ( s->flags & BRUSH29_SURF_DRAWTURB ) && r_wateralpha->value != 1.0 ) {
-				continue;	// draw translucent water later
-			}
-
-			if ( s->flags & BRUSH29_SURF_TRANSLUCENT ) {
-				qglColor4f( 1, 1, 1, r_wateralpha->value );
-			} else {
-				qglColor4f( 1, 1, 1, 1 );
-			}
-
-			for (; s; s = s->texturechain ) {
-				R_RenderBrushPolyQ1( s, true );
-			}
-		}
-
-		t->texturechain = NULL;
+	if ( skychain ) {
+		R_DrawSkyChain( skychain );
+		skychain = NULL;
 	}
 }
 
 void R_DrawWaterSurfaces() {
-	if ( r_wateralpha->value == 1.0 && r_texsort->value ) {
+	if ( r_wateralpha->value == 1.0 ) {
+		return;
+	}
+
+	if ( !waterchain ) {
 		return;
 	}
 
@@ -996,53 +818,18 @@ void R_DrawWaterSurfaces() {
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	}
 
-	if ( !r_texsort->value ) {
-		if ( !waterchain ) {
-			return;
+	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
+		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
+			qglColor4f( 1, 1, 1, r_wateralpha->value );
+		} else {
+			qglColor4f( 1, 1, 1, 1 );
 		}
 
-		for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
-			if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-				qglColor4f( 1, 1, 1, r_wateralpha->value );
-			} else {
-				qglColor4f( 1, 1, 1, 1 );
-			}
-
-			GL_Bind( s->texinfo->texture->gl_texture );
-			EmitWaterPolysQ1( s );
-		}
-
-		waterchain = NULL;
-	} else {
-		for ( int i = 0; i < tr.worldModel->brush29_numtextures; i++ ) {
-			mbrush29_texture_t* t = tr.worldModel->brush29_textures[ i ];
-			if ( !t ) {
-				continue;
-			}
-			mbrush29_surface_t* s = t->texturechain;
-			if ( !s ) {
-				continue;
-			}
-			if ( !( s->flags & BRUSH29_SURF_DRAWTURB ) ) {
-				continue;
-			}
-
-			if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-				qglColor4f( 1, 1, 1, r_wateralpha->value );
-			} else {
-				qglColor4f( 1, 1, 1, 1 );
-			}
-
-			// set modulate mode explicitly
-			GL_Bind( t->gl_texture );
-
-			for (; s; s = s->texturechain ) {
-				EmitWaterPolysQ1( s );
-			}
-
-			t->texturechain = NULL;
-		}
+		GL_Bind( s->texinfo->texture->gl_texture );
+		EmitWaterPolysQ1( s );
 	}
+
+	waterchain = NULL;
 
 	if ( r_wateralpha->value < 1.0 ) {
 		qglColor4f( 1, 1, 1, 1 );

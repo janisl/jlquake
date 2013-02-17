@@ -75,7 +75,6 @@ struct mbrush29_texture_t {
 	unsigned width, height;
 	image_t* gl_texture;
 	image_t* fullBrightTexture;
-	mbrush29_surface_t* texturechain;	// for r_texsort drawing
 	int anim_total;						// total tenths in sequence ( 0 = no)
 	int anim_min, anim_max;				// time for this frame min <=time< max
 	mbrush29_texture_t* anim_next;		// in the animation sequence

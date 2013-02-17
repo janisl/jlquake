@@ -35,7 +35,7 @@ static bool R_CullGrid( srfGridMesh_t* cv ) {
 	int sphereCull;
 	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
 		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->radius );
-	} else   {
+	} else {
 		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->radius );
 	}
 
@@ -53,12 +53,12 @@ static bool R_CullGrid( srfGridMesh_t* cv ) {
 		if ( boxCull == CULL_OUT ) {
 			tr.pc.c_box_cull_patch_out++;
 			return true;
-		} else if ( boxCull == CULL_IN )     {
+		} else if ( boxCull == CULL_IN ) {
 			tr.pc.c_box_cull_patch_in++;
-		} else   {
+		} else {
 			tr.pc.c_box_cull_patch_clip++;
 		}
-	} else   {
+	} else {
 		tr.pc.c_sphere_cull_patch_in++;
 	}
 
@@ -111,7 +111,7 @@ static bool R_CullSurfaceET( surfaceType_t* surface, shader_t* shader, int* fron
 				tr.pc.c_plane_cull_out++;
 				return true;
 			}
-		} else if ( shader->cullType == CT_BACK_SIDED )     {
+		} else if ( shader->cullType == CT_BACK_SIDED ) {
 			if ( d > 8.0f ) {
 				tr.pc.c_plane_cull_out++;
 				return true;
@@ -125,7 +125,7 @@ static bool R_CullSurfaceET( surfaceType_t* surface, shader_t* shader, int* fron
 	int cull;
 	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
 		cull = R_CullLocalPointAndRadius( gen->localOrigin, gen->radius );
-	} else   {
+	} else {
 		cull = R_CullPointAndRadius( gen->localOrigin, gen->radius );
 	}
 	if ( cull == CULL_OUT ) {
@@ -186,7 +186,7 @@ static bool R_CullSurface( surfaceType_t* surface, shader_t* shader, int* frontF
 		if ( d < sface->plane.dist - 8 ) {
 			return true;
 		}
-	} else   {
+	} else {
 		if ( d > sface->plane.dist + 8 ) {
 			return true;
 		}
@@ -311,7 +311,7 @@ static int R_DlightSurfaceET( mbrush46_surface_t* surface, int dlightBits ) {
 	// set counters
 	if ( dlightBits == 0 ) {
 		tr.pc.c_dlightSurfacesCulled++;
-	} else   {
+	} else {
 		tr.pc.c_dlightSurfaces++;
 	}
 
@@ -329,11 +329,11 @@ static int R_DlightSurface( mbrush46_surface_t* surf, int dlightBits ) {
 
 	if ( *surf->data == SF_FACE ) {
 		dlightBits = R_DlightFace( ( srfSurfaceFace_t* )surf->data, dlightBits );
-	} else if ( *surf->data == SF_GRID )     {
+	} else if ( *surf->data == SF_GRID ) {
 		dlightBits = R_DlightGrid( ( srfGridMesh_t* )surf->data, dlightBits );
-	} else if ( *surf->data == SF_TRIANGLES )     {
+	} else if ( *surf->data == SF_TRIANGLES ) {
 		dlightBits = R_DlightTrisurf( ( srfTriangles_t* )surf->data, dlightBits );
-	} else   {
+	} else {
 		dlightBits = 0;
 	}
 
@@ -425,34 +425,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		// draw the polygon
 		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
 			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			if ( r_texsort->value ) {
-				R_RenderBrushPolyQ1( psurf, false );
-			} else   {
-				R_DrawSequentialPoly( psurf );
-			}
-		}
-	}
-
-	if ( !Translucent && !( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
-		R_BlendLightmapsQ1();
-	}
-
-	if ( r_texsort->value && !( tr.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
-		for ( int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
-			if ( psurf->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB ) ) {
-				continue;
-			}
-
-			// find which side of the node we are on
-			cplane_t* pplane = psurf->plane;
-
-			float dot = DotProduct( tr.orient.viewOrigin, pplane->normal ) - pplane->dist;
-
-			// draw the polygon
-			if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-				 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-				R_DrawFullBrightPoly( psurf );
-			}
+			R_DrawSequentialPoly( psurf );
 		}
 	}
 
@@ -471,7 +444,7 @@ static void R_DrawInlineBModel() {
 	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		qglColor4f( 1, 1, 1, 0.25 );
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else   {
+	} else {
 		GL_State( GLS_DEFAULT );
 	}
 
@@ -491,9 +464,9 @@ static void R_DrawInlineBModel() {
 				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
-			} else if ( qglMultiTexCoord2fARB && !( psurf->flags & BRUSH38_SURF_DRAWTURB ) )       {
+			} else if ( qglMultiTexCoord2fARB && !( psurf->flags & BRUSH38_SURF_DRAWTURB ) ) {
 				GL_RenderLightmappedPoly( psurf );
-			} else   {
+			} else {
 				R_RenderBrushPolyQ2( psurf );
 			}
 		}
@@ -503,7 +476,7 @@ static void R_DrawInlineBModel() {
 		if ( !qglMultiTexCoord2fARB ) {
 			R_BlendLightmapsQ2();
 		}
-	} else   {
+	} else {
 		GL_State( GLS_DEFAULT );
 		qglColor4f( 1, 1, 1, 1 );
 	}
@@ -619,7 +592,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t* ent ) {
 		// Arnout: custom shader support for brushmodels
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) && ent->e.customShader ) {
 			R_AddWorldSurface( bmodel->firstSurface + i, R_GetShaderByHandle( ent->e.customShader ), tr.currentEntity->dlightBits, decalBits );
-		} else   {
+		} else {
 			R_AddWorldSurface( bmodel->firstSurface + i, ( bmodel->firstSurface + i )->shader, tr.currentEntity->dlightBits, 0 );
 		}
 	}
@@ -696,7 +669,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 	int side;
 	if ( dot >= 0 ) {
 		side = 0;
-	} else   {
+	} else {
 		side = 1;
 	}
 
@@ -711,7 +684,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 
 		if ( dot < 0 - BACKFACE_EPSILON ) {
 			side = BRUSH29_SURF_PLANEBACK;
-		} else if ( dot > BACKFACE_EPSILON )     {
+		} else if ( dot > BACKFACE_EPSILON ) {
 			side = 0;
 		}
 		for (; c; c--, surf++ ) {
@@ -727,16 +700,13 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 			}
 
 			// if sorting by texture, just store it out
-			if ( r_texsort->value ) {
-				surf->texturechain = surf->texinfo->texture->texturechain;
-				surf->texinfo->texture->texturechain = surf;
-			} else if ( surf->flags & BRUSH29_SURF_DRAWSKY )     {
+			if ( surf->flags & BRUSH29_SURF_DRAWSKY ) {
 				surf->texturechain = skychain;
 				skychain = surf;
-			} else if ( surf->flags & BRUSH29_SURF_DRAWTURB )     {
+			} else if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
-			} else   {
+			} else {
 				R_DrawSequentialPoly( surf );
 			}
 		}
@@ -763,7 +733,7 @@ static void R_MarkLeavesQ1() {
 	if ( r_novis->value ) {
 		vis = solid;
 		Com_Memset( solid, 0xff, ( tr.worldModel->brush29_numleafs + 7 ) >> 3 );
-	} else   {
+	} else {
 		vis = Mod_LeafPVS( r_viewleaf, tr.worldModel );
 	}
 
@@ -794,8 +764,6 @@ void R_DrawWorldQ1() {
 	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
 
 	DrawTextureChainsQ1();
-
-	R_BlendLightmapsQ1();
 }
 
 static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
@@ -857,7 +825,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 	if ( dot >= 0 ) {
 		side = 0;
 		sidebit = 0;
-	} else   {
+	} else {
 		side = 1;
 		sidebit = BRUSH38_SURF_PLANEBACK;
 	}
@@ -879,14 +847,14 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 		if ( surf->texinfo->flags & BSP38SURF_SKY ) {
 			// just adds to visible sky bounds
 			R_AddSkySurface( surf );
-		} else if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) )       {
+		} else if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
-		} else   {
+		} else {
 			if ( qglMultiTexCoord2fARB && !( surf->flags & BRUSH38_SURF_DRAWTURB ) ) {
 				GL_RenderLightmappedPoly( surf );
-			} else   {
+			} else {
 				// the polygon is visible, so add it to the texture
 				// sorted chain
 				// FIXME: this is a hack for animation
@@ -917,7 +885,7 @@ static void R_FindViewCluster() {
 		if ( !( leaf->contents & BSP38CONTENTS_SOLID ) && ( leaf->cluster != r_viewcluster2 ) ) {
 			r_viewcluster2 = leaf->cluster;
 		}
-	} else   {
+	} else {
 		// look up a bit
 		vec3_t temp;
 		VectorCopy( tr.viewParms.orient.origin, temp );
@@ -1141,7 +1109,7 @@ static void R_RecursiveWorldNodeQ3( mbrush46_node_t* node, int planeBits, int dl
 			// RF, hack, dlight elimination above is unreliable
 			newDlights[ 0 ] = 0xffffffff;
 			newDlights[ 1 ] = 0xffffffff;
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			// ydnar: cull dlights
 			if ( dlightBits ) {		//%	&& node->contents != -1 )
 				for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
@@ -1163,7 +1131,7 @@ static void R_RecursiveWorldNodeQ3( mbrush46_node_t* node, int planeBits, int dl
 			}
 			newDlights[ 0 ] = dlightBits;
 			newDlights[ 1 ] = dlightBits;
-		} else   {
+		} else {
 			newDlights[ 0 ] = 0;
 			newDlights[ 1 ] = 0;
 			if ( dlightBits ) {
@@ -1321,14 +1289,14 @@ void R_AddWorldSurfaces() {
 		for ( int i = 0; i < tr.world->numSkyNodes; i++, node++ ) {
 			R_AddLeafSurfacesQ3( *node, tr.refdef.dlightBits, 0 );			// no decals on skybox nodes
 		}
-	} else   {
+	} else {
 		// determine which leaves are in the PVS / areamask
 		R_MarkLeavesQ3();
 
 		// perform frustum culling and add all the potentially visible surfaces
 		if ( GGameType & GAME_ET ) {
 			R_RecursiveWorldNodeQ3( tr.world->nodes, 31, tr.refdef.dlightBits, tr.refdef.decalBits );
-		} else   {
+		} else {
 			R_RecursiveWorldNodeQ3( tr.world->nodes, 15, ( 1 << tr.refdef.num_dlights ) - 1, 0 );
 		}
 

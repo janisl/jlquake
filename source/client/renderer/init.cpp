@@ -128,7 +128,6 @@ Cvar* r_lodCurveError;
 Cvar* r_ignore;
 
 Cvar* r_keeptjunctions;
-Cvar* r_texsort;
 Cvar* r_dynamic;
 Cvar* r_saturatelighting;
 Cvar* r_fullBrightColours;
@@ -510,7 +509,6 @@ static void R_Register() {
 	r_skymip = Cvar_Get( "r_skymip", "0", 0 );
 	r_showsky = Cvar_Get( "r_showsky", "0", CVAR_CHEAT );
 	r_ignore = Cvar_Get( "r_ignore", "1", CVAR_CHEAT );
-	r_texsort = Cvar_Get( "r_texsort", "1", 0 );
 	r_dynamic = Cvar_Get( "r_dynamic", "1", 0 );
 	r_saturatelighting = Cvar_Get( "r_saturatelighting", "0", CVAR_CHEAT );
 	r_fullBrightColours = Cvar_Get( "r_fullBrightColours", "1", 0 );
@@ -663,10 +661,6 @@ static void InitOpenGLSubsystem() {
 		R_InitQ1Palette();
 	} else if ( GGameType & GAME_Quake2 )     {
 		R_InitQ2Palette();
-	}
-
-	if ( qglActiveTextureARB ) {
-		Cvar_SetValue( "r_texsort", 0.0 );
 	}
 }
 
