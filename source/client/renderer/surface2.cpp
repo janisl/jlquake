@@ -745,102 +745,57 @@ dynamic:
 	}
 
 	if ( is_dynamic ) {
+		int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
+		int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+
 		unsigned temp[ 128 * 128 ];
-		int smax, tmax;
+		R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
 
 		if ( ( surf->styles[ map ] >= 32 || surf->styles[ map ] == 0 ) && ( surf->dlightframe != tr.frameCount ) ) {
-			smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-			tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-
-			R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
 			R_SetCacheState( surf );
 
-			GL_MBind( 1, tr.lightmaps[ surf->lightmaptexturenum ] );
-
 			lmtex = surf->lightmaptexturenum;
-
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
-				GL_RGBA, GL_UNSIGNED_BYTE, temp );
 		} else {
-			smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-			tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-
-			R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
-
-			GL_MBind( 1, tr.lightmaps[ 0 ] );
-
 			lmtex = 0;
-
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
-				GL_RGBA, GL_UNSIGNED_BYTE, temp );
 		}
 
-		c_brush_polys++;
-
-		GL_MBind( 0, image );
 		GL_MBind( 1, tr.lightmaps[ lmtex ] );
 
-		if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-			float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
-			if ( scroll == 0.0 ) {
-				scroll = -64.0;
-			}
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
+			GL_RGBA, GL_UNSIGNED_BYTE, temp );
+	}
 
-			for ( p = surf->polys; p; p = p->chain ) {
-				v = p->verts[ 0 ];
-				qglBegin( GL_POLYGON );
-				for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, ( v[ 3 ] + scroll ), v[ 4 ] );
-					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
-				}
-				qglEnd();
+	c_brush_polys++;
+
+	GL_MBind( 0, image );
+	GL_MBind( 1, tr.lightmaps[ lmtex ] );
+
+	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
+		float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
+		if ( scroll == 0.0 ) {
+			scroll = -64.0;
+		}
+
+		for ( p = surf->polys; p; p = p->chain ) {
+			v = p->verts[ 0 ];
+			qglBegin( GL_POLYGON );
+			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
+				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, ( v[ 3 ] + scroll ), v[ 4 ] );
+				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				qglVertex3fv( v );
 			}
-		} else {
-			for ( p = surf->polys; p; p = p->chain ) {
-				v = p->verts[ 0 ];
-				qglBegin( GL_POLYGON );
-				for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
-				}
-				qglEnd();
-			}
+			qglEnd();
 		}
 	} else {
-		c_brush_polys++;
-
-		GL_MBind( 0, image );
-		GL_MBind( 1, tr.lightmaps[ lmtex ] );
-
-		if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-			float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
-			if ( scroll == 0.0 ) {
-				scroll = -64.0;
+		for ( p = surf->polys; p; p = p->chain ) {
+			v = p->verts[ 0 ];
+			qglBegin( GL_POLYGON );
+			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
+				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
+				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				qglVertex3fv( v );
 			}
-
-			for ( p = surf->polys; p; p = p->chain ) {
-				v = p->verts[ 0 ];
-				qglBegin( GL_POLYGON );
-				for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, ( v[ 3 ] + scroll ), v[ 4 ] );
-					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
-				}
-				qglEnd();
-			}
-		} else {
-			for ( p = surf->polys; p; p = p->chain ) {
-				v = p->verts[ 0 ];
-				qglBegin( GL_POLYGON );
-				for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
-				}
-				qglEnd();
-			}
+			qglEnd();
 		}
 	}
 
