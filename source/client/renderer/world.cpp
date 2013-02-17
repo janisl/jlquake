@@ -407,11 +407,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		}
 	}
 
-	qglColor3f( 1, 1, 1 );
 	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
-
-	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
 
 	//
 	// draw texture
@@ -425,11 +421,9 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		// draw the polygon
 		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
 			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			R_DrawSequentialPoly( psurf );
+			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 		}
 	}
-
-	qglPopMatrix();
 }
 
 static void R_DrawInlineBModel() {

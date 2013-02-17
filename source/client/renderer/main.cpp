@@ -818,6 +818,12 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					}
 					if ( !item_trans ) {
 						R_DrawBrushModelQ1( ent, false );
+						if ( !( GGameType & GAME_Tech3 ) ) {
+							R_VerifyNoRenderCommands();
+							R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+							R_SyncRenderThread();
+							GL_State(GLS_DEFAULT);
+						}
 					}
 					break;
 
@@ -989,6 +995,12 @@ static void R_DrawTransEntitiesOnList( bool inwater ) {
 			break;
 		case MOD_BRUSH29:
 			R_DrawBrushModelQ1( tr.currentEntity,true );
+			if ( !( GGameType & GAME_Tech3 ) ) {
+				R_VerifyNoRenderCommands();
+				R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+				R_SyncRenderThread();
+				GL_State(GLS_DEFAULT);
+			}
 			break;
 		case MOD_SPRITE:
 			R_AddSprSurfaces( tr.currentEntity );
