@@ -503,6 +503,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 	loadmodel->brush29_numsurfaces = count;
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
+		out->surfaceType = SF_FACE_Q1;
 		out->firstedge = LittleLong( in->firstedge );
 		out->numedges = LittleShort( in->numedges );
 		out->flags = 0;

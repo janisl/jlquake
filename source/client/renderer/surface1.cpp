@@ -550,6 +550,7 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
+	qglColor3f( 1, 1, 1 );
 	//
 	// normal lightmaped poly
 	//

@@ -19,7 +19,6 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/content_types.h"
-static void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs );
 
 struct sortedent_t {
 	trRefEntity_t* ent;
@@ -1649,7 +1648,7 @@ recurse:
 	}
 }
 
-static void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs ) {
+void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	// it is possible for some views to not have any surfaces
 	if ( numDrawSurfs < 1 ) {
 		// we still need to add it for hyperspace cases

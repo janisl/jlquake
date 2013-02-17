@@ -421,7 +421,7 @@ void R_AddMd2Surfaces( trRefEntity_t* e ) {
 	}
 
 	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
-	R_AddDrawSurf(( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE);
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 }
 
 void RB_SurfaceMd2( dmd2_t* paliashdr ) {

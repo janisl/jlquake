@@ -396,12 +396,6 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		return;
 	}
 
-	qglColor3f( 1, 1, 1 );
-	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
-
-	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
-
 	mbrush29_surface_t* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
 
 	// calculate dynamic lighting for bmodel if it's not an
@@ -412,6 +406,12 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 				clmodel->brush29_nodes + clmodel->brush29_firstnode );
 		}
 	}
+
+	qglColor3f( 1, 1, 1 );
+	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
+
+	qglPushMatrix();
+	qglLoadMatrixf( tr.orient.modelMatrix );
 
 	//
 	// draw texture
@@ -707,7 +707,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
 			} else {
-				R_DrawSequentialPoly( surf );
+				R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 			}
 		}
 	}
@@ -758,10 +758,16 @@ void R_DrawWorldQ1() {
 
 	tr.currentEntity = &tr.worldEntity;
 
-	qglColor3f( 1, 1, 1 );
 	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
 
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+		R_SyncRenderThread();
+		GL_State(GLS_DEFAULT);
+	}
 
 	DrawTextureChainsQ1();
 }
