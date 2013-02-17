@@ -530,48 +530,32 @@ void DrawTextureChainsQ2() {
 
 	c_visible_textures = 0;
 
-	if ( !qglActiveTextureARB ) {
-		for ( i = 0; i < tr.numImages; i++ ) {
-			mbrush38_surface_t* s = tr.images[ i ]->texturechain;
-			if ( !s ) {
-				continue;
-			}
-			c_visible_textures++;
+	for ( i = 0; i < tr.numImages; i++ ) {
+		if ( !tr.images[ i ]->texturechain ) {
+			continue;
+		}
+		c_visible_textures++;
 
-			for (; s; s = s->texturechain ) {
+		for ( mbrush38_surface_t* s = tr.images[ i ]->texturechain; s; s = s->texturechain ) {
+			if ( !( s->flags & BRUSH38_SURF_DRAWTURB ) ) {
 				R_RenderBrushPolyQ2( s );
 			}
-
-			tr.images[ i ]->texturechain = NULL;
 		}
-	} else {
-		for ( i = 0; i < tr.numImages; i++ ) {
-			if ( !tr.images[ i ]->texturechain ) {
-				continue;
-			}
-			c_visible_textures++;
+	}
 
-			for ( mbrush38_surface_t* s = tr.images[ i ]->texturechain; s; s = s->texturechain ) {
-				if ( !( s->flags & BRUSH38_SURF_DRAWTURB ) ) {
-					R_RenderBrushPolyQ2( s );
-				}
+	for ( i = 0; i < tr.numImages; i++ ) {
+		mbrush38_surface_t* s = tr.images[ i ]->texturechain;
+		if ( !s ) {
+			continue;
+		}
+
+		for (; s; s = s->texturechain ) {
+			if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
+				R_RenderBrushPolyQ2( s );
 			}
 		}
 
-		for ( i = 0; i < tr.numImages; i++ ) {
-			mbrush38_surface_t* s = tr.images[ i ]->texturechain;
-			if ( !s ) {
-				continue;
-			}
-
-			for (; s; s = s->texturechain ) {
-				if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
-					R_RenderBrushPolyQ2( s );
-				}
-			}
-
-			tr.images[ i ]->texturechain = NULL;
-		}
+		tr.images[ i ]->texturechain = NULL;
 	}
 }
 
