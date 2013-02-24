@@ -230,11 +230,9 @@ struct mbrush38_surface_t {
 	short extents[ 2 ];
 
 	int light_s, light_t;			// gl lightmap coordinates
-	int dlight_s, dlight_t;			// gl lightmap coordinates for dynamic lightmaps
 
 	mbrush38_glpoly_t* polys;				// multiple if warped
 	mbrush38_surface_t* texturechain;
-	mbrush38_surface_t* lightmapchain;
 
 	mbrush38_texinfo_t* texinfo;
 

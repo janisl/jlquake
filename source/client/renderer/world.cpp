@@ -451,12 +451,8 @@ static void R_DrawInlineBModel() {
 				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
-			} else if ( psurf->flags & BRUSH38_SURF_DRAWTURB ) {
-				R_RenderBrushWaterPolyQ2( psurf );
-			} else if ( qglMultiTexCoord2fARB ) {
-				GL_RenderLightmappedPoly( psurf );
 			} else {
-				R_RenderBrushPolyQ2( psurf );
+				GL_RenderLightmappedPoly( psurf );
 			}
 		}
 	}
@@ -824,12 +820,8 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
-		} else if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
-			R_RenderBrushWaterPolyQ2( surf );
-		} else if ( qglMultiTexCoord2fARB ) {
-			GL_RenderLightmappedPoly( surf );
 		} else {
-			R_RenderBrushPolyQ2( surf );
+			GL_RenderLightmappedPoly( surf );
 		}
 	}
 
