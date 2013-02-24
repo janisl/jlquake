@@ -439,6 +439,7 @@ static void R_DrawInlineBModel() {
 		qglColor4f( 1, 1, 1, 0.25 );
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else {
+		qglColor3f( 1, 1, 1 );
 		GL_State( GLS_DEFAULT );
 	}
 
@@ -458,7 +459,9 @@ static void R_DrawInlineBModel() {
 				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
-			} else if ( qglMultiTexCoord2fARB && !( psurf->flags & BRUSH38_SURF_DRAWTURB ) ) {
+			} else if ( psurf->flags & BRUSH38_SURF_DRAWTURB ) {
+				R_RenderBrushWaterPolyQ2( psurf );
+			} else if ( qglMultiTexCoord2fARB ) {
 				GL_RenderLightmappedPoly( psurf );
 			} else {
 				R_RenderBrushPolyQ2( psurf );
@@ -485,7 +488,6 @@ void R_DrawBrushModelQ2( trRefEntity_t* e ) {
 		return;
 	}
 
-	qglColor3f( 1, 1, 1 );
 	Com_Memset( gl_lms.lightmap_surfaces, 0, sizeof ( gl_lms.lightmap_surfaces ) );
 
 	qglPushMatrix();

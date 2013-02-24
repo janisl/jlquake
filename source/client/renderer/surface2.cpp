@@ -455,23 +455,25 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	qglEnd();
 }
 
+void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
+	c_brush_polys++;
+
+	image_t* image = R_TextureAnimationQ2( fa->texinfo );
+
+	GL_Bind( image );
+
+	// warp texture, no lightmaps
+	qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
+	EmitWaterPolysQ2( fa );
+	qglColor4f( 1, 1, 1, 1.0f );
+}
+
 void R_RenderBrushPolyQ2( mbrush38_surface_t* fa ) {
 	c_brush_polys++;
 
 	image_t* image = R_TextureAnimationQ2( fa->texinfo );
 
-	if ( fa->flags & BRUSH38_SURF_DRAWTURB ) {
-		GL_Bind( image );
-
-		// warp texture, no lightmaps
-		qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
-		EmitWaterPolysQ2( fa );
-		qglColor4f( 1, 1, 1, 1.0f );
-
-		return;
-	} else {
-		GL_Bind( image );
-	}
+	GL_Bind( image );
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		DrawGLFlowingPoly( fa );
@@ -551,7 +553,7 @@ void DrawTextureChainsQ2() {
 
 		for (; s; s = s->texturechain ) {
 			if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
-				R_RenderBrushPolyQ2( s );
+				R_RenderBrushWaterPolyQ2( s );
 			}
 		}
 
