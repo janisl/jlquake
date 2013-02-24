@@ -639,7 +639,6 @@ extern vec3_t lightspot;
 
 extern int c_brush_polys;
 extern int c_alias_polys;
-extern int c_visible_lightmaps;
 
 #define TURBSCALE ( 256.0 / idMath::TWO_PI )
 extern float r_turbsin[ 256 ];
@@ -831,8 +830,6 @@ struct glRect_t {
 struct gllightmapstate_t {
 	int current_lightmap_texture;
 
-	mbrush38_surface_t* lightmap_surfaces[ MAX_LIGHTMAPS ];
-
 	int allocated[ BLOCK_WIDTH ];
 
 	// the lightmap texture data needs to be kept in
@@ -857,7 +854,6 @@ void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa );
 void R_BlendLightmapsQ2();
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces();
-void R_DrawTriangleOutlines();
 
 void RB_CheckOverflow( int verts, int indexes );
 #define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= SHADER_MAX_VERTEXES || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i ); }

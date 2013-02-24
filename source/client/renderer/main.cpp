@@ -31,7 +31,6 @@ trGlobals_t tr;
 
 int c_brush_polys;
 int c_alias_polys;
-int c_visible_lightmaps;
 
 int cl_numtransvisedicts;
 int cl_numtranswateredicts;

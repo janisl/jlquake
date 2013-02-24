@@ -64,8 +64,8 @@ static void R_PerformanceCounters() {
 		return;
 	}
 	if ( GGameType & GAME_Quake2 ) {
-		common->Printf( "%4i wpoly %4i epoly %i lmaps\n",
-			c_brush_polys, c_alias_polys, c_visible_lightmaps );
+		common->Printf( "%4i wpoly %4i epoly\n",
+			c_brush_polys, c_alias_polys );
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 		return;

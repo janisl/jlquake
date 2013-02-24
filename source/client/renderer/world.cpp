@@ -435,14 +435,6 @@ static void R_DrawInlineBModel() {
 
 	mbrush38_surface_t* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
 
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		qglColor4f( 1, 1, 1, 0.25 );
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else {
-		qglColor3f( 1, 1, 1 );
-		GL_State( GLS_DEFAULT );
-	}
-
 	//
 	// draw texture
 	//
@@ -469,14 +461,7 @@ static void R_DrawInlineBModel() {
 		}
 	}
 
-	if ( !( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) ) {
-		if ( !qglMultiTexCoord2fARB ) {
-			R_BlendLightmapsQ2();
-		}
-	} else {
-		GL_State( GLS_DEFAULT );
-		qglColor4f( 1, 1, 1, 1 );
-	}
+	GL_State( GLS_DEFAULT );
 }
 
 void R_DrawBrushModelQ2( trRefEntity_t* e ) {
@@ -487,8 +472,6 @@ void R_DrawBrushModelQ2( trRefEntity_t* e ) {
 	if ( R_CullLocalBox( &tr.currentModel->q2_mins ) == CULL_OUT ) {
 		return;
 	}
-
-	Com_Memset( gl_lms.lightmap_surfaces, 0, sizeof ( gl_lms.lightmap_surfaces ) );
 
 	qglPushMatrix();
 	qglLoadMatrixf( tr.orient.modelMatrix );
@@ -963,19 +946,11 @@ void R_DrawWorldQ2() {
 	tr.worldEntity.e.frame = ( int )( tr.refdef.floatTime * 2 );
 	tr.currentEntity = &tr.worldEntity;
 
-	Com_Memset( gl_lms.lightmap_surfaces, 0, sizeof ( gl_lms.lightmap_surfaces ) );
 	R_ClearSkyBox();
 
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
 
-	/*
-	** theoretically nothing should happen if multitexture is enabled
-	*/
-	R_BlendLightmapsQ2();
-
 	R_DrawSkyBoxQ2();
-
-	R_DrawTriangleOutlines();
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

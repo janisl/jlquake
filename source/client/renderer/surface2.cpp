@@ -381,6 +381,21 @@ void GL_EndBuildingLightmaps() {
 	LM_UploadBlock( false );
 }
 
+//	Returns the proper texture for a given time and base texture
+image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
+	if ( !tex->next ) {
+		return tex->image;
+	}
+
+	int c = tr.currentEntity->e.frame % tex->numframes;
+	while ( c ) {
+		tex = tex->next;
+		c--;
+	}
+
+	return tex->image;
+}
+
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
 static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 	float scroll;
@@ -412,21 +427,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 	}
 }
 
-//	Returns the proper texture for a given time and base texture
-image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
-	if ( !tex->next ) {
-		return tex->image;
-	}
-
-	int c = tr.currentEntity->e.frame % tex->numframes;
-	while ( c ) {
-		tex = tex->next;
-		c--;
-	}
-
-	return tex->image;
-}
-
 static void DrawGLPolyQ2( mbrush38_glpoly_t* p ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
@@ -455,12 +455,38 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	qglEnd();
 }
 
+static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffset ) {
+	if ( soffset == 0 && toffset == 0 ) {
+		for (; p != 0; p = p->chain ) {
+			qglBegin( GL_POLYGON );
+			float* v = p->verts[ 0 ];
+			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
+				qglTexCoord2f( v[ 5 ], v[ 6 ] );
+				qglVertex3fv( v );
+			}
+			qglEnd();
+		}
+	} else {
+		for (; p != 0; p = p->chain ) {
+			qglBegin( GL_POLYGON );
+			float* v = p->verts[ 0 ];
+			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
+				qglTexCoord2f( v[ 5 ] - soffset, v[ 6 ] - toffset );
+				qglVertex3fv( v );
+			}
+			qglEnd();
+		}
+	}
+}
+
 void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 	c_brush_polys++;
 
 	image_t* image = R_TextureAnimationQ2( fa->texinfo );
 
 	GL_Bind( image );
+
+	GL_State( GLS_DEFAULT );
 
 	// warp texture, no lightmaps
 	qglColor4f( tr.identityLight, tr.identityLight, tr.identityLight, 1.0f );
@@ -475,10 +501,42 @@ void R_RenderBrushPolyQ2( mbrush38_surface_t* fa ) {
 
 	GL_Bind( image );
 
+	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		qglColor4f( 1, 1, 1, 0.25 );
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	} else {
+		qglColor3f( 1, 1, 1 );
+		GL_State( GLS_DEFAULT );
+	}
+
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		DrawGLFlowingPoly( fa );
 	} else {
 		DrawGLPolyQ2( fa->polys );
+	}
+	qglColor4f( 1, 1, 1, 1 );
+
+	// don't bother if we're set to fullbright
+	if ( r_fullbright->value ) {
+		return;
+	}
+	if ( !tr.worldModel->brush38_lightdata ) {
+		return;
+	}
+
+	/*
+	** set the appropriate blending mode unless we're only looking at the
+	** lightmaps.
+	*/
+	// don't bother writing Z
+	if ( !r_lightmap->value ) {
+		if ( r_saturatelighting->value ) {
+			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+		} else {
+			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
+		}
+	} else {
+		GL_State( 0 );
 	}
 
 	/*
@@ -515,162 +573,46 @@ dynamic:
 
 			qglTexSubImage2D( GL_TEXTURE_2D, 0, fa->light_s, fa->light_t, smax, tmax, GL_RGBA, GL_UNSIGNED_BYTE, temp );
 
-			fa->lightmapchain = gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ];
-			gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ] = fa;
+			if ( fa->polys ) {
+				DrawGLPolyChainQ2( fa->polys, 0, 0 );
+			}
 		} else {
-			fa->lightmapchain = gl_lms.lightmap_surfaces[ 0 ];
-			gl_lms.lightmap_surfaces[ 0 ] = fa;
-		}
-	} else {
-		fa->lightmapchain = gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ];
-		gl_lms.lightmap_surfaces[ fa->lightmaptexturenum ] = fa;
-	}
-}
+			LM_InitBlock();
 
-static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffset ) {
-	if ( soffset == 0 && toffset == 0 ) {
-		for (; p != 0; p = p->chain ) {
-			qglBegin( GL_POLYGON );
-			float* v = p->verts[ 0 ];
-			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				qglTexCoord2f( v[ 5 ], v[ 6 ] );
-				qglVertex3fv( v );
-			}
-			qglEnd();
-		}
-	} else {
-		for (; p != 0; p = p->chain ) {
-			qglBegin( GL_POLYGON );
-			float* v = p->verts[ 0 ];
-			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				qglTexCoord2f( v[ 5 ] - soffset, v[ 6 ] - toffset );
-				qglVertex3fv( v );
-			}
-			qglEnd();
-		}
-	}
-}
+			GL_Bind( tr.lightmaps[ 0 ] );
 
-//	This routine takes all the given light mapped surfaces in the world and
-// blends them into the framebuffer.
-void R_BlendLightmapsQ2() {
-	// don't bother if we're set to fullbright
-	if ( r_fullbright->value ) {
-		return;
-	}
-	if ( !tr.worldModel->brush38_lightdata ) {
-		return;
-	}
+			int smax = ( fa->extents[ 0 ] >> 4 ) + 1;
+			int tmax = ( fa->extents[ 1 ] >> 4 ) + 1;
 
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	// don't bother writing Z
-	if ( !r_lightmap->value ) {
-		if ( r_saturatelighting->value ) {
-			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		} else {
-			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
-		}
-	} else {
-		GL_State( 0 );
-	}
+			LM_AllocBlock( smax, tmax, &fa->dlight_s, &fa->dlight_t );
 
-	if ( tr.currentModel == tr.worldModel ) {
-		c_visible_lightmaps = 0;
-	}
+			byte* base = gl_lms.lightmap_buffer;
+			base += ( fa->dlight_t * BLOCK_WIDTH + fa->dlight_s ) * LIGHTMAP_BYTES;
 
-	/*
-	** render static lightmaps first
-	*/
-	for ( int i = 1; i < MAX_LIGHTMAPS; i++ ) {
-		if ( gl_lms.lightmap_surfaces[ i ] ) {
-			if ( tr.currentModel == tr.worldModel ) {
-				c_visible_lightmaps++;
-			}
-			GL_Bind( tr.lightmaps[ i ] );
-
-			for ( mbrush38_surface_t* surf = gl_lms.lightmap_surfaces[ i ]; surf != 0; surf = surf->lightmapchain ) {
-				if ( surf->polys ) {
-					DrawGLPolyChainQ2( surf->polys, 0, 0 );
-				}
-			}
-		}
-	}
-
-	/*
-	** render dynamic lightmaps
-	*/
-	if ( r_dynamic->value ) {
-		LM_InitBlock();
-
-		GL_Bind( tr.lightmaps[ 0 ] );
-
-		if ( tr.currentModel == tr.worldModel ) {
-			c_visible_lightmaps++;
-		}
-
-		mbrush38_surface_t* newdrawsurf = gl_lms.lightmap_surfaces[ 0 ];
-
-		for ( mbrush38_surface_t* surf = gl_lms.lightmap_surfaces[ 0 ]; surf != 0; surf = surf->lightmapchain ) {
-			int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-			int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-
-			if ( LM_AllocBlock( smax, tmax, &surf->dlight_s, &surf->dlight_t ) ) {
-				byte* base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
-
-				R_BuildLightMapQ2( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
-			} else {
-				// upload what we have so far
-				LM_UploadBlock( true );
-
-				// draw all surfaces that use this lightmap
-				mbrush38_surface_t* drawsurf;
-				for ( drawsurf = newdrawsurf; drawsurf != surf; drawsurf = drawsurf->lightmapchain ) {
-					if ( drawsurf->polys ) {
-						DrawGLPolyChainQ2( drawsurf->polys,
-							( drawsurf->light_s - drawsurf->dlight_s ) * ( 1.0 / 128.0 ),
-							( drawsurf->light_t - drawsurf->dlight_t ) * ( 1.0 / 128.0 ) );
-					}
-				}
-
-				newdrawsurf = drawsurf;
-
-				// clear the block
-				LM_InitBlock();
-
-				// try uploading the block now
-				if ( !LM_AllocBlock( smax, tmax, &surf->dlight_s, &surf->dlight_t ) ) {
-					common->FatalError( "Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax );
-				}
-
-				byte* base = gl_lms.lightmap_buffer;
-				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
-
-				R_BuildLightMapQ2( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
-			}
-		}
-
-		/*
-		** draw remainder of dynamic lightmaps that haven't been uploaded yet
-		*/
-		if ( newdrawsurf ) {
+			R_BuildLightMapQ2( fa, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
 			LM_UploadBlock( true );
-		}
 
-		for ( mbrush38_surface_t* surf = newdrawsurf; surf != 0; surf = surf->lightmapchain ) {
-			if ( surf->polys ) {
-				DrawGLPolyChainQ2( surf->polys, ( surf->light_s - surf->dlight_s ) * ( 1.0 / 128.0 ), ( surf->light_t - surf->dlight_t ) * ( 1.0 / 128.0 ) );
+			if ( fa->polys ) {
+				DrawGLPolyChainQ2( fa->polys, ( fa->light_s - fa->dlight_s ) * ( 1.0 / 128.0 ), ( fa->light_t - fa->dlight_t ) * ( 1.0 / 128.0 ) );
 			}
+		}
+	} else {
+		GL_Bind( tr.lightmaps[ fa->lightmaptexturenum ] );
+
+		if ( fa->polys ) {
+			DrawGLPolyChainQ2( fa->polys, 0, 0 );
 		}
 	}
 
 	/*
 	** restore state
 	*/
-	GL_State( GLS_DEPTHMASK_TRUE );
+	GL_State( GLS_DEFAULT );
+}
+
+//	This routine takes all the given light mapped surfaces in the world and
+// blends them into the framebuffer.
+void R_BlendLightmapsQ2() {
 }
 
 static void GL_MBind( int target, image_t* image ) {
@@ -686,6 +628,14 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	qboolean is_dynamic = false;
 	unsigned lmtex = surf->lightmaptexturenum;
 	mbrush38_glpoly_t* p;
+
+	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		qglColor4f( 1, 1, 1, 0.25 );
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	} else {
+		qglColor3f( 1, 1, 1 );
+		GL_State( GLS_DEFAULT );
+	}
 
 	GL_SelectTexture( 1 );
 	qglEnable( GL_TEXTURE_2D );
@@ -770,6 +720,7 @@ dynamic:
 	GL_SelectTexture( 1 );
 	qglDisable( GL_TEXTURE_2D );
 	GL_SelectTexture( 0 );
+	qglColor4f( 1, 1, 1, 1 );
 }
 
 //	Draw water surfaces and windows.
@@ -808,32 +759,4 @@ void R_DrawAlphaSurfaces() {
 	GL_State( GLS_DEFAULT );
 
 	r_alpha_surfaces = NULL;
-}
-
-void R_DrawTriangleOutlines() {
-	if ( !r_showtris->value ) {
-		return;
-	}
-
-	GL_State( GLS_DEFAULT | GLS_DEPTHTEST_DISABLE );
-	qglDisable( GL_TEXTURE_2D );
-	qglColor4f( 1, 1, 1, 1 );
-
-	for ( int i = 0; i < MAX_LIGHTMAPS; i++ ) {
-		for ( mbrush38_surface_t* surf = gl_lms.lightmap_surfaces[ i ]; surf != 0; surf = surf->lightmapchain ) {
-			for ( mbrush38_glpoly_t* p = surf->polys; p; p = p->chain ) {
-				for ( int j = 2; j < p->numverts; j++ ) {
-					qglBegin( GL_LINE_STRIP );
-					qglVertex3fv( p->verts[ 0 ] );
-					qglVertex3fv( p->verts[ j - 1 ] );
-					qglVertex3fv( p->verts[ j ] );
-					qglVertex3fv( p->verts[ 0 ] );
-					qglEnd();
-				}
-			}
-		}
-	}
-
-	GL_State( GLS_DEFAULT );
-	qglEnable( GL_TEXTURE_2D );
 }
