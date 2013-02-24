@@ -639,7 +639,6 @@ extern vec3_t lightspot;
 
 extern int c_brush_polys;
 extern int c_alias_polys;
-extern int c_visible_textures;
 extern int c_visible_lightmaps;
 
 #define TURBSCALE ( 256.0 / idMath::TWO_PI )
