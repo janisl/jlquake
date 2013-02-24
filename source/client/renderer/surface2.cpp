@@ -565,6 +565,7 @@ static void GL_MBind( int target, image_t* image ) {
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 		// the textures are prescaled up for a better lighting range,
