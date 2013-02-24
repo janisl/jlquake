@@ -327,12 +327,7 @@ void GL_BeginBuildingLightmaps( model_t* m ) {
 		}
 	}
 
-	gl_lms.current_lightmap_texture = 1;
-
-	/*
-	** initialize the dynamic lightmap texture
-	*/
-	R_ReUploadImage( tr.lightmaps[ 0 ], dummy );
+	gl_lms.current_lightmap_texture = 0;
 }
 
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
@@ -362,6 +357,47 @@ void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
 
 void GL_EndBuildingLightmaps() {
 	LM_UploadBlock();
+}
+
+static void R_UpdateSurfaceLightmap( mbrush38_surface_t* surf ) {
+	if ( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+		return;
+	}
+
+	bool is_dynamic = false;
+
+	int map;
+	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[ map ] != 255; map++ ) {
+		if ( tr.refdef.lightstyles[ surf->styles[ map ] ].white != surf->cached_light[ map ] ) {
+			goto dynamic;
+		}
+	}
+
+	// dynamic this frame or dynamic previously
+	if ( surf->cached_dlight || surf->dlightframe == tr.frameCount ) {
+dynamic:
+		if ( r_dynamic->value ) {
+			is_dynamic = true;
+		}
+	}
+
+	if ( is_dynamic ) {
+		int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
+		int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+
+		unsigned temp[ 128 * 128 ];
+		R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
+
+		if ( ( surf->styles[ map ] >= 32 || surf->styles[ map ] == 0 ) && ( surf->dlightframe != tr.frameCount ) ) {
+			R_SetCacheState( surf );
+		}
+		surf->cached_dlight = surf->dlightframe == tr.frameCount;
+
+		GL_Bind( tr.lightmaps[ surf->lightmaptexturenum ] );
+
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
+			GL_RGBA, GL_UNSIGNED_BYTE, temp );
+	}
 }
 
 //	Returns the proper texture for a given time and base texture
@@ -477,7 +513,7 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 	qglColor4f( 1, 1, 1, 1.0f );
 }
 
-static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, int lmtex, image_t* image ) {
+static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	GL_Bind( image );
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
@@ -510,7 +546,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, int lmtex, image_t* ima
 		GL_State( 0 );
 	}
 
-	GL_Bind( tr.lightmaps[ lmtex ] );
+	GL_Bind( tr.lightmaps[ fa->lightmaptexturenum ] );
 
 	if ( fa->polys ) {
 		DrawGLPolyChainQ2( fa->polys, 0, 0 );
@@ -528,6 +564,28 @@ static void GL_MBind( int target, image_t* image ) {
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
+	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+
+		// the textures are prescaled up for a better lighting range,
+		// so scale it back down
+		float intens = tr.identityLight;
+
+		GL_Bind( surf->texinfo->image );
+		c_brush_polys++;
+		if ( surf->texinfo->flags & BSP38SURF_TRANS33 ) {
+			qglColor4f( intens, intens, intens, 0.33 );
+		} else {
+			qglColor4f( intens, intens, intens, 0.66 );
+		}
+		if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
+			EmitWaterPolysQ2( surf );
+		} else {
+			DrawGLPolyQ2( surf->polys );
+		}
+		return;
+	}
+
 	if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
 		R_RenderBrushWaterPolyQ2( surf );
 		return;
@@ -541,53 +599,14 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		GL_State( GLS_DEFAULT );
 	}
 
-	unsigned lmtex = surf->lightmaptexturenum;
-	bool is_dynamic = false;
-
-	int map;
-	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[ map ] != 255; map++ ) {
-		if ( tr.refdef.lightstyles[ surf->styles[ map ] ].white != surf->cached_light[ map ] ) {
-			goto dynamic;
-		}
-	}
-
-	// dynamic this frame or dynamic previously
-	if ( ( surf->dlightframe == tr.frameCount ) ) {
-dynamic:
-		if ( r_dynamic->value ) {
-			if ( !( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
-				is_dynamic = true;
-			}
-		}
-	}
-
-	if ( is_dynamic ) {
-		int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-		int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-
-		unsigned temp[ 128 * 128 ];
-		R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
-
-		if ( ( surf->styles[ map ] >= 32 || surf->styles[ map ] == 0 ) && ( surf->dlightframe != tr.frameCount ) ) {
-			R_SetCacheState( surf );
-
-			lmtex = surf->lightmaptexturenum;
-		} else {
-			lmtex = 0;
-		}
-
-		GL_Bind( tr.lightmaps[ lmtex ] );
-
-		qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
-			GL_RGBA, GL_UNSIGNED_BYTE, temp );
-	}
+	R_UpdateSurfaceLightmap( surf );
 
 	c_brush_polys++;
 
 	image_t* image = R_TextureAnimationQ2( surf->texinfo );
 
 	if ( !qglMultiTexCoord2fARB ) {
-		R_RenderBrushPolyQ2( surf, lmtex, image );
+		R_RenderBrushPolyQ2( surf, image );
 		return;
 	}
 
@@ -605,7 +624,7 @@ dynamic:
 	}
 
 	GL_MBind( 0, image );
-	GL_MBind( 1, tr.lightmaps[ lmtex ] );
+	GL_MBind( 1, tr.lightmaps[ surf->lightmaptexturenum ] );
 
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
 		float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
@@ -651,27 +670,8 @@ void R_DrawAlphaSurfaces() {
 	//
 	qglLoadMatrixf( tr.viewParms.world.modelMatrix );
 
-	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-
-	// the textures are prescaled up for a better lighting range,
-	// so scale it back down
-	float intens = tr.identityLight;
-
 	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
-		GL_Bind( s->texinfo->image );
-		c_brush_polys++;
-		if ( s->texinfo->flags & BSP38SURF_TRANS33 ) {
-			qglColor4f( intens, intens, intens, 0.33 );
-		} else if ( s->texinfo->flags & BSP38SURF_TRANS66 )     {
-			qglColor4f( intens, intens, intens, 0.66 );
-		} else {
-			qglColor4f( intens, intens, intens, 1 );
-		}
-		if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
-			EmitWaterPolysQ2( s );
-		} else {
-			DrawGLPolyQ2( s->polys );
-		}
+		GL_RenderLightmappedPoly( s );
 	}
 
 	qglColor4f( 1, 1, 1, 1 );

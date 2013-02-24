@@ -243,6 +243,7 @@ struct mbrush38_surface_t {
 	int lightmaptexturenum;
 	byte styles[ BSP38_MAXLIGHTMAPS ];
 	float cached_light[ BSP38_MAXLIGHTMAPS ];			// values currently used in lightmap
+	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
 };
 
