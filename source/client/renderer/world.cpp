@@ -452,12 +452,10 @@ static void R_DrawInlineBModel() {
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			} else {
-				GL_RenderLightmappedPoly( psurf );
+				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 			}
 		}
 	}
-
-	GL_State( GLS_DEFAULT );
 }
 
 void R_DrawBrushModelQ2( trRefEntity_t* e ) {
@@ -469,12 +467,7 @@ void R_DrawBrushModelQ2( trRefEntity_t* e ) {
 		return;
 	}
 
-	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
-
 	R_DrawInlineBModel();
-
-	qglPopMatrix();
 }
 
 //	See if a sprite is inside a fog volume
@@ -730,6 +723,9 @@ void R_DrawWorldQ1() {
 
 	tr.currentEntity = &tr.worldEntity;
 
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
+	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
 	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
 
 	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
@@ -821,7 +817,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
 		} else {
-			GL_RenderLightmappedPoly( surf );
+			R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 		}
 	}
 
@@ -938,9 +934,19 @@ void R_DrawWorldQ2() {
 	tr.worldEntity.e.frame = ( int )( tr.refdef.floatTime * 2 );
 	tr.currentEntity = &tr.worldEntity;
 
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
+	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
 	R_ClearSkyBox();
 
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+		R_SyncRenderThread();
+		GL_State(GLS_DEFAULT);
+	}
 
 	R_DrawSkyBoxQ2();
 }

@@ -591,7 +591,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		return;
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		qglColor4f( 1, 1, 1, 0.25 );
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else {
@@ -665,16 +665,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 //	The BSP tree is waled front to back, so unwinding the chain of
 // alpha_surfaces will draw back to front, giving proper ordering.
 void R_DrawAlphaSurfaces() {
-	//
-	// go back to the world matrix
-	//
-	qglLoadMatrixf( tr.viewParms.world.modelMatrix );
-
 	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
-		GL_RenderLightmappedPoly( s );
+		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 	}
 
-	qglColor4f( 1, 1, 1, 1 );
 	GL_State( GLS_DEFAULT );
 
 	r_alpha_surfaces = NULL;

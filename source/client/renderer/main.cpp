@@ -843,6 +843,12 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 				case MOD_BRUSH38:
 					R_DrawBrushModelQ2( ent );
+					if ( !( GGameType & GAME_Tech3 ) ) {
+						R_VerifyNoRenderCommands();
+						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+						R_SyncRenderThread();
+						GL_State(GLS_DEFAULT);
+					}
 					break;
 
 				case MOD_SPRITE2:
@@ -1114,7 +1120,14 @@ static void R_GenerateDrawSurfs() {
 
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
 	} else if ( GGameType & GAME_Quake2 )     {
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawAlphaSurfaces();
+		if ( !( GGameType & GAME_Tech3 ) ) {
+			R_VerifyNoRenderCommands();
+			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+			R_SyncRenderThread();
+			GL_State(GLS_DEFAULT);
+		}
 	}
 }
 

@@ -468,6 +468,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	GL_BeginBuildingLightmaps( loadmodel );
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
+		out->surfaceType = SF_FACE_Q2;
 		out->firstedge = LittleLong( in->firstedge );
 		out->numedges = LittleShort( in->numedges );
 		out->flags = 0;

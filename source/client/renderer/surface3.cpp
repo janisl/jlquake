@@ -1021,6 +1021,7 @@ void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* ) =
 	( void ( * )( void* ) )RB_SurfaceBad,			// SF_BAD,
 	( void ( * )( void* ) )RB_SurfaceSkip,			// SF_SKIP,
 	( void ( * )( void* ) )R_DrawSequentialPoly,	// SF_FACE_Q1,
+	( void ( * )( void* ) )GL_RenderLightmappedPoly,// SF_FACE_Q2,
 	( void ( * )( void* ) )RB_SurfaceFace,			// SF_FACE,
 	( void ( * )( void* ) )RB_SurfaceGrid,			// SF_GRID,
 	( void ( * )( void* ) )RB_SurfaceTriangles,		// SF_TRIANGLES,

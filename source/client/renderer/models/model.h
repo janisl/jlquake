@@ -25,6 +25,7 @@ enum surfaceType_t
 	SF_BAD,
 	SF_SKIP,				// ignore
 	SF_FACE_Q1,
+	SF_FACE_Q2,
 	SF_FACE,
 	SF_GRID,
 	SF_TRIANGLES,
@@ -218,6 +219,8 @@ struct mbrush38_glpoly_t {
 };
 
 struct mbrush38_surface_t {
+	surfaceType_t surfaceType;
+
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
