@@ -527,40 +527,6 @@ dynamic:
 	}
 }
 
-void DrawTextureChainsQ2() {
-	int i;
-
-	c_visible_textures = 0;
-
-	for ( i = 0; i < tr.numImages; i++ ) {
-		if ( !tr.images[ i ]->texturechain ) {
-			continue;
-		}
-		c_visible_textures++;
-
-		for ( mbrush38_surface_t* s = tr.images[ i ]->texturechain; s; s = s->texturechain ) {
-			if ( !( s->flags & BRUSH38_SURF_DRAWTURB ) ) {
-				R_RenderBrushPolyQ2( s );
-			}
-		}
-	}
-
-	for ( i = 0; i < tr.numImages; i++ ) {
-		mbrush38_surface_t* s = tr.images[ i ]->texturechain;
-		if ( !s ) {
-			continue;
-		}
-
-		for (; s; s = s->texturechain ) {
-			if ( s->flags & BRUSH38_SURF_DRAWTURB ) {
-				R_RenderBrushWaterPolyQ2( s );
-			}
-		}
-
-		tr.images[ i ]->texturechain = NULL;
-	}
-}
-
 static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffset ) {
 	if ( soffset == 0 && toffset == 0 ) {
 		for (; p != 0; p = p->chain ) {

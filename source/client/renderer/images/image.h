@@ -51,8 +51,6 @@ struct image_t {
 
 	float sl, tl, sh, th;					// 0,0 - 1,1 unless part of the scrap
 	bool scrap;
-
-	struct mbrush38_surface_t* texturechain;	// for sort-by-texture world drawing
 };
 
 void R_InitQ1Palette();

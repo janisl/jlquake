@@ -855,7 +855,6 @@ void GL_EndBuildingLightmaps();
 image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex );
 void R_RenderBrushPolyQ2( mbrush38_surface_t* fa );
 void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa );
-void DrawTextureChainsQ2();
 void R_BlendLightmapsQ2();
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces();

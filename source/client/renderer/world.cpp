@@ -841,17 +841,12 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
+		} else if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
+			R_RenderBrushWaterPolyQ2( surf );
+		} else if ( qglMultiTexCoord2fARB ) {
+			GL_RenderLightmappedPoly( surf );
 		} else {
-			if ( qglMultiTexCoord2fARB && !( surf->flags & BRUSH38_SURF_DRAWTURB ) ) {
-				GL_RenderLightmappedPoly( surf );
-			} else {
-				// the polygon is visible, so add it to the texture
-				// sorted chain
-				// FIXME: this is a hack for animation
-				image_t* image = R_TextureAnimationQ2( surf->texinfo );
-				surf->texturechain = image->texturechain;
-				image->texturechain = surf;
-			}
+			R_RenderBrushPolyQ2( surf );
 		}
 	}
 
@@ -968,17 +963,14 @@ void R_DrawWorldQ2() {
 	tr.worldEntity.e.frame = ( int )( tr.refdef.floatTime * 2 );
 	tr.currentEntity = &tr.worldEntity;
 
-	qglColor3f( 1, 1, 1 );
 	Com_Memset( gl_lms.lightmap_surfaces, 0, sizeof ( gl_lms.lightmap_surfaces ) );
 	R_ClearSkyBox();
 
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
 
 	/*
-	** theoretically nothing should happen in the next two functions
-	** if multitexture is enabled
+	** theoretically nothing should happen if multitexture is enabled
 	*/
-	DrawTextureChainsQ2();
 	R_BlendLightmapsQ2();
 
 	R_DrawSkyBoxQ2();
