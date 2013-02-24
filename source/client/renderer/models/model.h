@@ -26,6 +26,7 @@ enum surfaceType_t
 	SF_SKIP,				// ignore
 	SF_FACE_Q1,
 	SF_FACE_Q2,
+	SF_SKYBOX_Q2,
 	SF_FACE,
 	SF_GRID,
 	SF_TRIANGLES,

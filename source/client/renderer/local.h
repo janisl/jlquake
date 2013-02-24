@@ -881,7 +881,7 @@ void R_InitSky( mbrush29_texture_t* mt );
 void EmitSkyPolys( mbrush29_surface_t* fa );
 void R_ClearSkyBox();
 void R_AddSkySurface( mbrush38_surface_t* fa );
-void R_DrawSkyBoxQ2();
+void R_DrawSkyBoxQ2( surfaceType_t* dummy );
 void R_InitSkyTexCoords( float cloudLayerHeight );
 void RB_StageIteratorSky();
 void RB_DrawSun();

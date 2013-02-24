@@ -19,6 +19,8 @@
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
 
+static surfaceType_t q2SkySurface = SF_SKYBOX_Q2;
+
 static bool R_CullTriSurf( srfTriangles_t* cv ) {
 	int boxCull = R_CullLocalBox( cv->bounds );
 
@@ -939,16 +941,9 @@ void R_DrawWorldQ2() {
 
 	R_ClearSkyBox();
 
-	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
-	}
 
-	R_DrawSkyBoxQ2();
+	R_AddDrawSurf( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

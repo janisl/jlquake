@@ -1085,7 +1085,14 @@ static void R_GenerateDrawSurfs() {
 			GL_State(GLS_DEFAULT);
 		}
 	} else if ( GGameType & GAME_Quake2 )     {
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawWorldQ2();
+		if ( !( GGameType & GAME_Tech3 ) ) {
+			R_VerifyNoRenderCommands();
+			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+			R_SyncRenderThread();
+			GL_State(GLS_DEFAULT);
+		}
 	} else if ( GGameType & GAME_Tech3 )     {
 		R_AddWorldSurfaces();
 	}
