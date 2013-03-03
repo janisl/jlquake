@@ -798,6 +798,8 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				case MOD_SPRITE:
 					if ( GGameType & GAME_Hexen2 ) {
 						item_trans = true;
+					} else {
+						R_AddSprSurfaces( tr.currentEntity );
 					}
 					break;
 
@@ -861,24 +863,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 		R_SyncRenderThread();
 		GL_State(GLS_DEFAULT);
-	}
-
-	if ( GGameType & GAME_Quake ) {
-		for ( tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++ ) {
-			tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
-			tr.currentEntity = &tr.refdef.entities[ tr.currentEntityNum ];
-			tr.currentModel = R_GetModelByHandle( tr.currentEntity->e.hModel );
-			if ( tr.currentModel->type == MOD_SPRITE ) {
-				int firstDrawSurf = tr.refdef.numDrawSurfs;
-				R_AddSprSurfaces( tr.currentEntity );
-				if ( !( GGameType & GAME_Tech3 ) ) {
-					R_VerifyNoRenderCommands();
-					R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-					R_SyncRenderThread();
-					GL_State(GLS_DEFAULT);
-				}
-			}
-		}
 	}
 }
 
@@ -1029,13 +1013,14 @@ static void R_GenerateDrawSurfs() {
 	}
 
 	R_AddEntitySurfaces( false );
-	if ( GGameType & GAME_Quake2 ) {
-		R_AddEntitySurfaces( true );
-	}
 
 	R_AddPolygonSurfaces();
 
 	R_AddPolygonBufferSurfaces();
+
+	if ( GGameType & GAME_Quake2 ) {
+		R_AddEntitySurfaces( true );
+	}
 
 	R_DrawParticles();
 

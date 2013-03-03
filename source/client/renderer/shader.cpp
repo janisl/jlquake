@@ -3146,6 +3146,10 @@ static void CreateInternalShaders() {
 	String::NCpyZ( shader.name, "<stencil shadow>", sizeof ( shader.name ) );
 	shader.sort = SS_STENCIL_SHADOW;
 	tr.shadowShader = FinishShader();
+
+	String::NCpyZ( shader.name, "<sprite>", sizeof ( shader.name ) );
+	shader.sort = SS_SEE_THROUGH;
+	tr.spriteDummyShader = FinishShader();
 }
 
 static void BuildShaderChecksumLookup() {

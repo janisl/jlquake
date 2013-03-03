@@ -381,6 +381,8 @@ struct trGlobals_t {
 	shader_t* sunShader;
 	shader_t* sunflareShader;	//----(SA) for the camera lens flare effect for sun
 
+	shader_t* spriteDummyShader;
+
 	float identityLight;						// 1.0 / ( 1 << overbrightBits )
 	int identityLightByte;						// identityLight * 255
 	int overbrightBits;							// r_overbrightBits->integer, but set to 0 if no hw gamma
