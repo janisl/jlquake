@@ -565,7 +565,6 @@ static void GL_MBind( int target, image_t* image ) {
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-		qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 		// the textures are prescaled up for a better lighting range,
@@ -666,11 +665,11 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 //	The BSP tree is waled front to back, so unwinding the chain of
 // alpha_surfaces will draw back to front, giving proper ordering.
 void R_DrawAlphaSurfaces() {
+	int savedShiftedEntityNum = tr.shiftedEntityNum;
+	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
 	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
 		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 	}
-
-	GL_State( GLS_DEFAULT );
-
 	r_alpha_surfaces = NULL;
+	tr.shiftedEntityNum = savedShiftedEntityNum;
 }
