@@ -70,16 +70,16 @@ void R_AddSp2Surfaces( trRefEntity_t* e ) {
 void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	vec3_t point;
 
-	tr.currentEntity->e.frame %= psprite->numframes;
+	backEnd.currentEntity->e.frame %= psprite->numframes;
 
-	dsp2_frame_t* frame = &psprite->frames[ tr.currentEntity->e.frame ];
+	dsp2_frame_t* frame = &psprite->frames[ backEnd.currentEntity->e.frame ];
 
-	float* up = tr.viewParms.orient.axis[ 2 ];
-	float* left = tr.viewParms.orient.axis[ 1 ];
+	float* up = backEnd.viewParms.orient.axis[ 2 ];
+	float* left = backEnd.viewParms.orient.axis[ 1 ];
 
 	float alpha = 1.0F;
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = tr.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
 	}
 
 	if ( alpha != 1.0F ) {
@@ -90,7 +90,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	qglColor4f( 1, 1, 1, alpha );
 
-	GL_Bind( tr.currentModel->q2_skins[ tr.currentEntity->e.frame ] );
+	GL_Bind( R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ] );
 
 	qglBegin( GL_QUADS );
 

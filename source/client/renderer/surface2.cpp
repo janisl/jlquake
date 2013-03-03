@@ -401,12 +401,12 @@ dynamic:
 }
 
 //	Returns the proper texture for a given time and base texture
-image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
+static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	if ( !tex->next ) {
 		return tex->image;
 	}
 
-	int c = tr.currentEntity->e.frame % tex->numframes;
+	int c = backEnd.currentEntity->e.frame % tex->numframes;
 	while ( c ) {
 		tex = tex->next;
 		c--;

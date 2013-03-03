@@ -898,10 +898,10 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	int* order = paliashdr->commands;
 
 	float r, g, b;
-	if ( tr.currentEntity->e.renderfx & RF_COLORSHADE ) {
-		r = tr.currentEntity->e.shaderRGBA[ 0 ] / 255.0;
-		g = tr.currentEntity->e.shaderRGBA[ 1 ] / 255.0;
-		b = tr.currentEntity->e.shaderRGBA[ 2 ] / 255.0;
+	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
+		r = backEnd.currentEntity->e.shaderRGBA[ 0 ] / 255.0;
+		g = backEnd.currentEntity->e.shaderRGBA[ 1 ] / 255.0;
+		b = backEnd.currentEntity->e.shaderRGBA[ 2 ] / 255.0;
 	} else   {
 		r = g = b = 1;
 	}
@@ -939,7 +939,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 }
 
 static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
-	float lheight = tr.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
+	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = 0;
 	dmdl_trivertx_t* verts = paliashdr->posedata;
@@ -1040,12 +1040,10 @@ void R_AddMdlSurfaces( trRefEntity_t* e ) {
 		return;
 	}
 
-	model_t* clmodel = R_GetModelByHandle( tr.currentEntity->e.hModel );
-
-	if ( R_CullLocalBox( &clmodel->q1_mins ) == CULL_OUT ) {
+	if ( R_CullLocalBox( &tr.currentModel->q1_mins ) == CULL_OUT ) {
 		return;
 	}
-	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )clmodel->q1_cache;
+	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 }
 
@@ -1053,9 +1051,9 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	//
 	// get lighting information
 	//
-	ambientlight = shadelight = R_CalcEntityLight( &tr.currentEntity->e );
+	ambientlight = shadelight = R_CalcEntityLight( &backEnd.currentEntity->e );
 
-	if ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
 		r_lightlevel->value = ambientlight;
 	}
 
@@ -1067,7 +1065,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		shadelight = 192 - ambientlight;
 	}
 
-	model_t* clmodel = R_GetModelByHandle( tr.currentEntity->e.hModel );
+	model_t* clmodel = R_GetModelByHandle( backEnd.currentEntity->e.hModel );
 
 	// ZOID: never allow players to go totally black
 	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
@@ -1076,15 +1074,15 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		}
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		ambientlight = shadelight = tr.currentEntity->e.absoluteLight * 256.0;
+	if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+		ambientlight = shadelight = backEnd.currentEntity->e.absoluteLight * 256.0;
 	}
 
-	float tmp_yaw = VecToYaw( tr.currentEntity->e.axis[ 0 ] );
+	float tmp_yaw = VecToYaw( backEnd.currentEntity->e.axis[ 0 ] );
 	shadedots = r_avertexnormal_dots[ ( ( int )( tmp_yaw * ( SHADEDOT_QUANT / 360.0 ) ) ) & ( SHADEDOT_QUANT - 1 ) ];
 	shadelight = shadelight / 200.0;
 
-	VectorCopy( tr.currentEntity->e.axis[ 0 ], shadevector );
+	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
 	shadevector[ 2 ] = 1;
 	VectorNormalize( shadevector );
 
@@ -1095,8 +1093,6 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	//
 
 	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
-
 	qglTranslatef( paliashdr->scale_origin[ 0 ], paliashdr->scale_origin[ 1 ], paliashdr->scale_origin[ 2 ] );
 	qglScalef( paliashdr->scale[ 0 ], paliashdr->scale[ 1 ], paliashdr->scale[ 2 ] );
 
@@ -1107,7 +1103,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 			GL_Cull( CT_TWO_SIDED );
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA );
 			doOverBright = false;
-		} else if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
+		} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 			model_constant_alpha = r_wateralpha->value;
 			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 			doOverBright = false;
@@ -1128,24 +1124,24 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		GL_State( GLS_DEFAULT );
 	}
 
-	int anim = ( int )( tr.refdef.floatTime * 10 ) & 3;
-	if ( tr.currentEntity->e.customSkin ) {
-		GL_Bind( tr.images[ tr.currentEntity->e.customSkin ] );
+	int anim = ( int )( backEnd.refdef.floatTime * 10 ) & 3;
+	if ( backEnd.currentEntity->e.customSkin ) {
+		GL_Bind( tr.images[ backEnd.currentEntity->e.customSkin ] );
 	} else   {
-		GL_Bind( paliashdr->gl_texture[ tr.currentEntity->e.skinNum ][ anim ] );
+		GL_Bind( paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ] );
 	}
 
-	R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, false, false );
+	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false );
 
 	if ( doOverBright ) {
 		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, false, true );
+		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true );
 	}
 
-	if ( !tr.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] ) {
-		GL_Bind( paliashdr->fullBrightTexture[ tr.currentEntity->e.skinNum ][ anim ] );
+	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] ) {
+		GL_Bind( paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] );
 		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		R_SetupAliasFrame( tr.currentEntity->e.frame, paliashdr, true, false );
+		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
@@ -1156,7 +1152,6 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 
 	if ( r_shadows->value ) {
 		qglPushMatrix();
-		qglLoadMatrixf( tr.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		qglColor4f( 0, 0, 0, 0.5 );

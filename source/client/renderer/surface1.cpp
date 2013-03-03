@@ -388,7 +388,7 @@ void GL_BuildLightmaps() {
 
 //	Returns the proper texture for a given time and base texture
 static mbrush29_texture_t* R_TextureAnimationQ1( mbrush29_texture_t* base ) {
-	if ( tr.currentEntity->e.frame ) {
+	if ( backEnd.currentEntity->e.frame ) {
 		if ( base->alternate_anims ) {
 			base = base->alternate_anims;
 		}
@@ -398,7 +398,7 @@ static mbrush29_texture_t* R_TextureAnimationQ1( mbrush29_texture_t* base ) {
 		return base;
 	}
 
-	int reletive = ( int )( tr.refdef.floatTime * 10 ) % base->anim_total;
+	int reletive = ( int )( backEnd.refdef.floatTime * 10 ) % base->anim_total;
 
 	int count = 0;
 	while ( base->anim_min > reletive || base->anim_max <= reletive ) {
@@ -543,7 +543,6 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	GL_Bind( t->fullBrightTexture );
 	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	DrawGLPolyQ1( p );
-	GL_State( GLS_DEFAULT );
 }
 
 //	Systems that have fast state and texture changes can just do everything
@@ -555,8 +554,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	//
 	if ( !( s->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_UNDERWATER ) ) ) {
 		R_RenderDynamicLightmaps( s );
-		if ( qglActiveTextureARB  && !( tr.currentEntity->e.renderfx & RF_WATERTRANS ) &&
-			 !( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
+		if ( qglActiveTextureARB  && !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
+			 !( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 			mbrush29_glpoly_t* p = s->polys;
 
 			mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
@@ -580,6 +579,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				theRect->h = 0;
 				theRect->w = 0;
 			}
+			GL_State( GLS_DEFAULT );
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -613,8 +613,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					qglVertex3fv( v );
 				}
 				qglEnd();
-
-				GL_State( GLS_DEFAULT );
 			}
 
 			qglDisable( GL_TEXTURE_2D );
@@ -624,14 +622,16 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		} else {
 			float alpha_val = 1.0f;
 			float intensity = 1.0f;
-			if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
+			if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 				alpha_val = r_wateralpha->value;
 				intensity = 1;
+			} else {
+				GL_State( GLS_DEFAULT );
 			}
-			if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-				// tr.currentEntity->abslight   0 - 255
-				intensity = tr.currentEntity->e.absoluteLight;
+			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+				// backEnd.currentEntity->abslight   0 - 255
+				intensity = backEnd.currentEntity->e.absoluteLight;
 			}
 
 			qglColor4f( intensity, intensity, intensity, alpha_val );
@@ -648,8 +648,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			qglEnd();
 
-			if ( !( tr.currentEntity->e.renderfx & RF_WATERTRANS ) &&
-				 !( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
+			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
+				 !( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 				qglBegin( GL_POLYGON );
@@ -661,10 +661,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglEnd();
 			}
 
-			GL_State( GLS_DEFAULT );
-
 			qglColor4f( 1, 1, 1, 1 );
-			if ( !( tr.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
+			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
 				R_DrawFullBrightPoly( s );
 			}
 		}
@@ -675,8 +673,16 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	// subdivided water surface warp
 	//
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
+		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
+			GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+			qglColor4f( 1, 1, 1, r_wateralpha->value );
+		} else {
+			GL_State( GLS_DEFAULT );
+			qglColor4f( 1, 1, 1, 1 );
+		}
 		GL_Bind( s->texinfo->texture->gl_texture );
 		EmitWaterPolysQ1( s );
+		qglColor4f( 1, 1, 1, 1 );
 		return;
 	}
 
@@ -684,19 +690,18 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	// subdivided sky warp
 	//
 	if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
+		GL_State( GLS_DEFAULT );
 		GL_Bind( tr.solidskytexture );
-		speedscale = tr.refdef.floatTime * 8;
+		speedscale = backEnd.refdef.floatTime * 8;
 		speedscale -= ( int )speedscale & ~127;
 
 		EmitSkyPolys( s );
 
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		GL_Bind( tr.alphaskytexture );
-		speedscale = tr.refdef.floatTime * 16;
+		speedscale = backEnd.refdef.floatTime * 16;
 		speedscale -= ( int )speedscale & ~127;
 		EmitSkyPolys( s );
-
-		GL_State( GLS_DEFAULT );
 		return;
 	}
 
@@ -707,6 +712,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	mbrush29_glpoly_t* p = s->polys;
 	mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
 	if ( qglActiveTextureARB ) {
+		GL_State( GLS_DEFAULT );
 		GL_SelectTexture( 0 );
 		GL_Bind( t->gl_texture );
 		GL_SelectTexture( 1 );
@@ -770,8 +776,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglVertex3fv( nv );
 			}
 			qglEnd();
-
-			GL_State( GLS_DEFAULT );
 		}
 
 		qglDisable( GL_TEXTURE_2D );
@@ -783,49 +787,24 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 		DrawGLWaterPolyLightmap( p );
-		GL_State( GLS_DEFAULT );
 	}
 	if ( t->fullBrightTexture ) {
 		GL_Bind( t->fullBrightTexture );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		DrawGLWaterPoly( p );
-		GL_State( GLS_DEFAULT );
 	}
 }
 
 void R_DrawWaterSurfaces() {
-	if ( r_wateralpha->value == 1.0 ) {
-		return;
-	}
-
-	if ( !waterchain ) {
-		return;
-	}
-
-	//
-	// go back to the world matrix
-	//
-	qglLoadMatrixf( tr.viewParms.world.modelMatrix );
-
-	if ( r_wateralpha->value < 1.0 ) {
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	}
-
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
-		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-			qglColor4f( 1, 1, 1, r_wateralpha->value );
-		} else {
-			qglColor4f( 1, 1, 1, 1 );
-		}
-
-		GL_Bind( s->texinfo->texture->gl_texture );
-		EmitWaterPolysQ1( s );
+		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 	}
-
 	waterchain = NULL;
-
-	if ( r_wateralpha->value < 1.0 ) {
-		qglColor4f( 1, 1, 1, 1 );
-		GL_State( GLS_DEFAULT );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+		R_SyncRenderThread();
+		GL_State(GLS_DEFAULT);
 	}
 }

@@ -14,13 +14,9 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define DLIGHT_AT_RADIUS        16
 // at the edge of a dlight's influence, this amount of light will be added
@@ -28,25 +24,9 @@
 #define DLIGHT_MINIMUM_RADIUS   16
 // never calculate a range less than this to prevent huge light numbers
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 vec3_t lightspot;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static vec3_t pointcolor;
-
-// CODE --------------------------------------------------------------------
 
 /*
 =============================================================================
@@ -55,12 +35,6 @@ LIGHT SAMPLING
 
 =============================================================================
 */
-
-//==========================================================================
-//
-//	RecursiveLightPointQ1
-//
-//==========================================================================
 
 static int RecursiveLightPointQ1( mbrush29_node_t* node, vec3_t start, vec3_t end ) {
 	if ( node->contents < 0 ) {
@@ -146,12 +120,6 @@ static int RecursiveLightPointQ1( mbrush29_node_t* node, vec3_t start, vec3_t en
 	return RecursiveLightPointQ1( node->children[ !side ], mid, end );
 }
 
-//==========================================================================
-//
-//	R_LightPointQ1
-//
-//==========================================================================
-
 int R_LightPointQ1( vec3_t p ) {
 	if ( !tr.worldModel->brush29_lightdata ) {
 		return 255;
@@ -170,12 +138,6 @@ int R_LightPointQ1( vec3_t p ) {
 
 	return r;
 }
-
-//==========================================================================
-//
-//	RecursiveLightPointQ2
-//
-//==========================================================================
 
 static int RecursiveLightPointQ2( mbrush38_node_t* node, vec3_t start, vec3_t end ) {
 	if ( node->contents != -1 ) {
@@ -267,13 +229,7 @@ static int RecursiveLightPointQ2( mbrush38_node_t* node, vec3_t start, vec3_t en
 	return RecursiveLightPointQ2( node->children[ !side ], mid, end );
 }
 
-//==========================================================================
-//
-//	R_LightPointQ2
-//
-//==========================================================================
-
-void R_LightPointQ2( vec3_t p, vec3_t color ) {
+void R_LightPointQ2( vec3_t p, vec3_t color, trRefdef_t& refdef ) {
 	if ( !tr.worldModel->brush38_lightdata ) {
 		color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
 		return;
@@ -295,10 +251,10 @@ void R_LightPointQ2( vec3_t p, vec3_t color ) {
 	//
 	// add dynamic lights
 	//
-	dlight_t* dl = tr.refdef.dlights;
-	for ( int lnum = 0; lnum < tr.refdef.num_dlights; lnum++, dl++ ) {
+	dlight_t* dl = refdef.dlights;
+	for ( int lnum = 0; lnum < refdef.num_dlights; lnum++, dl++ ) {
 		vec3_t dist;
-		VectorSubtract( tr.currentEntity->e.origin, dl->origin, dist );
+		VectorSubtract( p, dl->origin, dist );
 		float add = dl->radius - VectorLength( dist );
 		add *= ( 1.0 / 256 );
 		if ( add > 0 ) {
@@ -308,12 +264,6 @@ void R_LightPointQ2( vec3_t p, vec3_t color ) {
 
 	VectorScale( color, r_modulate->value, color );
 }
-
-//==========================================================================
-//
-//	R_SetupEntityLightingGrid
-//
-//==========================================================================
 
 static void R_SetupEntityLightingGrid( trRefEntity_t* ent ) {
 	vec3_t lightOrigin;
@@ -427,12 +377,6 @@ static void R_SetupEntityLightingGrid( trRefEntity_t* ent ) {
 	VectorNormalize2( direction, ent->lightDir );
 }
 
-//==========================================================================
-//
-//	LogLight
-//
-//==========================================================================
-
 static void LogLight( trRefEntity_t* ent ) {
 	if ( !( ent->e.renderfx & RF_FIRST_PERSON ) ) {
 		return;
@@ -455,15 +399,8 @@ static void LogLight( trRefEntity_t* ent ) {
 	common->Printf( "amb:%i  dir:%i\n", max1, max2 );
 }
 
-//==========================================================================
-//
-//	R_SetupEntityLighting
-//
 //	Calculates all the lighting values that will be used
 // by the Calc_* functions
-//
-//==========================================================================
-
 void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 	// lighting calculations
 	if ( ent->lightingCalculated ) {
@@ -621,12 +558,6 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_LightForPoint
-//
-//==========================================================================
-
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir ) {
 	// bk010103 - this segfaults with -nolight maps
 	if ( tr.world->lightGridData == NULL ) {
@@ -651,12 +582,6 @@ DYNAMIC LIGHTS
 
 =============================================================================
 */
-
-//==========================================================================
-//
-//	R_MarkLightsQ1
-//
-//==========================================================================
 
 void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
 	if ( node->contents < 0 ) {
@@ -689,12 +614,6 @@ void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
 	R_MarkLightsQ1( light, bit, node->children[ 1 ] );
 }
 
-//==========================================================================
-//
-//	R_MarkLightsQ2
-//
-//==========================================================================
-
 void R_PushDlightsQ1() {
 	dlight_t* l = tr.refdef.dlights;
 
@@ -702,12 +621,6 @@ void R_PushDlightsQ1() {
 		R_MarkLightsQ1( l, 1 << i, tr.worldModel->brush29_nodes );
 	}
 }
-
-//==========================================================================
-//
-//	R_MarkLightsQ2
-//
-//==========================================================================
 
 void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node ) {
 	if ( node->contents != -1 ) {
@@ -740,12 +653,6 @@ void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node ) {
 	R_MarkLightsQ2( light, bit, node->children[ 1 ] );
 }
 
-//==========================================================================
-//
-//	R_PushDlightsQ2
-//
-//==========================================================================
-
 void R_PushDlightsQ2() {
 	dlight_t* l = tr.refdef.dlights;
 	for ( int i = 0; i < tr.refdef.num_dlights; i++, l++ ) {
@@ -753,15 +660,8 @@ void R_PushDlightsQ2() {
 	}
 }
 
-//==========================================================================
-//
-//	R_TransformDlights
-//
 //	Transforms the origins of an array of dlights. Used by both the front end
 // (for DlightBmodel) and the back end (before doing the lighting calculation)
-//
-//==========================================================================
-
 void R_TransformDlights( int count, dlight_t* dl, orientationr_t* orient ) {
 	for ( int i = 0; i < count; i++, dl++ ) {
 		vec3_t temp;
@@ -772,14 +672,7 @@ void R_TransformDlights( int count, dlight_t* dl, orientationr_t* orient ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_DlightBmodel
-//
 //	Determine which dynamic lights may effect this bmodel
-//
-//==========================================================================
-
 void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 	// transform all the lights
 	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr.orient );

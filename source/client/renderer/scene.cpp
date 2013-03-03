@@ -14,27 +14,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../client_main.h"
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 int r_firstSceneDrawSurf;
 
@@ -66,19 +50,9 @@ int r_numDecalProjectors;
 static int r_firstSceneDecal;
 static int r_numDecals;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 // Temp storage for saving view paramters.  Drawing the animated head in the corner
 // was creaming important view info.
 static viewParms_t g_oldViewParms;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_ToggleSmpFrame
-//
-//==========================================================================
 
 void R_ToggleSmpFrame() {
 	if ( r_smp->integer ) {
@@ -119,12 +93,6 @@ void R_ToggleSmpFrame() {
 	r_firstSceneDecal = 0;
 }
 
-//==========================================================================
-//
-//	R_ClearScene
-//
-//==========================================================================
-
 void R_ClearScene() {
 	// ydnar: clear model stuff for dynamic fog
 	if ( tr.world != NULL ) {
@@ -140,12 +108,6 @@ void R_ClearScene() {
 	r_firstScenePolybuffer = r_numpolybuffers;
 	r_firstSceneParticle = r_numparticles;
 }
-
-//==========================================================================
-//
-//	R_AddRefEntityToScene
-//
-//==========================================================================
 
 void R_AddRefEntityToScene( const refEntity_t* ent ) {
 	if ( !tr.registered ) {
@@ -167,12 +129,6 @@ void R_AddRefEntityToScene( const refEntity_t* ent ) {
 	R_AddModelShadow( ent );
 }
 
-//==========================================================================
-//
-//	R_AddDynamicLightToScene
-//
-//==========================================================================
-
 static void R_AddDynamicLightToScene( const vec3_t org, float intensity, float r, float g, float b, bool additive ) {
 	if ( !tr.registered ) {
 		return;
@@ -192,21 +148,9 @@ static void R_AddDynamicLightToScene( const vec3_t org, float intensity, float r
 	dl->additive = additive;
 }
 
-//==========================================================================
-//
-//	R_AddLightToScene
-//
-//==========================================================================
-
 void R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b ) {
 	R_AddDynamicLightToScene( org, intensity, r, g, b, false );
 }
-
-//==========================================================================
-//
-//	R_AddAdditiveLightToScene
-//
-//==========================================================================
 
 void R_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b ) {
 	R_AddDynamicLightToScene( org, intensity, r, g, b, true );
@@ -307,12 +251,6 @@ void R_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scal
 	cor->id = id;
 	cor->flags = flags;
 }
-
-//==========================================================================
-//
-//	R_AddPolyToScene
-//
-//==========================================================================
 
 void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts, int numPolys ) {
 	if ( !tr.registered ) {
@@ -420,12 +358,6 @@ void R_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer ) {
 	pPolySurf->fogIndex = fogIndex;
 }
 
-//==========================================================================
-//
-//	R_AddLightStyleToScene
-//
-//==========================================================================
-
 void R_AddLightStyleToScene( int style, float r, float g, float b ) {
 	if ( style < 0 || style > MAX_LIGHTSTYLES ) {
 		common->Error( "Bad light style %i", style );
@@ -436,12 +368,6 @@ void R_AddLightStyleToScene( int style, float r, float g, float b ) {
 	ls->rgb[ 1 ] = g;
 	ls->rgb[ 2 ] = b;
 }
-
-//==========================================================================
-//
-//	R_AddParticleToScene
-//
-//==========================================================================
 
 void R_AddParticleToScene( vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture ) {
 	if ( r_numparticles >= MAX_REF_PARTICLES ) {
@@ -457,12 +383,6 @@ void R_AddParticleToScene( vec3_t org, int r, int g, int b, int a, float size, Q
 	p->Texture = Texture;
 }
 
-//==========================================================================
-//
-//	R_SetLightLevel
-//
-//==========================================================================
-
 static void R_SetLightLevel() {
 	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
 		return;
@@ -471,7 +391,7 @@ static void R_SetLightLevel() {
 	// save off light value for server to look at (BIG HACK!)
 
 	vec3_t shadelight;
-	R_LightPointQ2( tr.refdef.vieworg, shadelight );
+	R_LightPointQ2( tr.refdef.vieworg, shadelight, tr.refdef );
 
 	// pick the greatest component, which should be the same
 	// as the mono value returned by software
@@ -490,16 +410,8 @@ static void R_SetLightLevel() {
 	}
 }
 
-//==========================================================================
-//
-//	R_RenderScene
-//
 //	Draw a 3D view into a part of the window, then return to 2D drawing.
-//
 //	Rendering a scene may require multiple views to be rendered to handle mirrors
-//
-//==========================================================================
-
 void R_RenderScene( const refdef_t* fd ) {
 	if ( !tr.registered ) {
 		return;

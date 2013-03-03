@@ -138,7 +138,7 @@ void Mod_FreeMd2Model( model_t* mod ) {
 
 static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dmd2_trivertx_t* verts,
 	float* lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
-	if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4 ) {
 			float* normal = bytedirs[ verts[ i ].lightnormalindex ];
 
@@ -159,24 +159,24 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, d
 //	FIXME: batch lerp all vertexes
 static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( ( byte* )paliashdr + paliashdr->ofs_frames +
-											 tr.currentEntity->e.frame * paliashdr->framesize );
+											 backEnd.currentEntity->e.frame * paliashdr->framesize );
 	dmd2_trivertx_t* verts = frame->verts;
 	dmd2_trivertx_t* v = verts;
 
 	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( ( byte* )paliashdr + paliashdr->ofs_frames +
-												tr.currentEntity->e.oldframe * paliashdr->framesize );
+												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
 	dmd2_trivertx_t* ov = oldframe->verts;
 
 	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
 
 	float alpha;
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = tr.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
 	} else   {
 		alpha = 1.0;
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		qglDisable( GL_TEXTURE_2D );
 	}
 
@@ -184,12 +184,12 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 	// move should be the delta back to the previous frame * backlerp
 	vec3_t delta;
-	VectorSubtract( tr.currentEntity->e.oldorigin, tr.currentEntity->e.origin, delta );
+	VectorSubtract( backEnd.currentEntity->e.oldorigin, backEnd.currentEntity->e.origin, delta );
 
 	vec3_t move;
-	move[ 0 ] = DotProduct( delta, tr.currentEntity->e.axis[ 0 ] );		// forward
-	move[ 1 ] = DotProduct( delta, tr.currentEntity->e.axis[ 1 ] );		// left
-	move[ 2 ] = DotProduct( delta, tr.currentEntity->e.axis[ 2 ] );		// up
+	move[ 0 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 0 ] );		// forward
+	move[ 1 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 1 ] );		// left
+	move[ 2 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 2 ] );		// up
 
 	VectorAdd( move, oldframe->translate, move );
 
@@ -212,7 +212,7 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 		qglVertexPointer( 3, GL_FLOAT, 16, s_lerped );		// padded for SIMD
 
-		if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 			qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
 		} else   {
 			qglEnableClientState( GL_COLOR_ARRAY );
@@ -247,7 +247,7 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 				qglBegin( GL_TRIANGLE_STRIP );
 			}
 
-			if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 				do {
 					int index_xyz = order[ 2 ];
 					order += 3;
@@ -286,7 +286,7 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 				qglBegin( GL_TRIANGLE_STRIP );
 			}
 
-			if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 				do {
 					int index_xyz = order[ 2 ];
 					order += 3;
@@ -312,13 +312,13 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 		}
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		qglEnable( GL_TEXTURE_2D );
 	}
 }
 
 static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
-	float lheight = tr.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
+	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
 
@@ -429,20 +429,20 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	//
 	// get lighting information
 	//
-	if ( tr.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = tr.currentEntity->e.shaderRGBA[ i ] / 255.0;
+			md2_shadelight[ i ] = backEnd.currentEntity->e.shaderRGBA[ i ] / 255.0;
 		}
-	} else if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT )     {
+	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT )     {
 		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = tr.currentEntity->e.absoluteLight;
+			md2_shadelight[ i ] = backEnd.currentEntity->e.absoluteLight;
 		}
 	} else   {
-		R_LightPointQ2( tr.currentEntity->e.origin, md2_shadelight );
+		R_LightPointQ2( backEnd.currentEntity->e.origin, md2_shadelight, backEnd.refdef );
 
 		// player lighting hack for communication back to server
 		// big hack!
-		if ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
+		if ( backEnd.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
 			// pick the greatest component, which should be the same
 			// as the mono value returned by software
 			if ( md2_shadelight[ 0 ] > md2_shadelight[ 1 ] ) {
@@ -461,7 +461,7 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		}
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_MINLIGHT ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_MINLIGHT ) {
 		int i;
 		for ( i = 0; i < 3; i++ ) {
 			if ( md2_shadelight[ i ] > 0.1 ) {
@@ -475,9 +475,9 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		}
 	}
 
-	if ( tr.currentEntity->e.renderfx & RF_GLOW ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_GLOW ) {
 		// bonus items will pulse with time
-		float scale = 0.1 * sin( tr.refdef.floatTime * 7 );
+		float scale = 0.1 * sin( backEnd.refdef.floatTime * 7 );
 		for ( int i = 0; i < 3; i++ ) {
 			float min = md2_shadelight[ i ] * 0.8;
 			md2_shadelight[ i ] += scale;
@@ -489,7 +489,7 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 	// =================
 	// PGM	ir goggles color override
-	if ( tr.refdef.rdflags & RDF_IRGOGGLES && tr.currentEntity->e.renderfx & RF_IR_VISIBLE ) {
+	if ( backEnd.refdef.rdflags & RDF_IRGOGGLES && backEnd.currentEntity->e.renderfx & RF_IR_VISIBLE ) {
 		md2_shadelight[ 0 ] = 1.0;
 		md2_shadelight[ 1 ] = 0.0;
 		md2_shadelight[ 2 ] = 0.0;
@@ -497,10 +497,10 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	// PGM
 	// =================
 
-	float tmp_yaw = VecToYaw( tr.currentEntity->e.axis[ 0 ] );
+	float tmp_yaw = VecToYaw( backEnd.currentEntity->e.axis[ 0 ] );
 	shadedots = r_avertexnormal_dots[ ( ( int )( tmp_yaw * ( SHADEDOT_QUANT / 360.0 ) ) ) & ( SHADEDOT_QUANT - 1 ) ];
 
-	VectorCopy( tr.currentEntity->e.axis[ 0 ], shadevector );
+	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
 	shadevector[ 2 ] = 1;
 	VectorNormalize( shadevector );
 
@@ -513,31 +513,30 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	//
 	// draw all the triangles
 	//
-	if ( tr.currentEntity->e.renderfx & RF_LEFTHAND ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPushMatrix();
 		qglLoadIdentity();
 		qglScalef( -1, 1, 1 );
-		qglMultMatrixf( tr.viewParms.projectionMatrix );
+		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
 		qglMatrixMode( GL_MODELVIEW );
 
 		GL_Cull( CT_BACK_SIDED );
 	}
 
 	qglPushMatrix();
-	qglLoadMatrixf( tr.orient.modelMatrix );
 
 	// select skin
 	image_t* skin;
-	if ( tr.currentEntity->e.customSkin ) {
-		skin = tr.images[ tr.currentEntity->e.customSkin ];		// custom player skin
+	if ( backEnd.currentEntity->e.customSkin ) {
+		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
 	} else   {
-		if ( tr.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
-			skin = tr.currentModel->q2_skins[ 0 ];
+		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
 		} else   {
-			skin = tr.currentModel->q2_skins[ tr.currentEntity->e.skinNum ];
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
 			if ( !skin ) {
-				skin = tr.currentModel->q2_skins[ 0 ];
+				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
 			}
 		}
 	}
@@ -548,48 +547,48 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 	// draw it
 
-	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else   {
 		GL_State( GLS_DEFAULT );
 	}
 
 
-	if ( ( tr.currentEntity->e.frame >= paliashdr->num_frames ) || ( tr.currentEntity->e.frame < 0 ) ) {
+	if ( ( backEnd.currentEntity->e.frame >= paliashdr->num_frames ) || ( backEnd.currentEntity->e.frame < 0 ) ) {
 		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
-			tr.currentModel->name, tr.currentEntity->e.frame );
-		tr.currentEntity->e.frame = 0;
-		tr.currentEntity->e.oldframe = 0;
+			R_GetModelByHandle( backEnd.currentEntity->e.hModel )->name, backEnd.currentEntity->e.frame );
+		backEnd.currentEntity->e.frame = 0;
+		backEnd.currentEntity->e.oldframe = 0;
 	}
 
-	if ( ( tr.currentEntity->e.oldframe >= paliashdr->num_frames ) || ( tr.currentEntity->e.oldframe < 0 ) ) {
+	if ( ( backEnd.currentEntity->e.oldframe >= paliashdr->num_frames ) || ( backEnd.currentEntity->e.oldframe < 0 ) ) {
 		common->Printf( "R_AddMd2Surfaces %s: no such oldframe %d\n",
-			tr.currentModel->name, tr.currentEntity->e.oldframe );
-		tr.currentEntity->e.frame = 0;
-		tr.currentEntity->e.oldframe = 0;
+			R_GetModelByHandle( backEnd.currentEntity->e.hModel )->name, backEnd.currentEntity->e.oldframe );
+		backEnd.currentEntity->e.frame = 0;
+		backEnd.currentEntity->e.oldframe = 0;
 	}
 
 	if ( !r_lerpmodels->value ) {
-		tr.currentEntity->e.backlerp = 0;
+		backEnd.currentEntity->e.backlerp = 0;
 	}
-	GL_DrawMd2FrameLerp( paliashdr, tr.currentEntity->e.backlerp );
+	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp );
 
 	qglPopMatrix();
 
-	if ( tr.currentEntity->e.renderfx & RF_LEFTHAND ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPopMatrix();
 		qglMatrixMode( GL_MODELVIEW );
 		GL_Cull( CT_FRONT_SIDED );
 	}
 
-	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
+	if ( r_shadows->value && !( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		qglPushMatrix();
-		qglLoadMatrixf( tr.orient.modelMatrix );
+		qglLoadMatrixf( backEnd.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		qglColor4f( 0, 0, 0, 0.5 );
-		GL_DrawMd2Shadow( paliashdr, tr.currentEntity->e.frame );
+		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame );
 		qglEnable( GL_TEXTURE_2D );
 		qglPopMatrix();
 	}

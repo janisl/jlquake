@@ -792,7 +792,7 @@ LIGHTS
 #define DLIGHT_CUTOFF       64
 
 int R_LightPointQ1( vec3_t p );
-void R_LightPointQ2( vec3_t p, vec3_t color );
+void R_LightPointQ2( vec3_t p, vec3_t color, trRefdef_t& refdef );
 void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent );
 void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node );
 void R_PushDlightsQ1();
@@ -848,7 +848,6 @@ void R_DrawWaterSurfaces();
 void GL_BeginBuildingLightmaps( model_t* m );
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf );
 void GL_EndBuildingLightmaps();
-image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex );
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces();
 

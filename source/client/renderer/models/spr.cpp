@@ -200,7 +200,7 @@ void R_AddSprSurfaces( trRefEntity_t* e ) {
 		return;
 	}
 
-	msprite1_t* psprite = ( msprite1_t* )R_GetModelByHandle( tr.currentEntity->e.hModel )->q1_cache;
+	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
 	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 }
 
@@ -210,7 +210,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	if ( tr.currentEntity->e.renderfx & RF_WATERTRANS ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 		qglColor4f( 1, 1, 1, r_wateralpha->value );
 	} else   {
 		qglColor3f( 1, 1, 1 );
@@ -218,21 +218,21 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
-	msprite1frame_t* frame = R_GetSpriteFrame( psprite, tr.currentEntity );
+	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
 
 	vec3_t up;
 	vec3_t right;
 	if ( psprite->type == SPR_FACING_UPRIGHT ) {
 		// generate the sprite's axes, with vup straight up in worldspace, and
-		// r_spritedesc.vright perpendicular to tr.viewParms.orient.origin.
+		// r_spritedesc.vright perpendicular to backEnd.viewParms.orient.origin.
 		// This will not work if the view direction is very close to straight up or
 		// down, because the cross product will be between two nearly parallel
 		// vectors and starts to approach an undefined state, so we don't draw if
 		// the two vectors are less than 1 degree apart
 		vec3_t tvec;
-		tvec[ 0 ] = -tr.viewParms.orient.origin[ 0 ];
-		tvec[ 1 ] = -tr.viewParms.orient.origin[ 1 ];
-		tvec[ 2 ] = -tr.viewParms.orient.origin[ 2 ];
+		tvec[ 0 ] = -backEnd.viewParms.orient.origin[ 0 ];
+		tvec[ 1 ] = -backEnd.viewParms.orient.origin[ 1 ];
+		tvec[ 2 ] = -backEnd.viewParms.orient.origin[ 2 ];
 		VectorNormalize( tvec );
 		float dot = tvec[ 2 ];		// same as DotProduct (tvec, r_spritedesc.vup) because
 									//  r_spritedesc.vup is 0, 0, 1
@@ -242,7 +242,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		up[ 0 ] = 0;
 		up[ 1 ] = 0;
 		up[ 2 ] = 1;
-		right[ 0 ] = tvec[ 1 ];		// CrossProduct(r_spritedesc.vup, -tr.viewParms.orient.origin,
+		right[ 0 ] = tvec[ 1 ];		// CrossProduct(r_spritedesc.vup, -backEnd.viewParms.orient.origin,
 		right[ 1 ] = -tvec[ 0 ];	//              r_spritedesc.vright)
 		right[ 2 ] = 0;
 		VectorNormalize( right );
@@ -250,8 +250,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		// generate the sprite's axes, completely parallel to the viewplane. There
 		// are no problem situations, because the sprite is always in the same
 		// position relative to the viewer
-		VectorCopy( tr.viewParms.orient.axis[ 2 ], up );
-		VectorSubtract( vec3_origin, tr.viewParms.orient.axis[ 1 ], right );
+		VectorCopy( backEnd.viewParms.orient.axis[ 2 ], up );
+		VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 1 ], right );
 	} else if ( psprite->type == SPR_VP_PARALLEL_UPRIGHT )     {
 		// generate the sprite's axes, with vup straight up in worldspace, and
 		// r_spritedesc.vright parallel to the viewplane.
@@ -259,7 +259,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		// down, because the cross product will be between two nearly parallel
 		// vectors and starts to approach an undefined state, so we don't draw if
 		// the two vectors are less than 1 degree apart
-		float dot = tr.viewParms.orient.axis[ 0 ][ 2 ];	// same as DotProduct (vpn, r_spritedesc.vup) because
+		float dot = backEnd.viewParms.orient.axis[ 0 ][ 2 ];	// same as DotProduct (vpn, r_spritedesc.vup) because
 		//  r_spritedesc.vup is 0, 0, 1
 		if ( ( dot > 0.999848 ) || ( dot < -0.999848 ) ) {	// cos(1 degree) = 0.999848
 			return;
@@ -267,35 +267,35 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		up[ 0 ] = 0;
 		up[ 1 ] = 0;
 		up[ 2 ] = 1;
-		right[ 0 ] = tr.viewParms.orient.axis[ 0 ][ 1 ];	// CrossProduct (r_spritedesc.vup, vpn,
-		right[ 1 ] = -tr.viewParms.orient.axis[ 0 ][ 0 ];	//  r_spritedesc.vright)
+		right[ 0 ] = backEnd.viewParms.orient.axis[ 0 ][ 1 ];	// CrossProduct (r_spritedesc.vup, vpn,
+		right[ 1 ] = -backEnd.viewParms.orient.axis[ 0 ][ 0 ];	//  r_spritedesc.vright)
 		right[ 2 ] = 0;
 		VectorNormalize( right );
 	} else if ( psprite->type == SPR_ORIENTED )     {
 		// generate the sprite's axes, according to the sprite's world orientation
-		VectorCopy( tr.currentEntity->e.axis[ 2 ], up );
-		VectorSubtract( vec3_origin, tr.currentEntity->e.axis[ 1 ], right );
+		VectorCopy( backEnd.currentEntity->e.axis[ 2 ], up );
+		VectorSubtract( vec3_origin, backEnd.currentEntity->e.axis[ 1 ], right );
 	} else if ( psprite->type == SPR_VP_PARALLEL_ORIENTED )     {
 		// generate the sprite's axes, parallel to the viewplane, but rotated in
 		// that plane around the center according to the sprite entity's roll
 		// angle. So vpn stays the same, but vright and vup rotate
 		float sr;
 		float cr;
-		if ( tr.currentEntity->e.axis[ 0 ][ 2 ] == 1 ) {
-			sr = -tr.currentEntity->e.axis[ 1 ][ 0 ];
-			cr = tr.currentEntity->e.axis[ 1 ][ 1 ];
-		} else if ( tr.currentEntity->e.axis[ 0 ][ 2 ] == -1 )         {
-			sr = tr.currentEntity->e.axis[ 1 ][ 0 ];
-			cr = tr.currentEntity->e.axis[ 1 ][ 1 ];
+		if ( backEnd.currentEntity->e.axis[ 0 ][ 2 ] == 1 ) {
+			sr = -backEnd.currentEntity->e.axis[ 1 ][ 0 ];
+			cr = backEnd.currentEntity->e.axis[ 1 ][ 1 ];
+		} else if ( backEnd.currentEntity->e.axis[ 0 ][ 2 ] == -1 )         {
+			sr = backEnd.currentEntity->e.axis[ 1 ][ 0 ];
+			cr = backEnd.currentEntity->e.axis[ 1 ][ 1 ];
 		} else   {
-			float cp = sqrt( 1 - tr.currentEntity->e.axis[ 0 ][ 2 ] * tr.currentEntity->e.axis[ 0 ][ 2 ] );
-			sr = tr.currentEntity->e.axis[ 1 ][ 2 ] / cp;
-			cr = tr.currentEntity->e.axis[ 2 ][ 2 ] / cp;
+			float cp = sqrt( 1 - backEnd.currentEntity->e.axis[ 0 ][ 2 ] * backEnd.currentEntity->e.axis[ 0 ][ 2 ] );
+			sr = backEnd.currentEntity->e.axis[ 1 ][ 2 ] / cp;
+			cr = backEnd.currentEntity->e.axis[ 2 ][ 2 ] / cp;
 		}
 
 		for ( int i = 0; i < 3; i++ ) {
-			right[ i ] = -tr.viewParms.orient.axis[ 1 ][ i ] * cr + tr.viewParms.orient.axis[ 2 ][ i ] * sr;
-			up[ i ] = tr.viewParms.orient.axis[ 1 ][ i ] * sr + tr.viewParms.orient.axis[ 2 ][ i ] * cr;
+			right[ i ] = -backEnd.viewParms.orient.axis[ 1 ][ i ] * cr + backEnd.viewParms.orient.axis[ 2 ][ i ] * sr;
+			up[ i ] = backEnd.viewParms.orient.axis[ 1 ][ i ] * sr + backEnd.viewParms.orient.axis[ 2 ][ i ] * cr;
 		}
 	} else   {
 		common->FatalError( "R_DrawSprite: Bad sprite type %d", psprite->type );
