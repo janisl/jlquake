@@ -713,6 +713,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 		return;
 	}
 
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	for ( tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++ ) {
 		tr.currentEntity = &tr.refdef.entities[ tr.currentEntityNum ];
 
@@ -737,7 +738,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 		bool item_trans = false;
 
-		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		// simple generated models, like sprites and beams, are not culled
 		switch ( ent->e.reType ) {
 		case RT_PORTALSURFACE:
@@ -758,12 +758,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				continue;
 			}
 			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
-			if ( !( GGameType & GAME_Tech3 ) ) {
-				R_VerifyNoRenderCommands();
-				R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-				R_SyncRenderThread();
-				GL_State(GLS_DEFAULT);
-			}
 			break;
 
 		case RT_MODEL:
@@ -773,12 +767,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
 				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-				if ( !( GGameType & GAME_Tech3 ) ) {
-					R_VerifyNoRenderCommands();
-					R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-					R_SyncRenderThread();
-					GL_State(GLS_DEFAULT);
-				}
 			} else {
 				switch ( tr.currentModel->type ) {
 				case MOD_BAD:
@@ -786,12 +774,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 						break;
 					}
 					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MESH1:
@@ -801,12 +783,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					}
 					if ( !item_trans ) {
 						R_AddMdlSurfaces( ent );
-						if ( !( GGameType & GAME_Tech3 ) ) {
-							R_VerifyNoRenderCommands();
-							R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-							R_SyncRenderThread();
-							GL_State(GLS_DEFAULT);
-						}
 					}
 					break;
 
@@ -816,12 +792,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					}
 					if ( !item_trans ) {
 						R_DrawBrushModelQ1( ent, false );
-						if ( !( GGameType & GAME_Tech3 ) ) {
-							R_VerifyNoRenderCommands();
-							R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-							R_SyncRenderThread();
-							GL_State(GLS_DEFAULT);
-						}
 					}
 					break;
 
@@ -833,92 +803,38 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 				case MOD_MESH2:
 					R_AddMd2Surfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_BRUSH38:
 					R_DrawBrushModelQ2( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_SPRITE2:
 					R_AddSp2Surfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MESH3:
 					R_AddMD3Surfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MD4:
 					R_AddAnimSurfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MDC:
 					R_AddMDCSurfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MDS:
 					R_AddMdsAnimSurfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_MDM:
 					R_MDM_AddAnimSurfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				case MOD_BRUSH46:
 					R_AddBrushModelSurfaces( ent );
-					if ( !( GGameType & GAME_Tech3 ) ) {
-						R_VerifyNoRenderCommands();
-						R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-						R_SyncRenderThread();
-						GL_State(GLS_DEFAULT);
-					}
 					break;
 
 				default:
@@ -939,6 +855,12 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				cl_transwateredicts[ cl_numtranswateredicts++ ].ent = tr.currentEntity;
 			}
 		}
+	}
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+		R_SyncRenderThread();
+		GL_State(GLS_DEFAULT);
 	}
 
 	if ( GGameType & GAME_Quake ) {
@@ -1107,23 +1029,36 @@ static void R_GenerateDrawSurfs() {
 	}
 
 	R_AddEntitySurfaces( false );
+	if ( GGameType & GAME_Quake2 ) {
+		R_AddEntitySurfaces( true );
+	}
 
 	R_AddPolygonSurfaces();
 
 	R_AddPolygonBufferSurfaces();
 
-	if ( GGameType & GAME_Quake2 ) {
-		R_AddEntitySurfaces( true );
-	}
-
 	R_DrawParticles();
 
 	if ( GGameType & GAME_Quake ) {
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawWaterSurfaces();
+		if ( !( GGameType & GAME_Tech3 ) ) {
+			R_VerifyNoRenderCommands();
+			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+			R_SyncRenderThread();
+			GL_State(GLS_DEFAULT);
+		}
 	} else if ( GGameType & GAME_Hexen2 )     {
 		R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY );	// This restores the depth mask
 
+		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawWaterSurfaces();
+		if ( !( GGameType & GAME_Tech3 ) ) {
+			R_VerifyNoRenderCommands();
+			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+			R_SyncRenderThread();
+			GL_State(GLS_DEFAULT);
+		}
 
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
 	} else if ( GGameType & GAME_Quake2 )     {

@@ -796,15 +796,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 }
 
 void R_DrawWaterSurfaces() {
-	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
 		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
 	}
 	waterchain = NULL;
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
-	}
 }
