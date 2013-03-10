@@ -409,7 +409,7 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 	return R_CullLocalBox( bounds ) == CULL_OUT;
 }
 
-void R_AddMd2Surfaces( trRefEntity_t* e ) {
+void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -421,7 +421,7 @@ void R_AddMd2Surfaces( trRefEntity_t* e ) {
 	}
 
 	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceMd2( dmd2_t* paliashdr ) {

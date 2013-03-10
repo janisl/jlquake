@@ -55,7 +55,7 @@ void Mod_FreeSprite2Model( model_t* mod ) {
 	Mem_Free( mod->q2_extradata );
 }
 
-void R_AddSp2Surfaces( trRefEntity_t* e ) {
+void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -64,7 +64,7 @@ void R_AddSp2Surfaces( trRefEntity_t* e ) {
 	// polygon without a surface cache
 
 	dsprite2_t* psprite = ( dsprite2_t* )tr.currentModel->q2_extradata;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSp2( dsprite2_t* psprite ) {

@@ -707,7 +707,7 @@ static int R_SpriteFogNum( trRefEntity_t* ent ) {
 	return 0;
 }
 
-static void R_AddEntitySurfaces( bool TranslucentPass ) {
+static void R_AddEntitySurfaces() {
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
 
@@ -715,7 +715,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 		return;
 	}
 
-	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	for ( tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++ ) {
 		tr.currentEntity = &tr.refdef.entities[ tr.currentEntityNum ];
 
@@ -725,9 +724,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 		// preshift the value we are going to OR into the drawsurf sort
 		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-		if ( ( GGameType & GAME_Quake2 ) && !( tr.currentEntity->e.renderfx & RF_TRANSLUCENT ) != TranslucentPass ) {
-			continue;
-		}
+		int forcedSortIndex = tr.currentEntity->e.renderfx & RF_TRANSLUCENT ? 1 : 0;
 
 		//
 		// the weapon model must be handled special --
@@ -806,15 +803,15 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 					break;
 
 				case MOD_MESH2:
-					R_AddMd2Surfaces( ent );
+					R_AddMd2Surfaces( ent, forcedSortIndex );
 					break;
 
 				case MOD_BRUSH38:
-					R_DrawBrushModelQ2( ent );
+					R_DrawBrushModelQ2( ent, forcedSortIndex );
 					break;
 
 				case MOD_SPRITE2:
-					R_AddSp2Surfaces( ent );
+					R_AddSp2Surfaces( ent, forcedSortIndex );
 					break;
 
 				case MOD_MESH3:
@@ -859,12 +856,6 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 				cl_transwateredicts[ cl_numtranswateredicts++ ].ent = tr.currentEntity;
 			}
 		}
-	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
 	}
 }
 
@@ -983,24 +974,11 @@ static void R_GenerateDrawSurfs() {
 		R_CullDlights();
 	}
 
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	if ( GGameType & GAME_QuakeHexen ) {
-		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawWorldQ1();
-		if ( !( GGameType & GAME_Tech3 ) ) {
-			R_VerifyNoRenderCommands();
-			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-			R_SyncRenderThread();
-			GL_State(GLS_DEFAULT);
-		}
 	} else if ( GGameType & GAME_Quake2 )     {
-		int firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawWorldQ2();
-		if ( !( GGameType & GAME_Tech3 ) ) {
-			R_VerifyNoRenderCommands();
-			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-			R_SyncRenderThread();
-			GL_State(GLS_DEFAULT);
-		}
 	} else if ( GGameType & GAME_Tech3 )     {
 		R_AddWorldSurfaces();
 	}
@@ -1014,14 +992,16 @@ static void R_GenerateDrawSurfs() {
 		R_SetupProjection();
 	}
 
-	R_AddEntitySurfaces( false );
+	R_AddEntitySurfaces();
 
 	R_AddPolygonSurfaces();
 
 	R_AddPolygonBufferSurfaces();
-
-	if ( GGameType & GAME_Quake2 ) {
-		R_AddEntitySurfaces( true );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_VerifyNoRenderCommands();
+		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+		R_SyncRenderThread();
+		GL_State(GLS_DEFAULT);
 	}
 
 	R_DrawParticles();

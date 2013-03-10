@@ -428,7 +428,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 	}
 }
 
-static void R_DrawInlineBModel() {
+static void R_DrawInlineBModel(int forcedSortIndex) {
 	// calculate dynamic lighting for bmodel
 	dlight_t* lt = tr.refdef.dlights;
 	for ( int k = 0; k < tr.refdef.num_dlights; k++, lt++ ) {
@@ -454,13 +454,13 @@ static void R_DrawInlineBModel() {
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			} else {
-				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 			}
 		}
 	}
 }
 
-void R_DrawBrushModelQ2( trRefEntity_t* e ) {
+void R_DrawBrushModelQ2( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( tr.currentModel->brush38_nummodelsurfaces == 0 ) {
 		return;
 	}
@@ -469,7 +469,7 @@ void R_DrawBrushModelQ2( trRefEntity_t* e ) {
 		return;
 	}
 
-	R_DrawInlineBModel();
+	R_DrawInlineBModel(forcedSortIndex);
 }
 
 //	See if a sprite is inside a fog volume
