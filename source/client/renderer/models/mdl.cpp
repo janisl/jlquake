@@ -930,7 +930,10 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 				l -= 1;
 			}
 			qglColor4f( r * l, g * l, b * l, model_constant_alpha );
-			qglVertex3f( verts->v[ 0 ], verts->v[ 1 ], verts->v[ 2 ] );
+			tess.xyz[ 0 ][ 0 ] = verts->v[ 0 ];
+			tess.xyz[ 0 ][ 1 ] = verts->v[ 1 ];
+			tess.xyz[ 0 ][ 2 ] = verts->v[ 2 ];
+			R_ArrayElement( 0 );
 			verts++;
 		} while ( --count );
 
@@ -975,7 +978,10 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
 			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
 			point[ 2 ] = height;
-			qglVertex3fv( point );
+			tess.xyz[ 0 ][ 0 ] = point[ 0 ];
+			tess.xyz[ 0 ][ 1 ] = point[ 1 ];
+			tess.xyz[ 0 ][ 2 ] = point[ 2 ];
+			R_ArrayElement( 0 );
 
 			verts++;
 		} while ( --count );

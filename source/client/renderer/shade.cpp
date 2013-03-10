@@ -37,6 +37,10 @@ shaderCommands_t tess;
 
 bool setArraysOnce;
 
+void R_ArrayElement( GLint index ) {
+	qglVertex3fv( tess.xyz[ index ] );
+}
+
 //	This is just for OpenGL conformance testing, it should never be the fastest
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );

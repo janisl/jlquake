@@ -69,13 +69,22 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	qglColor4ubv( p->rgba );
 
 	qglTexCoord2f( s1, t1 );
-	qglVertex3fv( p->origin );
+	tess.xyz[ 0 ][ 0 ] = p->origin[ 0 ];
+	tess.xyz[ 0 ][ 1 ] = p->origin[ 1 ];
+	tess.xyz[ 0 ][ 2 ] = p->origin[ 2 ];
+	R_ArrayElement( 0 );
 
 	qglTexCoord2f( s2, t1 );
-	qglVertex3f( p->origin[ 0 ] + up[ 0 ] * scale, p->origin[ 1 ] + up[ 1 ] * scale, p->origin[ 2 ] + up[ 2 ] * scale );
+	tess.xyz[ 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
+	tess.xyz[ 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
+	tess.xyz[ 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
+	R_ArrayElement( 1 );
 
 	qglTexCoord2f( s1, t2 );
-	qglVertex3f( p->origin[ 0 ] + right[ 0 ] * scale, p->origin[ 1 ] + right[ 1 ] * scale, p->origin[ 2 ] + right[ 2 ] * scale );
+	tess.xyz[ 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
+	tess.xyz[ 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
+	tess.xyz[ 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
+	R_ArrayElement( 2 );
 }
 
 static void R_DrawParticleTriangles() {

@@ -440,7 +440,10 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 			t *= ( 1.0 / 64 );
 
 			qglTexCoord2f( s, t );
-			qglVertex3fv( v );
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
+			R_ArrayElement( i );
 		}
 		qglEnd();
 	}
@@ -451,7 +454,10 @@ static void DrawGLPolyQ2( mbrush38_glpoly_t* p ) {
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
 		qglTexCoord2f( v[ 3 ], v[ 4 ] );
-		qglVertex3fv( v );
+		tess.xyz[ i ][ 0 ] = v[ 0 ];
+		tess.xyz[ i ][ 1 ] = v[ 1 ];
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		R_ArrayElement( i );
 	}
 	qglEnd();
 }
@@ -469,7 +475,10 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
 		qglTexCoord2f( ( v[ 3 ] + scroll ), v[ 4 ] );
-		qglVertex3fv( v );
+		tess.xyz[ i ][ 0 ] = v[ 0 ];
+		tess.xyz[ i ][ 1 ] = v[ 1 ];
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		R_ArrayElement( i );
 	}
 	qglEnd();
 }
@@ -481,7 +490,10 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 			float* v = p->verts[ 0 ];
 			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
 				qglTexCoord2f( v[ 5 ], v[ 6 ] );
-				qglVertex3fv( v );
+				tess.xyz[ j ][ 0 ] = v[ 0 ];
+				tess.xyz[ j ][ 1 ] = v[ 1 ];
+				tess.xyz[ j ][ 2 ] = v[ 2 ];
+				R_ArrayElement( j );
 			}
 			qglEnd();
 		}
@@ -491,7 +503,10 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 			float* v = p->verts[ 0 ];
 			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
 				qglTexCoord2f( v[ 5 ] - soffset, v[ 6 ] - toffset );
-				qglVertex3fv( v );
+				tess.xyz[ j ][ 0 ] = v[ 0 ];
+				tess.xyz[ j ][ 1 ] = v[ 1 ];
+				tess.xyz[ j ][ 2 ] = v[ 2 ];
+				R_ArrayElement( j );
 			}
 			qglEnd();
 		}
@@ -639,7 +654,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
 				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, ( v[ 3 ] + scroll ), v[ 4 ] );
 				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-				qglVertex3fv( v );
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+				R_ArrayElement( i );
 			}
 			qglEnd();
 		}
@@ -650,7 +668,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
 				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
 				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-				qglVertex3fv( v );
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+				R_ArrayElement( i );
 			}
 			qglEnd();
 		}

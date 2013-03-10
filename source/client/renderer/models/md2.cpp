@@ -247,25 +247,17 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 				qglBegin( GL_TRIANGLE_STRIP );
 			}
 
-			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-				do {
-					int index_xyz = order[ 2 ];
-					order += 3;
-
-					qglVertex3fv( s_lerped[ index_xyz ] );
-				} while ( --count );
-			} else   {
-				do {
+			do {
+				int index_xyz = order[ 2 ];
+				if ( !( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) ) {
 					// texture coordinates come from the draw list
 					qglTexCoord2f( ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
-					int index_xyz = order[ 2 ];
+				}
+				order += 3;
 
-					order += 3;
-
-					// normals and vertexes come from the frame list
-					qglArrayElement( index_xyz );
-				} while ( --count );
-			}
+				// normals and vertexes come from the frame list
+				qglArrayElement( index_xyz );
+			} while ( --count );
 			qglEnd();
 		}
 
@@ -286,28 +278,25 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 				qglBegin( GL_TRIANGLE_STRIP );
 			}
 
-			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-				do {
-					int index_xyz = order[ 2 ];
-					order += 3;
-
+			do {
+				int index_xyz = order[ 2 ];
+				if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 					qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
-					qglVertex3fv( s_lerped[ index_xyz ] );
-				} while ( --count );
-			} else   {
-				do {
+				} else {
 					// texture coordinates come from the draw list
 					qglTexCoord2f( ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
-					int index_xyz = order[ 2 ];
-					order += 3;
 
 					// normals and vertexes come from the frame list
 					float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
 
 					qglColor4f( l * md2_shadelight[ 0 ], l * md2_shadelight[ 1 ], l * md2_shadelight[ 2 ], alpha );
-					qglVertex3fv( s_lerped[ index_xyz ] );
-				} while ( --count );
-			}
+				}
+				tess.xyz[ index_xyz ][ 0 ] = s_lerped[ index_xyz ][ 0 ];
+				tess.xyz[ index_xyz ][ 1 ] = s_lerped[ index_xyz ][ 1 ];
+				tess.xyz[ index_xyz ][ 2 ] = s_lerped[ index_xyz ][ 2 ];
+				R_ArrayElement( index_xyz );
+				order += 3;
+			} while ( --count );
 			qglEnd();
 		}
 	}
@@ -344,7 +333,10 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
 			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
 			point[ 2 ] = height;
-			qglVertex3fv( point );
+			tess.xyz[ 0 ][ 0 ] = point[ 0 ];
+			tess.xyz[ 0 ][ 1 ] = point[ 1 ];
+			tess.xyz[ 0 ][ 2 ] = point[ 2 ];
+			R_ArrayElement( 0 );
 
 			order += 3;
 		} while ( --count );

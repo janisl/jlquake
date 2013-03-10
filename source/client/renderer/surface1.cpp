@@ -473,7 +473,10 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		qglTexCoord2f( v[ 3 ], v[ 4 ] );
-		qglVertex3fv( v );
+		tess.xyz[ i ][ 0 ] = v[ 0 ];
+		tess.xyz[ i ][ 1 ] = v[ 1 ];
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		R_ArrayElement( i );
 	}
 	qglEnd();
 }
@@ -485,12 +488,10 @@ static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		qglTexCoord2f( v[ 3 ], v[ 4 ] );
 
-		vec3_t nv;
-		nv[ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		nv[ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		nv[ 2 ] = v[ 2 ];
-
-		qglVertex3fv( nv );
+		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		R_ArrayElement( i );
 	}
 	qglEnd();
 }
@@ -501,12 +502,10 @@ static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		qglTexCoord2f( v[ 5 ], v[ 6 ] );
 
-		vec3_t nv;
-		nv[ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		nv[ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		nv[ 2 ] = v[ 2 ];
-
-		qglVertex3fv( nv );
+		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		R_ArrayElement( i );
 	}
 	qglEnd();
 }
@@ -527,7 +526,10 @@ void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 			t *= ( 1.0 / 64 );
 
 			qglTexCoord2f( s, t );
-			qglVertex3fv( v );
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
+			R_ArrayElement( i );
 		}
 		qglEnd();
 	}
@@ -586,7 +588,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
 				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-				qglVertex3fv( v );
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+				R_ArrayElement( i );
 			}
 			qglEnd();
 
@@ -611,7 +616,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
 					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
+					tess.xyz[ i ][ 0 ] = v[ 0 ];
+					tess.xyz[ i ][ 1 ] = v[ 1 ];
+					tess.xyz[ i ][ 2 ] = v[ 2 ];
+					R_ArrayElement( i );
 				}
 				qglEnd();
 			}
@@ -645,7 +653,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				qglTexCoord2f( v[ 3 ], v[ 4 ] );
-				qglVertex3fv( v );
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+				R_ArrayElement( i );
 			}
 			qglEnd();
 
@@ -657,7 +668,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					qglTexCoord2f( v[ 5 ], v[ 6 ] );
-					qglVertex3fv( v );
+					tess.xyz[ i ][ 0 ] = v[ 0 ];
+					tess.xyz[ i ][ 1 ] = v[ 1 ];
+					tess.xyz[ i ][ 2 ] = v[ 2 ];
+					R_ArrayElement( i );
 				}
 				qglEnd();
 			}
@@ -738,12 +752,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
 			qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
 
-			vec3_t nv;
-			nv[ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-			nv[ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-			nv[ 2 ] = v[ 2 ];
-
-			qglVertex3fv( nv );
+			tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+			tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
+			R_ArrayElement( i );
 		}
 		qglEnd();
 
@@ -769,12 +781,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
 				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
 
-				vec3_t nv;
-				nv[ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-				nv[ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-				nv[ 2 ] = v[ 2 ];
-
-				qglVertex3fv( nv );
+				tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+				tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+				R_ArrayElement( i );
 			}
 			qglEnd();
 		}
