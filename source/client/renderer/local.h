@@ -845,13 +845,13 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void EmitWaterPolysQ1( mbrush29_surface_t* fa );
 void DrawTextureChainsQ1();
-void R_DrawWaterSurfaces();
+void R_DrawWaterSurfaces(int& forcedSortIndex);
 
 void GL_BeginBuildingLightmaps( model_t* m );
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf );
 void GL_EndBuildingLightmaps();
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
-void R_DrawAlphaSurfaces();
+void R_DrawAlphaSurfaces(int& forcedSortIndex);
 
 void RB_CheckOverflow( int verts, int indexes );
 #define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= SHADER_MAX_VERTEXES || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i ); }

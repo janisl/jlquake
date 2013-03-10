@@ -664,11 +664,11 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 //	Draw water surfaces and windows.
 //	The BSP tree is waled front to back, so unwinding the chain of
 // alpha_surfaces will draw back to front, giving proper ordering.
-void R_DrawAlphaSurfaces() {
+void R_DrawAlphaSurfaces(int& forcedSortIndex) {
 	int savedShiftedEntityNum = tr.shiftedEntityNum;
 	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
 	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
-		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	}
 	r_alpha_surfaces = NULL;
 	tr.shiftedEntityNum = savedShiftedEntityNum;

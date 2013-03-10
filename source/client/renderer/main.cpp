@@ -989,29 +989,15 @@ static void R_GenerateDrawSurfs() {
 	int forcedSortIndex = 2;
 	firstDrawSurf = tr.refdef.numDrawSurfs;
 	if ( GGameType & GAME_Quake ) {
-		R_DrawWaterSurfaces();
+		R_DrawWaterSurfaces(forcedSortIndex);
 	} else if ( GGameType & GAME_Hexen2 )     {
 		R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY, forcedSortIndex );	// This restores the depth mask
-		if ( !( GGameType & GAME_Tech3 ) ) {
-			R_VerifyNoRenderCommands();
-			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-			R_SyncRenderThread();
-			GL_State(GLS_DEFAULT);
-		}
 
-		firstDrawSurf = tr.refdef.numDrawSurfs;
-		R_DrawWaterSurfaces();
-		if ( !( GGameType & GAME_Tech3 ) ) {
-			R_VerifyNoRenderCommands();
-			R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-			R_SyncRenderThread();
-			GL_State(GLS_DEFAULT);
-		}
+		R_DrawWaterSurfaces(forcedSortIndex);
 
-		firstDrawSurf = tr.refdef.numDrawSurfs;
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY, forcedSortIndex );
 	} else if ( GGameType & GAME_Quake2 )     {
-		R_DrawAlphaSurfaces();
+		R_DrawAlphaSurfaces(forcedSortIndex);
 	}
 	if ( !( GGameType & GAME_Tech3 ) ) {
 		R_VerifyNoRenderCommands();

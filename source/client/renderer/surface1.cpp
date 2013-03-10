@@ -795,9 +795,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	}
 }
 
-void R_DrawWaterSurfaces() {
+void R_DrawWaterSurfaces(int& forcedSortIndex) {
 	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
-		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex++ );
 	}
 	waterchain = NULL;
 }
