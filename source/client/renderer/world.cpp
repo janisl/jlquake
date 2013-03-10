@@ -376,7 +376,7 @@ static void R_AddWorldSurface( mbrush46_surface_t* surf, shader_t* shader, int d
 		}
 	}
 
-	R_AddDrawSurf( surf->data, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE );
+	R_AddDrawSurf( surf->data, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE, 0 );
 }
 
 /*
@@ -423,7 +423,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		// draw the polygon
 		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
 			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 		}
 	}
 }
@@ -454,7 +454,7 @@ static void R_DrawInlineBModel() {
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			} else {
-				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 			}
 		}
 	}
@@ -674,7 +674,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
 			} else {
-				R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+				R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 			}
 		}
 	}
@@ -819,7 +819,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
 		} else {
-			R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+			R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 		}
 	}
 
@@ -943,7 +943,7 @@ void R_DrawWorldQ2() {
 
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
 
-	R_AddDrawSurf( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+	R_AddDrawSurf( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

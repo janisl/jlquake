@@ -201,7 +201,7 @@ void R_AddSprSurfaces( trRefEntity_t* e ) {
 	}
 
 	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE );
+	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {

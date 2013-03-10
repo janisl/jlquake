@@ -666,16 +666,18 @@ int R_CullLocalPointAndRadius( vec3_t pt, float radius ) {
 }
 
 void R_AddDrawSurf( surfaceType_t* surface, shader_t* shader, int fogIndex,
-	int dlightMap, int frontFace, int atiTess ) {
+	int dlightMap, int frontFace, int atiTess, int forcedSortIndex ) {
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around
 	int index = tr.refdef.numDrawSurfs & DRAWSURF_MASK;
 	// the sort data is packed into a single 32 bit value so it can be
 	// compared quickly during the qsorting process
-	tr.refdef.drawSurfs[ index ].sort = ( shader->sortedIndex << QSORT_SHADERNUM_SHIFT ) |
-										tr.shiftedEntityNum | ( atiTess << QSORT_ATI_TESS_SHIFT ) |
-										( fogIndex << QSORT_FOGNUM_SHIFT ) | dlightMap |
-										( GGameType & GAME_ET ? ( frontFace << QSORT_FRONTFACE_SHIFT ) : 0 );
+	tr.refdef.drawSurfs[ index ].sort =
+		((unsigned long long)forcedSortIndex << QSORT_FORCED_SORT_SHIFT) |
+		( shader->sortedIndex << QSORT_SHADERNUM_SHIFT ) |
+		tr.shiftedEntityNum | ( atiTess << QSORT_ATI_TESS_SHIFT ) |
+		( fogIndex << QSORT_FOGNUM_SHIFT ) | dlightMap |
+		( GGameType & GAME_ET ? ( frontFace << QSORT_FRONTFACE_SHIFT ) : 0 );
 	tr.refdef.drawSurfs[ index ].surface = surface;
 	tr.refdef.numDrawSurfs++;
 }
@@ -757,7 +759,7 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 				continue;
 			}
-			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE );
+			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE, 0 );
 			break;
 
 		case RT_MODEL:
@@ -766,14 +768,14 @@ static void R_AddEntitySurfaces( bool TranslucentPass ) {
 
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
-				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
+				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 			} else {
 				switch ( tr.currentModel->type ) {
 				case MOD_BAD:
 					if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 						break;
 					}
-					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE );
+					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 					break;
 
 				case MOD_MESH1:
@@ -936,7 +938,7 @@ static void R_AddPolygonSurfaces() {
 	srfPoly_t* poly = tr.refdef.polys;
 	for ( int i = 0; i < tr.refdef.numPolys; i++, poly++ ) {
 		shader_t* sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE );
+		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE, 0 );
 	}
 }
 
@@ -947,7 +949,7 @@ static void R_AddPolygonBufferSurfaces() {
 	srfPolyBuffer_t* polybuffer = tr.refdef.polybuffers;
 	for ( int i = 0; i < tr.refdef.numPolyBuffers; i++, polybuffer++ ) {
 		shader_t* sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
-		R_AddDrawSurf( ( surfaceType_t* )polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE );
+		R_AddDrawSurf( ( surfaceType_t* )polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE, 0 );
 	}
 }
 

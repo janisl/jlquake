@@ -64,7 +64,7 @@ void R_AddSp2Surfaces( trRefEntity_t* e ) {
 	// polygon without a surface cache
 
 	dsprite2_t* psprite = ( dsprite2_t* )tr.currentModel->q2_extradata;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 void RB_SurfaceSp2( dsprite2_t* psprite ) {

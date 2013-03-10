@@ -1044,7 +1044,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e ) {
 		return;
 	}
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE );
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {

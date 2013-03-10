@@ -675,7 +675,7 @@ void R_AddMD3Surfaces( trRefEntity_t* ent ) {
 			 fogNum == 0 &&
 			 !( ent->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) ) &&
 			 shader->sort == SS_OPAQUE ) {
-			R_AddDrawSurf( ( surfaceType_t* )surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess );
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess, 0 );
 		}
 
 		// projection shadows work fine with personal models
@@ -684,17 +684,17 @@ void R_AddMD3Surfaces( trRefEntity_t* ent ) {
 			 fogNum == 0 &&
 			 ( ent->e.renderfx & RF_SHADOW_PLANE ) &&
 			 shader->sort == SS_OPAQUE ) {
-			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess );
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess, 0 );
 		}
 
 		// for testing polygon shadows (on /all/ models)
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) && r_shadows->integer == 4 ) {
-			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, 0, 0, 0 );
+			R_AddDrawSurf( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, 0, 0, 0, 0 );
 		}
 
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
-			R_AddDrawSurf( ( surfaceType_t* )surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess );
+			R_AddDrawSurf( ( surfaceType_t* )surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess, 0 );
 		}
 
 		surface = ( md3Surface_t* )( ( byte* )surface + surface->ofsEnd );

@@ -319,6 +319,7 @@ the bits are allocated as follows:
 2-6   : fog index
 0-1   : dlightmap index
 */
+#define QSORT_FORCED_SORT_SHIFT 32
 #define QSORT_SHADERNUM_SHIFT   18
 #define QSORT_ENTITYNUM_SHIFT   8
 #define QSORT_ATI_TESS_SHIFT    7	//	Remove
@@ -337,7 +338,7 @@ the bits are allocated as follows:
 #define MAX_DECAL_VERTS     10	// worst case is triangle clipped by 6 planes
 
 struct drawSurf_t {
-	unsigned sort;						// bit combination for fast compares
+	unsigned long long sort;						// bit combination for fast compares
 	surfaceType_t* surface;				// any of surface*_t
 };
 
