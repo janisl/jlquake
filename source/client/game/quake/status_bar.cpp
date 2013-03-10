@@ -1177,7 +1177,6 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 	// draw teams if room
 	if ( viddef.width < 640 || !teamplay ) {
-		R_SyncRenderThread();
 		return;
 	}
 

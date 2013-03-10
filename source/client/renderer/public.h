@@ -500,9 +500,6 @@ void R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float 
 void R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t* points, vec4_t projection, vec4_t color, int lifeTime, int fadeTime );
 void R_ClearDecals();
 
-void R_VerifyNoRenderCommands();
-void R_SyncRenderThread();
-
 extern byte r_palette[ 256 ][ 4 ];
 
 extern int ColorIndex[ 16 ];

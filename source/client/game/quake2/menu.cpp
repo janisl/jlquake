@@ -1323,7 +1323,6 @@ static void AddressBookFunc( void* self ) {
 }
 
 static void SearchLocalGames() {
-	R_VerifyNoRenderCommands();
 	mq2_num_servers = 0;
 	for ( int i = 0; i < MAX_LOCAL_SERVERS; i++ ) {
 		String::Cpy( local_server_names[ i ], NO_SERVER_STRING );

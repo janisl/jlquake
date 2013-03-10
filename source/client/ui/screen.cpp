@@ -482,13 +482,10 @@ void SCR_TileClear() {
 // text to the screen.
 void SCR_UpdateScreen() {
 	if ( GGameType & GAME_Quake ) {
-		R_VerifyNoRenderCommands();
 		SCRQ1_DrawScreen( STEREO_CENTER );
 	} else if ( GGameType & GAME_Hexen2 )     {
-		R_VerifyNoRenderCommands();
 		SCRH2_DrawScreen( STEREO_CENTER );
 	} else if ( GGameType & GAME_Quake2 )     {
-		R_VerifyNoRenderCommands();
 		// if the screen is disabled (loading plaque is up, or vid mode changing)
 		// do nothing at all
 		if ( cls.disable_screen ) {

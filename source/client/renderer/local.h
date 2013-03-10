@@ -697,7 +697,6 @@ MAIN
 void myGlMultMatrix( const float* a, const float* b, float* out );
 void R_DecomposeSort( unsigned sort, int* entityNum, shader_t** shader,
 	int* fogNum, int* dlightMap, int* frontFace, int* atiTess );
-void R_SetupProjection();
 void R_LocalNormalToWorld( vec3_t local, vec3_t world );
 void R_LocalPointToWorld( vec3_t local, vec3_t world );
 void R_TransformModelToClip( const vec3_t src, const float* modelMatrix, const float* projectionMatrix,
@@ -709,7 +708,6 @@ int R_CullLocalBox( vec3_t bounds[ 2 ] );
 int R_CullPointAndRadius( vec3_t origin, float radius );
 int R_CullLocalPointAndRadius( vec3_t origin, float radius );
 void R_AddDrawSurf( surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap, int frontFace, int atiTess, int forcedSortIndex );
-void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs );
 void R_RenderView( viewParms_t* parms );
 
 void R_FogOn();
@@ -766,6 +764,7 @@ RENDERER BACK END COMMAND QUEUE
 
 void R_InitCommandBuffers();
 void R_ShutdownCommandBuffers();
+void R_SyncRenderThread();
 void R_IssueRenderCommands( bool runPerformanceCounters );
 void* R_GetCommandBuffer( int bytes );
 void R_AddDrawSurfCmd( drawSurf_t* drawSurfs, int numDrawSurfs );

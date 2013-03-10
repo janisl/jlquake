@@ -676,19 +676,16 @@ void Con_DrawConsole() {
 		if ( cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING ) {
 			// forced full screen console
 			Con_DrawSolidConsole( 1.0 );
-			R_SyncRenderThread();
 			return;
 		}
 	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) )       {
 		if ( cls.state != CA_ACTIVE ) {
 			Con_DrawSolidConsole( 1.0 );
-			R_SyncRenderThread();
 			return;
 		}
 	} else   {
 		if ( cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS ) {
 			Con_DrawSolidConsole( 1.0 );
-			R_SyncRenderThread();
 			return;
 		}
 	}
@@ -697,7 +694,6 @@ void Con_DrawConsole() {
 		// connected, but can't render
 		Con_DrawSolidConsole( 0.5 );
 		UI_Fill( 0, viddef.height / 2, viddef.width, viddef.height / 2, 0, 0, 0, 1 );
-		R_SyncRenderThread();
 		return;
 	}
 

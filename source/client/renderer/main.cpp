@@ -346,7 +346,7 @@ static void R_SetupFrustum() {
 	}
 }
 
-void R_SetupProjection() {
+static void R_SetupProjection() {
 	// dynamically compute far clip plane distance
 	SetFarClip();
 
@@ -1534,7 +1534,7 @@ recurse:
 	}
 }
 
-void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs ) {
+static void R_SortDrawSurfs( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	// it is possible for some views to not have any surfaces
 	if ( numDrawSurfs < 1 ) {
 		// we still need to add it for hyperspace cases

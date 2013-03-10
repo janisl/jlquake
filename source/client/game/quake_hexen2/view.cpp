@@ -1169,7 +1169,6 @@ static void VQH_TimeRefresh_f() {
 	viewangles[ 1 ] = 0;
 	viewangles[ 2 ] = 0;
 	for ( i = 0; i < 128; i++ ) {
-		R_VerifyNoRenderCommands();
 		viewangles[ 1 ] = i / 128.0 * 360.0;
 		AnglesToAxis( viewangles, cl.refdef.viewaxis );
 		R_BeginFrame( STEREO_CENTER );

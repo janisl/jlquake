@@ -108,16 +108,6 @@ static void R_PerformanceCounters() {
 	Com_Memset( &backEnd.pc, 0, sizeof ( backEnd.pc ) );
 }
 
-void R_VerifyNoRenderCommands() {
-	if ( !tr.registered ) {
-		return;
-	}
-	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
-	assert( cmdList );
-	if ( cmdList->used )
-		common->FatalError( "Back end has commands pending, %d used, first command %d\n", cmdList->used, *( int* )cmdList->cmds );
-}
-
 void R_IssueRenderCommands( bool runPerformanceCounters ) {
 	renderCommandList_t* cmdList = &backEndData[ tr.smpFrame ]->commands;
 	assert( cmdList );		// bk001205
