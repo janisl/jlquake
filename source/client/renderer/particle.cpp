@@ -14,26 +14,8 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/common_defs.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte dottexture[ 16 ][ 16 ] =
 {
@@ -55,14 +37,6 @@ static byte dottexture[ 16 ][ 16 ] =
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},	//16
 };
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_InitParticleTexture
-//
-//==========================================================================
-
 void R_InitParticleTexture() {
 	//
 	// particle texture
@@ -78,12 +52,6 @@ void R_InitParticleTexture() {
 	}
 	tr.particleImage = R_CreateImage( "*particle", ( byte* )data, 16, 16, true, false, GL_CLAMP, false );
 }
-
-//==========================================================================
-//
-//	R_DrawParticle
-//
-//==========================================================================
 
 static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t right,
 	float s1, float t1, float s2, float t2 ) {
@@ -109,12 +77,6 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	qglTexCoord2f( s1, t2 );
 	qglVertex3f( p->origin[ 0 ] + right[ 0 ] * scale, p->origin[ 1 ] + right[ 1 ] * scale, p->origin[ 2 ] + right[ 2 ] * scale );
 }
-
-//==========================================================================
-//
-//	R_DrawParticleTriangles
-//
-//==========================================================================
 
 static void R_DrawParticleTriangles() {
 	GL_Bind( tr.particleImage );
@@ -155,12 +117,6 @@ static void R_DrawParticleTriangles() {
 	qglColor4f( 1, 1, 1, 1 );
 }
 
-//==========================================================================
-//
-//	R_DrawParticlePoints
-//
-//==========================================================================
-
 static void R_DrawParticlePoints() {
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	qglDisable( GL_TEXTURE_2D );
@@ -180,13 +136,7 @@ static void R_DrawParticlePoints() {
 	qglEnable( GL_TEXTURE_2D );
 }
 
-//==========================================================================
-//
-//	R_DrawParticles
-//
-//==========================================================================
-
-void R_DrawParticles() {
+void R_DrawParticles(void*) {
 	if ( !tr.refdef.num_particles ) {
 		return;
 	}

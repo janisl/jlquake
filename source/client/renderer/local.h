@@ -743,7 +743,6 @@ BACK END
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
-void RB_BeginDrawingView();
 void RB_SetGL2D();
 void RB_ShowImages();
 void RB_ExecuteRenderCommands( const void* data );
@@ -938,7 +937,7 @@ Particles
 */
 
 void R_InitParticleTexture();
-void R_DrawParticles();
+void R_DrawParticles(void*);
 
 /*
 ============================================================

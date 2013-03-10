@@ -46,6 +46,7 @@ enum surfaceType_t
 	SF_DISPLAY_LIST,
 	SF_POLYBUFFER,
 	SF_DECAL,				// ydnar: decal surfaces
+	SF_PARTICLES,
 
 	SF_NUM_SURFACE_TYPES,
 	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )

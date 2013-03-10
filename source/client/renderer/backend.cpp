@@ -124,7 +124,7 @@ static void RB_Hyperspace() {
 
 //	Any mirrored or portaled views have already been drawn, so prepare
 // to actually render the visible surfaces for this view
-void RB_BeginDrawingView() {
+static void RB_BeginDrawingView() {
 	// sync with gl if needed
 	if ( r_finish->integer == 1 && !glState.finishCalled ) {
 		qglFinish();
@@ -309,10 +309,8 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
 
-	if ( GGameType & GAME_Tech3 ) {
-		// clear the z buffer, set the modelview, etc
-		RB_BeginDrawingView();
-	}
+	// clear the z buffer, set the modelview, etc
+	RB_BeginDrawingView();
 
 	// draw everything
 	int oldEntityNum = -1;

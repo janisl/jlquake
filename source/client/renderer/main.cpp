@@ -97,6 +97,7 @@ static sortedent_t cl_transwateredicts[ MAX_ENTITIES ];
 // entities that will have procedurally generated surfaces will just
 // point at this for their sorting surface
 static surfaceType_t entitySurface = SF_ENTITY;
+static surfaceType_t particlesSurface = SF_PARTICLES;
 
 void myGlMultMatrix( const float* a, const float* b, float* out ) {
 	for ( int i = 0; i < 4; i++ ) {
@@ -928,11 +929,6 @@ static void R_GenerateDrawSurfs() {
 	if ( !( GGameType & GAME_Tech3 ) ) {
 		R_SetupProjection();
 
-		backEnd.viewParms = tr.viewParms;
-		RB_BeginDrawingView();
-
-		qglLoadMatrixf( tr.viewParms.world.modelMatrix );
-
 		GL_Cull( CT_FRONT_SIDED );
 	}
 
@@ -954,7 +950,6 @@ static void R_GenerateDrawSurfs() {
 		R_CullDlights();
 	}
 
-	int firstDrawSurf = tr.refdef.numDrawSurfs;
 	if ( GGameType & GAME_QuakeHexen ) {
 		R_DrawWorldQ1();
 	} else if ( GGameType & GAME_Quake2 )     {
@@ -977,17 +972,10 @@ static void R_GenerateDrawSurfs() {
 	R_AddPolygonSurfaces();
 
 	R_AddPolygonBufferSurfaces();
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
-	}
 
-	R_DrawParticles();
+	R_AddDrawSurf( &particlesSurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 2 );
 
-	int forcedSortIndex = 2;
-	firstDrawSurf = tr.refdef.numDrawSurfs;
+	int forcedSortIndex = 3;
 	if ( GGameType & GAME_Quake ) {
 		R_DrawWaterSurfaces(forcedSortIndex);
 	} else if ( GGameType & GAME_Hexen2 )     {
@@ -998,12 +986,6 @@ static void R_GenerateDrawSurfs() {
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY, forcedSortIndex );
 	} else if ( GGameType & GAME_Quake2 )     {
 		R_DrawAlphaSurfaces(forcedSortIndex);
-	}
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-		R_SyncRenderThread();
-		GL_State(GLS_DEFAULT);
 	}
 }
 
@@ -1687,20 +1669,12 @@ void R_RenderView( viewParms_t* parms ) {
 		R_SetupFrustum();
 	}
 
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_SyncRenderThread();
-	}
 	R_GenerateDrawSurfs();
 
-	if ( GGameType & GAME_Tech3 ) {
-		R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
-	}
+	R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_VerifyNoRenderCommands();
-	}
 }
 
 bool R_GetScreenPosFromWorldPos( vec3_t origin, int& u, int& v ) {

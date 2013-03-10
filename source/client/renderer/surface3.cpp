@@ -1042,4 +1042,5 @@ void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* ) =
 	( void ( * )( void* ) )RB_SurfaceDisplayList,	// SF_DISPLAY_LIST
 	( void ( * )( void* ) )RB_SurfacePolyBuffer,	// SF_POLYBUFFER
 	( void ( * )( void* ) )RB_SurfaceDecal,			// SF_DECAL
+	( void ( * )( void* ) )R_DrawParticles,			// SF_PARTICLES,
 };
