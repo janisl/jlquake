@@ -921,7 +921,8 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 
 		do {
 			// texture coordinates come from the draw list
-			qglTexCoord2f( ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
+			tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = ( ( float* )order )[ 1 ];
 			order += 2;
 
 			// normals and vertexes come from the frame list
@@ -966,7 +967,8 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 
 		do {
 			// texture coordinates come from the draw list
-			// (skipped for shadows)
+			tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = ( ( float* )order )[ 1 ];
 			order += 2;
 
 			// normals and vertexes come from the frame list

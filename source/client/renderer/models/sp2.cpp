@@ -95,7 +95,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	qglBegin( GL_QUADS );
 
-	qglTexCoord2f( 0, 1 );
+	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = 0;
+	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = 1;
 	VectorScale( up, -frame->origin_y, point );
 	VectorMA( point, frame->origin_x, left, point );
 	tess.xyz[ 0 ][ 0 ] = point[ 0 ];
@@ -103,7 +104,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 0 ][ 2 ] = point[ 2 ];
 	R_ArrayElement( 0 );
 
-	qglTexCoord2f( 0, 0 );
+	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = 0;
+	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = 0;
 	VectorScale( up, frame->height - frame->origin_y, point );
 	VectorMA( point, frame->origin_x, left, point );
 	tess.xyz[ 1 ][ 0 ] = point[ 0 ];
@@ -111,7 +113,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 1 ][ 2 ] = point[ 2 ];
 	R_ArrayElement( 1 );
 
-	qglTexCoord2f( 1, 0 );
+	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = 1;
+	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = 0;
 	VectorScale( up, frame->height - frame->origin_y, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	tess.xyz[ 2 ][ 0 ] = point[ 0 ];
@@ -119,7 +122,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 2 ][ 2 ] = point[ 2 ];
 	R_ArrayElement( 2 );
 
-	qglTexCoord2f( 1, 1 );
+	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = 1;
+	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = 1;
 	VectorScale( up, -frame->origin_y, point );
 	VectorMA( point, -( frame->width - frame->origin_x ), left, point );
 	tess.xyz[ 3 ][ 0 ] = point[ 0 ];

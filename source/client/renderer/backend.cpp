@@ -513,28 +513,32 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	qglColor4f( cmd->r, cmd->g, cmd->b, cmd->a );
 	qglBegin( GL_QUADS );
 
-	qglTexCoord2f( cmd->s1, cmd->t1 );
+	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = cmd->s1;
+	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = cmd->t1;
 
 	tess.xyz[ 0 ][ 0 ] = cmd->x;
 	tess.xyz[ 0 ][ 1 ] = cmd->y;
 	tess.xyz[ 0 ][ 2 ] = 0;
 	R_ArrayElement( 0 );
 
-	qglTexCoord2f( cmd->s2, cmd->t1 );
+	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = cmd->s2;
+	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = cmd->t1;
 
 	tess.xyz[ 1 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ 1 ][ 1 ] = cmd->y;
 	tess.xyz[ 1 ][ 2 ] = 0;
 	R_ArrayElement( 1 );
 
-	qglTexCoord2f( cmd->s2, cmd->t2 );
+	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = cmd->s2;
+	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = cmd->t2;
 
 	tess.xyz[ 2 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ 2 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ 2 ][ 2 ] = 0;
 	R_ArrayElement( 2 );
 
-	qglTexCoord2f( cmd->s1, cmd->t2 );
+	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = cmd->s1;
+	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = cmd->t2;
 
 	tess.xyz[ 3 ][ 0 ] = cmd->x;
 	tess.xyz[ 3 ][ 1 ] = cmd->y + cmd->h;

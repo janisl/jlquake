@@ -168,7 +168,8 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 			float s = ( speedscale + dir[ 0 ] ) * ( 1.0 / 128 );
 			float t = ( speedscale + dir[ 1 ] ) * ( 1.0 / 128 );
 
-			qglTexCoord2f( s, t );
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];

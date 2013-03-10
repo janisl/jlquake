@@ -280,12 +280,12 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 			do {
 				int index_xyz = order[ 2 ];
+				// texture coordinates come from the draw list
+				tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = ( ( float* )order )[ 0 ];
+				tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = ( ( float* )order )[ 1 ];
 				if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 					qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
 				} else {
-					// texture coordinates come from the draw list
-					qglTexCoord2f( ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
-
 					// normals and vertexes come from the frame list
 					float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
 
@@ -333,10 +333,12 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
 			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
 			point[ 2 ] = height;
-			tess.xyz[ 0 ][ 0 ] = point[ 0 ];
-			tess.xyz[ 0 ][ 1 ] = point[ 1 ];
-			tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-			R_ArrayElement( 0 );
+			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 1 ] = ( ( float* )order )[ 1 ];
+			tess.xyz[ order[ 2 ] ][ 0 ] = point[ 0 ];
+			tess.xyz[ order[ 2 ] ][ 1 ] = point[ 1 ];
+			tess.xyz[ order[ 2 ] ][ 2 ] = point[ 2 ];
+			R_ArrayElement( order[ 2 ] );
 
 			order += 3;
 		} while ( --count );

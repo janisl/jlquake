@@ -472,7 +472,8 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-		qglTexCoord2f( v[ 3 ], v[ 4 ] );
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -486,6 +487,8 @@ static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		qglTexCoord2f( v[ 3 ], v[ 4 ] );
 
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
@@ -500,7 +503,8 @@ static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-		qglTexCoord2f( v[ 5 ], v[ 6 ] );
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
@@ -525,7 +529,8 @@ void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 			float t = ot + r_turbsin[ ( int )( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) & 255 ];
 			t *= ( 1.0 / 64 );
 
-			qglTexCoord2f( s, t );
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -586,8 +591,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -614,8 +621,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglBegin( GL_POLYGON );
 				v = p->verts[ 0 ];
 				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+					tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+					tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 					tess.xyz[ i ][ 0 ] = v[ 0 ];
 					tess.xyz[ i ][ 1 ] = v[ 1 ];
 					tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -652,7 +661,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				qglTexCoord2f( v[ 3 ], v[ 4 ] );
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -667,7 +677,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglBegin( GL_POLYGON );
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					qglTexCoord2f( v[ 5 ], v[ 6 ] );
+					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
+					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 					tess.xyz[ i ][ 0 ] = v[ 0 ];
 					tess.xyz[ i ][ 1 ] = v[ 1 ];
 					tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -749,8 +760,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		qglBegin( GL_TRIANGLE_FAN );
 		float* v = p->verts[ 0 ];
 		for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-			qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+			tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 
 			tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 			tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
@@ -778,8 +791,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_TRIANGLE_FAN );
 			v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 
 				tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 				tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );

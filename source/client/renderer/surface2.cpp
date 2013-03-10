@@ -439,7 +439,8 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa ) {
 			float t = ot + r_turbsin[ idMath::FtoiFast( ( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) ) & 255 ] * 0.5;
 			t *= ( 1.0 / 64 );
 
-			qglTexCoord2f( s, t );
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -453,7 +454,8 @@ static void DrawGLPolyQ2( mbrush38_glpoly_t* p ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
-		qglTexCoord2f( v[ 3 ], v[ 4 ] );
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -474,7 +476,8 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
-		qglTexCoord2f( ( v[ 3 ] + scroll ), v[ 4 ] );
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -489,7 +492,8 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				qglTexCoord2f( v[ 5 ], v[ 6 ] );
+				tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ];
 				tess.xyz[ j ][ 0 ] = v[ 0 ];
 				tess.xyz[ j ][ 1 ] = v[ 1 ];
 				tess.xyz[ j ][ 2 ] = v[ 2 ];
@@ -502,7 +506,8 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffse
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				qglTexCoord2f( v[ 5 ] - soffset, v[ 6 ] - toffset );
+				tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ] - soffset;
+				tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ] - toffset;
 				tess.xyz[ j ][ 0 ] = v[ 0 ];
 				tess.xyz[ j ][ 1 ] = v[ 1 ];
 				tess.xyz[ j ][ 2 ] = v[ 2 ];
@@ -652,8 +657,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			v = p->verts[ 0 ];
 			qglBegin( GL_POLYGON );
 			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, ( v[ 3 ] + scroll ), v[ 4 ] );
-				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
@@ -666,8 +673,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			v = p->verts[ 0 ];
 			qglBegin( GL_POLYGON );
 			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-				qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[ 3 ], v[ 4 ] );
-				qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[ 5 ], v[ 6 ] );
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
