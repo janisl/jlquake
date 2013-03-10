@@ -564,6 +564,7 @@ static void GL_MBind( int target, image_t* image ) {
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
+	GL_Cull( CT_FRONT_SIDED );
 	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 

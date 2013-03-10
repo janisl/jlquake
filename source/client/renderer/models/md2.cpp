@@ -523,6 +523,8 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 		GL_Cull( CT_BACK_SIDED );
 	}
+	else
+		GL_Cull( CT_FRONT_SIDED );
 
 	qglPushMatrix();
 
@@ -579,10 +581,10 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPopMatrix();
 		qglMatrixMode( GL_MODELVIEW );
-		GL_Cull( CT_FRONT_SIDED );
 	}
 
 	if ( r_shadows->value && !( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
+		GL_Cull( CT_FRONT_SIDED );
 		qglPushMatrix();
 		qglLoadMatrixf( backEnd.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );

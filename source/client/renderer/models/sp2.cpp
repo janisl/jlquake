@@ -82,6 +82,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
 	}
 
+	GL_Cull( CT_FRONT_SIDED );
 	if ( alpha != 1.0F ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else   {

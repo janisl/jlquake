@@ -928,8 +928,6 @@ static void R_AddPolygonBufferSurfaces() {
 static void R_GenerateDrawSurfs() {
 	if ( !( GGameType & GAME_Tech3 ) ) {
 		R_SetupProjection();
-
-		GL_Cull( CT_FRONT_SIDED );
 	}
 
 	if ( GGameType & GAME_ET ) {

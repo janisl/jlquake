@@ -1097,6 +1097,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	qglScalef( paliashdr->scale[ 0 ], paliashdr->scale[ 1 ], paliashdr->scale[ 2 ] );
 
 	bool doOverBright = !!r_drawOverBrights->integer;
+	GL_Cull( CT_FRONT_SIDED );
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			model_constant_alpha = 1.0f;

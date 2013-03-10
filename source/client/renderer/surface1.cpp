@@ -549,6 +549,7 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	qglColor3f( 1, 1, 1 );
+	GL_Cull( CT_FRONT_SIDED );
 	//
 	// normal lightmaped poly
 	//

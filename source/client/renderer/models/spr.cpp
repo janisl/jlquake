@@ -216,6 +216,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		qglColor3f( 1, 1, 1 );
 	}
 
+	GL_Cull( CT_FRONT_SIDED );
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
