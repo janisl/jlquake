@@ -14,8 +14,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
@@ -26,33 +24,17 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-// MACROS ------------------------------------------------------------------
-
 #define WOLF_SMP
 
 //	Minimum extension version required
 #define GAMMA_MINMAJOR 2
 #define GAMMA_MINMINOR 0
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 Display* dpy = NULL;
 Window win;
 
 Atom wm_protocols;
 Atom wm_delete_window;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int scrnum;
 static GLXContext ctx = NULL;
@@ -87,19 +69,10 @@ static volatile void* smpData = NULL;
 static volatile bool smpDataReady;
 #endif
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	qXErrorHandler
-//
 //	the default X error handler exits the application
 //	I found out that on some hosts some operations would raise X errors (GLXUnsupportedPrivateRequest)
 //	but those don't seem to be fatal .. so the default would be to just ignore them
 //	our implementation mimics the default handler behaviour (not completely cause I'm lazy)
-//
-//==========================================================================
-
 static int qXErrorHandler( Display* dpy, XErrorEvent* ev ) {
 	static char buf[ 1024 ];
 	XGetErrorText( dpy, ev->error_code, buf, 1024 );
@@ -156,12 +129,6 @@ static void GLW_GenDefaultLists() {
 
 	fontbase_init = true;
 }
-
-//==========================================================================
-//
-//	GLimp_SetMode
-//
-//==========================================================================
 
 rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 	if ( !XInitThreads() ) {
@@ -494,16 +461,9 @@ static void GLW_DeleteDefaultLists() {
 	fontbase_init = false;
 }
 
-//==========================================================================
-//
-//	GLimp_Shutdown
-//
 //	This routine does all OS specific shutdown procedures for the OpenGL
 // subsystem. This means deleting the rendering context, destroying the
 // window and restoring video mode. The state structure is also nulled out.
-//
-//==========================================================================
-
 void GLimp_Shutdown() {
 	IN_DeactivateMouse();
 	if ( dpy ) {
@@ -540,24 +500,11 @@ const char* GLimp_GetSystemExtensionsString() {
 	return glXQueryExtensionsString( dpy, scrnum );
 }
 
-//==========================================================================
-//
-//	GLimp_GetProcAddress
-//
-//==========================================================================
-
 void* GLimp_GetProcAddress( const char* Name ) {
 	return ( void* )glXGetProcAddress( ( const GLubyte* )Name );
 }
 
-//==========================================================================
-//
-//	GLimp_SetGamma
-//
 //	This routine should only be called if glConfig.deviceSupportsGamma is TRUE
-//
-//==========================================================================
-
 void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] ) {
 	if ( !glConfig.deviceSupportsGamma ) {
 		return;
@@ -573,12 +520,6 @@ void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsig
 	XF86VidModeSetGamma( dpy, scrnum, &gamma );
 }
 
-//==========================================================================
-//
-//	GLimp_SwapBuffers
-//
-//==========================================================================
-
 void GLimp_SwapBuffers() {
 	glXSwapBuffers( dpy, win );
 }
@@ -588,12 +529,6 @@ void GLimp_SwapBuffers() {
 //	SMP acceleration
 //
 //**************************************************************************
-
-//==========================================================================
-//
-//	GLimp_RenderThreadWrapper
-//
-//==========================================================================
 
 static void* GLimp_RenderThreadWrapper( void* arg ) {
 	common->Printf( "Render thread starting\n" );
@@ -606,12 +541,6 @@ static void* GLimp_RenderThreadWrapper( void* arg ) {
 
 	return arg;
 }
-
-//==========================================================================
-//
-//	GLimp_SpawnRenderThread
-//
-//==========================================================================
 
 bool GLimp_SpawnRenderThread( void ( * function )() ) {
 #ifdef WOLF_SMP
@@ -643,12 +572,6 @@ bool GLimp_SpawnRenderThread( void ( * function )() ) {
 
 	return true;
 }
-
-//==========================================================================
-//
-//	GLimp_RendererSleep
-//
-//==========================================================================
 
 void* GLimp_RendererSleep() {
 #ifdef WOLF_SMP
@@ -685,12 +608,6 @@ void* GLimp_RendererSleep() {
 	return data;
 }
 
-//==========================================================================
-//
-//	GLimp_FrontEndSleep
-//
-//==========================================================================
-
 void GLimp_FrontEndSleep() {
 #ifdef WOLF_SMP
 	sem_wait( &renderCompletedEvent );
@@ -704,12 +621,6 @@ void GLimp_FrontEndSleep() {
 	glXMakeCurrent( dpy, win, ctx );
 #endif
 }
-
-//==========================================================================
-//
-//	GLimp_WakeRenderer
-//
-//==========================================================================
 
 void GLimp_WakeRenderer( void* data ) {
 #ifdef WOLF_SMP

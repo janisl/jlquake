@@ -63,8 +63,6 @@
 //
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
@@ -75,27 +73,11 @@
 #include <freetype/freetype.h>
 #include <freetype/ftoutln.h>
 
-// MACROS ------------------------------------------------------------------
-
 #define MAX_FONTS   10
 
 #define _FLOOR( x )   ( ( x ) & - 64 )
 #define _CEIL( x )    ( ( ( x ) + 63 ) & - 64 )
 #define _TRUNC( x )   ( ( x ) >> 6 )
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static FT_Library ftLibrary = NULL;
 
@@ -104,14 +86,6 @@ static fontInfo_t registeredFont[ MAX_FONTS ];
 
 static int fdOffset;
 static byte* fdFile;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_GetGlyphInfo
-//
-//==========================================================================
 
 static void R_GetGlyphInfo( FT_GlyphSlot glyph, int* left, int* right, int* width,
 	int* top, int* bottom, int* height, int* pitch ) {
@@ -124,12 +98,6 @@ static void R_GetGlyphInfo( FT_GlyphSlot glyph, int* left, int* right, int* widt
 	*height = _TRUNC( *top - *bottom );
 	*pitch  = ( *width + 3 ) & - 4;
 }
-
-//==========================================================================
-//
-//	R_RenderGlyph
-//
-//==========================================================================
 
 static FT_Bitmap* R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t* glyphOut ) {
 	int left, right, width, top, bottom, height, pitch, size;
@@ -165,12 +133,6 @@ static FT_Bitmap* R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t* glyphOut ) {
 
 	return bit2;
 }
-
-//==========================================================================
-//
-//	RE_ConstructGlyphInfo
-//
-//==========================================================================
 
 static glyphInfo_t* RE_ConstructGlyphInfo( unsigned char* imageOut, int* xOut, int* yOut,
 	int* maxHeight, FT_Face face, const unsigned char c, bool calcHeight ) {
@@ -277,35 +239,17 @@ static glyphInfo_t* RE_ConstructGlyphInfo( unsigned char* imageOut, int* xOut, i
 	return &glyph;
 }
 
-//==========================================================================
-//
-//	readInt
-//
-//==========================================================================
-
 static int readInt() {
 	int i = fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
 	fdOffset += 4;
 	return i;
 }
 
-//==========================================================================
-//
-//	readFloat
-//
-//==========================================================================
-
 static float readFloat() {
 	float f = LittleFloat( *( float* )( fdFile + fdOffset ) );
 	fdOffset += 4;
 	return f;
 }
-
-//==========================================================================
-//
-//	R_RegisterFont
-//
-//==========================================================================
 
 void R_RegisterFont( const char* fontName, int pointSize, fontInfo_t* font ) {
 	float dpi = 72;
@@ -482,24 +426,12 @@ void R_RegisterFont( const char* fontName, int pointSize, fontInfo_t* font ) {
 	FS_FreeFile( faceData );
 }
 
-//==========================================================================
-//
-//	R_InitFreeType
-//
-//==========================================================================
-
 void R_InitFreeType() {
 	if ( FT_Init_FreeType( &ftLibrary ) ) {
 		common->Printf( "R_InitFreeType: Unable to initialize FreeType.\n" );
 	}
 	registeredFontCount = 0;
 }
-
-//==========================================================================
-//
-//	R_DoneFreeType
-//
-//==========================================================================
 
 void R_DoneFreeType() {
 	if ( ftLibrary ) {

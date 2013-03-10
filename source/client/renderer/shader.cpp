@@ -18,8 +18,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../cinematic/public.h"
 #include "local.h"
 #include "../../common/Common.h"
@@ -28,14 +26,10 @@
 #include "../../common/command_buffer.h"
 #include "../../common/content_types.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define SHADER_HASH_SIZE    4096
 #define MAX_SHADERTEXT_HASH 2048
 #define MAX_SHADER_FILES    4096
 #define MAX_SHADER_STRING_POINTERS  100000
-
-// TYPES -------------------------------------------------------------------
 
 struct infoParm_t {
 	const char* name;
@@ -65,18 +59,6 @@ struct dynamicshader_t {
 	char* shadertext;
 	dynamicshader_t* next;
 };
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static shader_t* ShaderHashTable[ SHADER_HASH_SIZE ];
 
@@ -207,14 +189,6 @@ static collapse_t collapse[] =
 	{ -1 }
 };
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	ParseVector
-//
-//==========================================================================
-
 static bool ParseVector( const char** text, int count, float* v ) {
 	// FIXME: spaces are currently required after parens, should change parseext...
 	char* token = String::ParseExt( text, false );
@@ -241,12 +215,6 @@ static bool ParseVector( const char** text, int count, float* v ) {
 	return true;
 }
 
-//==========================================================================
-//
-//	NameToAFunc
-//
-//==========================================================================
-
 static unsigned NameToAFunc( const char* funcname ) {
 	if ( !String::ICmp( funcname, "GT0" ) ) {
 		return GLS_ATEST_GT_0;
@@ -259,12 +227,6 @@ static unsigned NameToAFunc( const char* funcname ) {
 	common->Printf( S_COLOR_YELLOW "WARNING: invalid alphaFunc name '%s' in shader '%s'\n", funcname, shader.name );
 	return 0;
 }
-
-//==========================================================================
-//
-//	NameToSrcBlendMode
-//
-//==========================================================================
 
 static int NameToSrcBlendMode( const char* name ) {
 	if ( !String::ICmp( name, "GL_ONE" ) ) {
@@ -291,12 +253,6 @@ static int NameToSrcBlendMode( const char* name ) {
 	return GLS_SRCBLEND_ONE;
 }
 
-//==========================================================================
-//
-//	NameToDstBlendMode
-//
-//==========================================================================
-
 static int NameToDstBlendMode( const char* name ) {
 	if ( !String::ICmp( name, "GL_ONE" ) ) {
 		return GLS_DSTBLEND_ONE;
@@ -320,12 +276,6 @@ static int NameToDstBlendMode( const char* name ) {
 	return GLS_DSTBLEND_ONE;
 }
 
-//==========================================================================
-//
-//	NameToGenFunc
-//
-//==========================================================================
-
 static genFunc_t NameToGenFunc( const char* funcname ) {
 	if ( !String::ICmp( funcname, "sin" ) ) {
 		return GF_SIN;
@@ -344,12 +294,6 @@ static genFunc_t NameToGenFunc( const char* funcname ) {
 	common->Printf( S_COLOR_YELLOW "WARNING: invalid genfunc name '%s' in shader '%s'\n", funcname, shader.name );
 	return GF_SIN;
 }
-
-//==========================================================================
-//
-//	ParseWaveForm
-//
-//==========================================================================
 
 static void ParseWaveForm( const char** text, waveForm_t* wave ) {
 	char* token = String::ParseExt( text, false );
@@ -388,12 +332,6 @@ static void ParseWaveForm( const char** text, waveForm_t* wave ) {
 	}
 	wave->frequency = String::Atof( token );
 }
-
-//==========================================================================
-//
-//	ParseTexMod
-//
-//==========================================================================
 
 static void ParseTexMod( const char* _text, shaderStage_t* stage ) {
 	const char** text = &_text;
@@ -592,12 +530,6 @@ static void ParseTexMod( const char* _text, shaderStage_t* stage ) {
 		common->Printf( S_COLOR_YELLOW "WARNING: unknown tcMod '%s' in shader '%s'\n", token, shader.name );
 	}
 }
-
-//==========================================================================
-//
-//	ParseStage
-//
-//==========================================================================
 
 static bool ParseStage( shaderStage_t* stage, const char** text ) {
 	int depthMaskBits = GLS_DEPTHMASK_TRUE, blendSrcBits = 0, blendDstBits = 0, atestBits = 0, depthFuncBits = 0;
@@ -1096,10 +1028,6 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 	return true;
 }
 
-//==========================================================================
-//
-//	ParseDeform
-//
 //	deformVertexes wave <spread> <waveform> <base> <amplitude> <phase> <frequency>
 //	deformVertexes normal <frequency> <amplitude>
 //	deformVertexes move <vector> <waveform> <base> <amplitude> <phase> <frequency>
@@ -1108,9 +1036,6 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 //	deformVertexes autoSprite
 //	deformVertexes autoSprite2
 //	deformVertexes text[0-7]
-//
-//==========================================================================
-
 static void ParseDeform( const char** text ) {
 	char* token = String::ParseExt( text, false );
 	if ( token[ 0 ] == 0 ) {
@@ -1232,14 +1157,7 @@ static void ParseDeform( const char** text ) {
 	common->Printf( S_COLOR_YELLOW "WARNING: unknown deformVertexes subtype '%s' found in shader '%s'\n", token, shader.name );
 }
 
-//==========================================================================
-//
-//	ParseSkyParms
-//
 //	skyParms <outerbox> <cloudheight> <innerbox>
-//
-//==========================================================================
-
 static void ParseSkyParms( const char** text ) {
 	static const char* suf[ 6 ] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
@@ -1292,12 +1210,6 @@ static void ParseSkyParms( const char** text ) {
 	shader.isSky = true;
 }
 
-//==========================================================================
-//
-//	ParseSort
-//
-//==========================================================================
-
 static void ParseSort( const char** text ) {
 	char* token = String::ParseExt( text, false );
 	if ( token[ 0 ] == 0 ) {
@@ -1328,14 +1240,7 @@ static void ParseSort( const char** text ) {
 	}
 }
 
-//==========================================================================
-//
-//	ParseSurfaceParm
-//
 //	surfaceparm <name>
-//
-//==========================================================================
-
 static void ParseSurfaceParm( const char** text ) {
 	int numInfoParms = sizeof ( infoParms ) / sizeof ( infoParms[ 0 ] );
 
@@ -1349,16 +1254,9 @@ static void ParseSurfaceParm( const char** text ) {
 	}
 }
 
-//==========================================================================
-//
-//	ParseShader
-//
 //	The current text pointer is at the explicit text definition of the
 // shader.  Parse it into the global shader variable.  Later functions
 // will optimize it.
-//
-//==========================================================================
-
 static bool ParseShader( const char** text ) {
 	int s;
 
@@ -1752,15 +1650,8 @@ SHADER OPTIMIZATION AND FOGGING
 ========================================================================================
 */
 
-//==========================================================================
-//
-//	VertexLightingCollapse
-//
 //	If vertex lighting is enabled, only render a single pass, trying to guess
 // which is the correct one to best aproximate what it is supposed to look like.
-//
-//==========================================================================
-
 static void VertexLightingCollapse() {
 	// if we aren't opaque, just use the first pass
 	if ( shader.sort == SS_OPAQUE ) {
@@ -1835,15 +1726,8 @@ static void VertexLightingCollapse() {
 	}
 }
 
-//==========================================================================
-//
-//	CollapseMultitexture
-//
 //	Attempt to combine two stages into a single multitexture stage
 //	FIXME: I think modulated add + modulated add collapses incorrectly
-//
-//==========================================================================
-
 static bool CollapseMultitexture() {
 	if ( !qglActiveTextureARB ) {
 		return false;
@@ -1928,15 +1812,8 @@ static bool CollapseMultitexture() {
 	return true;
 }
 
-//==========================================================================
-//
-//	ComputeStageIteratorFunc
-//
 //	See if we can use on of the simple fastpath stage functions, otherwise
 // set to the generic stage function
-//
-//==========================================================================
-
 static void ComputeStageIteratorFunc() {
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
@@ -1998,18 +1875,10 @@ static void ComputeStageIteratorFunc() {
 	}
 }
 
-//==========================================================================
-//
-//	FixRenderCommandList
-//
-//	https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=493
 //	Arnout: this is a nasty issue. Shaders can be registered after drawsurfaces
 // are generated but before the frame is rendered. This will, for the duration
 // of one frame, cause drawsurfaces to be rendered with bad shaders. To fix this,
 // need to go through all render commands and fix sortedIndex.
-//
-//==========================================================================
-
 static void FixRenderCommandList( int newShader ) {
 	if ( !backEndData[ tr.smpFrame ] ) {
 		return;
@@ -2102,18 +1971,11 @@ static void FixRenderCommandList( int newShader ) {
 	}
 }
 
-//==========================================================================
-//
-//	SortNewShader
-//
 //	Positions the most recently created shader in the tr.sortedShaders[]
 // array so that the shader->sort key is sorted reletive to the other
 // shaders.
 //
 //	Sets shader->sortedIndex
-//
-//==========================================================================
-
 static void SortNewShader() {
 	shader_t* newShader = tr.shaders[ tr.numShaders - 1 ];
 	float sort = newShader->sort;
@@ -2134,12 +1996,6 @@ static void SortNewShader() {
 	newShader->sortedIndex = i + 1;
 	tr.sortedShaders[ i + 1 ] = newShader;
 }
-
-//==========================================================================
-//
-//	GenerateShaderHashValue
-//
-//==========================================================================
 
 static int GenerateShaderHashValue( const char* fname, const int size ) {
 	int hash = 0;
@@ -2162,12 +2018,6 @@ static int GenerateShaderHashValue( const char* fname, const int size ) {
 	hash &= ( size - 1 );
 	return hash;
 }
-
-//==========================================================================
-//
-//	GeneratePermanentShader
-//
-//==========================================================================
 
 static shader_t* GeneratePermanentShader() {
 	if ( tr.numShaders == MAX_SHADERS ) {
@@ -2217,15 +2067,8 @@ static shader_t* GeneratePermanentShader() {
 	return newShader;
 }
 
-//==========================================================================
-//
-//	FinishShader
-//
 //	Returns a freshly allocated shader with all the needed info from the
 // current global working shader
-//
-//==========================================================================
-
 static shader_t* FinishShader() {
 	int stage;
 	qboolean hasLightmapStage;
@@ -2406,19 +2249,12 @@ static shader_t* FinishShader() {
 	return GeneratePermanentShader();
 }
 
-//==========================================================================
-//
-//	FindShaderInShaderText
-//
 //	Scans the combined text description of all the shader files for the
 // given shader name.
 //
 //	return NULL if not found
 //
 //	If found, it will return a valid shader
-//
-//==========================================================================
-
 static const char* FindShaderInShaderText( const char* shadername ) {
 	if ( !s_shaderText ) {
 		return NULL;
@@ -2730,10 +2566,6 @@ static void SetImplicitShaderStages( image_t* image ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_FindShader
-//
 //	Will always return a valid shader, but it might be the default shader if
 // the real one can't be found.
 //
@@ -2754,9 +2586,6 @@ static void SetImplicitShaderStages( image_t* image ) {
 //	Other lightmapIndex values will have a lightmap stage created and src*dest
 // blending applied with the texture, as apropriate for most world
 // construction surfaces.
-//
-//==========================================================================
-
 shader_t* R_FindShader( const char* name, int lightmapIndex, bool mipRawImage ) {
 	if ( name[ 0 ] == 0 ) {
 		return tr.defaultShader;
@@ -2898,12 +2727,6 @@ shader_t* R_FindShader( const char* name, int lightmapIndex, bool mipRawImage ) 
 	return FinishShader();
 }
 
-//==========================================================================
-//
-//	R_RegisterShaderFromImage
-//
-//==========================================================================
-
 qhandle_t R_RegisterShaderFromImage( const char* name, int lightmapIndex, image_t* image, bool mipRawImage ) {
 	int hash = GenerateShaderHashValue( name, SHADER_HASH_SIZE );
 
@@ -2953,18 +2776,11 @@ qhandle_t R_RegisterShaderFromImage( const char* name, int lightmapIndex, image_
 	return sh->index;
 }
 
-//==========================================================================
-//
-//	R_RegisterShader
-//
 //	This is the exported shader entry point for the rest of the system
 // It will always return an index that will be valid.
 //
 //	This should really only be used for explicit shaders, because there is no
 // way to ask for different implicit lighting modes (vertex, lightmap, etc)
-//
-//==========================================================================
-
 qhandle_t R_RegisterShader( const char* name ) {
 	if ( String::Length( name ) >= MAX_QPATH ) {
 		common->Printf( "Shader name exceeds MAX_QPATH\n" );
@@ -2985,14 +2801,7 @@ qhandle_t R_RegisterShader( const char* name ) {
 	return sh->index;
 }
 
-//==========================================================================
-//
-//	R_RegisterShaderNoMip
-//
 //	For menu graphics that should never be picmiped
-//
-//==========================================================================
-
 qhandle_t R_RegisterShaderNoMip( const char* name ) {
 	if ( String::Length( name ) >= MAX_QPATH ) {
 		common->Printf( "Shader name exceeds MAX_QPATH\n" );
@@ -3012,12 +2821,6 @@ qhandle_t R_RegisterShaderNoMip( const char* name ) {
 
 	return sh->index;
 }
-
-//==========================================================================
-//
-//	R_RegisterShaderLightMap
-//
-//==========================================================================
 
 static shader_t* R_RegisterShaderLightMap( const char* name, int lightmapIndex ) {
 	if ( String::Length( name ) >= MAX_QPATH ) {
@@ -3039,15 +2842,8 @@ static shader_t* R_RegisterShaderLightMap( const char* name, int lightmapIndex )
 	return sh;
 }
 
-//==========================================================================
-//
-//	R_FindShaderByName
-//
 //	Will always return a valid shader, but it might be the default shader if
 // the real one can't be found.
-//
-//==========================================================================
-
 static shader_t* R_FindShaderByName( const char* name ) {
 	if ( ( name == NULL ) || ( name[ 0 ] == 0 ) ) {
 		// bk001205
@@ -3076,12 +2872,6 @@ static shader_t* R_FindShaderByName( const char* name ) {
 
 	return tr.defaultShader;
 }
-
-//==========================================================================
-//
-//	R_RemapShader
-//
-//==========================================================================
 
 void R_RemapShader( const char* shaderName, const char* newShaderName, const char* timeOffset ) {
 	shader_t* sh = R_FindShaderByName( shaderName );
@@ -3120,12 +2910,6 @@ void R_RemapShader( const char* shaderName, const char* newShaderName, const cha
 		sh2->timeOffset = String::Atof( timeOffset );
 	}
 }
-
-//==========================================================================
-//
-//	CreateInternalShaders
-//
-//==========================================================================
 
 static void CreateInternalShaders() {
 	tr.numShaders = 0;
@@ -3204,15 +2988,8 @@ static void BuildShaderChecksumLookup() {
 	}
 }
 
-//==========================================================================
-//
-//	ScanAndLoadShaderFiles
-//
 //	Finds and loads all .shader files, combining them into a single large
 // text block that can be scanned for shader names
-//
-//==========================================================================
-
 static void ScanAndLoadShaderFiles() {
 	long sum = 0;
 	// scan for shader files
@@ -3347,12 +3124,6 @@ static void ScanAndLoadShaderFiles() {
 	}
 }
 
-//==========================================================================
-//
-//	CreateExternalShaders
-//
-//==========================================================================
-
 static void CreateExternalShaders() {
 	if ( GGameType & GAME_Tech3 ) {
 		if ( !( GGameType & GAME_WolfSP ) ) {
@@ -3402,12 +3173,6 @@ static void R_LoadCacheShaders() {
 	FS_FreeFile( buf );
 }
 
-//==========================================================================
-//
-//	R_InitShaders
-//
-//==========================================================================
-
 void R_InitShaders() {
 	common->Printf( "Initializing Shaders\n" );
 
@@ -3430,12 +3195,6 @@ void R_InitShaders() {
 	R_LoadCacheShaders();
 }
 
-//==========================================================================
-//
-//	R_FreeShaders
-//
-//==========================================================================
-
 void R_FreeShaders() {
 	for ( int i = 0; i < tr.numShaders; i++ ) {
 		shader_t* sh = tr.shaders[ i ];
@@ -3457,15 +3216,8 @@ void R_FreeShaders() {
 	}
 }
 
-//==========================================================================
-//
-//	R_GetShaderByHandle
-//
 //	When a handle is passed in by another module, this range checks it and
 // returns a valid (possibly default) shader_t to be used internally.
-//
-//==========================================================================
-
 shader_t* R_GetShaderByHandle( qhandle_t hShader ) {
 	if ( hShader < 0 ) {
 		common->Printf( S_COLOR_YELLOW "R_GetShaderByHandle: out of range hShader '%d'\n", hShader );
@@ -3478,15 +3230,8 @@ shader_t* R_GetShaderByHandle( qhandle_t hShader ) {
 	return tr.shaders[ hShader ];
 }
 
-//==========================================================================
-//
-//	R_ShaderList_f
-//
 //	Dump information on all valid shaders to the console. A second parameter
 // will cause it to print in sorted order
-//
-//==========================================================================
-
 void R_ShaderList_f() {
 	shader_t* shader;
 

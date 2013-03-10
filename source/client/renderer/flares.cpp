@@ -45,15 +45,9 @@ up to five or more times in a frame with 3D status bar icons).
 =============================================================================
 */
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define MAX_FLARES      128
-
-// TYPES -------------------------------------------------------------------
 
 // flare states maintain visibility over multiple frames for fading
 // layers: view, mirror, menu
@@ -82,29 +76,9 @@ struct flare_t {
 	int id;
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static flare_t r_flareStructs[ MAX_FLARES ];
 static flare_t* r_activeFlares;
 static flare_t* r_inactiveFlares;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_ClearFlares
-//
-//==========================================================================
 
 void R_ClearFlares() {
 	Com_Memset( r_flareStructs, 0, sizeof ( r_flareStructs ) );
@@ -117,14 +91,7 @@ void R_ClearFlares() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_AddFlare
-//
 //	This is called at surface tesselation time
-//
-//==========================================================================
-
 static void RB_AddFlare( void* surface, int fogNum, vec3_t point, vec3_t color, float scale, vec3_t normal, int id, int flags ) {
 	backEnd.pc.c_flareAdds++;
 
@@ -207,12 +174,6 @@ static void RB_AddFlare( void* surface, int fogNum, vec3_t point, vec3_t color, 
 	f->eyeZ = eye[ 2 ];
 }
 
-//==========================================================================
-//
-//	RB_AddDlightFlares
-//
-//==========================================================================
-
 static void RB_AddDlightFlares() {
 	if ( r_flares->integer < 2 ) {
 		return;
@@ -277,12 +238,6 @@ static void RB_AddCoronaFlares() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_TestFlare
-//
-//==========================================================================
-
 static void RB_TestFlare( flare_t* f ) {
 	backEnd.pc.c_flareTests++;
 
@@ -327,12 +282,6 @@ static void RB_TestFlare( flare_t* f ) {
 
 	f->drawIntensity = fade;
 }
-
-//==========================================================================
-//
-//	RB_RenderFlare
-//
-//==========================================================================
 
 static void RB_RenderFlare( flare_t* f ) {
 	backEnd.pc.c_flareRenders++;
@@ -410,10 +359,6 @@ static void RB_RenderFlare( flare_t* f ) {
 	RB_EndSurface();
 }
 
-//==========================================================================
-//
-//	RB_RenderFlares
-//
 //	Because flares are simulating an occular effect, they should be drawn after
 // everything (all views) in the entire frame has been drawn.
 //
@@ -424,9 +369,6 @@ static void RB_RenderFlare( flare_t* f ) {
 // The resulting artifact is that flares in mirrors or portals don't dim properly
 // when occluded by something in the main view, and portal flares that should
 // extend past the portal edge will be overwritten.
-//
-//==========================================================================
-
 void RB_RenderFlares() {
 	if ( !r_flares->integer ) {
 		return;

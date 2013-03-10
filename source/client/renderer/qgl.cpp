@@ -18,26 +18,10 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 #include <time.h>
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 #define GLF_0( r, n )             r( APIENTRY * qgl ## n ) ( );
 #define GLF_V0( n )               void( APIENTRY * qgl ## n ) ( );
@@ -88,17 +72,7 @@ BOOL ( WINAPI* qwglSwapIntervalEXT )( int interval );
 int ( * qglXSwapIntervalSGI )( int interval );
 #endif
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static fileHandle_t log_fp;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	QGL_Log
-//
-//==========================================================================
 
 static void QGL_Log( const char* Fmt, ... ) {
 	va_list ArgPtr;
@@ -111,11 +85,7 @@ static void QGL_Log( const char* Fmt, ... ) {
 	FS_Printf( log_fp, "%s", string );
 }
 
-//==========================================================================
-//
 //	Simple logging
-//
-//==========================================================================
 
 #define GLF_0( r, n ) \
 	static r APIENTRY log ## n() \
@@ -225,12 +195,6 @@ static void QGL_Log( const char* Fmt, ... ) {
 #undef GLF_V9
 #undef GLF_V10
 
-//==========================================================================
-//
-//	BooleanToString
-//
-//==========================================================================
-
 static const char* BooleanToString( GLboolean b ) {
 	if ( b == GL_FALSE ) {
 		return "GL_FALSE";
@@ -240,12 +204,6 @@ static const char* BooleanToString( GLboolean b ) {
 	}
 	return "OUT OF RANGE FOR BOOLEAN";
 }
-
-//==========================================================================
-//
-//	FuncToString
-//
-//==========================================================================
 
 static const char* FuncToString( GLenum f ) {
 	switch ( f ) {
@@ -269,12 +227,6 @@ static const char* FuncToString( GLenum f ) {
 		return "!!! UNKNOWN !!!";
 	}
 }
-
-//==========================================================================
-//
-//	PrimToString
-//
-//==========================================================================
 
 static const char* PrimToString( GLenum mode ) {
 	static char prim[ 1024 ];
@@ -305,12 +257,6 @@ static const char* PrimToString( GLenum mode ) {
 
 	return prim;
 }
-
-//==========================================================================
-//
-//	CapToString
-//
-//==========================================================================
 
 static const char* CapToString( GLenum cap ) {
 	static char buffer[ 1024 ];
@@ -343,12 +289,6 @@ static const char* CapToString( GLenum cap ) {
 	return buffer;
 }
 
-//==========================================================================
-//
-//	BlendToName
-//
-//==========================================================================
-
 static const char* TypeToString( GLenum t ) {
 	switch ( t ) {
 	case GL_BYTE:
@@ -371,12 +311,6 @@ static const char* TypeToString( GLenum t ) {
 		return "!!! UNKNOWN !!!";
 	}
 }
-
-//==========================================================================
-//
-//	BlendToName
-//
-//==========================================================================
 
 static void BlendToName( char* n, GLenum f ) {
 	switch ( f ) {
@@ -576,12 +510,6 @@ static void APIENTRY logViewport( GLint x, GLint y, GLsizei width, GLsizei heigh
 	glViewport( x, y, width, height );
 }
 
-//==========================================================================
-//
-//	CheckExtension
-//
-//==========================================================================
-
 static bool CheckExtension( const char* Extension ) {
 	idList<idStr> Extensions;
 	idStr( ( char* )qglGetString( GL_EXTENSIONS ) ).Split( ' ', Extensions );
@@ -604,15 +532,8 @@ static bool CheckSystemExtension( const char* Extension ) {
 	return false;
 }
 
-//==========================================================================
-//
-//	QGL_Init
-//
 //	This is responsible for binding our qgl function pointers to the
 // appropriate GL stuff.
-//
-//==========================================================================
-
 void QGL_Init() {
 	common->Printf( "...initializing QGL\n" );
 
@@ -835,15 +756,8 @@ void QGL_Init() {
 	QGL_EnableLogging( !!r_logFile->integer );
 }
 
-//==========================================================================
-//
-//	QGL_Shutdown
-//
 //	Nulls out all the proc pointers.  This is only called during a hard
 // shutdown of the OGL subsystem (e.g. vid_restart).
-//
-//==========================================================================
-
 void QGL_Shutdown() {
 	common->Printf( "...shutting down QGL\n" );
 
@@ -899,12 +813,6 @@ void QGL_Shutdown() {
 	qglXSwapIntervalSGI = NULL;
 #endif
 }
-
-//==========================================================================
-//
-//	QGL_EnableLogging
-//
-//==========================================================================
 
 void QGL_EnableLogging( bool enable ) {
 	static bool isEnabled;
@@ -1006,12 +914,6 @@ void QGL_EnableLogging( bool enable ) {
 #undef GLF_V10
 	}
 }
-
-//==========================================================================
-//
-//	QGL_LogComment
-//
-//==========================================================================
 
 void QGL_LogComment( const char* Comment ) {
 	if ( log_fp ) {

@@ -20,15 +20,11 @@
   This file deals with applying shaders to surface data in the tess struct.
 */
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../cinematic/public.h"
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
-
-// MACROS ------------------------------------------------------------------
 
 // Hex Color string support
 #define gethex( ch ) ( ( ch ) > '9' ? ( ( ch ) >= 'a' ? ( ( ch ) - 'a' + 10 ) : ( ( ch ) - '7' ) ) : ( ( ch ) - '0' ) )
@@ -37,34 +33,11 @@
 #define Q_IsHexColorString( p ) ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 shaderCommands_t tess;
 
 bool setArraysOnce;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_ArrayElementDiscrete
-//
 //	This is just for OpenGL conformance testing, it should never be the fastest
-//
-//==========================================================================
-
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );
 	if ( glState.currenttmu ) {
@@ -75,12 +48,6 @@ static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	}
 	qglVertex3fv( tess.xyz[ index ] );
 }
-
-//==========================================================================
-//
-//	R_DrawStripElements
-//
-//==========================================================================
 
 static void R_DrawStripElements( int numIndexes, const glIndex_t* indexes, void ( APIENTRY* element )( GLint ) ) {
 	if ( numIndexes <= 0 ) {
@@ -154,16 +121,9 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t* indexes, void 
 	qglEnd();
 }
 
-//==========================================================================
-//
-//	R_DrawElements
-//
 //	Optionally performs our own glDrawElements that looks for strip conditions
 // instead of using the single glDrawElements call that may be inefficient
 // without compiled vertex arrays.
-//
-//==========================================================================
-
 static void R_DrawElements( int numIndexes, const glIndex_t* indexes ) {
 	int primitives = r_primitives->integer;
 
@@ -202,12 +162,6 @@ SURFACE SHADERS
 =============================================================
 */
 
-//==========================================================================
-//
-//	R_BindAnimatedImage
-//
-//==========================================================================
-
 static void R_BindAnimatedImage( textureBundle_t* bundle ) {
 	if ( bundle->isVideoMap ) {
 		CIN_RunCinematic( bundle->videoMapHandle );
@@ -238,14 +192,7 @@ static void R_BindAnimatedImage( textureBundle_t* bundle ) {
 	GL_Bind( bundle->image[ index ] );
 }
 
-//==========================================================================
-//
-//	DrawTris
-//
 //	Draws triangle outlines for debugging
-//
-//==========================================================================
-
 static void DrawTris( shaderCommands_t* input ) {
 	GL_Bind( tr.whiteImage );
 
@@ -315,14 +262,7 @@ static void DrawTris( shaderCommands_t* input ) {
 	qglDisable( GL_POLYGON_OFFSET_LINE );
 }
 
-//==========================================================================
-//
-//	DrawNormals
-//
 //	Draws vertex normals for debugging
-//
-//==========================================================================
-
 static void DrawNormals( shaderCommands_t* input ) {
 	GL_Bind( tr.whiteImage );
 	qglColor3f( 1, 1, 1 );
@@ -377,15 +317,8 @@ static void DrawNormals( shaderCommands_t* input ) {
 	qglDepthRange( 0, 1 );
 }
 
-//==========================================================================
-//
-//	RB_BeginSurface
-//
 //	We must set some things up before beginning any tesselation, because a
 // surface may be forced to perform a RB_End due to overflow.
-//
-//==========================================================================
-
 void RB_BeginSurface( shader_t* shader, int fogNum ) {
 	shader_t* state = shader->remappedShader ? shader->remappedShader : shader;
 
@@ -405,17 +338,10 @@ void RB_BeginSurface( shader_t* shader, int fogNum ) {
 	}
 }
 
-//==========================================================================
-//
-//	DrawMultitextured
-//
 //	output = t0 * t1 or t0 + t1
 //
 //	t0 = most upstream according to spec
 //	t1 = most downstream according to spec
-//
-//==========================================================================
-
 static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	shaderStage_t* pStage = tess.xstages[ stage ];
 
@@ -470,12 +396,6 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 
 	GL_SelectTexture( 0 );
 }
-
-//==========================================================================
-//
-//	RB_IterateStagesGeneric
-//
-//==========================================================================
 
 static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	for ( int stage = 0; stage < MAX_SHADER_STAGES; stage++ ) {
@@ -570,14 +490,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	}
 }
 
-//==========================================================================
-//
-//	ProjectDlightTexture
-//
 //	Perform dynamic lighting with another rendering pass
-//
-//==========================================================================
-
 static void ProjectDlightTexture() {
 	if ( !backEnd.refdef.num_dlights ) {
 		return;
@@ -965,14 +878,7 @@ static void DynamicLightPass() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_FogPass
-//
 //	Blends a fog texture on top of everything else
-//
-//==========================================================================
-
 static void RB_FogPass() {
 	if ( tr.refdef.rdflags & RDF_SNOOPERVIEW ) {
 		// no fog pass in snooper
@@ -1045,12 +951,6 @@ static void SetIteratorFog() {
 		}
 	}
 }
-
-//==========================================================================
-//
-//	RB_StageIteratorGeneric
-//
-//==========================================================================
 
 void RB_StageIteratorGeneric() {
 	shaderCommands_t* input = &tess;
@@ -1186,12 +1086,6 @@ void RB_StageIteratorGeneric() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_StageIteratorVertexLitTexture
-//
-//==========================================================================
-
 void RB_StageIteratorVertexLitTexture() {
 	shaderCommands_t* input = &tess;
 
@@ -1282,12 +1176,6 @@ void RB_StageIteratorVertexLitTexture() {
 		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
 	}
 }
-
-//==========================================================================
-//
-//	RB_StageIteratorLightmappedMultitexture
-//
-//==========================================================================
 
 void RB_StageIteratorLightmappedMultitexture() {
 	shaderCommands_t* input = &tess;
@@ -1405,12 +1293,6 @@ void RB_StageIteratorLightmappedMultitexture() {
 		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
 	}
 }
-
-//==========================================================================
-//
-//	RB_EndSurface
-//
-//==========================================================================
 
 void RB_EndSurface() {
 	shaderCommands_t* input = &tess;

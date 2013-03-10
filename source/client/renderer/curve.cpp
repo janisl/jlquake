@@ -22,33 +22,7 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	LerpDrawVert
-//
-//==========================================================================
 
 static void LerpDrawVert( bsp46_drawVert_t* a, bsp46_drawVert_t* b, bsp46_drawVert_t* out ) {
 	out->xyz[ 0 ] = 0.5f * ( a->xyz[ 0 ] + b->xyz[ 0 ] );
@@ -66,12 +40,6 @@ static void LerpDrawVert( bsp46_drawVert_t* a, bsp46_drawVert_t* b, bsp46_drawVe
 	out->color[ 2 ] = ( a->color[ 2 ] + b->color[ 2 ] ) >> 1;
 	out->color[ 3 ] = ( a->color[ 3 ] + b->color[ 3 ] ) >> 1;
 }
-
-//==========================================================================
-//
-//	Transpose
-//
-//==========================================================================
 
 static void Transpose( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ] ) {
 	if ( width > height ) {
@@ -106,14 +74,7 @@ static void Transpose( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SI
 
 }
 
-//==========================================================================
-//
-//	MakeMeshNormals
-//
 //	Handles all the complicated wrapping and degenerate cases.
-//
-//==========================================================================
-
 static void MakeMeshNormals( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ] ) {
 	static int neighbors[ 8 ][ 2 ] =
 	{
@@ -209,12 +170,6 @@ static void MakeMeshNormals( int width, int height, bsp46_drawVert_t ctrl[ MAX_G
 	}
 }
 
-//==========================================================================
-//
-//	InvertCtrl
-//
-//==========================================================================
-
 static void InvertCtrl( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ] ) {
 	for ( int i = 0; i < height; i++ ) {
 		for ( int j = 0; j < width / 2; j++ ) {
@@ -224,12 +179,6 @@ static void InvertCtrl( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_S
 		}
 	}
 }
-
-//==========================================================================
-//
-//	InvertErrorTable
-//
-//==========================================================================
 
 static void InvertErrorTable( float errorTable[ 2 ][ MAX_GRID_SIZE ], int width, int height ) {
 	float copy[ 2 ][ MAX_GRID_SIZE ];
@@ -243,12 +192,6 @@ static void InvertErrorTable( float errorTable[ 2 ][ MAX_GRID_SIZE ], int width,
 		errorTable[ 0 ][ i ] = copy[ 1 ][ height - 1 - i ];
 	}
 }
-
-//==========================================================================
-//
-//	PutPointsOnCurve
-//
-//==========================================================================
 
 static void PutPointsOnCurve( bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ], int width, int height ) {
 	for ( int i = 0; i < width; i++ ) {
@@ -269,12 +212,6 @@ static void PutPointsOnCurve( bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_S
 		}
 	}
 }
-
-//==========================================================================
-//
-//	R_CreateSurfaceGridMesh
-//
-//==========================================================================
 
 static srfGridMesh_t* R_CreateSurfaceGridMesh( int width, int height,
 	bsp46_drawVert_t ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ], float errorTable[ 2 ][ MAX_GRID_SIZE ] ) {
@@ -315,23 +252,11 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh( int width, int height,
 	return grid;
 }
 
-//==========================================================================
-//
-//	R_FreeSurfaceGridMesh
-//
-//==========================================================================
-
 void R_FreeSurfaceGridMesh( srfGridMesh_t* grid ) {
 	delete[] grid->widthLodError;
 	delete[] grid->heightLodError;
 	Mem_Free( grid );
 }
-
-//==========================================================================
-//
-//	R_SubdividePatchToGrid
-//
-//==========================================================================
 
 srfGridMesh_t* R_SubdividePatchToGrid( int width, int height,
 	bsp46_drawVert_t points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] ) {
@@ -481,12 +406,6 @@ srfGridMesh_t* R_SubdividePatchToGrid( int width, int height,
 	return R_CreateSurfaceGridMesh( width, height, ctrl, errorTable );
 }
 
-//==========================================================================
-//
-//	R_GridInsertColumn
-//
-//==========================================================================
-
 srfGridMesh_t* R_GridInsertColumn( srfGridMesh_t* grid, int column, int row, vec3_t point, float loderror ) {
 	int oldwidth = 0;
 	int width = grid->width + 1;
@@ -534,12 +453,6 @@ srfGridMesh_t* R_GridInsertColumn( srfGridMesh_t* grid, int column, int row, vec
 	VectorCopy( lodOrigin, grid->lodOrigin );
 	return grid;
 }
-
-//==========================================================================
-//
-//	R_GridInsertRow
-//
-//==========================================================================
 
 srfGridMesh_t* R_GridInsertRow( srfGridMesh_t* grid, int row, int column, vec3_t point, float loderror ) {
 	int oldheight = 0;

@@ -26,44 +26,18 @@
 
 */
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define MAX_EDGE_DEFS   32
-
-// TYPES -------------------------------------------------------------------
 
 struct edgeDef_t {
 	int i2;
 	int facing;
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static edgeDef_t edgeDefs[ SHADER_MAX_VERTEXES ][ MAX_EDGE_DEFS ];
 static int numEdgeDefs[ SHADER_MAX_VERTEXES ];
 static int facing[ SHADER_MAX_INDEXES / 3 ];
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	RB_ProjectionShadowDeform
-//
-//==========================================================================
 
 void RB_ProjectionShadowDeform() {
 	float* xyz = ( float* )tess.xyz;
@@ -99,12 +73,6 @@ void RB_ProjectionShadowDeform() {
 	}
 }
 
-//==========================================================================
-//
-//	R_AddEdgeDef
-//
-//==========================================================================
-
 static void R_AddEdgeDef( int i1, int i2, int facing ) {
 	int c = numEdgeDefs[ i1 ];
 	if ( c == MAX_EDGE_DEFS ) {
@@ -115,12 +83,6 @@ static void R_AddEdgeDef( int i1, int i2, int facing ) {
 
 	numEdgeDefs[ i1 ]++;
 }
-
-//==========================================================================
-//
-//	R_RenderShadowEdges
-//
-//==========================================================================
 
 static void R_RenderShadowEdges() {
 #if 0
@@ -192,18 +154,11 @@ static void R_RenderShadowEdges() {
 #endif
 }
 
-//==========================================================================
-//
-//	RB_ShadowTessEnd
-//
 //	triangleFromEdge[ v1 ][ v2 ]
 //
 //	set triangle from edge( v1, v2, tri )
 //	if ( facing[ triangleFromEdge[ v1 ][ v2 ] ] && !facing[ triangleFromEdge[ v2 ][ v1 ] ) {
 //	}
-//
-//==========================================================================
-
 void RB_ShadowTessEnd() {
 	int i;
 	int numTris;
@@ -283,16 +238,9 @@ void RB_ShadowTessEnd() {
 	qglColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 }
 
-//==========================================================================
-//
-//	RB_ShadowFinish
-//
 //	Darken everything that is is a shadow volume. We have to delay this until
 // everything has been shadowed, because otherwise shadows from different body
 // parts would overlap and double darken.
-//
-//==========================================================================
-
 void RB_ShadowFinish() {
 	if ( r_shadows->integer != 2 ) {
 		return;

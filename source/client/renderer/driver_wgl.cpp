@@ -14,8 +14,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../windows_shared.h"
 #include "../../common/Common.h"
@@ -23,8 +21,6 @@
 #include "../../common/command_buffer.h"
 #include "../sound/public.h"
 #include "../input/public.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define WINDOW_CLASS_NAME   "JLQuake"
 
@@ -34,20 +30,6 @@ enum
 	TRY_PFD_FAIL_SOFT   = 1,
 	TRY_PFD_FAIL_HARD   = 2,
 };
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static HDC maindc;
 static HGLRC baseRC;
@@ -81,14 +63,6 @@ static DWORD renderThreadId;
 static void* smpData;
 static int wglErrors;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	WIN_DisableAltTab
-//
-//==========================================================================
-
 static void WIN_DisableAltTab() {
 	if ( s_alttab_disabled ) {
 		return;
@@ -99,12 +73,6 @@ static void WIN_DisableAltTab() {
 	s_alttab_disabled = true;
 }
 
-//==========================================================================
-//
-//	WIN_EnableAltTab
-//
-//==========================================================================
-
 static void WIN_EnableAltTab() {
 	if ( !s_alttab_disabled ) {
 		return;
@@ -114,12 +82,6 @@ static void WIN_EnableAltTab() {
 
 	s_alttab_disabled = false;
 }
-
-//==========================================================================
-//
-//	AppActivate
-//
-//==========================================================================
 
 static void AppActivate( bool fActive, bool minimize ) {
 	Minimized = minimize;
@@ -137,14 +99,7 @@ static void AppActivate( bool fActive, bool minimize ) {
 	SNDDMA_Activate();
 }
 
-//==========================================================================
-//
-//	MainWndProc
-//
 //	main window procedure
-//
-//==========================================================================
-
 static LRESULT WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 	switch ( uMsg ) {
 	case WM_CREATE:
@@ -227,14 +182,7 @@ static LRESULT WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
 
-//==========================================================================
-//
-//	GLW_ChoosePFD
-//
 //	Helper function that replaces ChoosePixelFormat.
-//
-//==========================================================================
-
 #define MAX_PFDS 256
 
 static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR* pPFD ) {
@@ -383,14 +331,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR* pPFD ) {
 	return bestMatch;
 }
 
-//==========================================================================
-//
-//	GLW_CreatePFD
-//
 //	Helper function zeros out then fills in a PFD.
-//
-//==========================================================================
-
 static void GLW_CreatePFD( PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo ) {
 	PIXELFORMATDESCRIPTOR src =
 	{
@@ -428,12 +369,6 @@ static void GLW_CreatePFD( PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depth
 
 	*pPFD = src;
 }
-
-//==========================================================================
-//
-//	GLW_MakeContext
-//
-//==========================================================================
 
 static int GLW_MakeContext( PIXELFORMATDESCRIPTOR* pPFD ) {
 	//
@@ -485,15 +420,8 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR* pPFD ) {
 	return TRY_PFD_SUCCESS;
 }
 
-//==========================================================================
-//
-//	GLW_InitDriver
-//
 //	- get a DC if one doesn't exist
 //	- create an HGLRC if one doesn't exist
-//
-//==========================================================================
-
 static bool GLW_InitDriver( int colorbits ) {
 	static PIXELFORMATDESCRIPTOR pfd;		// save between frames since 'tr' gets cleared
 
@@ -611,14 +539,7 @@ static bool GLW_InitDriver( int colorbits ) {
 	return true;
 }
 
-//==========================================================================
-//
-//	WG_CheckHardwareGamma
-//
 //	Determines if the underlying hardware supports the Win32 gamma correction API.
-//
-//==========================================================================
-
 static void WG_CheckHardwareGamma() {
 	glConfig.deviceSupportsGamma = false;
 
@@ -705,14 +626,7 @@ static void GLW_GenDefaultLists() {
 	fontbase_init = true;
 }
 
-//==========================================================================
-//
-//	GLW_CreateWindow
-//
 //	Responsible for creating the Win32 window and initializing the OpenGL driver.
-//
-//==========================================================================
-
 static bool GLW_CreateWindow( int width, int height, int colorbits, bool fullscreen ) {
 	//
 	// register the window class if necessary
@@ -830,12 +744,6 @@ static bool GLW_CreateWindow( int width, int height, int colorbits, bool fullscr
 	return true;
 }
 
-//==========================================================================
-//
-//	PrintCDSError
-//
-//==========================================================================
-
 static void PrintCDSError( int value ) {
 	switch ( value ) {
 	case DISP_CHANGE_RESTART:
@@ -861,12 +769,6 @@ static void PrintCDSError( int value ) {
 		break;
 	}
 }
-
-//==========================================================================
-//
-//	GLimp_SetMode
-//
-//==========================================================================
 
 rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 	const char* win_fs[] = { "W", "FS" };
@@ -1055,15 +957,8 @@ static void GLW_DeleteDefaultLists() {
 	fontbase_init = false;
 }
 
-//==========================================================================
-//
-//	GLimp_Shutdown()
-//
 //	This routine does all OS specific shutdown procedures for the OpenGL
 // subsystem.
-//
-//==========================================================================
-
 void GLimp_Shutdown() {
 	const char* success[] = { "failed", "success" };
 
@@ -1123,24 +1018,11 @@ const char* GLimp_GetSystemExtensionsString() {
 	return "";
 }
 
-//==========================================================================
-//
-//	GLimp_GetProcAddress
-//
-//==========================================================================
-
 void* GLimp_GetProcAddress( const char* Name ) {
 	return ( void* )wglGetProcAddress( Name );
 }
 
-//==========================================================================
-//
-//	GLimp_SetGamma
-//
 //	This routine should only be called if glConfig.deviceSupportsGamma is TRUE
-//
-//==========================================================================
-
 void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] ) {
 	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !maindc ) {
 		return;
@@ -1180,12 +1062,6 @@ void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsig
 	}
 }
 
-//==========================================================================
-//
-//	GLimp_SwapBuffers
-//
-//==========================================================================
-
 void GLimp_SwapBuffers() {
 	SwapBuffers( maindc );
 }
@@ -1196,12 +1072,6 @@ void GLimp_SwapBuffers() {
 //
 //**************************************************************************
 
-//==========================================================================
-//
-//	GLimp_RenderThreadWrapper
-//
-//==========================================================================
-
 static DWORD WINAPI GLimp_RenderThreadWrapper( LPVOID ) {
 	glimpRenderThread();
 
@@ -1210,12 +1080,6 @@ static DWORD WINAPI GLimp_RenderThreadWrapper( LPVOID ) {
 
 	return 0;
 }
-
-//==========================================================================
-//
-//	GLimp_SpawnRenderThread
-//
-//==========================================================================
 
 bool GLimp_SpawnRenderThread( void ( * function )() ) {
 	renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
@@ -1232,12 +1096,6 @@ bool GLimp_SpawnRenderThread( void ( * function )() ) {
 
 	return true;
 }
-
-//==========================================================================
-//
-//	GLimp_RendererSleep
-//
-//==========================================================================
 
 void* GLimp_RendererSleep() {
 	if ( !wglMakeCurrent( maindc, NULL ) ) {
@@ -1266,12 +1124,6 @@ void* GLimp_RendererSleep() {
 	return data;
 }
 
-//==========================================================================
-//
-//	GLimp_FrontEndSleep
-//
-//==========================================================================
-
 void GLimp_FrontEndSleep() {
 	WaitForSingleObject( renderCompletedEvent, INFINITE );
 
@@ -1279,12 +1131,6 @@ void GLimp_FrontEndSleep() {
 		wglErrors++;
 	}
 }
-
-//==========================================================================
-//
-//	GLimp_WakeRenderer
-//
-//==========================================================================
 
 void GLimp_WakeRenderer( void* data ) {
 	smpData = data;

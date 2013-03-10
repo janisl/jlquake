@@ -14,30 +14,12 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define WAVEVALUE( table, base, amplitude, phase, freq )  ( ( base ) + table[ idMath::FtoiFast( ( ( ( phase ) + tess.shaderTime * ( freq ) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * ( amplitude ) )
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int edgeVerts[ 6 ][ 2 ] =
 {
@@ -50,14 +32,6 @@ static int edgeVerts[ 6 ][ 2 ] =
 };
 
 static vec3_t lightOrigin = { -960, 1980, 96 };		// FIXME: track dynamically
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	TableForFunc
-//
-//==========================================================================
 
 static float* TableForFunc( genFunc_t func ) {
 	switch ( func ) {
@@ -80,25 +54,12 @@ static float* TableForFunc( genFunc_t func ) {
 	return NULL;
 }
 
-//==========================================================================
-//
-//	EvalWaveForm
-//
 //	Evaluates a given waveForm_t, referencing backEnd.refdef.time directly
-//
-//==========================================================================
-
 static float EvalWaveForm( const waveForm_t* wf ) {
 	float* table = TableForFunc( wf->func );
 
 	return WAVEVALUE( table, wf->base, wf->amplitude, wf->phase, wf->frequency );
 }
-
-//==========================================================================
-//
-//	EvalWaveFormClamped
-//
-//==========================================================================
 
 static float EvalWaveFormClamped( const waveForm_t* wf ) {
 	float glow = EvalWaveForm( wf );
@@ -122,14 +83,7 @@ DEFORMATIONS
 ====================================================================
 */
 
-//==========================================================================
-//
-//	RB_CalcDeformNormals
-//
 //	Wiggle the normals for wavy environment mapping
-//
-//==========================================================================
-
 static void RB_CalcDeformNormals( deformStage_t* ds ) {
 	float* xyz = ( float* )tess.xyz;
 	float* normal = ( float* )tess.normal;
@@ -153,12 +107,6 @@ static void RB_CalcDeformNormals( deformStage_t* ds ) {
 		VectorNormalizeFast( normal );
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcDeformVertexes
-//
-//==========================================================================
 
 static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 	float* xyz = ( float* )tess.xyz;
@@ -244,12 +192,6 @@ static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcBulgeVertexes
-//
-//==========================================================================
-
 static void RB_CalcBulgeVertexes( deformStage_t* ds ) {
 	const float* st = ( const float* )tess.texCoords[ 0 ];
 	float* xyz = ( float* )tess.xyz;
@@ -268,14 +210,7 @@ static void RB_CalcBulgeVertexes( deformStage_t* ds ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcMoveVertexes
-//
 //	A deformation that can move an entire surface along a wave path
-//
-//==========================================================================
-
 static void RB_CalcMoveVertexes( deformStage_t* ds ) {
 	float* table = TableForFunc( ds->deformationWave.func );
 
@@ -293,14 +228,7 @@ static void RB_CalcMoveVertexes( deformStage_t* ds ) {
 	}
 }
 
-//==========================================================================
-//
-//	DeformText
-//
 //	Change a polygon into a bunch of text polygons
-//
-//==========================================================================
-
 static void DeformText( const char* text ) {
 	vec3_t height;
 	height[ 0 ] = 0;
@@ -363,27 +291,14 @@ static void DeformText( const char* text ) {
 	}
 }
 
-//==========================================================================
-//
-//	GlobalVectorToLocal
-//
-//==========================================================================
-
 void GlobalVectorToLocal( const vec3_t in, vec3_t out ) {
 	out[ 0 ] = DotProduct( in, backEnd.orient.axis[ 0 ] );
 	out[ 1 ] = DotProduct( in, backEnd.orient.axis[ 1 ] );
 	out[ 2 ] = DotProduct( in, backEnd.orient.axis[ 2 ] );
 }
 
-//==========================================================================
-//
-//	AutospriteDeform
-//
 //	Assuming all the triangles for this shader are independant quads, rebuild
 // them as forward facing sprites
-//
-//==========================================================================
-
 static void AutospriteDeform() {
 	if ( tess.numVertexes & 3 ) {
 		common->Printf( S_COLOR_YELLOW "Autosprite shader %s had odd vertex count", tess.shader->name );
@@ -442,14 +357,7 @@ static void AutospriteDeform() {
 	}
 }
 
-//==========================================================================
-//
-//	Autosprite2Deform
-//
 //	Autosprite2 will pivot a rectangular quad along the center of its long axis
-//
-//==========================================================================
-
 static void Autosprite2Deform() {
 	if ( tess.numVertexes & 3 ) {
 		common->Printf( S_COLOR_YELLOW "Autosprite2 shader %s had odd vertex count", tess.shader->name );
@@ -544,12 +452,6 @@ static void Autosprite2Deform() {
 	}
 }
 
-//==========================================================================
-//
-//	RB_DeformTessGeometry
-//
-//==========================================================================
-
 void RB_DeformTessGeometry() {
 	for ( int i = 0; i < tess.shader->numDeforms; i++ ) {
 		deformStage_t* ds = &tess.shader->deforms[ i ];
@@ -641,14 +543,7 @@ static void RB_CalcDiffuseColorET( unsigned char* colors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcDiffuseColor
-//
 //	The basic vertex lighting calc
-//
-//==========================================================================
-
 void RB_CalcDiffuseColor( byte* colors ) {
 	if ( GGameType & GAME_ET ) {
 		RB_CalcDiffuseColorET( colors );
@@ -696,12 +591,6 @@ void RB_CalcDiffuseColor( byte* colors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcWaveColor
-//
-//==========================================================================
-
 static void RB_CalcWaveColor( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
@@ -728,12 +617,6 @@ static void RB_CalcWaveColor( const waveForm_t* wf, byte* dstColors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcColorFromEntity
-//
-//==========================================================================
-
 static void RB_CalcColorFromEntity( byte* dstColors ) {
 	if ( !backEnd.currentEntity ) {
 		return;
@@ -746,12 +629,6 @@ static void RB_CalcColorFromEntity( byte* dstColors ) {
 		*pColors = c;
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcColorFromOneMinusEntity
-//
-//==========================================================================
 
 static void RB_CalcColorFromOneMinusEntity( byte* dstColors ) {
 	if ( !backEnd.currentEntity ) {
@@ -772,12 +649,6 @@ static void RB_CalcColorFromOneMinusEntity( byte* dstColors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcWaveAlpha
-//
-//==========================================================================
-
 static void RB_CalcWaveAlpha( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
@@ -793,14 +664,7 @@ static void RB_CalcWaveAlpha( const waveForm_t* wf, byte* dstColors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcSpecularAlpha
-//
 //	Calculates specular coefficient and places it in the alpha channel
-//
-//==========================================================================
-
 static void RB_CalcSpecularAlpha( byte* alphas ) {
 	float* v = tess.xyz[ 0 ];
 	float* normal = tess.normal[ 0 ];
@@ -845,12 +709,6 @@ static void RB_CalcSpecularAlpha( byte* alphas ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcAlphaFromEntity
-//
-//==========================================================================
-
 static void RB_CalcAlphaFromEntity( byte* dstColors ) {
 	if ( !backEnd.currentEntity ) {
 		return;
@@ -862,12 +720,6 @@ static void RB_CalcAlphaFromEntity( byte* dstColors ) {
 		*dstColors = backEnd.currentEntity->e.shaderRGBA[ 3 ];
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcAlphaFromOneMinusEntity
-//
-//==========================================================================
 
 static void RB_CalcAlphaFromOneMinusEntity( byte* dstColors ) {
 	if ( !backEnd.currentEntity ) {
@@ -909,12 +761,6 @@ static void RB_CalcModulateColorsByFogET( unsigned char* colors ) {
 		}
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcModulateColorsByFog
-//
-//==========================================================================
 
 static void RB_CalcModulateColorsByFog( byte* colors ) {
 	if ( GGameType & GAME_ET ) {
@@ -960,12 +806,6 @@ static void RB_CalcModulateAlphasByFogET( unsigned char* colors ) {
 		}
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcModulateAlphasByFog
-//
-//==========================================================================
 
 static void RB_CalcModulateAlphasByFog( byte* colors ) {
 	if ( GGameType & GAME_ET ) {
@@ -1016,12 +856,6 @@ static void RB_CalcModulateRGBAsByFogET( unsigned char* colors ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcModulateRGBAsByFog
-//
-//==========================================================================
-
 static void RB_CalcModulateRGBAsByFog( byte* colors ) {
 	if ( GGameType & GAME_ET ) {
 		RB_CalcModulateRGBAsByFogET( colors );
@@ -1042,12 +876,6 @@ static void RB_CalcModulateRGBAsByFog( byte* colors ) {
 		colors[ 3 ] *= f;
 	}
 }
-
-//==========================================================================
-//
-//	ComputeColors
-//
-//==========================================================================
 
 void ComputeColors( shaderStage_t* pStage ) {
 	//
@@ -1400,15 +1228,8 @@ static void RB_CalcFogTexCoordsET( float* st ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcFogTexCoords
-//
 //	To do the clipped fog plane really correctly, we should use projected
 // textures, but I don't trust the drivers and it doesn't fit our shader data.
-//
-//==========================================================================
-
 void RB_CalcFogTexCoords( float* st ) {
 	if ( GGameType & GAME_ET ) {
 		RB_CalcFogTexCoordsET( st );
@@ -1544,12 +1365,6 @@ static void RB_CalcEnvironmentTexCoordsET( float* st ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcEnvironmentTexCoords
-//
-//==========================================================================
-
 static void RB_CalcEnvironmentTexCoords( float* st ) {
 	if ( GGameType & GAME_ET ) {
 		RB_CalcEnvironmentTexCoordsET( st );
@@ -1596,12 +1411,6 @@ static void RB_CalcFireRiseEnvTexCoords( float* st ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcTurbulentTexCoords
-//
-//==========================================================================
-
 static void RB_CalcTurbulentTexCoords( const waveForm_t* wf, float* st ) {
 	float now = wf->phase + tess.shaderTime * wf->frequency;
 
@@ -1613,12 +1422,6 @@ static void RB_CalcTurbulentTexCoords( const waveForm_t* wf, float* st ) {
 		st[ 1 ] = t + tr.sinTable[ ( ( int )( ( tess.xyz[ i ][ 1 ] * 1.0 / 128 * 0.125 + now ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * wf->amplitude;
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcScrollTexCoords
-//
-//==========================================================================
 
 static void RB_CalcScrollTexCoords( const float scrollSpeed[ 2 ], float* st ) {
 	float timeScale = tess.shaderTime;
@@ -1637,24 +1440,12 @@ static void RB_CalcScrollTexCoords( const float scrollSpeed[ 2 ], float* st ) {
 	}
 }
 
-//==========================================================================
-//
-//	RB_CalcScaleTexCoords
-//
-//==========================================================================
-
 static void RB_CalcScaleTexCoords( const float scale[ 2 ], float* st ) {
 	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
 		st[ 0 ] *= scale[ 0 ];
 		st[ 1 ] *= scale[ 1 ];
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcTransformTexCoords
-//
-//==========================================================================
 
 static void RB_CalcTransformTexCoords( const texModInfo_t* tmi, float* st ) {
 	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
@@ -1665,12 +1456,6 @@ static void RB_CalcTransformTexCoords( const texModInfo_t* tmi, float* st ) {
 		st[ 1 ] = s * tmi->matrix[ 0 ][ 1 ] + t * tmi->matrix[ 1 ][ 1 ] + tmi->translate[ 1 ];
 	}
 }
-
-//==========================================================================
-//
-//	RB_CalcStretchTexCoords
-//
-//==========================================================================
 
 static void RB_CalcStretchTexCoords( const waveForm_t* wf, float* st ) {
 	float p = 1.0f / EvalWaveForm( wf );
@@ -1686,12 +1471,6 @@ static void RB_CalcStretchTexCoords( const waveForm_t* wf, float* st ) {
 
 	RB_CalcTransformTexCoords( &tmi, st );
 }
-
-//==========================================================================
-//
-//	RB_CalcRotateTexCoords
-//
-//==========================================================================
 
 static void RB_CalcRotateTexCoords( float degsPerSecond, float* st ) {
 	float timeScale = tess.shaderTime;
@@ -1723,12 +1502,6 @@ static void RB_CalcSwapTexCoords( float* st ) {
 		st[ 1 ] = 1.0 - s;		// err, flaming effect needs this
 	}
 }
-
-//==========================================================================
-//
-//	ComputeTexCoords
-//
-//==========================================================================
 
 void ComputeTexCoords( shaderStage_t* pStage ) {
 	for ( int b = 0; b < NUM_TEXTURE_BUNDLES; b++ ) {

@@ -14,16 +14,10 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/endian.h"
-
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
 
 struct wadinfo_t {
 	char identification[ 4 ];				// should be WAD2 or 2DAW
@@ -41,34 +35,13 @@ struct lumpinfo_t {
 	char name[ 16 ];						// must be null terminated
 };
 
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static int wad_numlumps;
 static lumpinfo_t* wad_lumps;
 static idList<byte>  wad_base;
 
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	CleanupName
-//
 //	Lowercases name and pads with terminating 0 to the length of lumpinfo_t->name.
 //	Used so lumpname lookups can proceed rapidly by comparing 4 chars at a time
 //	Can safely be performed in place.
-//
-//==========================================================================
-
 static void CleanupName( const char* in, char* out ) {
 	int i;
 	for ( i = 0; i < 16; i++ ) {
@@ -87,12 +60,6 @@ static void CleanupName( const char* in, char* out ) {
 		out[ i ] = 0;
 	}
 }
-
-//==========================================================================
-//
-//	R_LoadWadFile
-//
-//==========================================================================
 
 void R_LoadWadFile() {
 	if ( FS_ReadFile( "gfx.wad", wad_base ) <= 0 ) {
@@ -120,12 +87,6 @@ void R_LoadWadFile() {
 	}
 }
 
-//==========================================================================
-//
-//	R_GetWadLumpByName
-//
-//==========================================================================
-
 void* R_GetWadLumpByName( const char* name ) {
 	char clean[ 16 ];
 	CleanupName( name, clean );
@@ -140,12 +101,6 @@ void* R_GetWadLumpByName( const char* name ) {
 	common->Error( "R_GetWadLumpByName: %s not found", name );
 	return NULL;
 }
-
-//==========================================================================
-//
-//	R_PicFromWad
-//
-//==========================================================================
 
 static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
 	byte* qpic = ( byte* )R_GetWadLumpByName( name );
@@ -162,21 +117,9 @@ static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
 	return image;
 }
 
-//==========================================================================
-//
-//	R_PicFromWad
-//
-//==========================================================================
-
 image_t* R_PicFromWad( const char* name ) {
 	return R_PicFromWad( name, GL_CLAMP );
 }
-
-//==========================================================================
-//
-//	R_PicFromWadRepeat
-//
-//==========================================================================
 
 image_t* R_PicFromWadRepeat( const char* name ) {
 	return R_PicFromWad( name, GL_REPEAT );

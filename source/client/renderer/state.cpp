@@ -14,37 +14,11 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 glstate_t glState;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	GL_Bind
-//
-//==========================================================================
 
 void GL_Bind( image_t* image ) {
 	int texnum;
@@ -69,12 +43,6 @@ void GL_Bind( image_t* image ) {
 	qglBindTexture( GL_TEXTURE_2D, texnum );
 }
 
-//==========================================================================
-//
-//	GL_SelectTexture
-//
-//==========================================================================
-
 void GL_SelectTexture( int unit ) {
 	if ( glState.currenttmu == unit ) {
 		return;
@@ -96,12 +64,6 @@ void GL_SelectTexture( int unit ) {
 
 	glState.currenttmu = unit;
 }
-
-//==========================================================================
-//
-//	GL_TexEnv
-//
-//==========================================================================
 
 void GL_TexEnv( GLenum env ) {
 	if ( env == glState.texEnv[ glState.currenttmu ] ) {
@@ -128,14 +90,7 @@ void GL_TexEnv( GLenum env ) {
 	}
 }
 
-//==========================================================================
-//
-//	GL_State
-//
 //	This routine is responsible for setting the most commonly changed state.
-//
-//==========================================================================
-
 void GL_State( unsigned long stateBits ) {
 	unsigned long diff = stateBits ^ glState.glStateBits;
 
@@ -290,12 +245,6 @@ void GL_State( unsigned long stateBits ) {
 
 	glState.glStateBits = stateBits;
 }
-
-//==========================================================================
-//
-//	GL_Cull
-//
-//==========================================================================
 
 void GL_Cull( int cullType ) {
 	if ( glState.faceCulling == cullType ) {

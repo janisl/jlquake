@@ -15,13 +15,9 @@
 //**************************************************************************
 // tr_marks.c -- polygon projection on the world polygons
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
-
-// MACROS ------------------------------------------------------------------
 
 #define MAX_VERTS_ON_POLY       64
 
@@ -31,30 +27,7 @@
 #define SIDE_BACK   1
 #define SIDE_ON     2
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_ChopPolyBehindPlane
-//
 //	Out must have space for two more vertexes than in
-//
-//==========================================================================
-
 static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_ON_POLY ],
 	int* numOutPoints, vec3_t outPoints[ MAX_VERTS_ON_POLY ],
 	vec3_t normal, vec_t dist, vec_t epsilon ) {
@@ -138,12 +111,6 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 	}
 }
 
-//==========================================================================
-//
-//	R_BoxSurfaces_r
-//
-//==========================================================================
-
 static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 	surfaceType_t** list, int listsize, int* listlength, vec3_t dir ) {
 	// RF, if this node hasn't been rendered recently, ignore it
@@ -214,12 +181,6 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 	}
 }
 
-//==========================================================================
-//
-//	R_AddMarkFragments
-//
-//==========================================================================
-
 static void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ],
 	int numPlanes, vec3_t* normals, float* dists,
 	int maxPoints, vec3_t pointBuffer,
@@ -261,12 +222,6 @@ static void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_V
 	( *returnedPoints ) += numClipPoints;
 	( *returnedFragments )++;
 }
-
-//==========================================================================
-//
-//	R_MarkFragments
-//
-//==========================================================================
 
 int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projection,
 	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer ) {

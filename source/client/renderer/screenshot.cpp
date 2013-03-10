@@ -33,40 +33,14 @@ FIXME: the statics don't get a reinit between fs_game changes
 ==============================================================================
 */
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define RSSHOT_WIDTH    320
 #define RSSHOT_HEIGHT   200
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	R_ScreenshotFilename
-//
-//==========================================================================
 
 static void R_ScreenshotFilename( int lastNumber, char* fileName, const char* Extension ) {
 	if ( lastNumber < 0 || lastNumber > 9999 ) {
@@ -75,12 +49,6 @@ static void R_ScreenshotFilename( int lastNumber, char* fileName, const char* Ex
 	}
 	String::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%04i.%s", lastNumber, Extension );
 }
-
-//==========================================================================
-//
-//	R_FindAvailableScreenshotFilename
-//
-//==========================================================================
 
 static bool R_FindAvailableScreenshotFilename( int& lastNumber, char* fileName, const char* Extension ) {
 	// scan for a free number
@@ -99,12 +67,6 @@ static bool R_FindAvailableScreenshotFilename( int& lastNumber, char* fileName, 
 	return false;
 }
 
-//==========================================================================
-//
-//	R_TakeScreenshot
-//
-//==========================================================================
-
 static void R_TakeScreenshot( int x, int y, int width, int height, const char* name, bool jpeg ) {
 	static char fileName[ MAX_OSPATH ];		// bad things if two screenshots per frame?
 
@@ -122,12 +84,6 @@ static void R_TakeScreenshot( int x, int y, int width, int height, const char* n
 	cmd->fileName = fileName;
 	cmd->jpeg = jpeg;
 }
-
-//==========================================================================
-//
-//	RB_TakeScreenshot
-//
-//==========================================================================
 
 static void RB_TakeScreenshot( int x, int y, int width, int height, const char* fileName, bool IsJpeg ) {
 	byte* buffer = new byte[ width * height * 3 ];
@@ -149,12 +105,6 @@ static void RB_TakeScreenshot( int x, int y, int width, int height, const char* 
 	delete[] buffer;
 }
 
-//==========================================================================
-//
-//	RB_TakeScreenshotCmd
-//
-//==========================================================================
-
 const void* RB_TakeScreenshotCmd( const void* data ) {
 	const screenshotCommand_t* cmd = ( const screenshotCommand_t* )data;
 
@@ -163,15 +113,8 @@ const void* RB_TakeScreenshotCmd( const void* data ) {
 	return ( const void* )( cmd + 1 );
 }
 
-//==========================================================================
-//
-//	R_LevelShot
-//
 //	levelshots are specialized 128*128 thumbnails for the menu system, sampled
 // down from full screen distorted images
-//
-//==========================================================================
-
 static void R_LevelShot() {
 	char checkname[ MAX_OSPATH ];
 	String::Sprintf( checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName );
@@ -218,19 +161,12 @@ static void R_LevelShot() {
 	common->Printf( "Wrote %s\n", checkname );
 }
 
-//==========================================================================
-//
-//	R_ScreenShot_f
-//
 //	screenshot
 //	screenshot [silent]
 //	screenshot [levelshot]
 //	screenshot [filename]
 //
 //	Doesn't print the pacifier message if specified silent
-//
-//==========================================================================
-
 void R_ScreenShot_f() {
 	// if we have saved a previous screenshot, don't scan
 	// again, because recording demo avis can involve
@@ -265,12 +201,6 @@ void R_ScreenShot_f() {
 		common->Printf( "Wrote %s\n", checkname );
 	}
 }
-
-//==========================================================================
-//
-//	R_ScreenShotJPEG_f
-//
-//==========================================================================
 
 void R_ScreenShotJPEG_f() {
 	// if we have saved a previous screenshot, don't scan
@@ -307,14 +237,7 @@ void R_ScreenShotJPEG_f() {
 	}
 }
 
-//==========================================================================
-//
-//	MipColor
-//
 //	Find closest color in the palette for named color
-//
-//==========================================================================
-
 static int MipColor( int r, int g, int b ) {
 	int best = 0;
 	int bestdist = 256 * 256 * 3;
@@ -331,12 +254,6 @@ static int MipColor( int r, int g, int b ) {
 	}
 	return best;
 }
-
-//==========================================================================
-//
-//	SCR_DrawCharToSnap
-//
-//==========================================================================
 
 static void SCR_DrawCharToSnap( int num, byte* dest, int width ) {
 	int row = num >> 4;
@@ -358,12 +275,6 @@ static void SCR_DrawCharToSnap( int num, byte* dest, int width ) {
 	}
 }
 
-//==========================================================================
-//
-//	SCR_DrawStringToSnap
-//
-//==========================================================================
-
 static void SCR_DrawStringToSnap( const char* s, byte* buf, int x, int y, int width ) {
 	byte* dest = buf + ( y * width ) + x;
 	const unsigned char* p = ( const unsigned char* )s;
@@ -372,12 +283,6 @@ static void SCR_DrawStringToSnap( const char* s, byte* buf, int x, int y, int wi
 		dest += 8;
 	}
 }
-
-//==========================================================================
-//
-//	R_CaptureRemoteScreenShot
-//
-//==========================================================================
 
 void R_CaptureRemoteScreenShot( const char* string1, const char* string2, const char* string3, idList<byte>& buffer ) {
 	byte* newbuf = new byte[ glConfig.vidHeight * glConfig.vidWidth * 3 ];

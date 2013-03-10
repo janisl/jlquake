@@ -14,40 +14,13 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 
-// MACROS ------------------------------------------------------------------
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	CommaParse
-//
 //	This is unfortunate, but the skin files aren't compatable with our normal
 // parsing rules.
-//
-//==========================================================================
-
 static const char* CommaParse( char** data_p ) {
 	int c = 0, len;
 	char* data;
@@ -133,12 +106,6 @@ static const char* CommaParse( char** data_p ) {
 	*data_p = data;
 	return com_token;
 }
-
-//==========================================================================
-//
-//	R_RegisterSkin
-//
-//==========================================================================
 
 qhandle_t R_RegisterSkin( const char* name ) {
 	if ( !name || !name[ 0 ] ) {
@@ -291,12 +258,6 @@ qhandle_t R_RegisterSkin( const char* name ) {
 	return hSkin;
 }
 
-//==========================================================================
-//
-//	R_InitSkins
-//
-//==========================================================================
-
 void R_InitSkins() {
 	tr.numSkins = 1;
 
@@ -310,24 +271,12 @@ void R_InitSkins() {
 	skin->surfaces[ 0 ]->shader = tr.defaultShader;
 }
 
-//==========================================================================
-//
-//	R_GetSkinByHandle
-//
-//==========================================================================
-
 skin_t* R_GetSkinByHandle( qhandle_t hSkin ) {
 	if ( hSkin < 1 || hSkin >= tr.numSkins ) {
 		return tr.skins[ 0 ];
 	}
 	return tr.skins[ hSkin ];
 }
-
-//==========================================================================
-//
-//	R_SkinList_f
-//
-//==========================================================================
 
 void R_SkinList_f() {
 	common->Printf( "------------------\n" );
@@ -343,21 +292,9 @@ void R_SkinList_f() {
 	common->Printf( "------------------\n" );
 }
 
-//==========================================================================
-//
-//	R_RegisterSkinQ2
-//
-//==========================================================================
-
 image_t* R_RegisterSkinQ2( const char* name ) {
 	return R_FindImageFile( name, true, true, GL_CLAMP, false, IMG8MODE_Skin );
 }
-
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedModelSkin
-//
-//==========================================================================
 
 static void R_CreateOrUpdateTranslatedModelSkin( image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte* translation ) {
 	if ( !modelHandle ) {
@@ -376,31 +313,13 @@ static void R_CreateOrUpdateTranslatedModelSkin( image_t*& image, const char* na
 	R_CreateOrUpdateTranslatedSkin( image, name, pixels, translation, width, height );
 }
 
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedModelSkinQ1
-//
-//==========================================================================
-
 void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation ) {
 	R_CreateOrUpdateTranslatedModelSkin( image, name, modelHandle, q1_player_8bit_texels, translation );
 }
 
-//==========================================================================
-//
-//	R_CreateOrUpdateTranslatedModelSkinH2
-//
-//==========================================================================
-
 void R_CreateOrUpdateTranslatedModelSkinH2( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex ) {
 	R_CreateOrUpdateTranslatedModelSkin( image, name, modelHandle, h2_player_8bit_texels[ classIndex ], translation );
 }
-
-//==========================================================================
-//
-//	R_LoadQuakeWorldSkinData
-//
-//==========================================================================
 
 byte* R_LoadQuakeWorldSkinData( const char* name ) {
 	int width;
