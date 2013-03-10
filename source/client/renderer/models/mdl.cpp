@@ -1035,7 +1035,7 @@ float R_CalcEntityLight( refEntity_t* e ) {
 	return light;
 }
 
-void R_AddMdlSurfaces( trRefEntity_t* e ) {
+void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -1044,7 +1044,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e ) {
 		return;
 	}
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {

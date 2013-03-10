@@ -195,13 +195,13 @@ static msprite1frame_t* R_GetSpriteFrame( msprite1_t* psprite, trRefEntity_t* cu
 	}
 }
 
-void R_AddSprSurfaces( trRefEntity_t* e ) {
+void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
 
 	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {

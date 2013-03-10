@@ -387,7 +387,7 @@ static void R_AddWorldSurface( mbrush46_surface_t* surf, shader_t* shader, int d
 =============================================================
 */
 
-void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
+void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( ( e->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
@@ -423,7 +423,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent ) {
 		// draw the polygon
 		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
 			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 		}
 	}
 }

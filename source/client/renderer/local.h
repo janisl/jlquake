@@ -899,7 +899,7 @@ WORLD MAP
 
 #define BACKFACE_EPSILON    0.01
 
-void R_DrawBrushModelQ1( trRefEntity_t* e, bool Translucent );
+void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex );
 void R_DrawWorldQ1();
 void R_DrawBrushModelQ2( trRefEntity_t* e, int forcedSortIndex );
 void R_DrawWorldQ2();

@@ -903,7 +903,7 @@ void R_BackupModels();
 
 void Mod_LoadSpriteModel( model_t* mod, void* buffer );
 void Mod_FreeSpriteModel( model_t* mod );
-void R_AddSprSurfaces( trRefEntity_t* e );
+void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex );
 void RB_SurfaceSpr( msprite1_t* psprite );
 
 void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen );
@@ -914,7 +914,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite );
 void Mod_LoadMdlModel( model_t* mod, const void* buffer );
 void Mod_LoadMdlModelNew( model_t* mod, const void* buffer );
 void Mod_FreeMdlModel( model_t* mod );
-void R_AddMdlSurfaces( trRefEntity_t* e );
+void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex );
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr );
 bool R_MdlHasHexen2Transparency( model_t* Model );
 
