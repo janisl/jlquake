@@ -21,7 +21,6 @@
 #define POWERSUIT_SCALE         4.0F
 
 static float md2_shadelight[ 3 ];
-static vec4_t s_lerped[ MAX_MD2_VERTS ];
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	const dmd2_t* pinmodel = ( const dmd2_t* )buffer;
@@ -203,14 +202,12 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	float* lerp = s_lerped[ 0 ];
-
-	GL_LerpVerts( paliashdr->num_xyz, v, ov, verts, lerp, move, frontv, backv );
+	GL_LerpVerts( paliashdr->num_xyz, v, ov, verts, tess.xyz[ 0 ], move, frontv, backv );
 
 	if ( r_vertex_arrays->value ) {
 		float colorArray[ MAX_MD2_VERTS * 4 ];
 
-		qglVertexPointer( 3, GL_FLOAT, 16, s_lerped );		// padded for SIMD
+		qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );		// padded for SIMD
 
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 			qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
@@ -260,10 +257,6 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 			} while ( --count );
 			qglEnd();
 		}
-
-		if ( qglUnlockArraysEXT ) {
-			qglUnlockArraysEXT();
-		}
 	} else   {
 		while ( 1 ) {
 			// get the vertex count and primitive type
@@ -291,14 +284,15 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 					qglColor4f( l * md2_shadelight[ 0 ], l * md2_shadelight[ 1 ], l * md2_shadelight[ 2 ], alpha );
 				}
-				tess.xyz[ index_xyz ][ 0 ] = s_lerped[ index_xyz ][ 0 ];
-				tess.xyz[ index_xyz ][ 1 ] = s_lerped[ index_xyz ][ 1 ];
-				tess.xyz[ index_xyz ][ 2 ] = s_lerped[ index_xyz ][ 2 ];
 				R_ArrayElement( index_xyz );
 				order += 3;
 			} while ( --count );
 			qglEnd();
 		}
+	}
+
+	if ( r_vertex_arrays->value && qglUnlockArraysEXT ) {
+		qglUnlockArraysEXT();
 	}
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -312,6 +306,18 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
 
 	float height = -lheight + 1.0;
+
+	for ( int i = 0; i < paliashdr->num_xyz; i++ ) {
+		vec3_t point;
+		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
+
+		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
+		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
+		point[ 2 ] = height;
+		tess.xyz[ i ][ 0 ] = point[ 0 ];
+		tess.xyz[ i ][ 1 ] = point[ 1 ];
+		tess.xyz[ i ][ 2 ] = point[ 2 ];
+	}
 
 	while ( 1 ) {
 		// get the vertex count and primitive type
@@ -327,17 +333,8 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 		}
 
 		do {
-			vec3_t point;
-			Com_Memcpy( point, s_lerped[ order[ 2 ] ], sizeof ( point ) );
-
-			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
-			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
-			point[ 2 ] = height;
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 0 ] = ( ( float* )order )[ 0 ];
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 1 ] = ( ( float* )order )[ 1 ];
-			tess.xyz[ order[ 2 ] ][ 0 ] = point[ 0 ];
-			tess.xyz[ order[ 2 ] ][ 1 ] = point[ 1 ];
-			tess.xyz[ order[ 2 ] ][ 2 ] = point[ 2 ];
 			R_ArrayElement( order[ 2 ] );
 
 			order += 3;
