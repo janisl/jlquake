@@ -500,44 +500,22 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa, int alpha ) {
 	}
 }
 
-static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p, float soffset, float toffset ) {
-	if ( soffset == 0 && toffset == 0 ) {
-		for (; p != 0; p = p->chain ) {
-			float* v = p->verts[ 0 ];
-			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				tess.svars.colors[ j ][ 0 ] = 255;
-				tess.svars.colors[ j ][ 1 ] = 255;
-				tess.svars.colors[ j ][ 2 ] = 255;
-				tess.svars.colors[ j ][ 3 ] = 255;
-				tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ];
-				tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ];
-				tess.xyz[ j ][ 0 ] = v[ 0 ];
-				tess.xyz[ j ][ 1 ] = v[ 1 ];
-				tess.xyz[ j ][ 2 ] = v[ 2 ];
-			}
-			EnableArrays( p->numverts );
-			DrawPolyElementsQ2( p );
-			DisableArrays();
-		}
-	} else {
-		for (; p != 0; p = p->chain ) {
-			float* v = p->verts[ 0 ];
-			for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
-				tess.svars.colors[ j ][ 0 ] = 255;
-				tess.svars.colors[ j ][ 1 ] = 255;
-				tess.svars.colors[ j ][ 2 ] = 255;
-				tess.svars.colors[ j ][ 3 ] = 255;
-				tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ] - soffset;
-				tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ] - toffset;
-				tess.xyz[ j ][ 0 ] = v[ 0 ];
-				tess.xyz[ j ][ 1 ] = v[ 1 ];
-				tess.xyz[ j ][ 2 ] = v[ 2 ];
-			}
-			EnableArrays( p->numverts );
-			DrawPolyElementsQ2(  p );
-			DisableArrays();
-		}
+static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
+	float* v = p->verts[ 0 ];
+	for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
+		tess.svars.colors[ j ][ 0 ] = 255;
+		tess.svars.colors[ j ][ 1 ] = 255;
+		tess.svars.colors[ j ][ 2 ] = 255;
+		tess.svars.colors[ j ][ 3 ] = 255;
+		tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ];
+		tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ];
+		tess.xyz[ j ][ 0 ] = v[ 0 ];
+		tess.xyz[ j ][ 1 ] = v[ 1 ];
+		tess.xyz[ j ][ 2 ] = v[ 2 ];
 	}
+	EnableArrays( p->numverts );
+	DrawPolyElementsQ2(  p );
+	DisableArrays();
 }
 
 static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
@@ -591,7 +569,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image, int alp
 	GL_Bind( tr.lightmaps[ fa->lightmaptexturenum ] );
 
 	if ( fa->polys ) {
-		DrawGLPolyChainQ2( fa->polys, 0, 0 );
+		DrawGLPolyChainQ2( fa->polys );
 	}
 
 	/*
@@ -673,52 +651,45 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	GL_MBind( 0, image );
 	GL_MBind( 1, tr.lightmaps[ surf->lightmaptexturenum ] );
 
+	p = surf->polys;
+	v = p->verts[ 0 ];
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
 		float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
 		if ( scroll == 0.0 ) {
 			scroll = -64.0;
 		}
 
-		for ( p = surf->polys; p; p = p->chain ) {
-			v = p->verts[ 0 ];
-			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-				tess.svars.colors[ i ][ 0 ] = 255;
-				tess.svars.colors[ i ][ 1 ] = 255;
-				tess.svars.colors[ i ][ 2 ] = 255;
-				tess.svars.colors[ i ][ 3 ] = alpha;
-				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
-				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-				tess.xyz[ i ][ 0 ] = v[ 0 ];
-				tess.xyz[ i ][ 1 ] = v[ 1 ];
-				tess.xyz[ i ][ 2 ] = v[ 2 ];
-			}
-			EnableMultitexturedArrays( p->numverts );
-			DrawPolyElementsQ2( p );
-			DisableMultitexturedArrays();
+		for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
+			tess.svars.colors[ i ][ 0 ] = 255;
+			tess.svars.colors[ i ][ 1 ] = 255;
+			tess.svars.colors[ i ][ 2 ] = 255;
+			tess.svars.colors[ i ][ 3 ] = alpha;
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+			tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 	} else {
-		for ( p = surf->polys; p; p = p->chain ) {
-			v = p->verts[ 0 ];
-			for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-				tess.svars.colors[ i ][ 0 ] = 255;
-				tess.svars.colors[ i ][ 1 ] = 255;
-				tess.svars.colors[ i ][ 2 ] = 255;
-				tess.svars.colors[ i ][ 3 ] = alpha;
-				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-				tess.xyz[ i ][ 0 ] = v[ 0 ];
-				tess.xyz[ i ][ 1 ] = v[ 1 ];
-				tess.xyz[ i ][ 2 ] = v[ 2 ];
-			}
-			EnableMultitexturedArrays( p->numverts );
-			DrawPolyElementsQ2( p );
-			DisableMultitexturedArrays();
+		for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
+			tess.svars.colors[ i ][ 0 ] = 255;
+			tess.svars.colors[ i ][ 1 ] = 255;
+			tess.svars.colors[ i ][ 2 ] = 255;
+			tess.svars.colors[ i ][ 3 ] = alpha;
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+			tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 	}
+	EnableMultitexturedArrays( p->numverts );
+	DrawPolyElementsQ2( p );
+	DisableMultitexturedArrays();
 
 	GL_SelectTexture( 1 );
 	qglDisable( GL_TEXTURE_2D );
