@@ -77,24 +77,26 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	float* up = backEnd.viewParms.orient.axis[ 2 ];
 	float* left = backEnd.viewParms.orient.axis[ 1 ];
 
-	float alpha = 1.0F;
+	int alpha = 255;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
+		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
-	if ( alpha != 1.0F ) {
+	if ( alpha != 255 ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	} else   {
 		GL_State( GLS_DEFAULT | GLS_ATEST_GE_80 );
 	}
 
-	qglColor4f( 1, 1, 1, alpha );
-
 	GL_Bind( R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ] );
 
 	qglBegin( GL_QUADS );
 
+	tess.svars.colors[ 0 ][ 0 ] = 255;
+	tess.svars.colors[ 0 ][ 1 ] = 255;
+	tess.svars.colors[ 0 ][ 2 ] = 255;
+	tess.svars.colors[ 0 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = 0;
 	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = 1;
 	VectorScale( up, -frame->origin_y, point );
@@ -102,8 +104,12 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 0 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 0 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 0 );
+	R_ArrayElementDiscrete( 0 );
 
+	tess.svars.colors[ 1 ][ 0 ] = 255;
+	tess.svars.colors[ 1 ][ 1 ] = 255;
+	tess.svars.colors[ 1 ][ 2 ] = 255;
+	tess.svars.colors[ 1 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = 0;
 	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = 0;
 	VectorScale( up, frame->height - frame->origin_y, point );
@@ -111,8 +117,12 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 1 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 1 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 1 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 1 );
+	R_ArrayElementDiscrete( 1 );
 
+	tess.svars.colors[ 2 ][ 0 ] = 255;
+	tess.svars.colors[ 2 ][ 1 ] = 255;
+	tess.svars.colors[ 2 ][ 2 ] = 255;
+	tess.svars.colors[ 2 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = 1;
 	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = 0;
 	VectorScale( up, frame->height - frame->origin_y, point );
@@ -120,8 +130,12 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 2 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 2 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 2 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 2 );
+	R_ArrayElementDiscrete( 2 );
 
+	tess.svars.colors[ 3 ][ 0 ] = 255;
+	tess.svars.colors[ 3 ][ 1 ] = 255;
+	tess.svars.colors[ 3 ][ 2 ] = 255;
+	tess.svars.colors[ 3 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = 1;
 	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = 1;
 	VectorScale( up, -frame->origin_y, point );
@@ -129,9 +143,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ 3 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 3 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 3 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 3 );
+	R_ArrayElementDiscrete( 3 );
 
 	qglEnd();
-
-	qglColor4f( 1, 1, 1, 1 );
 }

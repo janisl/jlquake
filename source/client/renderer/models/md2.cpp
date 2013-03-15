@@ -17,10 +17,11 @@
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
+#include "../../../common/math/Math.h"
 
 #define POWERSUIT_SCALE         4.0F
 
-static float md2_shadelight[ 3 ];
+static int md2_shadelight[ 3 ];
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	const dmd2_t* pinmodel = ( const dmd2_t* )buffer;
@@ -168,11 +169,11 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
 
-	float alpha;
+	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ] / 255.0;
+		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
 	} else   {
-		alpha = 1.0;
+		alpha = 255;
 	}
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -210,7 +211,7 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 		qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );		// padded for SIMD
 
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-			qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
+			qglColor4ub( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
 		} else   {
 			qglEnableClientState( GL_COLOR_ARRAY );
 			qglColorPointer( 3, GL_FLOAT, 0, colorArray );
@@ -221,9 +222,9 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 			for ( int i = 0; i < paliashdr->num_xyz; i++ ) {
 				float l = shadedots[ verts[ i ].lightnormalindex ];
 
-				colorArray[ i * 3 + 0 ] = l * md2_shadelight[ 0 ];
-				colorArray[ i * 3 + 1 ] = l * md2_shadelight[ 1 ];
-				colorArray[ i * 3 + 2 ] = l * md2_shadelight[ 2 ];
+				colorArray[ i * 3 + 0 ] = l * md2_shadelight[ 0 ] / 255.0;
+				colorArray[ i * 3 + 1 ] = l * md2_shadelight[ 1 ] / 255.0;
+				colorArray[ i * 3 + 2 ] = l * md2_shadelight[ 2 ] / 255.0;
 			}
 		}
 
@@ -277,14 +278,20 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 				tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = ( ( float* )order )[ 0 ];
 				tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = ( ( float* )order )[ 1 ];
 				if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-					qglColor4f( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
+					tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
+					tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
+					tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
+					tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 				} else {
 					// normals and vertexes come from the frame list
 					float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
 
-					qglColor4f( l * md2_shadelight[ 0 ], l * md2_shadelight[ 1 ], l * md2_shadelight[ 2 ], alpha );
+					tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
+					tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
+					tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+					tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 				}
-				R_ArrayElement( index_xyz );
+				R_ArrayElementDiscrete( index_xyz );
 				order += 3;
 			} while ( --count );
 			qglEnd();
@@ -308,6 +315,10 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 	float height = -lheight + 1.0;
 
 	for ( int i = 0; i < paliashdr->num_xyz; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = 0;
+		tess.svars.colors[ i ][ 1 ] = 0;
+		tess.svars.colors[ i ][ 2 ] = 0;
+		tess.svars.colors[ i ][ 3 ] = 127;
 		vec3_t point;
 		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
 
@@ -335,7 +346,7 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 		do {
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 0 ] = ( ( float* )order )[ 0 ];
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 1 ] = ( ( float* )order )[ 1 ];
-			R_ArrayElement( order[ 2 ] );
+			R_ArrayElementDiscrete( order[ 2 ] );
 
 			order += 3;
 		} while ( --count );
@@ -422,14 +433,19 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	//
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = backEnd.currentEntity->e.shaderRGBA[ i ] / 255.0;
+			md2_shadelight[ i ] = backEnd.currentEntity->e.shaderRGBA[ i ];
 		}
 	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT )     {
 		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = backEnd.currentEntity->e.absoluteLight;
+			md2_shadelight[ i ] = backEnd.currentEntity->e.absoluteLight * 255;
 		}
-	} else   {
-		R_LightPointQ2( backEnd.currentEntity->e.origin, md2_shadelight, backEnd.refdef );
+	} else {
+		float l[4];
+		R_LightPointQ2( backEnd.currentEntity->e.origin, l, backEnd.refdef );
+		md2_shadelight[0] = Min(l[0] * 255, 255.0f);
+		md2_shadelight[1] = Min(l[1] * 255, 255.0f);
+		md2_shadelight[2] = Min(l[2] * 255, 255.0f);
+		md2_shadelight[3] = Min(l[3] * 255, 255.0f);
 
 		// player lighting hack for communication back to server
 		// big hack!
@@ -438,15 +454,15 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 			// as the mono value returned by software
 			if ( md2_shadelight[ 0 ] > md2_shadelight[ 1 ] ) {
 				if ( md2_shadelight[ 0 ] > md2_shadelight[ 2 ] ) {
-					r_lightlevel->value = 150 * md2_shadelight[ 0 ];
+					r_lightlevel->value = 150 * md2_shadelight[ 0 ] / 255;
 				} else   {
-					r_lightlevel->value = 150 * md2_shadelight[ 2 ];
+					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
 				}
 			} else   {
 				if ( md2_shadelight[ 1 ] > md2_shadelight[ 2 ] ) {
-					r_lightlevel->value = 150 * md2_shadelight[ 1 ];
+					r_lightlevel->value = 150 * md2_shadelight[ 1 ] / 255;
 				} else   {
-					r_lightlevel->value = 150 * md2_shadelight[ 2 ];
+					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
 				}
 			}
 		}
@@ -455,23 +471,23 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	if ( backEnd.currentEntity->e.renderfx & RF_MINLIGHT ) {
 		int i;
 		for ( i = 0; i < 3; i++ ) {
-			if ( md2_shadelight[ i ] > 0.1 ) {
+			if ( md2_shadelight[ i ] > 25 ) {
 				break;
 			}
 		}
 		if ( i == 3 ) {
-			md2_shadelight[ 0 ] = 0.1;
-			md2_shadelight[ 1 ] = 0.1;
-			md2_shadelight[ 2 ] = 0.1;
+			md2_shadelight[ 0 ] = 25;
+			md2_shadelight[ 1 ] = 25;
+			md2_shadelight[ 2 ] = 25;
 		}
 	}
 
 	if ( backEnd.currentEntity->e.renderfx & RF_GLOW ) {
 		// bonus items will pulse with time
-		float scale = 0.1 * sin( backEnd.refdef.floatTime * 7 );
+		int scale = 25 * sin( backEnd.refdef.floatTime * 7 );
 		for ( int i = 0; i < 3; i++ ) {
-			float min = md2_shadelight[ i ] * 0.8;
-			md2_shadelight[ i ] += scale;
+			int min = md2_shadelight[ i ] * 0.8;
+			md2_shadelight[ i ] = Min(md2_shadelight[ i ] + scale, 255);
 			if ( md2_shadelight[ i ] < min ) {
 				md2_shadelight[ i ] = min;
 			}
@@ -481,9 +497,9 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	// =================
 	// PGM	ir goggles color override
 	if ( backEnd.refdef.rdflags & RDF_IRGOGGLES && backEnd.currentEntity->e.renderfx & RF_IR_VISIBLE ) {
-		md2_shadelight[ 0 ] = 1.0;
-		md2_shadelight[ 1 ] = 0.0;
-		md2_shadelight[ 2 ] = 0.0;
+		md2_shadelight[ 0 ] = 255;
+		md2_shadelight[ 1 ] = 0;
+		md2_shadelight[ 2 ] = 0;
 	}
 	// PGM
 	// =================
@@ -580,10 +596,8 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 		qglLoadMatrixf( backEnd.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		qglColor4f( 0, 0, 0, 0.5 );
 		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame );
 		qglEnable( GL_TEXTURE_2D );
 		qglPopMatrix();
 	}
-	qglColor4f( 1, 1, 1, 1 );
 }

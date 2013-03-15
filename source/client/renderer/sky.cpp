@@ -168,12 +168,16 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 			float s = ( speedscale + dir[ 0 ] ) * ( 1.0 / 128 );
 			float t = ( speedscale + dir[ 1 ] ) * ( 1.0 / 128 );
 
+			tess.svars.colors[ i ][ 0 ] = 255;
+			tess.svars.colors[ i ][ 1 ] = 255;
+			tess.svars.colors[ i ][ 2 ] = 255;
+			tess.svars.colors[ i ][ 3 ] = 255;
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElement( i );
+			R_ArrayElementDiscrete( i );
 		}
 		qglEnd();
 	}
@@ -533,6 +537,7 @@ static void DrawSkySideInner( image_t* image, const int mins[ 2 ], const int max
 
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
+	qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
 	for ( int t = mins[ 1 ] + HALF_SKY_SUBDIVISIONS; t < maxs[ 1 ] + HALF_SKY_SUBDIVISIONS; t++ ) {
 		qglBegin( GL_TRIANGLE_STRIP );
 

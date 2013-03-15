@@ -510,8 +510,10 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	GL_Bind( cmd->image );
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
-	qglColor4f( cmd->r, cmd->g, cmd->b, cmd->a );
-	qglBegin( GL_QUADS );
+	tess.svars.colors[ 0 ][ 0 ] = cmd->r * 255;
+	tess.svars.colors[ 0 ][ 1 ] = cmd->g * 255;
+	tess.svars.colors[ 0 ][ 2 ] = cmd->b * 255;
+	tess.svars.colors[ 0 ][ 3 ] = cmd->a * 255;
 
 	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = cmd->s1;
 	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = cmd->t1;
@@ -519,7 +521,11 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xyz[ 0 ][ 0 ] = cmd->x;
 	tess.xyz[ 0 ][ 1 ] = cmd->y;
 	tess.xyz[ 0 ][ 2 ] = 0;
-	R_ArrayElement( 0 );
+
+	tess.svars.colors[ 1 ][ 0 ] = cmd->r * 255;
+	tess.svars.colors[ 1 ][ 1 ] = cmd->g * 255;
+	tess.svars.colors[ 1 ][ 2 ] = cmd->b * 255;
+	tess.svars.colors[ 1 ][ 3 ] = cmd->a * 255;
 
 	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = cmd->s2;
 	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = cmd->t1;
@@ -527,7 +533,11 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xyz[ 1 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ 1 ][ 1 ] = cmd->y;
 	tess.xyz[ 1 ][ 2 ] = 0;
-	R_ArrayElement( 1 );
+
+	tess.svars.colors[ 2 ][ 0 ] = cmd->r * 255;
+	tess.svars.colors[ 2 ][ 1 ] = cmd->g * 255;
+	tess.svars.colors[ 2 ][ 2 ] = cmd->b * 255;
+	tess.svars.colors[ 2 ][ 3 ] = cmd->a * 255;
 
 	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = cmd->s2;
 	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = cmd->t2;
@@ -535,7 +545,11 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xyz[ 2 ][ 0 ] = cmd->x + cmd->w;
 	tess.xyz[ 2 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ 2 ][ 2 ] = 0;
-	R_ArrayElement( 2 );
+
+	tess.svars.colors[ 3 ][ 0 ] = cmd->r * 255;
+	tess.svars.colors[ 3 ][ 1 ] = cmd->g * 255;
+	tess.svars.colors[ 3 ][ 2 ] = cmd->b * 255;
+	tess.svars.colors[ 3 ][ 3 ] = cmd->a * 255;
 
 	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = cmd->s1;
 	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = cmd->t2;
@@ -543,8 +557,12 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xyz[ 3 ][ 0 ] = cmd->x;
 	tess.xyz[ 3 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ 3 ][ 2 ] = 0;
-	R_ArrayElement( 3 );
 
+	qglBegin( GL_QUADS );
+	R_ArrayElementDiscrete( 0 );
+	R_ArrayElementDiscrete( 1 );
+	R_ArrayElementDiscrete( 2 );
+	R_ArrayElementDiscrete( 3 );
 	qglEnd();
 
 	return ( const void* )( cmd + 1 );

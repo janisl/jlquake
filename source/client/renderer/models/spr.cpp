@@ -210,10 +210,11 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
+	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		qglColor4f( 1, 1, 1, r_wateralpha->value );
-	} else   {
-		qglColor3f( 1, 1, 1 );
+		alpha = r_wateralpha->value * 255;
+	} else {
+		alpha = 255;
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
@@ -306,6 +307,10 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	qglBegin( GL_QUADS );
 
+	tess.svars.colors[ 0 ][ 0 ] = 255;
+	tess.svars.colors[ 0 ][ 1 ] = 255;
+	tess.svars.colors[ 0 ][ 2 ] = 255;
+	tess.svars.colors[ 0 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = 0;
 	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
@@ -313,8 +318,12 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 0 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 0 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 0 );
+	R_ArrayElementDiscrete( 0 );
 
+	tess.svars.colors[ 1 ][ 0 ] = 255;
+	tess.svars.colors[ 1 ][ 1 ] = 255;
+	tess.svars.colors[ 1 ][ 2 ] = 255;
+	tess.svars.colors[ 1 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = 0;
 	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
@@ -322,8 +331,12 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 1 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 1 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 1 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 1 );
+	R_ArrayElementDiscrete( 1 );
 
+	tess.svars.colors[ 2 ][ 0 ] = 255;
+	tess.svars.colors[ 2 ][ 1 ] = 255;
+	tess.svars.colors[ 2 ][ 2 ] = 255;
+	tess.svars.colors[ 2 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = 1;
 	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
@@ -331,8 +344,12 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 2 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 2 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 2 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 2 );
+	R_ArrayElementDiscrete( 2 );
 
+	tess.svars.colors[ 3 ][ 0 ] = 255;
+	tess.svars.colors[ 3 ][ 1 ] = 255;
+	tess.svars.colors[ 3 ][ 2 ] = 255;
+	tess.svars.colors[ 3 ][ 3 ] = alpha;
 	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = 1;
 	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
@@ -340,7 +357,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 3 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 3 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 3 ][ 2 ] = point[ 2 ];
-	R_ArrayElement( 3 );
+	R_ArrayElementDiscrete( 3 );
 
 	qglEnd();
 }

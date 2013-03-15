@@ -841,7 +841,6 @@ void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
 void R_DrawFullBrightPoly( mbrush29_surface_t* s );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
-void EmitWaterPolysQ1( mbrush29_surface_t* fa );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
 

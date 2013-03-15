@@ -472,12 +472,16 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+		tess.svars.colors[ i ][ 0 ] = 255;
+		tess.svars.colors[ i ][ 1 ] = 255;
+		tess.svars.colors[ i ][ 2 ] = 255;
+		tess.svars.colors[ i ][ 3 ] = 255;
 		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElement( i );
+		R_ArrayElementDiscrete( i );
 	}
 	qglEnd();
 }
@@ -487,14 +491,16 @@ static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+		tess.svars.colors[ i ][ 0 ] = 255;
+		tess.svars.colors[ i ][ 1 ] = 255;
+		tess.svars.colors[ i ][ 2 ] = 255;
+		tess.svars.colors[ i ][ 3 ] = 255;
 		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-		qglTexCoord2f( v[ 3 ], v[ 4 ] );
-
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElement( i );
+		R_ArrayElementDiscrete( i );
 	}
 	qglEnd();
 }
@@ -503,19 +509,22 @@ static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
 	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+		tess.svars.colors[ i ][ 0 ] = 255;
+		tess.svars.colors[ i ][ 1 ] = 255;
+		tess.svars.colors[ i ][ 2 ] = 255;
+		tess.svars.colors[ i ][ 3 ] = 255;
 		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
 		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
-
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElement( i );
+		R_ArrayElementDiscrete( i );
 	}
 	qglEnd();
 }
 
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
-void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
+static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
 		qglBegin( GL_POLYGON );
 		float* v = p->verts[ 0 ];
@@ -529,12 +538,16 @@ void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 			float t = ot + r_turbsin[ ( int )( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) & 255 ];
 			t *= ( 1.0 / 64 );
 
+			tess.svars.colors[ i ][ 0 ] = 255;
+			tess.svars.colors[ i ][ 1 ] = 255;
+			tess.svars.colors[ i ][ 2 ] = 255;
+			tess.svars.colors[ i ][ 3 ] = alpha;
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElement( i );
+			R_ArrayElementDiscrete( i );
 		}
 		qglEnd();
 	}
@@ -555,7 +568,6 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
-	qglColor3f( 1, 1, 1 );
 	GL_Cull( CT_FRONT_SIDED );
 	//
 	// normal lightmaped poly
@@ -591,6 +603,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = 255;
+				tess.svars.colors[ i ][ 1 ] = 255;
+				tess.svars.colors[ i ][ 2 ] = 255;
+				tess.svars.colors[ i ][ 3 ] = 255;
 				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
@@ -598,7 +614,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElement( i );
+				R_ArrayElementDiscrete( i );
 			}
 			qglEnd();
 
@@ -621,6 +637,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglBegin( GL_POLYGON );
 				v = p->verts[ 0 ];
 				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+					tess.svars.colors[ i ][ 0 ] = 255;
+					tess.svars.colors[ i ][ 1 ] = 255;
+					tess.svars.colors[ i ][ 2 ] = 255;
+					tess.svars.colors[ i ][ 3 ] = 255;
 					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 					tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
@@ -628,7 +648,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					tess.xyz[ i ][ 0 ] = v[ 0 ];
 					tess.xyz[ i ][ 1 ] = v[ 1 ];
 					tess.xyz[ i ][ 2 ] = v[ 2 ];
-					R_ArrayElement( i );
+					R_ArrayElementDiscrete( i );
 				}
 				qglEnd();
 			}
@@ -638,21 +658,18 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			R_DrawFullBrightPoly( s );
 			return;
 		} else {
-			float alpha_val = 1.0f;
-			float intensity = 1.0f;
+			int alpha_val = 255;
+			int intensity = 255;
 			if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-				alpha_val = r_wateralpha->value;
-				intensity = 1;
+				alpha_val = r_wateralpha->value * 255;
 			} else {
 				GL_State( GLS_DEFAULT );
 			}
 			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 				// backEnd.currentEntity->abslight   0 - 255
-				intensity = backEnd.currentEntity->e.absoluteLight;
+				intensity = backEnd.currentEntity->e.absoluteLight * 255;
 			}
-
-			qglColor4f( intensity, intensity, intensity, alpha_val );
 
 			mbrush29_glpoly_t* p = s->polys;
 
@@ -661,12 +678,17 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = intensity;
+				tess.svars.colors[ i ][ 1 ] = intensity;
+				tess.svars.colors[ i ][ 2 ] = intensity;
+				tess.svars.colors[ i ][ 3 ] = alpha_val;
+
 				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElement( i );
+				R_ArrayElementDiscrete( i );
 			}
 			qglEnd();
 
@@ -677,17 +699,21 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				qglBegin( GL_POLYGON );
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+					tess.svars.colors[ i ][ 0 ] = 255;
+					tess.svars.colors[ i ][ 1 ] = 255;
+					tess.svars.colors[ i ][ 2 ] = 255;
+					tess.svars.colors[ i ][ 3 ] = 255;
+
 					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
 					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 					tess.xyz[ i ][ 0 ] = v[ 0 ];
 					tess.xyz[ i ][ 1 ] = v[ 1 ];
 					tess.xyz[ i ][ 2 ] = v[ 2 ];
-					R_ArrayElement( i );
+					R_ArrayElementDiscrete( i );
 				}
 				qglEnd();
 			}
 
-			qglColor4f( 1, 1, 1, 1 );
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
 				R_DrawFullBrightPoly( s );
 			}
@@ -699,16 +725,16 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	// subdivided water surface warp
 	//
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
+		int alpha;
 		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
 			GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-			qglColor4f( 1, 1, 1, r_wateralpha->value );
+			alpha = r_wateralpha->value * 255;
 		} else {
 			GL_State( GLS_DEFAULT );
-			qglColor4f( 1, 1, 1, 1 );
+			alpha = 255;
 		}
 		GL_Bind( s->texinfo->texture->gl_texture );
-		EmitWaterPolysQ1( s );
-		qglColor4f( 1, 1, 1, 1 );
+		EmitWaterPolysQ1( s, alpha );
 		return;
 	}
 
@@ -760,6 +786,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		qglBegin( GL_TRIANGLE_FAN );
 		float* v = p->verts[ 0 ];
 		for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			tess.svars.colors[ i ][ 0 ] = 255;
+			tess.svars.colors[ i ][ 1 ] = 255;
+			tess.svars.colors[ i ][ 2 ] = 255;
+			tess.svars.colors[ i ][ 3 ] = 255;
+
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
@@ -768,7 +799,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 			tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElement( i );
+			R_ArrayElementDiscrete( i );
 		}
 		qglEnd();
 
@@ -791,6 +822,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglBegin( GL_TRIANGLE_FAN );
 			v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = 255;
+				tess.svars.colors[ i ][ 1 ] = 255;
+				tess.svars.colors[ i ][ 2 ] = 255;
+				tess.svars.colors[ i ][ 3 ] = 255;
+
 				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
@@ -799,7 +835,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 				tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElement( i );
+				R_ArrayElementDiscrete( i );
 			}
 			qglEnd();
 		}

@@ -897,13 +897,13 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	verts += posenum * paliashdr->poseverts;
 	int* order = paliashdr->commands;
 
-	float r, g, b;
+	int r, g, b;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
-		r = backEnd.currentEntity->e.shaderRGBA[ 0 ] / 255.0;
-		g = backEnd.currentEntity->e.shaderRGBA[ 1 ] / 255.0;
-		b = backEnd.currentEntity->e.shaderRGBA[ 2 ] / 255.0;
+		r = backEnd.currentEntity->e.shaderRGBA[ 0 ];
+		g = backEnd.currentEntity->e.shaderRGBA[ 1 ];
+		b = backEnd.currentEntity->e.shaderRGBA[ 2 ];
 	} else   {
-		r = g = b = 1;
+		r = g = b = 255;
 	}
 
 	while ( 1 ) {
@@ -930,11 +930,14 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 			if ( overBrights ) {
 				l -= 1;
 			}
-			qglColor4f( r * l, g * l, b * l, model_constant_alpha );
+			tess.svars.colors[ 0 ][ 0 ] = r * l;
+			tess.svars.colors[ 0 ][ 1 ] = g * l;
+			tess.svars.colors[ 0 ][ 2 ] = b * l;
+			tess.svars.colors[ 0 ][ 3 ] = model_constant_alpha * 255;
 			tess.xyz[ 0 ][ 0 ] = verts->v[ 0 ];
 			tess.xyz[ 0 ][ 1 ] = verts->v[ 1 ];
 			tess.xyz[ 0 ][ 2 ] = verts->v[ 2 ];
-			R_ArrayElement( 0 );
+			R_ArrayElementDiscrete( 0 );
 			verts++;
 		} while ( --count );
 
@@ -966,6 +969,10 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		}
 
 		do {
+			tess.svars.colors[ 0 ][ 0 ] = 0;
+			tess.svars.colors[ 0 ][ 1 ] = 0;
+			tess.svars.colors[ 0 ][ 2 ] = 0;
+			tess.svars.colors[ 0 ][ 3 ] = 127;
 			// texture coordinates come from the draw list
 			tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = ( ( float* )order )[ 0 ];
 			tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = ( ( float* )order )[ 1 ];
@@ -983,7 +990,7 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 			tess.xyz[ 0 ][ 0 ] = point[ 0 ];
 			tess.xyz[ 0 ][ 1 ] = point[ 1 ];
 			tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-			R_ArrayElement( 0 );
+			R_ArrayElementDiscrete( 0 );
 
 			verts++;
 		} while ( --count );
@@ -1163,10 +1170,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		qglPushMatrix();
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		qglColor4f( 0, 0, 0, 0.5 );
 		GL_DrawAliasShadow( paliashdr, lastposenum );
 		qglEnable( GL_TEXTURE_2D );
-		qglColor4f( 1,1,1,1 );
 		qglPopMatrix();
 	}
 }

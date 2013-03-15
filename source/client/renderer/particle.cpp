@@ -66,28 +66,38 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 		scale = p->size + scale * 0.004;
 	}
 
-	qglColor4ubv( p->rgba );
-
+	tess.svars.colors[ 0 ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ 0 ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ 0 ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ 0 ][ 3 ] = p->rgba[3];
 	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = s1;
 	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = t1;
 	tess.xyz[ 0 ][ 0 ] = p->origin[ 0 ];
 	tess.xyz[ 0 ][ 1 ] = p->origin[ 1 ];
 	tess.xyz[ 0 ][ 2 ] = p->origin[ 2 ];
-	R_ArrayElement( 0 );
+	R_ArrayElementDiscrete( 0 );
 
+	tess.svars.colors[ 1 ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ 1 ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ 1 ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ 1 ][ 3 ] = p->rgba[3];
 	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = s2;
 	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = t1;
 	tess.xyz[ 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
 	tess.xyz[ 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
 	tess.xyz[ 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
-	R_ArrayElement( 1 );
+	R_ArrayElementDiscrete( 1 );
 
+	tess.svars.colors[ 2 ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ 2 ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ 2 ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ 2 ][ 3 ] = p->rgba[3];
 	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = s1;
 	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = t2;
 	tess.xyz[ 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
 	tess.xyz[ 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
 	tess.xyz[ 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
-	R_ArrayElement( 2 );
+	R_ArrayElementDiscrete( 2 );
 }
 
 static void R_DrawParticleTriangles() {
@@ -126,7 +136,6 @@ static void R_DrawParticleTriangles() {
 
 	qglEnd();
 	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
-	qglColor4f( 1, 1, 1, 1 );
 }
 
 static void R_DrawParticlePoints() {
@@ -143,7 +152,6 @@ static void R_DrawParticlePoints() {
 	}
 	qglEnd();
 
-	qglColor4f( 1.0F, 1.0F, 1.0F, 1.0F );
 	GL_State( GLS_DEPTHMASK_TRUE );
 	qglEnable( GL_TEXTURE_2D );
 }

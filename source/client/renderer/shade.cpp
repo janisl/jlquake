@@ -37,18 +37,8 @@ shaderCommands_t tess;
 
 bool setArraysOnce;
 
-void R_ArrayElement( GLint index ) {
-	if ( glState.currenttmu ) {
-		qglMultiTexCoord2fARB( 0, tess.svars.texcoords[ 0 ][ index ][ 0 ], tess.svars.texcoords[ 0 ][ index ][ 1 ] );
-		qglMultiTexCoord2fARB( 1, tess.svars.texcoords[ 1 ][ index ][ 0 ], tess.svars.texcoords[ 1 ][ index ][ 1 ] );
-	} else   {
-		qglTexCoord2fv( tess.svars.texcoords[ 0 ][ index ] );
-	}
-	qglVertex3fv( tess.xyz[ index ] );
-}
-
 //	This is just for OpenGL conformance testing, it should never be the fastest
-static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
+void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );
 	if ( glState.currenttmu ) {
 		qglMultiTexCoord2fARB( 0, tess.svars.texcoords[ 0 ][ index ][ 0 ], tess.svars.texcoords[ 0 ][ index ][ 1 ] );
