@@ -497,8 +497,26 @@ void RB_SetGL2D() {
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }
 
+static void RB_Set2DVertexCoords( const stretchPicCommand_t* cmd, int numVerts ) {
+	tess.xyz[ numVerts ][ 0 ] = cmd->x;
+	tess.xyz[ numVerts ][ 1 ] = cmd->y;
+	tess.xyz[ numVerts ][ 2 ] = 0;
+
+	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
+	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
+	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
+
+	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
+	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
+	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
+
+	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
+	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
+	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
+}
+
 static const void* RB_Draw2DQuad( const void* data ) {
-	const draw2DQuadCommand_t* cmd = ( const draw2DQuadCommand_t* )data;
+	const stretchPicCommand_t* cmd = ( const stretchPicCommand_t* )data;
 
 	if ( !backEnd.projection2D ) {
 		RB_SetGL2D();
@@ -510,6 +528,8 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	GL_Bind( cmd->image );
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
+	RB_Set2DVertexCoords( cmd, 0 );
+
 	tess.svars.colors[ 0 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 0 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 0 ][ 2 ] = cmd->b * 255;
@@ -517,10 +537,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 
 	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = cmd->s1;
 	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = cmd->t1;
-
-	tess.xyz[ 0 ][ 0 ] = cmd->x;
-	tess.xyz[ 0 ][ 1 ] = cmd->y;
-	tess.xyz[ 0 ][ 2 ] = 0;
 
 	tess.svars.colors[ 1 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 1 ][ 1 ] = cmd->g * 255;
@@ -530,10 +546,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = cmd->s2;
 	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = cmd->t1;
 
-	tess.xyz[ 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ 1 ][ 1 ] = cmd->y;
-	tess.xyz[ 1 ][ 2 ] = 0;
-
 	tess.svars.colors[ 2 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 2 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 2 ][ 2 ] = cmd->b * 255;
@@ -542,10 +554,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = cmd->s2;
 	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = cmd->t2;
 
-	tess.xyz[ 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ 2 ][ 2 ] = 0;
-
 	tess.svars.colors[ 3 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 3 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 3 ][ 2 ] = cmd->b * 255;
@@ -553,10 +561,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 
 	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = cmd->s1;
 	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = cmd->t2;
-
-	tess.xyz[ 3 ][ 0 ] = cmd->x;
-	tess.xyz[ 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ 3 ][ 2 ] = 0;
 
 	EnableArrays( 4 );
 	qglBegin( GL_QUADS );
@@ -605,30 +609,16 @@ static const void* RB_StretchPic( const void* data ) {
 			*( int* )tess.vertexColors[ numVerts + 2 ] =
 				*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )backEnd.color2D;
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
+	RB_Set2DVertexCoords( cmd, numVerts );
 
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
-
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
@@ -672,30 +662,16 @@ static const void* RB_StretchPicGradient( const void* data ) {
 	*( int* )tess.vertexColors[ numVerts + 2 ] =
 		*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )cmd->gradientColor;
 
-	tess.xyz[ numVerts ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts ][ 2 ] = 0;
+	RB_Set2DVertexCoords( cmd, numVerts );
 
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
 
-	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y;
-	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
 
-	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
-
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
-
-	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x;
-	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;

@@ -507,6 +507,7 @@ struct setColorCommand_t {
 
 struct stretchPicCommand_t {
 	int commandId;
+	image_t* image;
 	shader_t* shader;
 	float x, y;
 	float w, h;
@@ -516,15 +517,7 @@ struct stretchPicCommand_t {
 	byte gradientColor[ 4 ];	// color values 0-255
 	int gradientType;
 	float angle;
-};
 
-struct draw2DQuadCommand_t {
-	int commandId;
-	image_t* image;
-	float x, y;
-	float w, h;
-	float s1, t1;
-	float s2, t2;
 	float r;
 	float g;
 	float b;

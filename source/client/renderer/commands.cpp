@@ -242,7 +242,7 @@ void R_Draw2DQuad( float x, float y, float width, float height,
 		t2 = image->tl + t2 * glheight;
 	}
 
-	draw2DQuadCommand_t* cmd = ( draw2DQuadCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
+	stretchPicCommand_t* cmd = ( stretchPicCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
 	if ( !cmd ) {
 		return;
 	}
