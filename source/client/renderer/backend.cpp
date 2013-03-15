@@ -558,12 +558,14 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xyz[ 3 ][ 1 ] = cmd->y + cmd->h;
 	tess.xyz[ 3 ][ 2 ] = 0;
 
+	EnableArrays( 4 );
 	qglBegin( GL_QUADS );
-	R_ArrayElementDiscrete( 0 );
-	R_ArrayElementDiscrete( 1 );
-	R_ArrayElementDiscrete( 2 );
-	R_ArrayElementDiscrete( 3 );
+	qglArrayElement( 0 );
+	qglArrayElement( 1 );
+	qglArrayElement( 2 );
+	qglArrayElement( 3 );
 	qglEnd();
+	DisableArrays();
 
 	return ( const void* )( cmd + 1 );
 }

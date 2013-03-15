@@ -305,8 +305,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	GL_Bind( frame->gl_texture );
 
-	qglBegin( GL_QUADS );
-
 	tess.svars.colors[ 0 ][ 0 ] = 255;
 	tess.svars.colors[ 0 ][ 1 ] = 255;
 	tess.svars.colors[ 0 ][ 2 ] = 255;
@@ -318,7 +316,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 0 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 0 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-	R_ArrayElementDiscrete( 0 );
 
 	tess.svars.colors[ 1 ][ 0 ] = 255;
 	tess.svars.colors[ 1 ][ 1 ] = 255;
@@ -331,7 +328,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 1 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 1 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 1 ][ 2 ] = point[ 2 ];
-	R_ArrayElementDiscrete( 1 );
 
 	tess.svars.colors[ 2 ][ 0 ] = 255;
 	tess.svars.colors[ 2 ][ 1 ] = 255;
@@ -344,7 +340,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 2 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 2 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 2 ][ 2 ] = point[ 2 ];
-	R_ArrayElementDiscrete( 2 );
 
 	tess.svars.colors[ 3 ][ 0 ] = 255;
 	tess.svars.colors[ 3 ][ 1 ] = 255;
@@ -357,7 +352,13 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ 3 ][ 0 ] = point[ 0 ];
 	tess.xyz[ 3 ][ 1 ] = point[ 1 ];
 	tess.xyz[ 3 ][ 2 ] = point[ 2 ];
-	R_ArrayElementDiscrete( 3 );
 
+	EnableArrays( 4 );
+	qglBegin( GL_QUADS );
+	qglArrayElement( 0 );
+	qglArrayElement( 1 );
+	qglArrayElement( 2 );
+	qglArrayElement( 3 );
 	qglEnd();
+	DisableArrays();
 }

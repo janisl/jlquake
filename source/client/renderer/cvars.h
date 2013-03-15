@@ -92,7 +92,6 @@ extern Cvar* r_primitives;				// "0" = based on compiled vertex array existance
 										// "1" = glDrawElemet tristrips
 										// "2" = glDrawElements triangles
 										// "-1" = no drawing
-extern Cvar* r_vertex_arrays;
 extern Cvar* r_lerpmodels;
 extern Cvar* r_shadows;					// controls shadows: 0 = none, 1 = blur, 2 = stencil, 3 = black planar projection
 extern Cvar* r_debugSort;

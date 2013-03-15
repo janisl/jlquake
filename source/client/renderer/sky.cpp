@@ -151,7 +151,6 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 
 void EmitSkyPolys( mbrush29_surface_t* fa ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
-		qglBegin( GL_POLYGON );
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 			vec3_t dir;
@@ -177,9 +176,14 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElementDiscrete( i );
+		}
+		EnableArrays( p->numverts );
+		qglBegin( GL_POLYGON );
+		for ( int i = 0; i < p->numverts; i++ ) {
+			qglArrayElement( i );
 		}
 		qglEnd();
+		DisableArrays();
 	}
 }
 

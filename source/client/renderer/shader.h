@@ -389,7 +389,10 @@ void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
 
-void APIENTRY R_ArrayElementDiscrete( GLint index );
+void EnableArrays( int numVertexes );
+void DisableArrays();
+void EnableMultitexturedArrays( int numVertexes );
+void DisableMultitexturedArrays();
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();

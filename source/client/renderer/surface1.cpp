@@ -468,8 +468,15 @@ dynamic:
 	}
 }
 
+static void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
+	qglBegin( GL_TRIANGLE_FAN );
+	for ( int i = 0; i < p->numverts; i++ ) {
+		qglArrayElement( i );
+	}
+	qglEnd();
+}
+
 static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
-	qglBegin( GL_POLYGON );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		tess.svars.colors[ i ][ 0 ] = 255;
@@ -481,14 +488,11 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElementDiscrete( i );
 	}
-	qglEnd();
 }
 
 //	Warp the vertex coordinates
 static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
-	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		tess.svars.colors[ i ][ 0 ] = 255;
@@ -500,13 +504,10 @@ static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElementDiscrete( i );
 	}
-	qglEnd();
 }
 
 static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
-	qglBegin( GL_TRIANGLE_FAN );
 	float* v = p->verts[ 0 ];
 	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 		tess.svars.colors[ i ][ 0 ] = 255;
@@ -518,15 +519,12 @@ static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
 		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		R_ArrayElementDiscrete( i );
 	}
-	qglEnd();
 }
 
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
-		qglBegin( GL_POLYGON );
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 			float os = v[ 3 ];
@@ -547,9 +545,10 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 			tess.xyz[ i ][ 0 ] = v[ 0 ];
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElementDiscrete( i );
 		}
-		qglEnd();
+		EnableArrays( p->numverts );
+		DrawPolyElementsQ1( p );
+		DisableArrays();
 	}
 }
 
@@ -563,6 +562,9 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	GL_Bind( t->fullBrightTexture );
 	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	DrawGLPolyQ1( p );
+	EnableArrays( p->numverts );
+	DrawPolyElementsQ1( p );
+	DisableArrays();
 }
 
 //	Systems that have fast state and texture changes can just do everything
@@ -600,7 +602,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				theRect->w = 0;
 			}
 			GL_State( GLS_DEFAULT );
-			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = 255;
@@ -614,9 +615,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElementDiscrete( i );
 			}
-			qglEnd();
+			EnableMultitexturedArrays( p->numverts );
+			DrawPolyElementsQ1( p );
 
 			if ( r_drawOverBrights->integer ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -634,24 +635,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					theRect->h = 0;
 					theRect->w = 0;
 				}
-				qglBegin( GL_POLYGON );
-				v = p->verts[ 0 ];
-				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					tess.svars.colors[ i ][ 0 ] = 255;
-					tess.svars.colors[ i ][ 1 ] = 255;
-					tess.svars.colors[ i ][ 2 ] = 255;
-					tess.svars.colors[ i ][ 3 ] = 255;
-					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-					tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-					tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-					tess.xyz[ i ][ 0 ] = v[ 0 ];
-					tess.xyz[ i ][ 1 ] = v[ 1 ];
-					tess.xyz[ i ][ 2 ] = v[ 2 ];
-					R_ArrayElementDiscrete( i );
-				}
-				qglEnd();
+				DrawPolyElementsQ1( p );
 			}
+			DisableMultitexturedArrays();
 
 			qglDisable( GL_TEXTURE_2D );
 			GL_SelectTexture( 0 );
@@ -675,7 +661,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 			mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
 			GL_Bind( t->gl_texture );
-			qglBegin( GL_POLYGON );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = intensity;
@@ -688,31 +673,26 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 0 ] = v[ 0 ];
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElementDiscrete( i );
 			}
-			qglEnd();
+			EnableArrays( p->numverts );
+			DrawPolyElementsQ1( p );
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
 				 !( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
-				qglBegin( GL_POLYGON );
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					tess.svars.colors[ i ][ 0 ] = 255;
 					tess.svars.colors[ i ][ 1 ] = 255;
 					tess.svars.colors[ i ][ 2 ] = 255;
 					tess.svars.colors[ i ][ 3 ] = 255;
-
 					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
 					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
-					tess.xyz[ i ][ 0 ] = v[ 0 ];
-					tess.xyz[ i ][ 1 ] = v[ 1 ];
-					tess.xyz[ i ][ 2 ] = v[ 2 ];
-					R_ArrayElementDiscrete( i );
 				}
-				qglEnd();
+				DrawPolyElementsQ1( p );
 			}
+			DisableArrays();
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
 				R_DrawFullBrightPoly( s );
@@ -783,7 +763,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			theRect->h = 0;
 			theRect->w = 0;
 		}
-		qglBegin( GL_TRIANGLE_FAN );
 		float* v = p->verts[ 0 ];
 		for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 			tess.svars.colors[ i ][ 0 ] = 255;
@@ -799,9 +778,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 			tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			R_ArrayElementDiscrete( i );
 		}
-		qglEnd();
+		EnableMultitexturedArrays( p->numverts );
+		DrawPolyElementsQ1( p );
 
 		if ( r_drawOverBrights->integer ) {
 			GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -819,41 +798,33 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				theRect->h = 0;
 				theRect->w = 0;
 			}
-			qglBegin( GL_TRIANGLE_FAN );
-			v = p->verts[ 0 ];
-			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				tess.svars.colors[ i ][ 0 ] = 255;
-				tess.svars.colors[ i ][ 1 ] = 255;
-				tess.svars.colors[ i ][ 2 ] = 255;
-				tess.svars.colors[ i ][ 3 ] = 255;
-
-				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-
-				tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-				tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				R_ArrayElementDiscrete( i );
-			}
-			qglEnd();
+			DrawPolyElementsQ1( p );
 		}
+		DisableMultitexturedArrays();
 
 		qglDisable( GL_TEXTURE_2D );
 		GL_SelectTexture( 0 );
 	} else {
 		GL_Bind( t->gl_texture );
 		DrawGLWaterPoly( p );
+		EnableArrays( p->numverts );
+		DrawPolyElementsQ1( p );
+		DisableArrays();
 
 		GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 		DrawGLWaterPolyLightmap( p );
+		EnableArrays( p->numverts );
+		DrawPolyElementsQ1( p );
+		DisableArrays();
 	}
 	if ( t->fullBrightTexture ) {
 		GL_Bind( t->fullBrightTexture );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		DrawGLWaterPoly( p );
+		EnableArrays( p->numverts );
+		DrawPolyElementsQ1( p );
+		DisableArrays();
 	}
 }
 

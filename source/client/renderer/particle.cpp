@@ -75,7 +75,7 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ 0 ][ 0 ] = p->origin[ 0 ];
 	tess.xyz[ 0 ][ 1 ] = p->origin[ 1 ];
 	tess.xyz[ 0 ][ 2 ] = p->origin[ 2 ];
-	R_ArrayElementDiscrete( 0 );
+	qglArrayElement( 0 );
 
 	tess.svars.colors[ 1 ][ 0 ] = p->rgba[0];
 	tess.svars.colors[ 1 ][ 1 ] = p->rgba[1];
@@ -86,7 +86,7 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
 	tess.xyz[ 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
 	tess.xyz[ 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
-	R_ArrayElementDiscrete( 1 );
+	qglArrayElement( 1 );
 
 	tess.svars.colors[ 2 ][ 0 ] = p->rgba[0];
 	tess.svars.colors[ 2 ][ 1 ] = p->rgba[1];
@@ -97,20 +97,21 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
 	tess.xyz[ 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
 	tess.xyz[ 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
-	R_ArrayElementDiscrete( 2 );
+	qglArrayElement( 2 );
 }
 
 static void R_DrawParticleTriangles() {
 	GL_Bind( tr.particleImage );
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );		// no z buffering
+	EnableArrays( 0 );
 	qglBegin( GL_TRIANGLES );
 
 	vec3_t up, right;
-	VectorScale( tr.viewParms.orient.axis[ 2 ], 1.5, up );
-	VectorScale( tr.viewParms.orient.axis[ 1 ], -1.5, right );
+	VectorScale( backEnd.viewParms.orient.axis[ 2 ], 1.5, up );
+	VectorScale( backEnd.viewParms.orient.axis[ 1 ], -1.5, right );
 
-	const particle_t* p = tr.refdef.particles;
-	for ( int i = 0; i < tr.refdef.num_particles; i++, p++ ) {
+	const particle_t* p = backEnd.refdef.particles;
+	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		switch ( p->Texture ) {
 		case PARTTEX_Default:
 			R_DrawParticle( p, up, right, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2 );
@@ -135,6 +136,7 @@ static void R_DrawParticleTriangles() {
 	}
 
 	qglEnd();
+	DisableArrays();
 	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
 }
 
@@ -145,8 +147,8 @@ static void R_DrawParticlePoints() {
 	qglPointSize( r_particle_size->value );
 
 	qglBegin( GL_POINTS );
-	const particle_t* p = tr.refdef.particles;
-	for ( int i = 0; i < tr.refdef.num_particles; i++, p++ ) {
+	const particle_t* p = backEnd.refdef.particles;
+	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		qglColor4ubv( p->rgba );
 		qglVertex3fv( p->origin );
 	}

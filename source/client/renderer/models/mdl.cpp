@@ -906,6 +906,8 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		r = g = b = 255;
 	}
 
+	int vertexIndex = 0;
+	EnableArrays( 0 );
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -921,8 +923,8 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 
 		do {
 			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = ( ( float* )order )[ 0 ];
-			tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = ( ( float* )order )[ 1 ];
+			tess.svars.texcoords[ 0 ][ vertexIndex ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ vertexIndex ][ 1 ] = ( ( float* )order )[ 1 ];
 			order += 2;
 
 			// normals and vertexes come from the frame list
@@ -930,19 +932,21 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 			if ( overBrights ) {
 				l -= 1;
 			}
-			tess.svars.colors[ 0 ][ 0 ] = r * l;
-			tess.svars.colors[ 0 ][ 1 ] = g * l;
-			tess.svars.colors[ 0 ][ 2 ] = b * l;
-			tess.svars.colors[ 0 ][ 3 ] = model_constant_alpha * 255;
-			tess.xyz[ 0 ][ 0 ] = verts->v[ 0 ];
-			tess.xyz[ 0 ][ 1 ] = verts->v[ 1 ];
-			tess.xyz[ 0 ][ 2 ] = verts->v[ 2 ];
-			R_ArrayElementDiscrete( 0 );
+			tess.svars.colors[ vertexIndex ][ 0 ] = r * l;
+			tess.svars.colors[ vertexIndex ][ 1 ] = g * l;
+			tess.svars.colors[ vertexIndex ][ 2 ] = b * l;
+			tess.svars.colors[ vertexIndex ][ 3 ] = model_constant_alpha * 255;
+			tess.xyz[ vertexIndex ][ 0 ] = verts->v[ 0 ];
+			tess.xyz[ vertexIndex ][ 1 ] = verts->v[ 1 ];
+			tess.xyz[ vertexIndex ][ 2 ] = verts->v[ 2 ];
+			qglArrayElement( vertexIndex );
 			verts++;
+			vertexIndex++;
 		} while ( --count );
 
 		qglEnd();
 	}
+	DisableArrays();
 }
 
 static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
@@ -955,6 +959,8 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 
 	height = -lheight + 1.0;
 
+	int vertexIndex = 0;
+	EnableArrays( 0 );
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -969,13 +975,13 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		}
 
 		do {
-			tess.svars.colors[ 0 ][ 0 ] = 0;
-			tess.svars.colors[ 0 ][ 1 ] = 0;
-			tess.svars.colors[ 0 ][ 2 ] = 0;
-			tess.svars.colors[ 0 ][ 3 ] = 127;
+			tess.svars.colors[ vertexIndex ][ 0 ] = 0;
+			tess.svars.colors[ vertexIndex ][ 1 ] = 0;
+			tess.svars.colors[ vertexIndex ][ 2 ] = 0;
+			tess.svars.colors[ vertexIndex ][ 3 ] = 127;
 			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = ( ( float* )order )[ 0 ];
-			tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = ( ( float* )order )[ 1 ];
+			tess.svars.texcoords[ 0 ][ vertexIndex ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ vertexIndex ][ 1 ] = ( ( float* )order )[ 1 ];
 			order += 2;
 
 			// normals and vertexes come from the frame list
@@ -987,16 +993,18 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
 			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
 			point[ 2 ] = height;
-			tess.xyz[ 0 ][ 0 ] = point[ 0 ];
-			tess.xyz[ 0 ][ 1 ] = point[ 1 ];
-			tess.xyz[ 0 ][ 2 ] = point[ 2 ];
-			R_ArrayElementDiscrete( 0 );
+			tess.xyz[ vertexIndex ][ 0 ] = point[ 0 ];
+			tess.xyz[ vertexIndex ][ 1 ] = point[ 1 ];
+			tess.xyz[ vertexIndex ][ 2 ] = point[ 2 ];
+			qglArrayElement( vertexIndex );
 
 			verts++;
+			vertexIndex++;
 		} while ( --count );
 
 		qglEnd();
 	}
+	DisableArrays();
 }
 
 static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights ) {

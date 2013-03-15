@@ -146,7 +146,7 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, d
 			lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
 			lerp[ 2 ] = move[ 2 ] + ov->v[ 2 ] * backv[ 2 ] + v->v[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4 ) {
 			lerp[ 0 ] = move[ 0 ] + ov->v[ 0 ] * backv[ 0 ] + v->v[ 0 ] * frontv[ 0 ];
 			lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ];
@@ -172,7 +172,7 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	} else   {
+	} else {
 		alpha = 255;
 	}
 
@@ -205,102 +205,45 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 
 	GL_LerpVerts( paliashdr->num_xyz, v, ov, verts, tess.xyz[ 0 ], move, frontv, backv );
 
-	if ( r_vertex_arrays->value ) {
-		float colorArray[ MAX_MD2_VERTS * 4 ];
-
-		qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );		// padded for SIMD
-
-		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-			qglColor4ub( md2_shadelight[ 0 ], md2_shadelight[ 1 ], md2_shadelight[ 2 ], alpha );
-		} else   {
-			qglEnableClientState( GL_COLOR_ARRAY );
-			qglColorPointer( 3, GL_FLOAT, 0, colorArray );
-
-			//
-			// pre light everything
-			//
-			for ( int i = 0; i < paliashdr->num_xyz; i++ ) {
-				float l = shadedots[ verts[ i ].lightnormalindex ];
-
-				colorArray[ i * 3 + 0 ] = l * md2_shadelight[ 0 ] / 255.0;
-				colorArray[ i * 3 + 1 ] = l * md2_shadelight[ 1 ] / 255.0;
-				colorArray[ i * 3 + 2 ] = l * md2_shadelight[ 2 ] / 255.0;
-			}
+	EnableArrays( 0 );//paliashdr->num_xyz
+	while ( 1 ) {
+		// get the vertex count and primitive type
+		int count = *order++;
+		if ( !count ) {
+			break;		// done
+		}
+		if ( count < 0 ) {
+			count = -count;
+			qglBegin( GL_TRIANGLE_FAN );
+		} else {
+			qglBegin( GL_TRIANGLE_STRIP );
 		}
 
-		if ( qglLockArraysEXT ) {
-			qglLockArraysEXT( 0, paliashdr->num_xyz );
-		}
-
-		while ( 1 ) {
-			// get the vertex count and primitive type
-			int count = *order++;
-			if ( !count ) {
-				break;		// done
-			}
-			if ( count < 0 ) {
-				count = -count;
-				qglBegin( GL_TRIANGLE_FAN );
-			} else   {
-				qglBegin( GL_TRIANGLE_STRIP );
-			}
-
-			do {
-				int index_xyz = order[ 2 ];
-				if ( !( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) ) {
-					// texture coordinates come from the draw list
-					qglTexCoord2f( ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
-				}
-				order += 3;
-
+		do {
+			int index_xyz = order[ 2 ];
+			// texture coordinates come from the draw list
+			tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = ( ( float* )order )[ 0 ];
+			tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = ( ( float* )order )[ 1 ];
+			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+				tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
+				tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
+				tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
+				tess.svars.colors[ index_xyz ][ 3 ] = alpha;
+			} else {
 				// normals and vertexes come from the frame list
-				qglArrayElement( index_xyz );
-			} while ( --count );
-			qglEnd();
-		}
-	} else   {
-		while ( 1 ) {
-			// get the vertex count and primitive type
-			int count = *order++;
-			if ( !count ) {
-				break;		// done
+				float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
+
+				tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
+				tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
+				tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+				tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 			}
-			if ( count < 0 ) {
-				count = -count;
-				qglBegin( GL_TRIANGLE_FAN );
-			} else   {
-				qglBegin( GL_TRIANGLE_STRIP );
-			}
-
-			do {
-				int index_xyz = order[ 2 ];
-				// texture coordinates come from the draw list
-				tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = ( ( float* )order )[ 0 ];
-				tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = ( ( float* )order )[ 1 ];
-				if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-					tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
-					tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
-					tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
-					tess.svars.colors[ index_xyz ][ 3 ] = alpha;
-				} else {
-					// normals and vertexes come from the frame list
-					float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
-
-					tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
-					tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
-					tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
-					tess.svars.colors[ index_xyz ][ 3 ] = alpha;
-				}
-				R_ArrayElementDiscrete( index_xyz );
-				order += 3;
-			} while ( --count );
-			qglEnd();
-		}
+			qglArrayElement( index_xyz );
+			order += 3;
+		} while ( --count );
+		qglEnd();
 	}
-
-	if ( r_vertex_arrays->value && qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-	}
+	DisableArrays();
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		qglEnable( GL_TEXTURE_2D );
@@ -330,6 +273,7 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
+	EnableArrays( 0 );
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -339,20 +283,21 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 		if ( count < 0 ) {
 			count = -count;
 			qglBegin( GL_TRIANGLE_FAN );
-		} else   {
+		} else {
 			qglBegin( GL_TRIANGLE_STRIP );
 		}
 
 		do {
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 0 ] = ( ( float* )order )[ 0 ];
 			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 1 ] = ( ( float* )order )[ 1 ];
-			R_ArrayElementDiscrete( order[ 2 ] );
+			qglArrayElement( order[ 2 ] );
 
 			order += 3;
 		} while ( --count );
 
 		qglEnd();
 	}
+	DisableArrays();
 }
 
 static bool R_CullMd2Model( trRefEntity_t* e ) {
@@ -384,7 +329,7 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 			bounds[ 0 ][ i ] = pframe->translate[ i ];
 			bounds[ 1 ][ i ] = bounds[ 0 ][ i ] + pframe->scale[ i ] * 255;
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < 3; i++ ) {
 			vec3_t thismins, thismaxs;
 			thismins[ i ] = pframe->translate[ i ];
@@ -396,13 +341,13 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 
 			if ( thismins[ i ] < oldmins[ i ] ) {
 				bounds[ 0 ][ i ] = thismins[ i ];
-			} else   {
+			} else {
 				bounds[ 0 ][ i ] = oldmins[ i ];
 			}
 
 			if ( thismaxs[ i ] > oldmaxs[ i ] ) {
 				bounds[ 1 ][ i ] = thismaxs[ i ];
-			} else   {
+			} else {
 				bounds[ 1 ][ i ] = oldmaxs[ i ];
 			}
 		}
@@ -455,13 +400,13 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 			if ( md2_shadelight[ 0 ] > md2_shadelight[ 1 ] ) {
 				if ( md2_shadelight[ 0 ] > md2_shadelight[ 2 ] ) {
 					r_lightlevel->value = 150 * md2_shadelight[ 0 ] / 255;
-				} else   {
+				} else {
 					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
 				}
-			} else   {
+			} else {
 				if ( md2_shadelight[ 1 ] > md2_shadelight[ 2 ] ) {
 					r_lightlevel->value = 150 * md2_shadelight[ 1 ] / 255;
-				} else   {
+				} else {
 					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
 				}
 			}
@@ -539,10 +484,10 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 	image_t* skin;
 	if ( backEnd.currentEntity->e.customSkin ) {
 		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
-	} else   {
+	} else {
 		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
 			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-		} else   {
+		} else {
 			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
 			if ( !skin ) {
 				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
@@ -558,7 +503,7 @@ void RB_SurfaceMd2( dmd2_t* paliashdr ) {
 
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else   {
+	} else {
 		GL_State( GLS_DEFAULT );
 	}
 

@@ -37,8 +37,59 @@ shaderCommands_t tess;
 
 bool setArraysOnce;
 
+void EnableArrays( int numVertexes ) {
+	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
+	qglEnableClientState( GL_COLOR_ARRAY );
+	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	if ( qglLockArraysEXT && numVertexes ) {
+		qglLockArraysEXT( 0, numVertexes );
+		QGL_LogComment( "glLockArraysEXT\n" );
+	}
+}
+
+void DisableArrays() {
+	qglDisableClientState( GL_COLOR_ARRAY );
+	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	if ( qglUnlockArraysEXT ) {
+		qglUnlockArraysEXT();
+		QGL_LogComment( "glUnlockArraysEXT\n" );
+	}
+}
+
+void EnableMultitexturedArrays( int numVertexes ) {
+	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
+	qglEnableClientState( GL_COLOR_ARRAY );
+	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
+
+	GL_SelectTexture( 0 );
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+
+	GL_SelectTexture( 1 );
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 1 ] );
+	if ( qglLockArraysEXT && numVertexes ) {
+		qglLockArraysEXT( 0, numVertexes );
+		QGL_LogComment( "glLockArraysEXT\n" );
+	}
+}
+
+void DisableMultitexturedArrays() {
+	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	GL_SelectTexture( 0 );
+	qglDisableClientState( GL_COLOR_ARRAY );
+	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	if ( qglUnlockArraysEXT ) {
+		qglUnlockArraysEXT();
+		QGL_LogComment( "glUnlockArraysEXT\n" );
+	}
+	GL_SelectTexture( 1 );
+}
+
 //	This is just for OpenGL conformance testing, it should never be the fastest
-void APIENTRY R_ArrayElementDiscrete( GLint index ) {
+static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );
 	if ( glState.currenttmu ) {
 		qglMultiTexCoord2fARB( 0, tess.svars.texcoords[ 0 ][ index ][ 0 ], tess.svars.texcoords[ 0 ][ index ][ 1 ] );
