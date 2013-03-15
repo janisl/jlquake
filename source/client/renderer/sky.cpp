@@ -178,11 +178,7 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 		EnableArrays( p->numverts );
-		qglBegin( GL_POLYGON );
-		for ( int i = 0; i < p->numverts; i++ ) {
-			qglArrayElement( i );
-		}
-		qglEnd();
+		DrawPolyElementsQ1( p );
 		DisableArrays();
 	}
 }

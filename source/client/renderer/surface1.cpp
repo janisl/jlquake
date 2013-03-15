@@ -468,12 +468,15 @@ dynamic:
 	}
 }
 
-static void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
-	qglBegin( GL_TRIANGLE_FAN );
-	for ( int i = 0; i < p->numverts; i++ ) {
-		qglArrayElement( i );
+void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
+	int numVerts = 0;
+	int numIndexes = 0;
+	for ( int i = 0; i < p->numverts - 2; i++ ) {
+		tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
+		tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
+		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 	}
-	qglEnd();
+	R_DrawElements( ( p->numverts - 2 ) * 3, tess.indexes );
 }
 
 static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
