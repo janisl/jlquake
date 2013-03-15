@@ -215,7 +215,6 @@ struct mbrush38_texinfo_t {
 struct mbrush38_glpoly_t {
 	mbrush38_glpoly_t* next;
 	int numverts;
-	int flags;				// for BRUSH29_SURF_UNDERWATER (not needed anymore?)
 	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 

@@ -395,7 +395,6 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 	mbrush38_glpoly_t* poly = ( mbrush38_glpoly_t* )Mem_Alloc( sizeof ( mbrush38_glpoly_t ) + ( lnumverts - 4 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
 	Com_Memset( poly, 0, sizeof ( mbrush38_glpoly_t ) + ( lnumverts - 4 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
 	poly->next = fa->polys;
-	poly->flags = fa->flags;
 	fa->polys = poly;
 	poly->numverts = lnumverts;
 
