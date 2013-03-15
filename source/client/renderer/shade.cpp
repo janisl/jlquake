@@ -175,7 +175,7 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t* indexes, void 
 //	Optionally performs our own glDrawElements that looks for strip conditions
 // instead of using the single glDrawElements call that may be inefficient
 // without compiled vertex arrays.
-static void R_DrawElements( int numIndexes, const glIndex_t* indexes ) {
+void R_DrawElements( int numIndexes, const glIndex_t* indexes ) {
 	int primitives = r_primitives->integer;
 
 	// default is to use triangles if compiled vertex arrays are present

@@ -515,6 +515,15 @@ static void RB_Set2DVertexCoords( const stretchPicCommand_t* cmd, int numVerts )
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 }
 
+static void RB_Set2DIndexes( int numVerts, int numIndexes ) {
+	tess.indexes[ numIndexes ] = numVerts + 3;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
+	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
+	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
+}
+
 static const void* RB_Draw2DQuad( const void* data ) {
 	const stretchPicCommand_t* cmd = ( const stretchPicCommand_t* )data;
 
@@ -562,13 +571,10 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = cmd->s1;
 	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = cmd->t2;
 
+	RB_Set2DIndexes( 0, 0 );
+
 	EnableArrays( 4 );
-	qglBegin( GL_QUADS );
-	qglArrayElement( 0 );
-	qglArrayElement( 1 );
-	qglArrayElement( 2 );
-	qglArrayElement( 3 );
-	qglEnd();
+	R_DrawElements( 6, tess.indexes );
 	DisableArrays();
 
 	return ( const void* )( cmd + 1 );
@@ -597,12 +603,7 @@ static const void* RB_StretchPic( const void* data ) {
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
 
-	tess.indexes[ numIndexes ] = numVerts + 3;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
+	RB_Set2DIndexes( numVerts, numIndexes );
 
 	*( int* )tess.vertexColors[ numVerts ] =
 		*( int* )tess.vertexColors[ numVerts + 1 ] =
@@ -649,12 +650,7 @@ static const void* RB_StretchPicGradient( const void* data ) {
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
 
-	tess.indexes[ numIndexes ] = numVerts + 3;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
+	RB_Set2DIndexes( numVerts, numIndexes );
 
 	*( int* )tess.vertexColors[ numVerts ] =
 		*( int* )tess.vertexColors[ numVerts + 1 ] = *( int* )backEnd.color2D;
@@ -702,12 +698,7 @@ static const void* RB_RotatedPic( const void* data ) {
 	tess.numVertexes += 4;
 	tess.numIndexes += 6;
 
-	tess.indexes[ numIndexes ] = numVerts + 3;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
+	RB_Set2DIndexes( numVerts, numIndexes );
 
 	*( int* )tess.vertexColors[ numVerts ] =
 		*( int* )tess.vertexColors[ numVerts + 1 ] =
