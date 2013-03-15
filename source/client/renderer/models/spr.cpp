@@ -305,60 +305,65 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	GL_Bind( frame->gl_texture );
 
-	tess.svars.colors[ 0 ][ 0 ] = 255;
-	tess.svars.colors[ 0 ][ 1 ] = 255;
-	tess.svars.colors[ 0 ][ 2 ] = 255;
-	tess.svars.colors[ 0 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = 0;
-	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = 1;
+	int numVerts = 0;
+	int numIndexes = 0;
+
+	tess.svars.colors[ numVerts ][ 0 ] = 255;
+	tess.svars.colors[ numVerts ][ 1 ] = 255;
+	tess.svars.colors[ numVerts ][ 2 ] = 255;
+	tess.svars.colors[ numVerts ][ 3 ] = alpha;
+	tess.svars.texcoords[ 0 ][ numVerts ][ 0 ] = 0;
+	tess.svars.texcoords[ 0 ][ numVerts ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->left, right, point );
-	tess.xyz[ 0 ][ 0 ] = point[ 0 ];
-	tess.xyz[ 0 ][ 1 ] = point[ 1 ];
-	tess.xyz[ 0 ][ 2 ] = point[ 2 ];
+	tess.xyz[ numVerts ][ 0 ] = point[ 0 ];
+	tess.xyz[ numVerts ][ 1 ] = point[ 1 ];
+	tess.xyz[ numVerts ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ 1 ][ 0 ] = 255;
-	tess.svars.colors[ 1 ][ 1 ] = 255;
-	tess.svars.colors[ 1 ][ 2 ] = 255;
-	tess.svars.colors[ 1 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = 0;
-	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = 0;
+	tess.svars.colors[ numVerts + 1 ][ 0 ] = 255;
+	tess.svars.colors[ numVerts + 1 ][ 1 ] = 255;
+	tess.svars.colors[ numVerts + 1 ][ 2 ] = 255;
+	tess.svars.colors[ numVerts + 1 ][ 3 ] = alpha;
+	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 0 ] = 0;
+	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->left, right, point );
-	tess.xyz[ 1 ][ 0 ] = point[ 0 ];
-	tess.xyz[ 1 ][ 1 ] = point[ 1 ];
-	tess.xyz[ 1 ][ 2 ] = point[ 2 ];
+	tess.xyz[ numVerts + 1 ][ 0 ] = point[ 0 ];
+	tess.xyz[ numVerts + 1 ][ 1 ] = point[ 1 ];
+	tess.xyz[ numVerts + 1 ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ 2 ][ 0 ] = 255;
-	tess.svars.colors[ 2 ][ 1 ] = 255;
-	tess.svars.colors[ 2 ][ 2 ] = 255;
-	tess.svars.colors[ 2 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = 1;
-	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = 0;
+	tess.svars.colors[ numVerts + 2 ][ 0 ] = 255;
+	tess.svars.colors[ numVerts + 2 ][ 1 ] = 255;
+	tess.svars.colors[ numVerts + 2 ][ 2 ] = 255;
+	tess.svars.colors[ numVerts + 2 ][ 3 ] = alpha;
+	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 0 ] = 1;
+	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->right, right, point );
-	tess.xyz[ 2 ][ 0 ] = point[ 0 ];
-	tess.xyz[ 2 ][ 1 ] = point[ 1 ];
-	tess.xyz[ 2 ][ 2 ] = point[ 2 ];
+	tess.xyz[ numVerts + 2 ][ 0 ] = point[ 0 ];
+	tess.xyz[ numVerts + 2 ][ 1 ] = point[ 1 ];
+	tess.xyz[ numVerts + 2 ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ 3 ][ 0 ] = 255;
-	tess.svars.colors[ 3 ][ 1 ] = 255;
-	tess.svars.colors[ 3 ][ 2 ] = 255;
-	tess.svars.colors[ 3 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = 1;
-	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = 1;
+	tess.svars.colors[ numVerts + 3 ][ 0 ] = 255;
+	tess.svars.colors[ numVerts + 3 ][ 1 ] = 255;
+	tess.svars.colors[ numVerts + 3 ][ 2 ] = 255;
+	tess.svars.colors[ numVerts + 3 ][ 3 ] = alpha;
+	tess.svars.texcoords[ 0 ][ numVerts + 3 ][ 0 ] = 1;
+	tess.svars.texcoords[ 0 ][ numVerts + 3 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->right, right, point );
-	tess.xyz[ 3 ][ 0 ] = point[ 0 ];
-	tess.xyz[ 3 ][ 1 ] = point[ 1 ];
-	tess.xyz[ 3 ][ 2 ] = point[ 2 ];
+	tess.xyz[ numVerts + 3 ][ 0 ] = point[ 0 ];
+	tess.xyz[ numVerts + 3 ][ 1 ] = point[ 1 ];
+	tess.xyz[ numVerts + 3 ][ 2 ] = point[ 2 ];
+
+	tess.indexes[ numIndexes ] = numVerts + 3;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
 
 	EnableArrays( 4 );
-	qglBegin( GL_QUADS );
-	qglArrayElement( 0 );
-	qglArrayElement( 1 );
-	qglArrayElement( 2 );
-	qglArrayElement( 3 );
-	qglEnd();
+	R_DrawElements( 6, tess.indexes );
 	DisableArrays();
 }
