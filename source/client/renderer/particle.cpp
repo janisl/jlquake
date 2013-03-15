@@ -66,45 +66,59 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 		scale = p->size + scale * 0.004;
 	}
 
-	tess.svars.colors[ 0 ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ 0 ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ 0 ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ 0 ][ 3 ] = p->rgba[3];
-	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = s1;
-	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = t1;
-	tess.xyz[ 0 ][ 0 ] = p->origin[ 0 ];
-	tess.xyz[ 0 ][ 1 ] = p->origin[ 1 ];
-	tess.xyz[ 0 ][ 2 ] = p->origin[ 2 ];
-	qglArrayElement( 0 );
+	if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
+	{
+		EnableArrays( tess.numVertexes );
+		R_DrawElements( tess.numIndexes, tess.indexes );
+		DisableArrays();
+		tess.numVertexes = 0;
+		tess.numIndexes = 0;
+	}
 
-	tess.svars.colors[ 1 ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ 1 ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ 1 ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ 1 ][ 3 ] = p->rgba[3];
-	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = s2;
-	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = t1;
-	tess.xyz[ 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
-	tess.xyz[ 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
-	tess.xyz[ 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
-	qglArrayElement( 1 );
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
 
-	tess.svars.colors[ 2 ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ 2 ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ 2 ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ 2 ][ 3 ] = p->rgba[3];
-	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = s1;
-	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = t2;
-	tess.xyz[ 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
-	tess.xyz[ 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
-	tess.xyz[ 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
-	qglArrayElement( 2 );
+	tess.numVertexes += 3;
+	tess.numIndexes += 3;
+
+	tess.svars.colors[ numVerts ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ numVerts ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ numVerts ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ numVerts ][ 3 ] = p->rgba[3];
+	tess.svars.texcoords[ 0 ][ numVerts ][ 0 ] = s1;
+	tess.svars.texcoords[ 0 ][ numVerts ][ 1 ] = t1;
+	tess.xyz[ numVerts ][ 0 ] = p->origin[ 0 ];
+	tess.xyz[ numVerts ][ 1 ] = p->origin[ 1 ];
+	tess.xyz[ numVerts ][ 2 ] = p->origin[ 2 ];
+
+	tess.svars.colors[ numVerts + 1 ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ numVerts + 1 ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ numVerts + 1 ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ numVerts + 1 ][ 3 ] = p->rgba[3];
+	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 0 ] = s2;
+	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 1 ] = t1;
+	tess.xyz[ numVerts + 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
+	tess.xyz[ numVerts + 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
+	tess.xyz[ numVerts + 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
+
+	tess.svars.colors[ numVerts + 2 ][ 0 ] = p->rgba[0];
+	tess.svars.colors[ numVerts + 2 ][ 1 ] = p->rgba[1];
+	tess.svars.colors[ numVerts + 2 ][ 2 ] = p->rgba[2];
+	tess.svars.colors[ numVerts + 2 ][ 3 ] = p->rgba[3];
+	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 0 ] = s1;
+	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 1 ] = t2;
+	tess.xyz[ numVerts + 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
+	tess.xyz[ numVerts + 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
+	tess.xyz[ numVerts + 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
+
+	tess.indexes[ numIndexes ] = numVerts;
+	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
+	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
 }
 
 static void R_DrawParticleTriangles() {
 	GL_Bind( tr.particleImage );
 	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );		// no z buffering
-	EnableArrays( 0 );
-	qglBegin( GL_TRIANGLES );
 
 	vec3_t up, right;
 	VectorScale( backEnd.viewParms.orient.axis[ 2 ], 1.5, up );
@@ -135,8 +149,15 @@ static void R_DrawParticleTriangles() {
 		}
 	}
 
-	qglEnd();
-	DisableArrays();
+	if (tess.numVertexes)
+	{
+		EnableArrays( tess.numVertexes );
+		R_DrawElements( tess.numIndexes, tess.indexes );
+		DisableArrays();
+		tess.numVertexes = 0;
+		tess.numIndexes = 0;
+	}
+
 	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
 }
 
