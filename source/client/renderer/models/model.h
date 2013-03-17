@@ -728,6 +728,39 @@ struct msprite1_t {
 
 //==============================================================================
 //
+//	QUAKE 2 MESH MODELS
+//
+//==============================================================================
+
+
+// the glcmd format:
+// a positive integer starts a tristrip command, followed by that many
+// vertex structures.
+// a negative integer starts a trifan command, followed by -x vertexes
+// a zero indicates the end of the command list.
+// a vertex consists of a floating point s, a floating point t,
+// and an integer vertex index.
+
+struct mmd2_t {
+	surfaceType_t surfaceType;
+
+	int framesize;				// byte size of each frame
+
+	int num_skins;
+	int num_xyz;
+	int num_st;					// greater than num_xyz for seams
+	int num_tris;
+	int num_glcmds;				// dwords in strip/fan command list
+	int num_frames;
+
+	dmd2_stvert_t* st;					// byte offset from start for stverts
+	dmd2_triangle_t* tris;				// offset for dtriangles
+	byte* frames;
+	int* glcmds;
+};
+
+//==============================================================================
+//
 //	Whole model
 //
 //==============================================================================
@@ -870,7 +903,8 @@ struct model_t {
 	image_t* q2_skins[ MAX_MD2_SKINS ];
 
 	int q2_extradatasize;
-	void* q2_extradata;
+	dsprite2_t* q2_sp2;
+	mmd2_t* q2_md2;
 
 	int q3_dataSize;					// just for listing purposes
 	mbrush46_model_t* q3_bmodel;			// only if type == MOD_BRUSH
@@ -920,7 +954,7 @@ bool R_MdlHasHexen2Transparency( model_t* Model );
 void Mod_LoadMd2Model( model_t* mod, const void* buffer );
 void Mod_FreeMd2Model( model_t* mod );
 void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex );
-void RB_SurfaceMd2( dmd2_t* paliashdr );
+void RB_SurfaceMd2( mmd2_t* paliashdr );
 
 bool R_LoadMd3( model_t* mod, void* buffer );
 void R_FreeMd3( model_t* mod );

@@ -46,13 +46,13 @@ void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
 		mod->q2_skins[ i ] = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
 	}
 
-	mod->q2_extradata = sprout;
+	mod->q2_sp2 = sprout;
 	mod->q2_extradatasize = modfilelen;
 	mod->type = MOD_SPRITE2;
 }
 
 void Mod_FreeSprite2Model( model_t* mod ) {
-	Mem_Free( mod->q2_extradata );
+	Mem_Free( mod->q2_sp2 );
 }
 
 void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
@@ -63,7 +63,7 @@ void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	dsprite2_t* psprite = ( dsprite2_t* )tr.currentModel->q2_extradata;
+	dsprite2_t* psprite = tr.currentModel->q2_sp2;
 	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 

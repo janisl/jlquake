@@ -24,74 +24,90 @@
 static int md2_shadelight[ 3 ];
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
-	const dmd2_t* pinmodel = ( const dmd2_t* )buffer;
-
-	int version = LittleLong( pinmodel->version );
-	if ( version != MESH2_VERSION ) {
-		common->Error( "%s has wrong version number (%i should be %i)",
-			mod->name, version, MESH2_VERSION );
-	}
-
-	dmd2_t* pheader = ( dmd2_t* )Mem_Alloc( LittleLong( pinmodel->ofs_end ) );
-
 	// byte swap the header fields and sanity check
+	dmd2_t pinmodel;
 	for ( int i = 0; i < ( int )sizeof ( dmd2_t ) / 4; i++ ) {
-		( ( int* )pheader )[ i ] = LittleLong( ( ( int* )buffer )[ i ] );
+		( ( int* )&pinmodel )[ i ] = LittleLong( ( ( int* )buffer )[ i ] );
 	}
-	pheader->ident = SF_MD2;
 
-	if ( pheader->num_xyz <= 0 ) {
+	if ( pinmodel.version != MESH2_VERSION ) {
+		common->Error( "%s has wrong version number (%i should be %i)",
+			mod->name, pinmodel.version, MESH2_VERSION );
+	}
+
+	if ( pinmodel.num_xyz <= 0 ) {
 		common->Error( "model %s has no vertices", mod->name );
 	}
 
-	if ( pheader->num_xyz > MAX_MD2_VERTS ) {
+	if ( pinmodel.num_xyz > MAX_MD2_VERTS ) {
 		common->Error( "model %s has too many vertices", mod->name );
 	}
 
-	if ( pheader->num_st <= 0 ) {
+	if ( pinmodel.num_st <= 0 ) {
 		common->Error( "model %s has no st vertices", mod->name );
 	}
 
-	if ( pheader->num_tris <= 0 ) {
+	if ( pinmodel.num_tris <= 0 ) {
 		common->Error( "model %s has no triangles", mod->name );
 	}
 
-	if ( pheader->num_frames <= 0 ) {
+	if ( pinmodel.num_frames <= 0 ) {
 		common->Error( "model %s has no frames", mod->name );
 	}
+
+	mod->type = MOD_MESH2;
+	mod->q2_extradatasize = sizeof( mmd2_t ) +
+		pinmodel.num_st * sizeof( dmd2_stvert_t ) +
+		pinmodel.num_tris * sizeof( dmd2_triangle_t ) +
+		pinmodel.num_frames * pinmodel.framesize +
+		pinmodel.num_glcmds * sizeof( int );
+	mod->q2_md2 = ( mmd2_t* )Mem_Alloc( mod->q2_extradatasize );
+	mod->q2_numframes = pinmodel.num_frames;
+
+	mmd2_t* pheader = mod->q2_md2;
+
+	pheader->surfaceType = SF_MD2;
+	pheader->framesize = pinmodel.framesize;
+	pheader->num_skins = pinmodel.num_skins;
+	pheader->num_xyz = pinmodel.num_xyz;
+	pheader->num_st = pinmodel.num_st;
+	pheader->num_tris = pinmodel.num_tris;
+	pheader->num_glcmds = pinmodel.num_glcmds;
+	pheader->num_frames = pinmodel.num_frames;
 
 	//
 	// load base s and t vertices (not used in gl version)
 	//
-	const dmd2_stvert_t* pinst = ( const dmd2_stvert_t* )( ( byte* )pinmodel + pheader->ofs_st );
-	dmd2_stvert_t* poutst = ( dmd2_stvert_t* )( ( byte* )pheader + pheader->ofs_st );
+	const dmd2_stvert_t* pinst = ( const dmd2_stvert_t* )( ( const byte* )buffer + pinmodel.ofs_st );
+	pheader->st = ( dmd2_stvert_t* )( ( byte* )pheader + sizeof( mmd2_t ) );
 
 	for ( int i = 0; i < pheader->num_st; i++ ) {
-		poutst[ i ].s = LittleShort( pinst[ i ].s );
-		poutst[ i ].t = LittleShort( pinst[ i ].t );
+		pheader->st[ i ].s = LittleShort( pinst[ i ].s );
+		pheader->st[ i ].t = LittleShort( pinst[ i ].t );
 	}
 
 	//
 	// load triangle lists
 	//
-	const dmd2_triangle_t* pintri = ( const dmd2_triangle_t* )( ( byte* )pinmodel + pheader->ofs_tris );
-	dmd2_triangle_t* pouttri = ( dmd2_triangle_t* )( ( byte* )pheader + pheader->ofs_tris );
+	const dmd2_triangle_t* pintri = ( const dmd2_triangle_t* )( ( const byte* )buffer + pinmodel.ofs_tris );
+	pheader->tris = ( dmd2_triangle_t* )( ( byte* )pheader->st + pheader->num_st * sizeof( dmd2_stvert_t ) );
 
 	for ( int i = 0; i < pheader->num_tris; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
-			pouttri[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
-			pouttri[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
+			pheader->tris[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
+			pheader->tris[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
 		}
 	}
 
 	//
 	// load the frames
 	//
+	pheader->frames = ( byte* )pheader->tris + pheader->num_tris * sizeof( dmd2_triangle_t );
+
 	for ( int i = 0; i < pheader->num_frames; i++ ) {
-		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( byte* )pinmodel +
-																pheader->ofs_frames + i * pheader->framesize );
-		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( ( byte* )pheader +
-													 pheader->ofs_frames + i * pheader->framesize );
+		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer +
+																pinmodel.ofs_frames + i * pheader->framesize );
+		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->frames + i * pheader->framesize );
 
 		Com_Memcpy( poutframe->name, pinframe->name, sizeof ( poutframe->name ) );
 		for ( int j = 0; j < 3; j++ ) {
@@ -102,25 +118,18 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 		Com_Memcpy( poutframe->verts, pinframe->verts, pheader->num_xyz * sizeof ( dmd2_trivertx_t ) );
 	}
 
-	mod->type = MOD_MESH2;
-	mod->q2_extradata = pheader;
-	mod->q2_extradatasize = pheader->ofs_end;
-	mod->q2_numframes = pheader->num_frames;
-
 	//
 	// load the glcmds
 	//
-	const int* pincmd = ( const int* )( ( byte* )pinmodel + pheader->ofs_glcmds );
-	int* poutcmd = ( int* )( ( byte* )pheader + pheader->ofs_glcmds );
+	const int* pincmd = ( const int* )( ( const byte* )buffer + pinmodel.ofs_glcmds );
+	pheader->glcmds = ( int* )( pheader->frames + pheader->num_frames * pheader->framesize );
 	for ( int i = 0; i < pheader->num_glcmds; i++ ) {
-		poutcmd[ i ] = LittleLong( pincmd[ i ] );
+		pheader->glcmds[ i ] = LittleLong( pincmd[ i ] );
 	}
 
 	// register all skins
-	Com_Memcpy( ( char* )pheader + pheader->ofs_skins, ( char* )pinmodel + pheader->ofs_skins,
-		pheader->num_skins * MAX_MD2_SKINNAME );
 	for ( int i = 0; i < pheader->num_skins; i++ ) {
-		mod->q2_skins[ i ] = R_FindImageFile( ( char* )pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME,
+		mod->q2_skins[ i ] = R_FindImageFile( ( const char* )buffer + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
 			true, true, GL_CLAMP, false, IMG8MODE_Skin );
 	}
 
@@ -133,7 +142,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 }
 
 void Mod_FreeMd2Model( model_t* mod ) {
-	Mem_Free( mod->q2_extradata );
+	Mem_Free( mod->q2_md2 );
 }
 
 static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dmd2_trivertx_t* verts,
@@ -157,17 +166,17 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, d
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
-	dmd2_frame_t* frame = ( dmd2_frame_t* )( ( byte* )paliashdr + paliashdr->ofs_frames +
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
+	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
 											 backEnd.currentEntity->e.frame * paliashdr->framesize );
 	dmd2_trivertx_t* verts = frame->verts;
 	dmd2_trivertx_t* v = verts;
 
-	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( ( byte* )paliashdr + paliashdr->ofs_frames +
+	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
 												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
 	dmd2_trivertx_t* ov = oldframe->verts;
 
-	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
+	int* order = paliashdr->glcmds;
 
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
@@ -250,10 +259,10 @@ static void GL_DrawMd2FrameLerp( dmd2_t* paliashdr, float backlerp ) {
 	}
 }
 
-static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
+static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
-	int* order = ( int* )( ( byte* )paliashdr + paliashdr->ofs_glcmds );
+	int* order = paliashdr->glcmds;
 
 	float height = -lheight + 1.0;
 
@@ -301,7 +310,7 @@ static void GL_DrawMd2Shadow( dmd2_t* paliashdr, int posenum ) {
 }
 
 static bool R_CullMd2Model( trRefEntity_t* e ) {
-	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
+	mmd2_t* paliashdr = tr.currentModel->q2_md2;
 
 	if ( ( e->e.frame >= paliashdr->num_frames ) || ( e->e.frame < 0 ) ) {
 		common->Printf( "R_CullMd2Model %s: no such frame %d\n",
@@ -314,11 +323,9 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 		e->e.oldframe = 0;
 	}
 
-	dmd2_frame_t* pframe = ( dmd2_frame_t* )( ( byte* )paliashdr +
-											  paliashdr->ofs_frames + e->e.frame * paliashdr->framesize );
+	dmd2_frame_t* pframe = ( dmd2_frame_t* )( paliashdr->frames + e->e.frame * paliashdr->framesize );
 
-	dmd2_frame_t* poldframe = ( dmd2_frame_t* )( ( byte* )paliashdr +
-												 paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize );
+	dmd2_frame_t* poldframe = ( dmd2_frame_t* )( paliashdr->frames + e->e.oldframe * paliashdr->framesize );
 
 	/*
 	** compute axially aligned mins and maxs
@@ -367,11 +374,11 @@ void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 		}
 	}
 
-	dmd2_t* paliashdr = ( dmd2_t* )tr.currentModel->q2_extradata;
+	mmd2_t* paliashdr = tr.currentModel->q2_md2;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
-void RB_SurfaceMd2( dmd2_t* paliashdr ) {
+void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 
 	//
 	// get lighting information
