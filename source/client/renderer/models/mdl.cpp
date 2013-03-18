@@ -550,48 +550,9 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 	aliasmodel = m;
 	paliashdr = hdr;	// (mesh1hdr_t *)Mod_Extradata (m);
 
-	//
-	// look for a cached version
-	//
-	char cache[ MAX_QPATH ];
-	if ( GGameType & GAME_Hexen2 ) {
-		String::Cpy( cache, "glhexen/" );
-		String::StripExtension( m->name + String::Length( "models/" ), cache + String::Length( "glhexen/" ) );
-	} else   {
-		String::Cpy( cache, "glquake/" );
-		String::StripExtension( m->name + String::Length( "progs/" ), cache + String::Length( "glquake/" ) );
-	}
-	String::Cat( cache, sizeof ( cache ), ".ms2" );
+	common->Printf( "meshing %s...\n",m->name );
 
-	fileHandle_t f;
-	FS_FOpenFileRead( cache, &f, true );
-	if ( f ) {
-		FS_Read( &numcommands, 4, f );
-		FS_Read( &numorder, 4, f );
-		FS_Read( &commands, numcommands * sizeof ( commands[ 0 ] ), f );
-		FS_Read( &vertexorder, numorder * sizeof ( vertexorder[ 0 ] ), f );
-		FS_FCloseFile( f );
-	} else   {
-		//
-		// build it from scratch
-		//
-		common->Printf( "meshing %s...\n",m->name );
-
-		BuildTris();		// trifans or lists
-
-		//
-		// save out the cached version
-		//
-		f = FS_FOpenFileWrite( cache );
-		if ( f ) {
-			FS_Write( &numcommands, 4, f );
-			FS_Write( &numorder, 4, f );
-			FS_Write( &commands, numcommands * sizeof ( commands[ 0 ] ), f );
-			FS_Write( &vertexorder, numorder * sizeof ( vertexorder[ 0 ] ), f );
-			FS_FCloseFile( f );
-		}
-	}
-
+	BuildTris();		// trifans or lists
 
 	// save the data out
 
