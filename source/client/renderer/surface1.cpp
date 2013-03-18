@@ -242,7 +242,6 @@ static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
 	//
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( lnumverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
 	poly->next = fa->polys;
-	poly->flags = fa->flags;
 	poly->chain = NULL;
 	fa->polys = poly;
 	poly->numverts = lnumverts;
@@ -290,7 +289,7 @@ static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
 	//
 	// remove co-linear points - Ed
 	//
-	if ( !r_keeptjunctions->value && !( fa->flags & BRUSH29_SURF_UNDERWATER ) ) {
+	if ( !r_keeptjunctions->value ) {
 		for ( int i = 0; i < lnumverts; ++i ) {
 			vec3_t v1, v2;
 			float* prev, * thisv, * next;
@@ -494,37 +493,6 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 	}
 }
 
-//	Warp the vertex coordinates
-static void DrawGLWaterPoly( mbrush29_glpoly_t* p ) {
-	float* v = p->verts[ 0 ];
-	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = 255;
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		tess.xyz[ i ][ 2 ] = v[ 2 ];
-	}
-}
-
-static void DrawGLWaterPolyLightmap( mbrush29_glpoly_t* p ) {
-	float* v = p->verts[ 0 ];
-	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = 255;
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
-		tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-		tess.xyz[ i ][ 2 ] = v[ 2 ];
-	}
-}
-
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
@@ -610,225 +578,130 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		speedscale -= ( int )speedscale & ~127;
 		EmitSkyPolys( s );
 	} else {
+		//
+		// normal lightmaped poly
+		//
 		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
 		mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
-		if ( s->flags & BRUSH29_SURF_UNDERWATER ) {
-			//
-			// underwater warped with lightmap
-			//
-			if ( qglActiveTextureARB ) {
-				GL_State( GLS_DEFAULT );
-				GL_SelectTexture( 0 );
-				GL_Bind( t->gl_texture );
-				GL_SelectTexture( 1 );
-				qglEnable( GL_TEXTURE_2D );
+		if ( qglActiveTextureARB  && !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
+			!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 
-				int i = s->lightmaptexturenum;
-				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
-				if ( lightmap_modified[ i ] ) {
-					lightmap_modified[ i ] = false;
+			// Binds world to texture env 0
+			GL_SelectTexture( 0 );
+			GL_Bind( t->gl_texture );
+			// Binds lightmap to texenv 1
+			GL_SelectTexture( 1 );
+			qglEnable( GL_TEXTURE_2D );
+
+			int i = s->lightmaptexturenum;
+			GL_Bind( tr.lightmaps[ i ] );
+			if ( lightmap_modified[ i ] ) {
+				lightmap_modified[ i ] = false;
+				glRect_t* theRect = &lightmap_rectchange[ i ];
+				qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
+					BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+					lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
+				theRect->l = BLOCK_WIDTH;
+				theRect->t = BLOCK_HEIGHT;
+				theRect->h = 0;
+				theRect->w = 0;
+			}
+			GL_State( GLS_DEFAULT );
+			float* v = p->verts[ 0 ];
+			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = 255;
+				tess.svars.colors[ i ][ 1 ] = 255;
+				tess.svars.colors[ i ][ 2 ] = 255;
+				tess.svars.colors[ i ][ 3 ] = 255;
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+			}
+			EnableMultitexturedArrays( p->numverts );
+			EmitPolyIndexesQ1( p );
+			DrawMultitexturedTemp( &tess );
+
+			if ( r_drawOverBrights->integer ) {
+				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+
+				i = s->lightmaptexturenum;
+				GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
+				if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
+					lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
 					glRect_t* theRect = &lightmap_rectchange[ i ];
 					qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
 						BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-						lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
+						lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
 					theRect->l = BLOCK_WIDTH;
 					theRect->t = BLOCK_HEIGHT;
 					theRect->h = 0;
 					theRect->w = 0;
 				}
-				float* v = p->verts[ 0 ];
-				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					tess.svars.colors[ i ][ 0 ] = 255;
-					tess.svars.colors[ i ][ 1 ] = 255;
-					tess.svars.colors[ i ][ 2 ] = 255;
-					tess.svars.colors[ i ][ 3 ] = 255;
-
-					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-					tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-					tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-
-					tess.xyz[ i ][ 0 ] = v[ 0 ] + 8 * sin( v[ 1 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-					tess.xyz[ i ][ 1 ] = v[ 1 ] + 8 * sin( v[ 0 ] * 0.05 + tr.refdef.floatTime ) * sin( v[ 2 ] * 0.05 + tr.refdef.floatTime );
-					tess.xyz[ i ][ 2 ] = v[ 2 ];
-				}
-				EnableMultitexturedArrays( p->numverts );
-				EmitPolyIndexesQ1( p );
 				DrawMultitexturedTemp( &tess );
+			}
+			tess.numIndexes = 0;
+			DisableMultitexturedArrays();
 
-				if ( r_drawOverBrights->integer ) {
-					GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-
-					i = s->lightmaptexturenum;
-					GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
-					if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
-						lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
-						glRect_t* theRect = &lightmap_rectchange[ i ];
-						qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-							BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-							lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-						theRect->l = BLOCK_WIDTH;
-						theRect->t = BLOCK_HEIGHT;
-						theRect->h = 0;
-						theRect->w = 0;
-					}
-					DrawMultitexturedTemp( &tess );
-				}
-				tess.numIndexes = 0;
-				DisableMultitexturedArrays();
-
-				qglDisable( GL_TEXTURE_2D );
-				GL_SelectTexture( 0 );
+			qglDisable( GL_TEXTURE_2D );
+			GL_SelectTexture( 0 );
+			R_DrawFullBrightPoly( s );
+		} else {
+			int alpha_val = 255;
+			int intensity = 255;
+			if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
+				GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+				alpha_val = r_wateralpha->value * 255;
 			} else {
-				GL_Bind( t->gl_texture );
-				DrawGLWaterPoly( p );
-				EnableArrays( p->numverts );
-				EmitPolyIndexesQ1( p );
-				RB_IterateStagesGenericTemp( &tess );
-				DisableArrays();
+				GL_State( GLS_DEFAULT );
+			}
+			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+				// backEnd.currentEntity->abslight   0 - 255
+				intensity = backEnd.currentEntity->e.absoluteLight * 255;
+			}
 
+			GL_Bind( t->gl_texture );
+			float* v = p->verts[ 0 ];
+			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = intensity;
+				tess.svars.colors[ i ][ 1 ] = intensity;
+				tess.svars.colors[ i ][ 2 ] = intensity;
+				tess.svars.colors[ i ][ 3 ] = alpha_val;
+
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+				tess.xyz[ i ][ 0 ] = v[ 0 ];
+				tess.xyz[ i ][ 1 ] = v[ 1 ];
+				tess.xyz[ i ][ 2 ] = v[ 2 ];
+			}
+			EnableArrays( p->numverts );
+			EmitPolyIndexesQ1( p );
+			RB_IterateStagesGenericTemp( &tess );
+
+			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
+				!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
-				DrawGLWaterPolyLightmap( p );
-				EnableArrays( p->numverts );
-				RB_IterateStagesGenericTemp( &tess );
-				tess.numIndexes = 0;
-				DisableArrays();
-			}
-			if ( t->fullBrightTexture ) {
-				GL_Bind( t->fullBrightTexture );
-				GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-				DrawGLWaterPoly( p );
-				EnableArrays( p->numverts );
-				EmitPolyIndexesQ1( p );
-				RB_IterateStagesGenericTemp( &tess );
-				tess.numIndexes = 0;
-				DisableArrays();
-			}
-		} else {
-			//
-			// normal lightmaped poly
-			//
-			if ( qglActiveTextureARB  && !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
-				!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
-
-				// Binds world to texture env 0
-				GL_SelectTexture( 0 );
-				GL_Bind( t->gl_texture );
-				// Binds lightmap to texenv 1
-				GL_SelectTexture( 1 );
-				qglEnable( GL_TEXTURE_2D );
-
-				int i = s->lightmaptexturenum;
-				GL_Bind( tr.lightmaps[ i ] );
-				if ( lightmap_modified[ i ] ) {
-					lightmap_modified[ i ] = false;
-					glRect_t* theRect = &lightmap_rectchange[ i ];
-					qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-						BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-						lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-					theRect->l = BLOCK_WIDTH;
-					theRect->t = BLOCK_HEIGHT;
-					theRect->h = 0;
-					theRect->w = 0;
-				}
-				GL_State( GLS_DEFAULT );
-				float* v = p->verts[ 0 ];
-				for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				v = p->verts[ 0 ];
+				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					tess.svars.colors[ i ][ 0 ] = 255;
 					tess.svars.colors[ i ][ 1 ] = 255;
 					tess.svars.colors[ i ][ 2 ] = 255;
 					tess.svars.colors[ i ][ 3 ] = 255;
-					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-					tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-					tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-					tess.xyz[ i ][ 0 ] = v[ 0 ];
-					tess.xyz[ i ][ 1 ] = v[ 1 ];
-					tess.xyz[ i ][ 2 ] = v[ 2 ];
+					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
+					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 				}
-				EnableMultitexturedArrays( p->numverts );
-				EmitPolyIndexesQ1( p );
-				DrawMultitexturedTemp( &tess );
-
-				if ( r_drawOverBrights->integer ) {
-					GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-
-					i = s->lightmaptexturenum;
-					GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
-					if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
-						lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
-						glRect_t* theRect = &lightmap_rectchange[ i ];
-						qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-							BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-							lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-						theRect->l = BLOCK_WIDTH;
-						theRect->t = BLOCK_HEIGHT;
-						theRect->h = 0;
-						theRect->w = 0;
-					}
-					DrawMultitexturedTemp( &tess );
-				}
-				tess.numIndexes = 0;
-				DisableMultitexturedArrays();
-
-				qglDisable( GL_TEXTURE_2D );
-				GL_SelectTexture( 0 );
-				R_DrawFullBrightPoly( s );
-			} else {
-				int alpha_val = 255;
-				int intensity = 255;
-				if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-					GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-					alpha_val = r_wateralpha->value * 255;
-				} else {
-					GL_State( GLS_DEFAULT );
-				}
-				if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-					// backEnd.currentEntity->abslight   0 - 255
-					intensity = backEnd.currentEntity->e.absoluteLight * 255;
-				}
-
-				GL_Bind( t->gl_texture );
-				float* v = p->verts[ 0 ];
-				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					tess.svars.colors[ i ][ 0 ] = intensity;
-					tess.svars.colors[ i ][ 1 ] = intensity;
-					tess.svars.colors[ i ][ 2 ] = intensity;
-					tess.svars.colors[ i ][ 3 ] = alpha_val;
-
-					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-					tess.xyz[ i ][ 0 ] = v[ 0 ];
-					tess.xyz[ i ][ 1 ] = v[ 1 ];
-					tess.xyz[ i ][ 2 ] = v[ 2 ];
-				}
-				EnableArrays( p->numverts );
-				EmitPolyIndexesQ1( p );
 				RB_IterateStagesGenericTemp( &tess );
+			}
+			tess.numIndexes = 0;
+			DisableArrays();
 
-				if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
-					!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
-					GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
-					GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
-					v = p->verts[ 0 ];
-					for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-						tess.svars.colors[ i ][ 0 ] = 255;
-						tess.svars.colors[ i ][ 1 ] = 255;
-						tess.svars.colors[ i ][ 2 ] = 255;
-						tess.svars.colors[ i ][ 3 ] = 255;
-						tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
-						tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
-					}
-					RB_IterateStagesGenericTemp( &tess );
-				}
-				tess.numIndexes = 0;
-				DisableArrays();
-
-				if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
-					R_DrawFullBrightPoly( s );
-				}
+			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
+				R_DrawFullBrightPoly( s );
 			}
 		}
 	}

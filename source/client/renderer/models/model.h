@@ -66,8 +66,6 @@ enum surfaceType_t
 #define BRUSH29_SURF_DRAWSKY        4
 #define BRUSH29_SURF_DRAWTURB       0x10
 #define BRUSH29_SURF_DRAWTILED      0x20
-#define BRUSH29_SURF_UNDERWATER     0x80
-#define BRUSH29_SURF_DONTWARP       0x100
 #define BRUSH29_SURF_TRANSLUCENT    0x200
 
 struct mbrush29_surface_t;
@@ -104,7 +102,6 @@ struct mbrush29_glpoly_t {
 	mbrush29_glpoly_t* next;
 	mbrush29_glpoly_t* chain;
 	int numverts;
-	int flags;				// for BRUSH29_SURF_UNDERWATER
 	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 

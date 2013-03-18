@@ -663,9 +663,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 			}
 
 			// don't backface underwater surfaces, because they warp
-			if ( !( ( ( r_viewleaf->contents == BSP29CONTENTS_EMPTY && ( surf->flags & BRUSH29_SURF_UNDERWATER ) ) ||
-					  ( r_viewleaf->contents != BSP29CONTENTS_EMPTY && !( surf->flags & BRUSH29_SURF_UNDERWATER ) ) ) &&
-					!( surf->flags & BRUSH29_SURF_DONTWARP ) ) && ( ( dot < 0 ) ^ !!( surf->flags & BRUSH29_SURF_PLANEBACK ) ) ) {
+			if ( ( dot < 0 ) ^ !!( surf->flags & BRUSH29_SURF_PLANEBACK ) ) {
 				continue;		// wrong side
 			}
 

@@ -451,7 +451,6 @@ static void SubdividePolygon( int numverts, float* verts ) {
 
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( numverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
 	poly->next = warpface->polys;
-	poly->flags = 0;
 	poly->chain = NULL;
 	warpface->polys = poly;
 	poly->numverts = numverts;
@@ -617,14 +616,6 @@ static void Mod_LoadLeafs( bsp29_lump_t* l ) {
 	loadmodel->brush29_leafs = out;
 	loadmodel->brush29_numleafs = count;
 
-	//char s[80];
-	//sprintf(s, "maps/%s.bsp", Info_ValueForKey(cl.serverinfo,"map"));
-	bool isnotmap = true;
-	//if (!String::Cmp(s, loadmodel->name))
-	{
-		isnotmap = false;
-	}
-
 	for ( int i = 0; i < count; i++, in++, out++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			out->minmaxs[ j ] = LittleShort( in->mins[ j ] );
@@ -647,18 +638,6 @@ static void Mod_LoadLeafs( bsp29_lump_t* l ) {
 
 		for ( int j = 0; j < 4; j++ ) {
 			out->ambient_sound_level[ j ] = in->ambient_level[ j ];
-		}
-
-		// gl underwater warp
-		if ( out->contents != BSP29CONTENTS_EMPTY ) {
-			for ( int j = 0; j < out->nummarksurfaces; j++ ) {
-				out->firstmarksurface[ j ]->flags |= BRUSH29_SURF_UNDERWATER;
-			}
-		}
-		if ( isnotmap ) {
-			for ( int j = 0; j < out->nummarksurfaces; j++ ) {
-				out->firstmarksurface[ j ]->flags |= BRUSH29_SURF_DONTWARP;
-			}
 		}
 	}
 }
