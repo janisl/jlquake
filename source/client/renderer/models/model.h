@@ -732,29 +732,15 @@ struct msprite1_t {
 //
 //==============================================================================
 
-
-// the glcmd format:
-// a positive integer starts a tristrip command, followed by that many
-// vertex structures.
-// a negative integer starts a trifan command, followed by -x vertexes
-// a zero indicates the end of the command list.
-// a vertex consists of a floating point s, a floating point t,
-// and an integer vertex index.
-
 struct mmd2_t {
 	surfaceType_t surfaceType;
 
 	int framesize;				// byte size of each frame
 
 	int num_skins;
-	int num_xyz;
-	int num_st;					// greater than num_xyz for seams
-	int num_tris;
 	int num_glcmds;				// dwords in strip/fan command list
 	int num_frames;
 
-	dmd2_stvert_t* st;					// byte offset from start for stverts
-	dmd2_triangle_t* tris;				// offset for dtriangles
 	byte* frames;
 	int* glcmds;
 };

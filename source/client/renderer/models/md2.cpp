@@ -115,8 +115,6 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 
 	mod->type = MOD_MESH2;
 	mod->q2_extradatasize = sizeof( mmd2_t ) +
-		pinmodel.num_st * sizeof( dmd2_stvert_t ) +
-		pinmodel.num_tris * sizeof( dmd2_triangle_t ) +
 		pinmodel.num_frames * pinmodel.framesize +
 		pinmodel.num_glcmds * sizeof( int );
 	mod->q2_md2 = ( mmd2_t* )Mem_Alloc( mod->q2_extradatasize );
@@ -127,40 +125,13 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	pheader->surfaceType = SF_MD2;
 	pheader->framesize = pinmodel.framesize;
 	pheader->num_skins = pinmodel.num_skins;
-	pheader->num_xyz = pinmodel.num_xyz;
-	pheader->num_st = pinmodel.num_st;
-	pheader->num_tris = pinmodel.num_tris;
 	pheader->num_glcmds = pinmodel.num_glcmds;
 	pheader->num_frames = pinmodel.num_frames;
 
 	//
-	// load base s and t vertices (not used in gl version)
-	//
-	const dmd2_stvert_t* pinst = ( const dmd2_stvert_t* )( ( const byte* )buffer + pinmodel.ofs_st );
-	pheader->st = ( dmd2_stvert_t* )( ( byte* )pheader + sizeof( mmd2_t ) );
-
-	for ( int i = 0; i < pheader->num_st; i++ ) {
-		pheader->st[ i ].s = LittleShort( pinst[ i ].s );
-		pheader->st[ i ].t = LittleShort( pinst[ i ].t );
-	}
-
-	//
-	// load triangle lists
-	//
-	const dmd2_triangle_t* pintri = ( const dmd2_triangle_t* )( ( const byte* )buffer + pinmodel.ofs_tris );
-	pheader->tris = ( dmd2_triangle_t* )( ( byte* )pheader->st + pheader->num_st * sizeof( dmd2_stvert_t ) );
-
-	for ( int i = 0; i < pheader->num_tris; i++ ) {
-		for ( int j = 0; j < 3; j++ ) {
-			pheader->tris[ i ].index_xyz[ j ] = LittleShort( pintri[ i ].index_xyz[ j ] );
-			pheader->tris[ i ].index_st[ j ] = LittleShort( pintri[ i ].index_st[ j ] );
-		}
-	}
-
-	//
 	// load the frames
 	//
-	pheader->frames = ( byte* )pheader->tris + pheader->num_tris * sizeof( dmd2_triangle_t );
+	pheader->frames = ( byte* )pheader + sizeof( mmd2_t );
 
 	for ( int i = 0; i < pheader->num_frames; i++ ) {
 		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer +
@@ -173,7 +144,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 			poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 		}
 		// verts are all 8 bit, so no swapping needed
-		Com_Memcpy( poutframe->verts, pinframe->verts, pheader->num_xyz * sizeof ( dmd2_trivertx_t ) );
+		Com_Memcpy( poutframe->verts, pinframe->verts, pinmodel.num_xyz * sizeof ( dmd2_trivertx_t ) );
 	}
 
 	//
@@ -203,7 +174,7 @@ void Mod_FreeMd2Model( model_t* mod ) {
 	Mem_Free( mod->q2_md2 );
 }
 
-static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
+static void GL_LerpVerts( dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
 	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ],
 	idList< idMd2VertexRemap >& vertexMap ) {
 	for ( int i = 0; i < vertexMap.Num(); i++, lerp += 4, normals += 4 ) {
@@ -268,7 +239,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( paliashdr->num_xyz, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv, vertexMap );
+	GL_LerpVerts( v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv, vertexMap );
 
 	for ( int i = 0; i < vertexMap.Num(); i++ ) {
 		int index_xyz = vertexMap[ i ].xyzIndex;
@@ -481,7 +452,10 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	// locate the proper data
 	//
 
-	c_alias_polys += paliashdr->num_tris;
+	idList< idMd2VertexRemap > vertexMap;
+	int numIndexes = ExtractMd2Triangles( paliashdr->glcmds, tess.indexes, vertexMap );
+
+	c_alias_polys += numIndexes / 3;
 
 	//
 	// draw all the triangles
@@ -540,9 +514,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		backEnd.currentEntity->e.frame = 0;
 		backEnd.currentEntity->e.oldframe = 0;
 	}
-
-	idList< idMd2VertexRemap > vertexMap;
-	int numIndexes = ExtractMd2Triangles( paliashdr->glcmds, tess.indexes, vertexMap );
 
 	if ( !r_lerpmodels->value ) {
 		backEnd.currentEntity->e.backlerp = 0;
