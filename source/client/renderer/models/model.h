@@ -650,24 +650,6 @@ struct mmesh1framedesc_t {
 	char name[ 16 ];
 };
 
-struct mmesh1groupframedesc_t {
-	dmdl_trivertx_t bboxmin;
-	dmdl_trivertx_t bboxmax;
-	int frame;
-};
-
-struct mmesh1group_t {
-	int numframes;
-	int intervals;
-	mmesh1groupframedesc_t frames[ 1 ];
-};
-
-struct mmesh1triangle_t {
-	int facesfront;
-	int vertindex[ 3 ];
-	int stindex[ 3 ];
-};
-
 struct mesh1hdr_t {
 	int ident;
 	int version;
@@ -688,6 +670,7 @@ struct mesh1hdr_t {
 	int numposes;
 	int poseverts;
 	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
+	idVec2* texCoords;
 	int* commands;					// gl command list with embedded s/t
 	image_t* gl_texture[ MAX_MESH1_SKINS ][ 4 ];
 	image_t* fullBrightTexture[ MAX_MESH1_SKINS ][ 4 ];

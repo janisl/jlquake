@@ -31,6 +31,12 @@
 #define MAXALIASVERTS       2000
 #define MAXALIASTRIS        2048
 
+struct mmesh1triangle_t {
+	int facesfront;
+	int vertindex[ 3 ];
+	int stindex[ 3 ];
+};
+
 struct idMdlVertexRemap {
 	int xyzIndex;
 	int stIndex;
@@ -451,24 +457,8 @@ static void BuildTris() {
 		commands[ numcommands++ ] = ( bestlen + 2 );
 
 		for ( int j = 0; j < bestlen + 2; j++ ) {
-			// emit a vertex into the reorder buffer
 			commands[ numcommands++ ] = AddMdlVertex( bestverts[ j ], beststverts[ j ],
 				!triangles[ besttris[ 0 ] ].facesfront && stverts[ beststverts[ j ] ].onseam );
-
-			int k = beststverts[ j ];
-
-			// emit s/t coords into the commands stream
-			float s = stverts[ k ].s;
-			float t = stverts[ k ].t;
-
-			if ( !triangles[ besttris[ 0 ] ].facesfront && stverts[ k ].onseam ) {
-				s += pheader->skinwidth / 2;	// on back side
-			}
-			s = ( s + 0.5 ) / pheader->skinwidth;
-			t = ( t + 0.5 ) / pheader->skinheight;
-
-			*( float* )&commands[ numcommands++ ] = s;
-			*( float* )&commands[ numcommands++ ] = t;
 		}
 	}
 
@@ -499,6 +489,22 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 		for ( int j = 0; j < numorder; j++ ) {
 			*verts++ = poseverts[ i ][ vertexorder[ j ].xyzIndex ];
 		}
+	}
+
+	idVec2* texCoords = new idVec2[ paliashdr->poseverts ];
+	paliashdr->texCoords = texCoords;
+	for ( int i = 0; i < paliashdr->poseverts; i++, texCoords++ ) {
+		int k = vertexorder[ i ].stIndex;
+
+		// emit s/t coords into the commands stream
+		float s = stverts[ k ].s;
+		float t = stverts[ k ].t;
+
+		if ( vertexorder[ i ].onBackSide ) {
+			s += pheader->skinwidth / 2;	// on back side
+		}
+		texCoords->x = ( s + 0.5f ) / pheader->skinwidth;
+		texCoords->y = ( t + 0.5f ) / pheader->skinheight;
 	}
 }
 
@@ -815,9 +821,9 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		do {
 			int xyzIndex = order[ 0 ];
 			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = ( ( float* )order )[ 1 ];
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = ( ( float* )order )[ 2 ];
-			order += 3;
+			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = paliashdr->texCoords[ xyzIndex ].x;
+			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = paliashdr->texCoords[ xyzIndex ].y;
+			order++;
 
 			// normals and vertexes come from the frame list
 			float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts->lightnormalindex ] - 1 ) * shadelight;
@@ -870,9 +876,9 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 			tess.svars.colors[ xyzIndex ][ 2 ] = 0;
 			tess.svars.colors[ xyzIndex ][ 3 ] = 127;
 			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = ( ( float* )order )[ 1 ];
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = ( ( float* )order )[ 2 ];
-			order += 3;
+			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = paliashdr->texCoords[ xyzIndex ].x;
+			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = paliashdr->texCoords[ xyzIndex ].y;
+			order++;
 
 			// normals and vertexes come from the frame list
 			vec3_t point;
