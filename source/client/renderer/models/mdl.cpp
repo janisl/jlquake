@@ -390,82 +390,6 @@ done:
 	return stripcount;
 }
 
-static int FanLength( int starttri, int startv ) {
-	used[ starttri ] = 2;
-
-	mmesh1triangle_t* last = &triangles[ starttri ];
-
-	stripverts[ 0 ] = last->vertindex[ startv % 3 ];
-	stripstverts[ 0 ] = last->stindex[ startv % 3 ];
-
-	stripverts[ 1 ] = last->vertindex[ ( startv + 1 ) % 3 ];
-	stripstverts[ 1 ] = last->stindex[ ( startv + 1 ) % 3 ];
-
-	stripverts[ 2 ] = last->vertindex[ ( startv + 2 ) % 3 ];
-	stripstverts[ 2 ] = last->stindex[ ( startv + 2 ) % 3 ];
-
-	striptris[ 0 ] = starttri;
-	stripcount = 1;
-
-	int m1 = last->vertindex[ ( startv + 0 ) % 3 ];
-	int st1 = last->stindex[ ( startv + 2 ) % 3 ];
-	int m2 = last->vertindex[ ( startv + 2 ) % 3 ];
-	int st2 = last->stindex[ ( startv + 1 ) % 3 ];
-
-
-	// look for a matching triangle
-nexttri:
-	mmesh1triangle_t * check = &triangles[ starttri + 1 ];
-	for ( int j = starttri + 1; j < pheader->numtris; j++, check++ ) {
-		if ( check->facesfront != last->facesfront ) {
-			continue;
-		}
-		for ( int k = 0; k < 3; k++ ) {
-			if ( check->vertindex[ k ] != m1 ) {
-				continue;
-			}
-			if ( check->stindex[ k ] != st1 ) {
-				continue;
-			}
-			if ( check->vertindex[ ( k + 1 ) % 3 ] != m2 ) {
-				continue;
-			}
-			if ( check->stindex[ ( k + 1 ) % 3 ] != st2 ) {
-				continue;
-			}
-
-			// this is the next part of the fan
-
-			// if we can't use this triangle, this tristrip is done
-			if ( used[ j ] ) {
-				goto done;
-			}
-
-			// the new edge
-			m2 = check->vertindex[ ( k + 2 ) % 3 ];
-			st2 = check->stindex[ ( k + 2 ) % 3 ];
-
-			stripverts[ stripcount + 2 ] = m2;
-			stripstverts[ stripcount + 2 ] = st2;
-			striptris[ stripcount ] = j;
-			stripcount++;
-
-			used[ j ] = 2;
-			goto nexttri;
-		}
-	}
-done:
-
-	// clear the temp used flags
-	for ( int j = starttri + 1; j < pheader->numtris; j++ ) {
-		if ( used[ j ] == 2 ) {
-			used[ j ] = 0;
-		}
-	}
-
-	return stripcount;
-}
-
 //	Generate a list of trifans or strips for the model, which holds for all
 // frames
 static void BuildTris() {
@@ -482,28 +406,19 @@ static void BuildTris() {
 		}
 
 		int bestlen = 0;
-		int besttype = 0;
 		int bestverts[ 1024 ];
 		int besttris[ 1024 ];
 		int beststverts[ 1024 ];
-		for ( int type = 0; type < 2; type++ ) {
-			for ( int startv = 0; startv < 3; startv++ ) {
-				int len;
-				if ( type == 1 ) {
-					len = StripLength( i, startv );
-				} else   {
-					len = FanLength( i, startv );
+		for ( int startv = 0; startv < 3; startv++ ) {
+			int len = StripLength( i, startv );
+			if ( len > bestlen ) {
+				bestlen = len;
+				for ( int j = 0; j < bestlen + 2; j++ ) {
+					beststverts[ j ] = stripstverts[ j ];
+					bestverts[ j ] = stripverts[ j ];
 				}
-				if ( len > bestlen ) {
-					besttype = type;
-					bestlen = len;
-					for ( int j = 0; j < bestlen + 2; j++ ) {
-						beststverts[ j ] = stripstverts[ j ];
-						bestverts[ j ] = stripverts[ j ];
-					}
-					for ( int j = 0; j < bestlen; j++ ) {
-						besttris[ j ] = striptris[ j ];
-					}
+				for ( int j = 0; j < bestlen; j++ ) {
+					besttris[ j ] = striptris[ j ];
 				}
 			}
 		}
@@ -513,11 +428,7 @@ static void BuildTris() {
 			used[ besttris[ j ] ] = 1;
 		}
 
-		if ( besttype == 1 ) {
-			commands[ numcommands++ ] = ( bestlen + 2 );
-		} else   {
-			commands[ numcommands++ ] = -( bestlen + 2 );
-		}
+		commands[ numcommands++ ] = ( bestlen + 2 );
 
 		for ( int j = 0; j < bestlen + 2; j++ ) {
 			// emit a vertex into the reorder buffer
