@@ -745,7 +745,6 @@ struct mmd2_t {
 	int num_frames;
 
 	idVec2* texCoords;
-	int* vertexMap;
 	glIndex_t* indexes;
 	byte* frames;
 };

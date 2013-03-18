@@ -124,28 +124,30 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	idList<idMd2VertexRemap> vertexMap;
 	ExtractMd2Triangles( glcmds.Ptr(), indexes, vertexMap );
 
+	int frameSize = sizeof( dmd2_frame_t ) + ( vertexMap.Num() - 1 ) * sizeof( dmd2_trivertx_t );
+
 	mod->type = MOD_MESH2;
 	mod->q2_extradatasize = sizeof( mmd2_t ) +
-		pinmodel.num_frames * pinmodel.framesize +
-		pinmodel.num_glcmds * sizeof( int );
+		pinmodel.num_frames * frameSize;
 	mod->q2_md2 = ( mmd2_t* )Mem_Alloc( mod->q2_extradatasize );
 	mod->q2_numframes = pinmodel.num_frames;
 
 	mmd2_t* pheader = mod->q2_md2;
 
 	pheader->surfaceType = SF_MD2;
-	pheader->framesize = pinmodel.framesize;
+	pheader->framesize = frameSize;
 	pheader->num_skins = pinmodel.num_skins;
 	pheader->num_frames = pinmodel.num_frames;
+	pheader->numVertexes = vertexMap.Num();
+	pheader->numIndexes = indexes.Num();
 
 	//
 	// load the frames
 	//
 	pheader->frames = ( byte* )pheader + sizeof( mmd2_t );
-
 	for ( int i = 0; i < pheader->num_frames; i++ ) {
 		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer +
-																pinmodel.ofs_frames + i * pinmodel.framesize );
+			pinmodel.ofs_frames + i * pinmodel.framesize );
 		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->frames + i * pheader->framesize );
 
 		Com_Memcpy( poutframe->name, pinframe->name, sizeof ( poutframe->name ) );
@@ -153,21 +155,20 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 			poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
 			poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
 		}
-		// verts are all 8 bit, so no swapping needed
-		Com_Memcpy( poutframe->verts, pinframe->verts, pinmodel.num_xyz * sizeof ( dmd2_trivertx_t ) );
+		for ( int j = 0; j < vertexMap.Num(); j++ ) {
+			Com_Memcpy( &poutframe->verts[ j ], &pinframe->verts[ vertexMap[ j ].xyzIndex ], sizeof ( dmd2_trivertx_t ) );
+		}
 	}
 
-	pheader->numIndexes = indexes.Num();
-	pheader->numVertexes = vertexMap.Num();
+	//	Copy texture coordinates
 	pheader->texCoords = new idVec2[ vertexMap.Num() ];
-	pheader->vertexMap = new int[ vertexMap.Num() ];
-	pheader->indexes = new glIndex_t[ pheader->numIndexes ];
-
 	for ( int i = 0; i < vertexMap.Num(); i++ ) {
 		pheader->texCoords[ i ].x = vertexMap[ i ].s;
 		pheader->texCoords[ i ].y = vertexMap[ i ].t;
-		pheader->vertexMap[ i ] = vertexMap[ i ].xyzIndex;
 	}
+
+	//	Copy indexes
+	pheader->indexes = new glIndex_t[ pheader->numIndexes ];
 	Com_Memcpy( pheader->indexes, indexes.Ptr(), pheader->numIndexes * sizeof( glIndex_t ) );
 
 	// register all skins
@@ -186,7 +187,6 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 
 void Mod_FreeMd2Model( model_t* mod ) {
 	delete[] mod->q2_md2->texCoords;
-	delete[] mod->q2_md2->vertexMap;
 	delete[] mod->q2_md2->indexes;
 	Mem_Free( mod->q2_md2 );
 }
@@ -194,11 +194,10 @@ void Mod_FreeMd2Model( model_t* mod ) {
 static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
 	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
 	for ( int i = 0; i < paliashdr->numVertexes; i++, lerp += 4, normals += 4 ) {
-		int xyzIndex = paliashdr->vertexMap[ i ];
-		lerp[ 0 ] = move[ 0 ] + ov[ xyzIndex ].v[ 0 ] * backv[ 0 ] + v[ xyzIndex ].v[ 0 ] * frontv[ 0 ];
-		lerp[ 1 ] = move[ 1 ] + ov[ xyzIndex ].v[ 1 ] * backv[ 1 ] + v[ xyzIndex ].v[ 1 ] * frontv[ 1 ];
-		lerp[ 2 ] = move[ 2 ] + ov[ xyzIndex ].v[ 2 ] * backv[ 2 ] + v[ xyzIndex ].v[ 2 ] * frontv[ 2 ];
-		const float* normal = bytedirs[ v[ xyzIndex ].lightnormalindex ];
+		lerp[ 0 ] = move[ 0 ] + ov[ i ].v[ 0 ] * backv[ 0 ] + v[ i ].v[ 0 ] * frontv[ 0 ];
+		lerp[ 1 ] = move[ 1 ] + ov[ i ].v[ 1 ] * backv[ 1 ] + v[ i ].v[ 1 ] * frontv[ 1 ];
+		lerp[ 2 ] = move[ 2 ] + ov[ i ].v[ 2 ] * backv[ 2 ] + v[ i ].v[ 2 ] * frontv[ 2 ];
+		const float* normal = bytedirs[ v[ i ].lightnormalindex ];
 		VectorCopy( normal, normals );
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 			lerp[ 0 ] += normal[ 0 ] * POWERSUIT_SCALE;
@@ -264,8 +263,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 			tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
 			tess.svars.colors[ i ][ 3 ] = alpha;
 		} else {
-			int index_xyz = paliashdr->vertexMap[ i ];
-			float l = shadedots[ v[ index_xyz ].lightnormalindex ];
+			float l = shadedots[ v[ i ].lightnormalindex ];
 
 			tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
 			tess.svars.colors[ i ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
