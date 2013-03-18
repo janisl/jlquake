@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+#include "../../../common/math/Vec2.h"
+
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
 
@@ -738,9 +740,14 @@ struct mmd2_t {
 	int framesize;				// byte size of each frame
 
 	int num_skins;
+	int numVertexes;
+	int numIndexes;
 	int num_glcmds;				// dwords in strip/fan command list
 	int num_frames;
 
+	idVec2* texCoords;
+	int* vertexMap;
+	glIndex_t* indexes;
 	byte* frames;
 	int* glcmds;
 };

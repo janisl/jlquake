@@ -156,6 +156,20 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 		pheader->glcmds[ i ] = LittleLong( pincmd[ i ] );
 	}
 
+	idList< idMd2VertexRemap > vertexMap;
+	pheader->numIndexes = ExtractMd2Triangles( pheader->glcmds, tess.indexes, vertexMap );
+	pheader->numVertexes = vertexMap.Num();
+	pheader->texCoords = new idVec2[ vertexMap.Num() ];
+	pheader->vertexMap = new int[ vertexMap.Num() ];
+	pheader->indexes = new glIndex_t[ pheader->numIndexes ];
+
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+		pheader->texCoords[ i ].x = vertexMap[ i ].s;
+		pheader->texCoords[ i ].y = vertexMap[ i ].t;
+		pheader->vertexMap[ i ] = vertexMap[ i ].xyzIndex;
+	}
+	Com_Memcpy( pheader->indexes, tess.indexes, pheader->numIndexes * sizeof( glIndex_t ) );
+
 	// register all skins
 	for ( int i = 0; i < pheader->num_skins; i++ ) {
 		mod->q2_skins[ i ] = R_FindImageFile( ( const char* )buffer + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
@@ -174,11 +188,10 @@ void Mod_FreeMd2Model( model_t* mod ) {
 	Mem_Free( mod->q2_md2 );
 }
 
-static void GL_LerpVerts( dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
-	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ],
-	idList< idMd2VertexRemap >& vertexMap ) {
-	for ( int i = 0; i < vertexMap.Num(); i++, lerp += 4, normals += 4 ) {
-		int xyzIndex = vertexMap[ i ].xyzIndex;
+static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
+	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
+	for ( int i = 0; i < paliashdr->numVertexes; i++, lerp += 4, normals += 4 ) {
+		int xyzIndex = paliashdr->vertexMap[ i ];
 		lerp[ 0 ] = move[ 0 ] + ov[ xyzIndex ].v[ 0 ] * backv[ 0 ] + v[ xyzIndex ].v[ 0 ] * frontv[ 0 ];
 		lerp[ 1 ] = move[ 1 ] + ov[ xyzIndex ].v[ 1 ] * backv[ 1 ] + v[ xyzIndex ].v[ 1 ] * frontv[ 1 ];
 		lerp[ 2 ] = move[ 2 ] + ov[ xyzIndex ].v[ 2 ] * backv[ 2 ] + v[ xyzIndex ].v[ 2 ] * frontv[ 2 ];
@@ -189,14 +202,14 @@ static void GL_LerpVerts( dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
 			lerp[ 1 ] += normal[ 1 ] * POWERSUIT_SCALE;
 			lerp[ 2 ] += normal[ 2 ] * POWERSUIT_SCALE;
 		}
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = vertexMap[ i ].s;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = vertexMap[ i ].t;
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
 	}
 }
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd2VertexRemap >& vertexMap, int numIndexes ) {
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
 											 backEnd.currentEntity->e.frame * paliashdr->framesize );
 	dmd2_trivertx_t* v = frame->verts;
@@ -239,17 +252,16 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv, vertexMap );
+	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
 
-	for ( int i = 0; i < vertexMap.Num(); i++ ) {
-		int index_xyz = vertexMap[ i ].xyzIndex;
+	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 			tess.svars.colors[ i ][ 0 ] = md2_shadelight[ 0 ];
 			tess.svars.colors[ i ][ 1 ] = md2_shadelight[ 1 ];
 			tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
 			tess.svars.colors[ i ][ 3 ] = alpha;
 		} else {
-			// normals and vertexes come from the frame list
+			int index_xyz = paliashdr->vertexMap[ i ];
 			float l = shadedots[ v[ index_xyz ].lightnormalindex ];
 
 			tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
@@ -259,8 +271,8 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd
 		}
 	}
 
-	EnableArrays( vertexMap.Num() );
-	R_DrawElements( numIndexes, tess.indexes );
+	EnableArrays( paliashdr->numVertexes );
+	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -268,12 +280,12 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd
 	}
 }
 
-static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum, idList< idMd2VertexRemap >& vertexMap, int numIndexes ) {
+static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = -lheight + 1.0;
 
-	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 0 ] = 0;
 		tess.svars.colors[ i ][ 1 ] = 0;
 		tess.svars.colors[ i ][ 2 ] = 0;
@@ -289,8 +301,8 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum, idList< idMd2Verte
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
-	EnableArrays( vertexMap.Num() );
-	R_DrawElements( numIndexes, tess.indexes );
+	EnableArrays( paliashdr->numVertexes );
+	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
 }
 
@@ -452,10 +464,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	// locate the proper data
 	//
 
-	idList< idMd2VertexRemap > vertexMap;
-	int numIndexes = ExtractMd2Triangles( paliashdr->glcmds, tess.indexes, vertexMap );
-
-	c_alias_polys += numIndexes / 3;
+	c_alias_polys += paliashdr->numIndexes / 3;
 
 	//
 	// draw all the triangles
@@ -518,7 +527,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	if ( !r_lerpmodels->value ) {
 		backEnd.currentEntity->e.backlerp = 0;
 	}
-	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp, vertexMap, numIndexes );
+	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp );
 
 	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
@@ -532,7 +541,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		qglLoadMatrixf( backEnd.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame, vertexMap, numIndexes );
+		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame );
 		qglEnable( GL_TEXTURE_2D );
 		qglPopMatrix();
 	}

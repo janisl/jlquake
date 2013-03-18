@@ -16,6 +16,7 @@ set(COMMON_FILES
 	clip_map/main.cpp
 	clip_map/non_map.cpp
 	math/Math.cpp
+	math/Vec2.cpp
 	math/Vec3.cpp
 	virtual_machine/interpreted.cpp
 	virtual_machine/main.cpp
