@@ -145,21 +145,18 @@ void Mod_FreeMd2Model( model_t* mod ) {
 	Mem_Free( mod->q2_md2 );
 }
 
-static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dmd2_trivertx_t* verts,
-	float* lerp, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4 ) {
-			float* normal = bytedirs[ verts[ i ].lightnormalindex ];
-
-			lerp[ 0 ] = move[ 0 ] + ov->v[ 0 ] * backv[ 0 ] + v->v[ 0 ] * frontv[ 0 ] + normal[ 0 ] * POWERSUIT_SCALE;
-			lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ] + normal[ 1 ] * POWERSUIT_SCALE;
-			lerp[ 2 ] = move[ 2 ] + ov->v[ 2 ] * backv[ 2 ] + v->v[ 2 ] * frontv[ 2 ] + normal[ 2 ] * POWERSUIT_SCALE;
-		}
-	} else {
-		for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4 ) {
-			lerp[ 0 ] = move[ 0 ] + ov->v[ 0 ] * backv[ 0 ] + v->v[ 0 ] * frontv[ 0 ];
-			lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ];
-			lerp[ 2 ] = move[ 2 ] + ov->v[ 2 ] * backv[ 2 ] + v->v[ 2 ] * frontv[ 2 ];
+static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
+	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
+	for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4, normals += 4 ) {
+		lerp[ 0 ] = move[ 0 ] + ov->v[ 0 ] * backv[ 0 ] + v->v[ 0 ] * frontv[ 0 ];
+		lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ];
+		lerp[ 2 ] = move[ 2 ] + ov->v[ 2 ] * backv[ 2 ] + v->v[ 2 ] * frontv[ 2 ];
+		const float* normal = bytedirs[ v->lightnormalindex ];
+		VectorCopy( normal, normals );
+		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+			lerp[ 0 ] += normal[ 0 ] * POWERSUIT_SCALE;
+			lerp[ 1 ] += normal[ 1 ] * POWERSUIT_SCALE;
+			lerp[ 2 ] += normal[ 2 ] * POWERSUIT_SCALE;
 		}
 	}
 }
@@ -169,8 +166,7 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, d
 static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
 											 backEnd.currentEntity->e.frame * paliashdr->framesize );
-	dmd2_trivertx_t* verts = frame->verts;
-	dmd2_trivertx_t* v = verts;
+	dmd2_trivertx_t* v = frame->verts;
 
 	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
 												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
@@ -212,7 +208,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( paliashdr->num_xyz, v, ov, verts, tess.xyz[ 0 ], move, frontv, backv );
+	GL_LerpVerts( paliashdr->num_xyz, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
 
 	EnableArrays( 0 );//paliashdr->num_xyz
 	while ( 1 ) {
@@ -240,7 +236,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 				tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 			} else {
 				// normals and vertexes come from the frame list
-				float l = shadedots[ verts[ index_xyz ].lightnormalindex ];
+				float l = shadedots[ v[ index_xyz ].lightnormalindex ];
 
 				tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
 				tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
