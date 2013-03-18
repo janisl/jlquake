@@ -30,6 +30,12 @@ struct idMd2VertexRemap {
 };
 
 static int AddToVertexMap( idList< idMd2VertexRemap >& vertexMap, int xyzIndex, float s, float t ) {
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+		if ( vertexMap[ i ].xyzIndex == xyzIndex && vertexMap[ i ].s == s && vertexMap[ i ].t == t) {
+			return i;
+		}
+	}
+
 	idMd2VertexRemap& v = vertexMap.Alloc();
 	v.xyzIndex = xyzIndex;
 	v.s = s;
