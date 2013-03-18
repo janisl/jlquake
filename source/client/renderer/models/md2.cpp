@@ -128,7 +128,9 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 
 	mod->type = MOD_MESH2;
 	mod->q2_extradatasize = sizeof( mmd2_t ) +
-		pinmodel.num_frames * frameSize;
+		pinmodel.num_frames * frameSize +
+		sizeof( idVec2 ) * vertexMap.Num() +
+		sizeof( glIndex_t ) * indexes.Num();
 	mod->q2_md2 = ( mmd2_t* )Mem_Alloc( mod->q2_extradatasize );
 	mod->q2_numframes = pinmodel.num_frames;
 
@@ -161,14 +163,14 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	}
 
 	//	Copy texture coordinates
-	pheader->texCoords = new idVec2[ vertexMap.Num() ];
+	pheader->texCoords = ( idVec2* )( pheader->frames + pheader->num_frames * pheader->framesize );
 	for ( int i = 0; i < vertexMap.Num(); i++ ) {
 		pheader->texCoords[ i ].x = vertexMap[ i ].s;
 		pheader->texCoords[ i ].y = vertexMap[ i ].t;
 	}
 
 	//	Copy indexes
-	pheader->indexes = new glIndex_t[ pheader->numIndexes ];
+	pheader->indexes = ( glIndex_t* )( ( byte* )pheader->texCoords + sizeof( idVec2 ) * vertexMap.Num() );
 	Com_Memcpy( pheader->indexes, indexes.Ptr(), pheader->numIndexes * sizeof( glIndex_t ) );
 
 	// register all skins
@@ -186,8 +188,6 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 }
 
 void Mod_FreeMd2Model( model_t* mod ) {
-	delete[] mod->q2_md2->texCoords;
-	delete[] mod->q2_md2->indexes;
 	Mem_Free( mod->q2_md2 );
 }
 
