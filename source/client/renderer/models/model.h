@@ -742,14 +742,12 @@ struct mmd2_t {
 	int num_skins;
 	int numVertexes;
 	int numIndexes;
-	int num_glcmds;				// dwords in strip/fan command list
 	int num_frames;
 
 	idVec2* texCoords;
 	int* vertexMap;
 	glIndex_t* indexes;
 	byte* frames;
-	int* glcmds;
 };
 
 //==============================================================================

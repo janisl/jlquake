@@ -37,8 +37,7 @@ static int AddToVertexMap( idList< idMd2VertexRemap >& vertexMap, int xyzIndex, 
 	return vertexMap.Num() - 1;
 }
 
-static int ExtractMd2Triangles( int* order, glIndex_t* indexes, idList< idMd2VertexRemap >& vertexMap ) {
-	int numIndexes = 0;
+static void ExtractMd2Triangles( int* order, idList<glIndex_t>& indexes, idList<idMd2VertexRemap>& vertexMap ) {
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -71,14 +70,12 @@ static int ExtractMd2Triangles( int* order, glIndex_t* indexes, idList< idMd2Ver
 			}
 			i++;
 			if ( i >= 3 ) {
-				*indexes++ = triangle[ 0 ];
-				*indexes++ = triangle[ 1 ];
-				*indexes++ = triangle[ 2 ];
-				numIndexes += 3;
+				indexes.Append( triangle[ 0 ] );
+				indexes.Append( triangle[ 1 ] );
+				indexes.Append( triangle[ 2 ] );
 			}
 		} while ( --count );
 	}
-	return numIndexes;
 }
 
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
@@ -113,6 +110,20 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 		common->Error( "model %s has no frames", mod->name );
 	}
 
+	//
+	// load the glcmds
+	//
+	const int* pincmd = ( const int* )( ( const byte* )buffer + pinmodel.ofs_glcmds );
+	idList<int> glcmds;
+	glcmds.SetNum( pinmodel.num_glcmds );
+	for ( int i = 0; i < pinmodel.num_glcmds; i++ ) {
+		glcmds[ i ] = LittleLong( pincmd[ i ] );
+	}
+
+	idList<glIndex_t> indexes;
+	idList<idMd2VertexRemap> vertexMap;
+	ExtractMd2Triangles( glcmds.Ptr(), indexes, vertexMap );
+
 	mod->type = MOD_MESH2;
 	mod->q2_extradatasize = sizeof( mmd2_t ) +
 		pinmodel.num_frames * pinmodel.framesize +
@@ -125,7 +136,6 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	pheader->surfaceType = SF_MD2;
 	pheader->framesize = pinmodel.framesize;
 	pheader->num_skins = pinmodel.num_skins;
-	pheader->num_glcmds = pinmodel.num_glcmds;
 	pheader->num_frames = pinmodel.num_frames;
 
 	//
@@ -135,7 +145,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 
 	for ( int i = 0; i < pheader->num_frames; i++ ) {
 		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer +
-																pinmodel.ofs_frames + i * pheader->framesize );
+																pinmodel.ofs_frames + i * pinmodel.framesize );
 		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->frames + i * pheader->framesize );
 
 		Com_Memcpy( poutframe->name, pinframe->name, sizeof ( poutframe->name ) );
@@ -147,17 +157,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 		Com_Memcpy( poutframe->verts, pinframe->verts, pinmodel.num_xyz * sizeof ( dmd2_trivertx_t ) );
 	}
 
-	//
-	// load the glcmds
-	//
-	const int* pincmd = ( const int* )( ( const byte* )buffer + pinmodel.ofs_glcmds );
-	pheader->glcmds = ( int* )( pheader->frames + pheader->num_frames * pheader->framesize );
-	for ( int i = 0; i < pheader->num_glcmds; i++ ) {
-		pheader->glcmds[ i ] = LittleLong( pincmd[ i ] );
-	}
-
-	idList< idMd2VertexRemap > vertexMap;
-	pheader->numIndexes = ExtractMd2Triangles( pheader->glcmds, tess.indexes, vertexMap );
+	pheader->numIndexes = indexes.Num();
 	pheader->numVertexes = vertexMap.Num();
 	pheader->texCoords = new idVec2[ vertexMap.Num() ];
 	pheader->vertexMap = new int[ vertexMap.Num() ];
@@ -168,7 +168,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 		pheader->texCoords[ i ].y = vertexMap[ i ].t;
 		pheader->vertexMap[ i ] = vertexMap[ i ].xyzIndex;
 	}
-	Com_Memcpy( pheader->indexes, tess.indexes, pheader->numIndexes * sizeof( glIndex_t ) );
+	Com_Memcpy( pheader->indexes, indexes.Ptr(), pheader->numIndexes * sizeof( glIndex_t ) );
 
 	// register all skins
 	for ( int i = 0; i < pheader->num_skins; i++ ) {
@@ -185,6 +185,9 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 }
 
 void Mod_FreeMd2Model( model_t* mod ) {
+	delete[] mod->q2_md2->texCoords;
+	delete[] mod->q2_md2->vertexMap;
+	delete[] mod->q2_md2->indexes;
 	Mem_Free( mod->q2_md2 );
 }
 
