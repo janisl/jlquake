@@ -31,6 +31,12 @@
 #define MAXALIASVERTS       2000
 #define MAXALIASTRIS        2048
 
+struct idMdlVertexRemap {
+	int xyzIndex;
+	int stIndex;
+	bool onBackSide;
+};
+
 byte q1_player_8bit_texels[ 320 * 200 ];
 byte h2_player_8bit_texels[ MAX_PLAYER_CLASS ][ 620 * 245 ];
 
@@ -60,7 +66,7 @@ static int numcommands;
 
 // all frames will have their vertexes rearranged and expanded
 // so they are in the order expected by the command list
-static int vertexorder[ 8192 ];
+static idMdlVertexRemap vertexorder[ 8192 ];
 static int numorder;
 
 static int stripverts[ 128 ];
@@ -390,6 +396,20 @@ done:
 	return stripcount;
 }
 
+static int AddMdlVertex( int xyzIndex, int stIndex, bool onBackSide ) {
+	for ( int i = 0; i < numorder; i++ ) {
+		if ( vertexorder[ i ].xyzIndex == xyzIndex && vertexorder[ i ].stIndex == stIndex &&
+			vertexorder[ i ].onBackSide == onBackSide ) {
+			return i;
+		}
+	}
+
+	vertexorder[ numorder ].xyzIndex = xyzIndex;
+	vertexorder[ numorder ].stIndex = stIndex;
+	vertexorder[ numorder ].onBackSide = onBackSide;
+	return numorder++;
+}
+
 //	Generate a list of trifans or strips for the model, which holds for all
 // frames
 static void BuildTris() {
@@ -432,11 +452,10 @@ static void BuildTris() {
 
 		for ( int j = 0; j < bestlen + 2; j++ ) {
 			// emit a vertex into the reorder buffer
-			int k = bestverts[ j ];
-			commands[ numcommands++ ] = numorder;
-			vertexorder[ numorder++ ] = k;
+			commands[ numcommands++ ] = AddMdlVertex( bestverts[ j ], beststverts[ j ],
+				!triangles[ besttris[ 0 ] ].facesfront && stverts[ beststverts[ j ] ].onseam );
 
-			k = beststverts[ j ];
+			int k = beststverts[ j ];
 
 			// emit s/t coords into the commands stream
 			float s = stverts[ k ].s;
@@ -478,7 +497,7 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 	paliashdr->posedata = verts;
 	for ( int i = 0; i < paliashdr->numposes; i++ ) {
 		for ( int j = 0; j < numorder; j++ ) {
-			*verts++ = poseverts[ i ][ vertexorder[ j ] ];
+			*verts++ = poseverts[ i ][ vertexorder[ j ].xyzIndex ];
 		}
 	}
 }
