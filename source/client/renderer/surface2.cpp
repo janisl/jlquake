@@ -415,7 +415,7 @@ static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	return tex->image;
 }
 
-static void DrawPolyElementsQ2( mbrush38_glpoly_t* p ) {
+static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
 	int numVerts = 0;
 	int numIndexes = 0;
 	for ( int i = 0; i < p->numverts - 2; i++ ) {
@@ -424,8 +424,6 @@ static void DrawPolyElementsQ2( mbrush38_glpoly_t* p ) {
 		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 	}
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
-	RB_IterateStagesGenericTemp( &tess );
-	tess.numIndexes = 0;
 }
 
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
@@ -462,7 +460,9 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ2( p );
+		EmitPolyIndexesQ2( p );
+		RB_IterateStagesGenericTemp( &tess );
+		tess.numIndexes = 0;
 		DisableArrays();
 	}
 }
@@ -519,7 +519,9 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
 		tess.xyz[ j ][ 2 ] = v[ 2 ];
 	}
 	EnableArrays( p->numverts );
-	DrawPolyElementsQ2(  p );
+	EmitPolyIndexesQ2(  p );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
 
@@ -545,7 +547,9 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image, int alp
 		DrawGLPolyQ2( fa->polys, alpha );
 	}
 	EnableArrays( fa->polys->numverts );
-	DrawPolyElementsQ2( fa->polys );
+	EmitPolyIndexesQ2( fa->polys );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 
 	// don't bother if we're set to fullbright
@@ -609,7 +613,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		} else {
 			DrawGLPolyQ2( surf->polys, alpha );
 			EnableArrays( surf->polys->numverts );
-			DrawPolyElementsQ2( surf->polys );
+			EmitPolyIndexesQ2( surf->polys );
+			RB_IterateStagesGenericTemp( &tess );
+			tess.numIndexes = 0;
 			DisableArrays();
 		}
 		return;
@@ -693,7 +699,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 	}
 	EnableMultitexturedArrays( p->numverts );
-	DrawPolyElementsQ2( p );
+	EmitPolyIndexesQ2( p );
+	DrawMultitexturedTemp( &tess );
+	tess.numIndexes = 0;
 	DisableMultitexturedArrays();
 
 	GL_SelectTexture( 1 );

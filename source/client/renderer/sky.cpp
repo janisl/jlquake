@@ -178,7 +178,9 @@ void EmitSkyPolys( mbrush29_surface_t* fa ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		EmitPolyIndexesQ1( p );
+		RB_IterateStagesGenericTemp( &tess );
+		tess.numIndexes = 0;
 		DisableArrays();
 	}
 }

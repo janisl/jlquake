@@ -468,7 +468,7 @@ dynamic:
 	}
 }
 
-void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
+void EmitPolyIndexesQ1( mbrush29_glpoly_t* p ) {
 	int numVerts = 0;
 	int numIndexes = 0;
 	for ( int i = 0; i < p->numverts - 2; i++ ) {
@@ -477,8 +477,6 @@ void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
 		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 	}
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
-	RB_IterateStagesGenericTemp( &tess );
-	tess.numIndexes = 0;
 }
 
 static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
@@ -552,7 +550,9 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		EmitPolyIndexesQ1( p );
+		RB_IterateStagesGenericTemp( &tess );
+		tess.numIndexes = 0;
 		DisableArrays();
 	}
 }
@@ -568,7 +568,9 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	DrawGLPolyQ1( p );
 	EnableArrays( p->numverts );
-	DrawPolyElementsQ1( p );
+	EmitPolyIndexesQ1( p );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
 
@@ -622,7 +624,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
 			}
 			EnableMultitexturedArrays( p->numverts );
-			DrawPolyElementsQ1( p );
+			EmitPolyIndexesQ1( p );
+			DrawMultitexturedTemp( &tess );
 
 			if ( r_drawOverBrights->integer ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -640,8 +643,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					theRect->h = 0;
 					theRect->w = 0;
 				}
-				DrawPolyElementsQ1( p );
+				DrawMultitexturedTemp( &tess );
 			}
+			tess.numIndexes = 0;
 			DisableMultitexturedArrays();
 
 			qglDisable( GL_TEXTURE_2D );
@@ -680,7 +684,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
 			}
 			EnableArrays( p->numverts );
-			DrawPolyElementsQ1( p );
+			EmitPolyIndexesQ1( p );
+			RB_IterateStagesGenericTemp( &tess );
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
 				 !( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
@@ -695,8 +700,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
 					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 				}
-				DrawPolyElementsQ1( p );
+				RB_IterateStagesGenericTemp( &tess );
 			}
+			tess.numIndexes = 0;
 			DisableArrays();
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) ) {
@@ -785,7 +791,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 		EnableMultitexturedArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		EmitPolyIndexesQ1( p );
+		DrawMultitexturedTemp( &tess );
 
 		if ( r_drawOverBrights->integer ) {
 			GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -803,8 +810,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				theRect->h = 0;
 				theRect->w = 0;
 			}
-			DrawPolyElementsQ1( p );
+			DrawMultitexturedTemp( &tess );
 		}
+		tess.numIndexes = 0;
 		DisableMultitexturedArrays();
 
 		qglDisable( GL_TEXTURE_2D );
@@ -813,14 +821,16 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		GL_Bind( t->gl_texture );
 		DrawGLWaterPoly( p );
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		EmitPolyIndexesQ1( p );
+		RB_IterateStagesGenericTemp( &tess );
 		DisableArrays();
 
 		GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 		DrawGLWaterPolyLightmap( p );
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		RB_IterateStagesGenericTemp( &tess );
+		tess.numIndexes = 0;
 		DisableArrays();
 	}
 	if ( t->fullBrightTexture ) {
@@ -828,7 +838,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		DrawGLWaterPoly( p );
 		EnableArrays( p->numverts );
-		DrawPolyElementsQ1( p );
+		EmitPolyIndexesQ1( p );
+		RB_IterateStagesGenericTemp( &tess );
+		tess.numIndexes = 0;
 		DisableArrays();
 	}
 }

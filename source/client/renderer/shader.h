@@ -393,6 +393,7 @@ void EnableArrays( int numVertexes );
 void DisableArrays();
 void EnableMultitexturedArrays( int numVertexes );
 void DisableMultitexturedArrays();
+void DrawMultitexturedTemp( shaderCommands_t* input );
 void RB_IterateStagesGenericTemp( shaderCommands_t* input );
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();

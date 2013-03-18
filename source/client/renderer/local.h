@@ -832,7 +832,7 @@ struct gllightmapstate_t {
 
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
-void DrawPolyElementsQ1( mbrush29_glpoly_t* p );
+void EmitPolyIndexesQ1( mbrush29_glpoly_t* p );
 void R_DrawFullBrightPoly( mbrush29_surface_t* s );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();

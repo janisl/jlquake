@@ -448,6 +448,10 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	GL_SelectTexture( 0 );
 }
 
+void DrawMultitexturedTemp( shaderCommands_t* input ) {
+	R_DrawElements( input->numIndexes, input->indexes );
+}
+
 static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	for ( int stage = 0; stage < MAX_SHADER_STAGES; stage++ ) {
 		shaderStage_t* pStage = tess.xstages[ stage ];
