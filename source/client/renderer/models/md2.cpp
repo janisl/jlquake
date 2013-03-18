@@ -217,14 +217,12 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
-	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
-											 backEnd.currentEntity->e.frame * paliashdr->framesize );
-	dmd2_trivertx_t* v = frame->verts;
-
-	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
-												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
-	dmd2_trivertx_t* ov = oldframe->verts;
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	} else {
+		GL_State( GLS_DEFAULT );
+	}
 
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
@@ -232,35 +230,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	} else {
 		alpha = 255;
 	}
-
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		qglDisable( GL_TEXTURE_2D );
-	}
-
-	float frontlerp = 1.0 - backlerp;
-
-	// move should be the delta back to the previous frame * backlerp
-	vec3_t delta;
-	VectorSubtract( backEnd.currentEntity->e.oldorigin, backEnd.currentEntity->e.origin, delta );
-
-	vec3_t move;
-	move[ 0 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 0 ] );		// forward
-	move[ 1 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 1 ] );		// left
-	move[ 2 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 2 ] );		// up
-
-	VectorAdd( move, oldframe->translate, move );
-
-	for ( int i = 0; i < 3; i++ ) {
-		move[ i ] = backlerp * move[ i ] + frontlerp * frame->translate[ i ];
-	}
-
-	vec3_t frontv, backv;
-	for ( int i = 0; i < 3; i++ ) {
-		frontv[ i ] = frontlerp * frame->scale[ i ];
-		backv[ i ] = backlerp * oldframe->scale[ i ];
-	}
-
-	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
 
 	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -278,6 +247,10 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 		}
 	}
 
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		qglDisable( GL_TEXTURE_2D );
+	}
+
 	EnableArrays( paliashdr->numVertexes );
 	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
@@ -287,7 +260,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	}
 }
 
-static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
+static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = -lheight + 1.0;
@@ -308,6 +281,9 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
+	GL_Cull( CT_FRONT_SIDED );
+	GL_Bind( tr.whiteImage );
+	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	EnableArrays( paliashdr->numVertexes );
 	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
@@ -380,6 +356,9 @@ void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 
 	mmd2_t* paliashdr = tr.currentModel->q2_md2;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+	}
 }
 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
@@ -510,13 +489,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 
 	// draw it
 
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else {
-		GL_State( GLS_DEFAULT );
-	}
-
-
 	if ( ( backEnd.currentEntity->e.frame >= paliashdr->num_frames ) || ( backEnd.currentEntity->e.frame < 0 ) ) {
 		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
 			R_GetModelByHandle( backEnd.currentEntity->e.hModel )->name, backEnd.currentEntity->e.frame );
@@ -534,22 +506,50 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	if ( !r_lerpmodels->value ) {
 		backEnd.currentEntity->e.backlerp = 0;
 	}
-	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp );
+
+	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
+											 backEnd.currentEntity->e.frame * paliashdr->framesize );
+	dmd2_trivertx_t* v = frame->verts;
+
+	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
+												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
+	dmd2_trivertx_t* ov = oldframe->verts;
+
+	float backlerp = backEnd.currentEntity->e.backlerp;
+	float frontlerp = 1.0 - backlerp;
+
+	// move should be the delta back to the previous frame * backlerp
+	vec3_t delta;
+	VectorSubtract( backEnd.currentEntity->e.oldorigin, backEnd.currentEntity->e.origin, delta );
+
+	vec3_t move;
+	move[ 0 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 0 ] );		// forward
+	move[ 1 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 1 ] );		// left
+	move[ 2 ] = DotProduct( delta, backEnd.currentEntity->e.axis[ 2 ] );		// up
+
+	VectorAdd( move, oldframe->translate, move );
+
+	for ( int i = 0; i < 3; i++ ) {
+		move[ i ] = backlerp * move[ i ] + frontlerp * frame->translate[ i ];
+	}
+
+	vec3_t frontv, backv;
+	for ( int i = 0; i < 3; i++ ) {
+		frontv[ i ] = frontlerp * frame->scale[ i ];
+		backv[ i ] = backlerp * oldframe->scale[ i ];
+	}
+
+	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
+
+	if ( tess.shader == tr.shadowShader ) {
+		GL_DrawMd2Shadow( paliashdr );
+	} else {
+		GL_DrawMd2FrameLerp( paliashdr, v );
+	}
 
 	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPopMatrix();
 		qglMatrixMode( GL_MODELVIEW );
-	}
-
-	if ( r_shadows->value && !( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
-		GL_Cull( CT_FRONT_SIDED );
-		qglPushMatrix();
-		qglLoadMatrixf( backEnd.orient.modelMatrix );
-		qglDisable( GL_TEXTURE_2D );
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame );
-		qglEnable( GL_TEXTURE_2D );
-		qglPopMatrix();
 	}
 }
