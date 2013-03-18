@@ -204,18 +204,22 @@ void Mod_FreeMd2Model( model_t* mod ) {
 }
 
 static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
-	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
-	for ( int i = 0; i < nverts; i++, v++, ov++, lerp += 4, normals += 4 ) {
-		lerp[ 0 ] = move[ 0 ] + ov->v[ 0 ] * backv[ 0 ] + v->v[ 0 ] * frontv[ 0 ];
-		lerp[ 1 ] = move[ 1 ] + ov->v[ 1 ] * backv[ 1 ] + v->v[ 1 ] * frontv[ 1 ];
-		lerp[ 2 ] = move[ 2 ] + ov->v[ 2 ] * backv[ 2 ] + v->v[ 2 ] * frontv[ 2 ];
-		const float* normal = bytedirs[ v->lightnormalindex ];
+	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ],
+	idList< idMd2VertexRemap >& vertexMap ) {
+	for ( int i = 0; i < vertexMap.Num(); i++, lerp += 4, normals += 4 ) {
+		int xyzIndex = vertexMap[ i ].xyzIndex;
+		lerp[ 0 ] = move[ 0 ] + ov[ xyzIndex ].v[ 0 ] * backv[ 0 ] + v[ xyzIndex ].v[ 0 ] * frontv[ 0 ];
+		lerp[ 1 ] = move[ 1 ] + ov[ xyzIndex ].v[ 1 ] * backv[ 1 ] + v[ xyzIndex ].v[ 1 ] * frontv[ 1 ];
+		lerp[ 2 ] = move[ 2 ] + ov[ xyzIndex ].v[ 2 ] * backv[ 2 ] + v[ xyzIndex ].v[ 2 ] * frontv[ 2 ];
+		const float* normal = bytedirs[ v[ xyzIndex ].lightnormalindex ];
 		VectorCopy( normal, normals );
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 			lerp[ 0 ] += normal[ 0 ] * POWERSUIT_SCALE;
 			lerp[ 1 ] += normal[ 1 ] * POWERSUIT_SCALE;
 			lerp[ 2 ] += normal[ 2 ] * POWERSUIT_SCALE;
 		}
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = vertexMap[ i ].s;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = vertexMap[ i ].t;
 	}
 }
 
@@ -264,32 +268,28 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( paliashdr->num_xyz, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
+	GL_LerpVerts( paliashdr->num_xyz, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv, vertexMap );
 
-	EnableArrays( 0 );//paliashdr->num_xyz
-	qglBegin( GL_TRIANGLES );
-	for ( int i = 0; i < numIndexes; i++ ) {
-		int index = tess.indexes[ i ];
-		int index_xyz = vertexMap[ index ].xyzIndex;
-		tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = vertexMap[ index ].s;
-		tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = vertexMap[ index ].t;
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+		int index_xyz = vertexMap[ i ].xyzIndex;
 		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-			tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
-			tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
-			tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
-			tess.svars.colors[ index_xyz ][ 3 ] = alpha;
+			tess.svars.colors[ i ][ 0 ] = md2_shadelight[ 0 ];
+			tess.svars.colors[ i ][ 1 ] = md2_shadelight[ 1 ];
+			tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
+			tess.svars.colors[ i ][ 3 ] = alpha;
 		} else {
 			// normals and vertexes come from the frame list
 			float l = shadedots[ v[ index_xyz ].lightnormalindex ];
 
-			tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
-			tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
-			tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
-			tess.svars.colors[ index_xyz ][ 3 ] = alpha;
+			tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
+			tess.svars.colors[ i ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
+			tess.svars.colors[ i ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+			tess.svars.colors[ i ][ 3 ] = alpha;
 		}
-		qglArrayElement( index_xyz );
 	}
-	qglEnd();
+
+	EnableArrays( vertexMap.Num() );
+	R_DrawElements( numIndexes, tess.indexes );
 	DisableArrays();
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -302,7 +302,7 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum, idList< idMd2Verte
 
 	float height = -lheight + 1.0;
 
-	for ( int i = 0; i < paliashdr->num_xyz; i++ ) {
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
 		tess.svars.colors[ i ][ 0 ] = 0;
 		tess.svars.colors[ i ][ 1 ] = 0;
 		tess.svars.colors[ i ][ 2 ] = 0;
@@ -318,16 +318,8 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum, idList< idMd2Verte
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
-	EnableArrays( 0 );
-	qglBegin( GL_TRIANGLES );
-	for ( int i = 0; i < numIndexes; i++ ) {
-		int index = tess.indexes[ i ];
-		int index_xyz = vertexMap[ index ].xyzIndex;
-		tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = vertexMap[ index ].s;
-		tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = vertexMap[ index ].t;
-		qglArrayElement( index_xyz );
-	}
-	qglEnd();
+	EnableArrays( vertexMap.Num() );
+	R_DrawElements( numIndexes, tess.indexes );
 	DisableArrays();
 }
 
