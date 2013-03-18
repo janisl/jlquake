@@ -804,7 +804,25 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		r = g = b = 255;
 	}
 
-	EnableArrays( 0 );
+	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
+
+		// normals and vertexes come from the frame list
+		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
+		if ( overBrights ) {
+			l -= 1;
+		}
+		tess.svars.colors[ i ][ 0 ] = r * l;
+		tess.svars.colors[ i ][ 1 ] = g * l;
+		tess.svars.colors[ i ][ 2 ] = b * l;
+		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
+		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ];
+		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ];
+		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
+	}
+
+	EnableArrays( paliashdr->poseverts );
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -819,25 +837,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		}
 
 		do {
-			int xyzIndex = order[ 0 ];
-			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = paliashdr->texCoords[ xyzIndex ].x;
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = paliashdr->texCoords[ xyzIndex ].y;
-			order++;
-
-			// normals and vertexes come from the frame list
-			float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts->lightnormalindex ] - 1 ) * shadelight;
-			if ( overBrights ) {
-				l -= 1;
-			}
-			tess.svars.colors[ xyzIndex ][ 0 ] = r * l;
-			tess.svars.colors[ xyzIndex ][ 1 ] = g * l;
-			tess.svars.colors[ xyzIndex ][ 2 ] = b * l;
-			tess.svars.colors[ xyzIndex ][ 3 ] = model_constant_alpha * 255;
-			tess.xyz[ xyzIndex ][ 0 ] = verts[ xyzIndex ].v[ 0 ];
-			tess.xyz[ xyzIndex ][ 1 ] = verts[ xyzIndex ].v[ 1 ];
-			tess.xyz[ xyzIndex ][ 2 ] = verts[ xyzIndex ].v[ 2 ];
-			qglArrayElement( xyzIndex );
+			qglArrayElement( *order++ );
 		} while ( --count );
 
 		qglEnd();
@@ -855,7 +855,29 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 
 	height = -lheight + 1.0;
 
-	EnableArrays( 0 );
+	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = 0;
+		tess.svars.colors[ i ][ 1 ] = 0;
+		tess.svars.colors[ i ][ 2 ] = 0;
+		tess.svars.colors[ i ][ 3 ] = 127;
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
+
+		// normals and vertexes come from the frame list
+		vec3_t point;
+		point[ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
+		point[ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
+		point[ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
+
+		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
+		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
+		point[ 2 ] = height;
+		tess.xyz[ i ][ 0 ] = point[ 0 ];
+		tess.xyz[ i ][ 1 ] = point[ 1 ];
+		tess.xyz[ i ][ 2 ] = point[ 2 ];
+	}
+
+	EnableArrays( paliashdr->poseverts );
 	while ( 1 ) {
 		// get the vertex count and primitive type
 		int count = *order++;
@@ -870,29 +892,7 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		}
 
 		do {
-			int xyzIndex = order[ 0 ];
-			tess.svars.colors[ xyzIndex ][ 0 ] = 0;
-			tess.svars.colors[ xyzIndex ][ 1 ] = 0;
-			tess.svars.colors[ xyzIndex ][ 2 ] = 0;
-			tess.svars.colors[ xyzIndex ][ 3 ] = 127;
-			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 0 ] = paliashdr->texCoords[ xyzIndex ].x;
-			tess.svars.texcoords[ 0 ][ xyzIndex ][ 1 ] = paliashdr->texCoords[ xyzIndex ].y;
-			order++;
-
-			// normals and vertexes come from the frame list
-			vec3_t point;
-			point[ 0 ] = verts[ xyzIndex ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
-			point[ 1 ] = verts[ xyzIndex ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
-			point[ 2 ] = verts[ xyzIndex ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
-
-			point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
-			point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
-			point[ 2 ] = height;
-			tess.xyz[ xyzIndex ][ 0 ] = point[ 0 ];
-			tess.xyz[ xyzIndex ][ 1 ] = point[ 1 ];
-			tess.xyz[ xyzIndex ][ 2 ] = point[ 2 ];
-			qglArrayElement( xyzIndex );
+			qglArrayElement( *order++ );
 		} while ( --count );
 
 		qglEnd();
