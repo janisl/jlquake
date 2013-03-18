@@ -63,19 +63,10 @@ static mmesh1triangle_t triangles[ MAXALIASTRIS ];
 static model_t* aliasmodel;
 static mesh1hdr_t* paliashdr;
 
-// the command list holds counts and s/t values that are valid for
-// every frame
-static glIndex_t mdlIndexes[ 8192 * 4 ];
-static int mdlNumIndexes;
-
 // all frames will have their vertexes rearranged and expanded
 // so they are in the order expected by the command list
 static idMdlVertexRemap vertexorder[ 8192 ];
 static int numorder;
-
-static int stripverts[ 128 ];
-static int striptris[ 128 ];
-static int stripstverts[ 128 ];
 
 static int lastposenum;
 static float shadelight;
@@ -333,62 +324,27 @@ static int AddMdlVertex( int xyzIndex, int stIndex, bool onBackSide ) {
 	return numorder++;
 }
 
-//	Generate a list of trifans or strips for the model, which holds for all
-// frames
-static void BuildTris() {
-	//
-	// build tristrips
-	//
-	numorder = 0;
-	mdlNumIndexes = 0;
-	for ( int i = 0; i < pheader->numtris; i++ ) {
-		int bestverts[ 1024 ];
-		int besttris[ 1024 ];
-		int beststverts[ 1024 ];
-		mmesh1triangle_t* last = &triangles[ i ];
-
-		stripverts[ 0 ] = last->vertindex[ 0 ];
-		stripstverts[ 0 ] = last->stindex[ 0 ];
-
-		stripverts[ 1 ] = last->vertindex[ 1 ];
-		stripstverts[ 1 ] = last->stindex[ 1 ];
-
-		stripverts[ 2 ] = last->vertindex[ 2 ];
-		stripstverts[ 2 ] = last->stindex[ 2 ];
-
-		striptris[ 0 ] = i;
-		for ( int j = 0; j < 3; j++ ) {
-			beststverts[ j ] = stripstverts[ j ];
-			bestverts[ j ] = stripverts[ j ];
-		}
-		for ( int j = 0; j < 1; j++ ) {
-			besttris[ j ] = striptris[ j ];
-		}
-
-		for ( int j = 0; j < 3; j++ ) {
-			mdlIndexes[ mdlNumIndexes++ ] = AddMdlVertex( bestverts[ j ], beststverts[ j ],
-				!triangles[ besttris[ 0 ] ].facesfront && stverts[ beststverts[ j ] ].onseam );
-		}
-	}
-
-	common->DPrintf( "%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, mdlNumIndexes );
-}
-
 static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 	aliasmodel = m;
 	paliashdr = hdr;	// (mesh1hdr_t *)Mod_Extradata (m);
 
 	common->Printf( "meshing %s...\n",m->name );
 
-	BuildTris();		// trifans or lists
+	numorder = 0;
+	paliashdr->numIndexes = pheader->numtris * 3;
+	paliashdr->indexes = new glIndex_t[ paliashdr->numIndexes ];
+	glIndex_t* indexes = paliashdr->indexes;
+	for ( int i = 0; i < pheader->numtris; i++ ) {
+		mmesh1triangle_t* triangle = &triangles[ i ];
+		for ( int j = 0; j < 3; j++ ) {
+			*indexes++ = AddMdlVertex( triangle->vertindex[ j ], triangle->stindex[ j ],
+				!triangle->facesfront && stverts[ triangle->stindex[ j ] ].onseam );
+		}
+	}
 
 	// save the data out
 
 	paliashdr->poseverts = numorder;
-
-	paliashdr->numIndexes = mdlNumIndexes;
-	paliashdr->indexes = new glIndex_t[ mdlNumIndexes ];
-	Com_Memcpy( paliashdr->indexes, mdlIndexes, mdlNumIndexes * sizeof( glIndex_t ) );
 
 	dmdl_trivertx_t* verts = new dmdl_trivertx_t[ paliashdr->numposes * paliashdr->poseverts ];
 	paliashdr->posedata = verts;
