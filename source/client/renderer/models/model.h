@@ -669,9 +669,10 @@ struct mesh1hdr_t {
 
 	int numposes;
 	int poseverts;
+	int numIndexes;
 	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
 	idVec2* texCoords;
-	int* commands;					// gl command list with embedded s/t
+	glIndex_t* indexes;
 	image_t* gl_texture[ MAX_MESH1_SKINS ][ 4 ];
 	image_t* fullBrightTexture[ MAX_MESH1_SKINS ][ 4 ];
 	mmesh1framedesc_t frames[ 1 ];		// variable sized

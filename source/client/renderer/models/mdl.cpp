@@ -63,12 +63,10 @@ static mmesh1triangle_t triangles[ MAXALIASTRIS ];
 static model_t* aliasmodel;
 static mesh1hdr_t* paliashdr;
 
-static qboolean used[ 8192 ];
-
 // the command list holds counts and s/t values that are valid for
 // every frame
-static int commands[ 8192 * 4 ];
-static int numcommands;
+static glIndex_t mdlIndexes[ 8192 * 4 ];
+static int mdlNumIndexes;
 
 // all frames will have their vertexes rearranged and expanded
 // so they are in the order expected by the command list
@@ -78,7 +76,6 @@ static int numorder;
 static int stripverts[ 128 ];
 static int striptris[ 128 ];
 static int stripstverts[ 128 ];
-static int stripcount;
 
 static int lastposenum;
 static float shadelight;
@@ -322,86 +319,6 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 	return ( void* )pskintype;
 }
 
-static int StripLength( int starttri, int startv ) {
-	used[ starttri ] = 2;
-
-	mmesh1triangle_t* last = &triangles[ starttri ];
-
-	stripverts[ 0 ] = last->vertindex[ startv % 3 ];
-	stripstverts[ 0 ] = last->stindex[ startv % 3 ];
-
-	stripverts[ 1 ] = last->vertindex[ ( startv + 1 ) % 3 ];
-	stripstverts[ 1 ] = last->stindex[ ( startv + 1 ) % 3 ];
-
-	stripverts[ 2 ] = last->vertindex[ ( startv + 2 ) % 3 ];
-	stripstverts[ 2 ] = last->stindex[ ( startv + 2 ) % 3 ];
-
-	striptris[ 0 ] = starttri;
-	stripcount = 1;
-
-	int m1 = last->vertindex[ ( startv + 2 ) % 3 ];
-	int st1 = last->stindex[ ( startv + 2 ) % 3 ];
-	int m2 = last->vertindex[ ( startv + 1 ) % 3 ];
-	int st2 = last->stindex[ ( startv + 1 ) % 3 ];
-
-	// look for a matching triangle
-nexttri:
-	mmesh1triangle_t * check = &triangles[ starttri + 1 ];
-	for ( int j = starttri + 1; j < pheader->numtris; j++, check++ ) {
-		if ( check->facesfront != last->facesfront ) {
-			continue;
-		}
-		for ( int k = 0; k < 3; k++ ) {
-			if ( check->vertindex[ k ] != m1 ) {
-				continue;
-			}
-			if ( check->stindex[ k ] != st1 ) {
-				continue;
-			}
-			if ( check->vertindex[ ( k + 1 ) % 3 ] != m2 ) {
-				continue;
-			}
-			if ( check->stindex[ ( k + 1 ) % 3 ] != st2 ) {
-				continue;
-			}
-
-			// this is the next part of the fan
-
-			// if we can't use this triangle, this tristrip is done
-			if ( used[ j ] ) {
-				goto done;
-			}
-
-			// the new edge
-			if ( stripcount & 1 ) {
-				m2 = check->vertindex[ ( k + 2 ) % 3 ];
-				st2 = check->stindex[ ( k + 2 ) % 3 ];
-			} else   {
-				m1 = check->vertindex[ ( k + 2 ) % 3 ];
-				st1 = check->stindex[ ( k + 2 ) % 3 ];
-			}
-
-			stripverts[ stripcount + 2 ] = check->vertindex[ ( k + 2 ) % 3 ];
-			stripstverts[ stripcount + 2 ] = check->stindex[ ( k + 2 ) % 3 ];
-			striptris[ stripcount ] = j;
-			stripcount++;
-
-			used[ j ] = 2;
-			goto nexttri;
-		}
-	}
-done:
-
-	// clear the temp used flags
-	for ( int j = starttri + 1; j < pheader->numtris; j++ ) {
-		if ( used[ j ] == 2 ) {
-			used[ j ] = 0;
-		}
-	}
-
-	return stripcount;
-}
-
 static int AddMdlVertex( int xyzIndex, int stIndex, bool onBackSide ) {
 	for ( int i = 0; i < numorder; i++ ) {
 		if ( vertexorder[ i ].xyzIndex == xyzIndex && vertexorder[ i ].stIndex == stIndex &&
@@ -423,48 +340,38 @@ static void BuildTris() {
 	// build tristrips
 	//
 	numorder = 0;
-	numcommands = 0;
-	Com_Memset( used, 0, sizeof ( used ) );
+	mdlNumIndexes = 0;
 	for ( int i = 0; i < pheader->numtris; i++ ) {
-		// pick an unused triangle and start the trifan
-		if ( used[ i ] ) {
-			continue;
-		}
-
-		int bestlen = 0;
 		int bestverts[ 1024 ];
 		int besttris[ 1024 ];
 		int beststverts[ 1024 ];
-		for ( int startv = 0; startv < 3; startv++ ) {
-			int len = StripLength( i, startv );
-			if ( len > bestlen ) {
-				bestlen = len;
-				for ( int j = 0; j < bestlen + 2; j++ ) {
-					beststverts[ j ] = stripstverts[ j ];
-					bestverts[ j ] = stripverts[ j ];
-				}
-				for ( int j = 0; j < bestlen; j++ ) {
-					besttris[ j ] = striptris[ j ];
-				}
-			}
+		mmesh1triangle_t* last = &triangles[ i ];
+
+		stripverts[ 0 ] = last->vertindex[ 0 ];
+		stripstverts[ 0 ] = last->stindex[ 0 ];
+
+		stripverts[ 1 ] = last->vertindex[ 1 ];
+		stripstverts[ 1 ] = last->stindex[ 1 ];
+
+		stripverts[ 2 ] = last->vertindex[ 2 ];
+		stripstverts[ 2 ] = last->stindex[ 2 ];
+
+		striptris[ 0 ] = i;
+		for ( int j = 0; j < 3; j++ ) {
+			beststverts[ j ] = stripstverts[ j ];
+			bestverts[ j ] = stripverts[ j ];
+		}
+		for ( int j = 0; j < 1; j++ ) {
+			besttris[ j ] = striptris[ j ];
 		}
 
-		// mark the tris on the best strip as used
-		for ( int j = 0; j < bestlen; j++ ) {
-			used[ besttris[ j ] ] = 1;
-		}
-
-		commands[ numcommands++ ] = ( bestlen + 2 );
-
-		for ( int j = 0; j < bestlen + 2; j++ ) {
-			commands[ numcommands++ ] = AddMdlVertex( bestverts[ j ], beststverts[ j ],
+		for ( int j = 0; j < 3; j++ ) {
+			mdlIndexes[ mdlNumIndexes++ ] = AddMdlVertex( bestverts[ j ], beststverts[ j ],
 				!triangles[ besttris[ 0 ] ].facesfront && stverts[ beststverts[ j ] ].onseam );
 		}
 	}
 
-	commands[ numcommands++ ] = 0;			// end of list marker
-
-	common->DPrintf( "%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands );
+	common->DPrintf( "%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, mdlNumIndexes );
 }
 
 static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
@@ -479,9 +386,9 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 
 	paliashdr->poseverts = numorder;
 
-	int* cmds = new int[ numcommands ];
-	paliashdr->commands = cmds;
-	Com_Memcpy( cmds, commands, numcommands * 4 );
+	paliashdr->numIndexes = mdlNumIndexes;
+	paliashdr->indexes = new glIndex_t[ mdlNumIndexes ];
+	Com_Memcpy( paliashdr->indexes, mdlIndexes, mdlNumIndexes * sizeof( glIndex_t ) );
 
 	dmdl_trivertx_t* verts = new dmdl_trivertx_t[ paliashdr->numposes * paliashdr->poseverts ];
 	paliashdr->posedata = verts;
@@ -783,8 +690,9 @@ void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
 
 void Mod_FreeMdlModel( model_t* mod ) {
 	mesh1hdr_t* pheader = ( mesh1hdr_t* )mod->q1_cache;
-	delete[] pheader->commands;
+	delete[] pheader->indexes;
 	delete[] pheader->posedata;
+	delete[] pheader->texCoords;
 	Mem_Free( pheader );
 }
 
@@ -793,7 +701,6 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 
 	dmdl_trivertx_t* verts = paliashdr->posedata;
 	verts += posenum * paliashdr->poseverts;
-	int* order = paliashdr->commands;
 
 	int r, g, b;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
@@ -823,25 +730,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	}
 
 	EnableArrays( paliashdr->poseverts );
-	while ( 1 ) {
-		// get the vertex count and primitive type
-		int count = *order++;
-		if ( !count ) {
-			break;		// done
-		}
-		if ( count < 0 ) {
-			count = -count;
-			qglBegin( GL_TRIANGLE_FAN );
-		} else   {
-			qglBegin( GL_TRIANGLE_STRIP );
-		}
-
-		do {
-			qglArrayElement( *order++ );
-		} while ( --count );
-
-		qglEnd();
-	}
+	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
 }
 
@@ -851,7 +740,6 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	float height = 0;
 	dmdl_trivertx_t* verts = paliashdr->posedata;
 	verts += posenum * paliashdr->poseverts;
-	int* order = paliashdr->commands;
 
 	height = -lheight + 1.0;
 
@@ -878,25 +766,7 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	}
 
 	EnableArrays( paliashdr->poseverts );
-	while ( 1 ) {
-		// get the vertex count and primitive type
-		int count = *order++;
-		if ( !count ) {
-			break;		// done
-		}
-		if ( count < 0 ) {
-			count = -count;
-			qglBegin( GL_TRIANGLE_FAN );
-		} else   {
-			qglBegin( GL_TRIANGLE_STRIP );
-		}
-
-		do {
-			qglArrayElement( *order++ );
-		} while ( --count );
-
-		qglEnd();
-	}
+	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
 	DisableArrays();
 }
 
