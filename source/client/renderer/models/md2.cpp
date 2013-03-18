@@ -23,6 +23,64 @@
 
 static int md2_shadelight[ 3 ];
 
+struct idMd2VertexRemap {
+	int xyzIndex;
+	float s;
+	float t;
+};
+
+static int AddToVertexMap( idList< idMd2VertexRemap >& vertexMap, int xyzIndex, float s, float t ) {
+	idMd2VertexRemap& v = vertexMap.Alloc();
+	v.xyzIndex = xyzIndex;
+	v.s = s;
+	v.t = t;
+	return vertexMap.Num() - 1;
+}
+
+static int ExtractMd2Triangles( int* order, glIndex_t* indexes, idList< idMd2VertexRemap >& vertexMap ) {
+	int numIndexes = 0;
+	while ( 1 ) {
+		// get the vertex count and primitive type
+		int count = *order++;
+		if ( !count ) {
+			break;		// done
+		}
+		bool isFan = count < 0;
+		if ( isFan ) {
+			count = -count;
+		}
+
+		int i = 0;
+		int triangle[3] = { -1, -1, -1 };
+		do {
+			// texture coordinates come from the draw list
+			int index = AddToVertexMap( vertexMap, order[ 2 ], ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
+			order += 3;
+			if ( i < 3 ) {
+				triangle[ i ] = index;
+			} else if ( isFan ) {
+				triangle[ 1 ] = triangle[ 2 ];
+				triangle[ 2 ] = index;
+			} else if ( i & 1 ) {
+				triangle[ 0 ] = triangle[ 1 ];
+				triangle[ 1 ] = index;
+				triangle[ 2 ] = triangle[ 2 ];
+			} else {
+				triangle[ 0 ] = triangle[ 2 ];
+				triangle[ 2 ] = index;
+			}
+			i++;
+			if ( i >= 3 ) {
+				*indexes++ = triangle[ 0 ];
+				*indexes++ = triangle[ 1 ];
+				*indexes++ = triangle[ 2 ];
+				numIndexes += 3;
+			}
+		} while ( --count );
+	}
+	return numIndexes;
+}
+
 void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	// byte swap the header fields and sanity check
 	dmd2_t pinmodel;
@@ -163,7 +221,7 @@ static void GL_LerpVerts( int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp, idList< idMd2VertexRemap >& vertexMap, int numIndexes ) {
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
 											 backEnd.currentEntity->e.frame * paliashdr->framesize );
 	dmd2_trivertx_t* v = frame->verts;
@@ -171,8 +229,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
 												backEnd.currentEntity->e.oldframe * paliashdr->framesize );
 	dmd2_trivertx_t* ov = oldframe->verts;
-
-	int* order = paliashdr->glcmds;
 
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
@@ -211,43 +267,29 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	GL_LerpVerts( paliashdr->num_xyz, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
 
 	EnableArrays( 0 );//paliashdr->num_xyz
-	while ( 1 ) {
-		// get the vertex count and primitive type
-		int count = *order++;
-		if ( !count ) {
-			break;		// done
-		}
-		if ( count < 0 ) {
-			count = -count;
-			qglBegin( GL_TRIANGLE_FAN );
+	qglBegin( GL_TRIANGLES );
+	for ( int i = 0; i < numIndexes; i++ ) {
+		int index = tess.indexes[ i ];
+		int index_xyz = vertexMap[ index ].xyzIndex;
+		tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = vertexMap[ index ].s;
+		tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = vertexMap[ index ].t;
+		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+			tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
+			tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
+			tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
+			tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 		} else {
-			qglBegin( GL_TRIANGLE_STRIP );
+			// normals and vertexes come from the frame list
+			float l = shadedots[ v[ index_xyz ].lightnormalindex ];
+
+			tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
+			tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
+			tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+			tess.svars.colors[ index_xyz ][ 3 ] = alpha;
 		}
-
-		do {
-			int index_xyz = order[ 2 ];
-			// texture coordinates come from the draw list
-			tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = ( ( float* )order )[ 0 ];
-			tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = ( ( float* )order )[ 1 ];
-			if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-				tess.svars.colors[ index_xyz ][ 0 ] = md2_shadelight[ 0 ];
-				tess.svars.colors[ index_xyz ][ 1 ] = md2_shadelight[ 1 ];
-				tess.svars.colors[ index_xyz ][ 2 ] = md2_shadelight[ 2 ];
-				tess.svars.colors[ index_xyz ][ 3 ] = alpha;
-			} else {
-				// normals and vertexes come from the frame list
-				float l = shadedots[ v[ index_xyz ].lightnormalindex ];
-
-				tess.svars.colors[ index_xyz ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
-				tess.svars.colors[ index_xyz ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
-				tess.svars.colors[ index_xyz ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
-				tess.svars.colors[ index_xyz ][ 3 ] = alpha;
-			}
-			qglArrayElement( index_xyz );
-			order += 3;
-		} while ( --count );
-		qglEnd();
+		qglArrayElement( index_xyz );
 	}
+	qglEnd();
 	DisableArrays();
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -255,10 +297,8 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, float backlerp ) {
 	}
 }
 
-static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
+static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum, idList< idMd2VertexRemap >& vertexMap, int numIndexes ) {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
-
-	int* order = paliashdr->glcmds;
 
 	float height = -lheight + 1.0;
 
@@ -279,29 +319,15 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr, int posenum ) {
 	}
 
 	EnableArrays( 0 );
-	while ( 1 ) {
-		// get the vertex count and primitive type
-		int count = *order++;
-		if ( !count ) {
-			break;		// done
-		}
-		if ( count < 0 ) {
-			count = -count;
-			qglBegin( GL_TRIANGLE_FAN );
-		} else {
-			qglBegin( GL_TRIANGLE_STRIP );
-		}
-
-		do {
-			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 0 ] = ( ( float* )order )[ 0 ];
-			tess.svars.texcoords[ 0 ][ order[ 2 ] ][ 1 ] = ( ( float* )order )[ 1 ];
-			qglArrayElement( order[ 2 ] );
-
-			order += 3;
-		} while ( --count );
-
-		qglEnd();
+	qglBegin( GL_TRIANGLES );
+	for ( int i = 0; i < numIndexes; i++ ) {
+		int index = tess.indexes[ i ];
+		int index_xyz = vertexMap[ index ].xyzIndex;
+		tess.svars.texcoords[ 0 ][ index_xyz ][ 0 ] = vertexMap[ index ].s;
+		tess.svars.texcoords[ 0 ][ index_xyz ][ 1 ] = vertexMap[ index ].t;
+		qglArrayElement( index_xyz );
 	}
+	qglEnd();
 	DisableArrays();
 }
 
@@ -481,8 +507,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	else
 		GL_Cull( CT_FRONT_SIDED );
 
-	qglPushMatrix();
-
 	// select skin
 	image_t* skin;
 	if ( backEnd.currentEntity->e.customSkin ) {
@@ -525,12 +549,13 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		backEnd.currentEntity->e.oldframe = 0;
 	}
 
+	idList< idMd2VertexRemap > vertexMap;
+	int numIndexes = ExtractMd2Triangles( paliashdr->glcmds, tess.indexes, vertexMap );
+
 	if ( !r_lerpmodels->value ) {
 		backEnd.currentEntity->e.backlerp = 0;
 	}
-	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp );
-
-	qglPopMatrix();
+	GL_DrawMd2FrameLerp( paliashdr, backEnd.currentEntity->e.backlerp, vertexMap, numIndexes );
 
 	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
@@ -544,7 +569,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		qglLoadMatrixf( backEnd.orient.modelMatrix );
 		qglDisable( GL_TEXTURE_2D );
 		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame );
+		GL_DrawMd2Shadow( paliashdr, backEnd.currentEntity->e.frame, vertexMap, numIndexes );
 		qglEnable( GL_TEXTURE_2D );
 		qglPopMatrix();
 	}
