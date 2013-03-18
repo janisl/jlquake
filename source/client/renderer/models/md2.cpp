@@ -252,7 +252,10 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	}
 
 	EnableArrays( paliashdr->numVertexes );
-	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
@@ -285,7 +288,10 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	GL_Bind( tr.whiteImage );
 	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	EnableArrays( paliashdr->numVertexes );
-	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
 

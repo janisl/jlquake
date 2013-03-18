@@ -393,7 +393,7 @@ void EnableArrays( int numVertexes );
 void DisableArrays();
 void EnableMultitexturedArrays( int numVertexes );
 void DisableMultitexturedArrays();
-void R_DrawElements( int numIndexes, const glIndex_t* indexes );
+void RB_IterateStagesGenericTemp( shaderCommands_t* input );
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();

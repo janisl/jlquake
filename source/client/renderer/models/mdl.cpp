@@ -686,7 +686,10 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	}
 
 	EnableArrays( paliashdr->poseverts );
-	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
 
@@ -722,7 +725,10 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	}
 
 	EnableArrays( paliashdr->poseverts );
-	R_DrawElements( paliashdr->numIndexes, paliashdr->indexes );
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
 

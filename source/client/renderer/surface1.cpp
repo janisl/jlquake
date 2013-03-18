@@ -476,7 +476,9 @@ void DrawPolyElementsQ1( mbrush29_glpoly_t* p ) {
 		tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
 		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 	}
-	R_DrawElements( ( p->numverts - 2 ) * 3, tess.indexes );
+	tess.numIndexes = ( p->numverts - 2 ) * 3;
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 }
 
 static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {

@@ -69,7 +69,7 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 	{
 		EnableArrays( tess.numVertexes );
-		R_DrawElements( tess.numIndexes, tess.indexes );
+		RB_IterateStagesGenericTemp( &tess );
 		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -152,7 +152,7 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		EnableArrays( tess.numVertexes );
-		R_DrawElements( tess.numIndexes, tess.indexes );
+		RB_IterateStagesGenericTemp( &tess );
 		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

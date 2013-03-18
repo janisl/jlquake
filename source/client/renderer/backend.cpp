@@ -574,7 +574,9 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	RB_Set2DIndexes( 0, 0 );
 
 	EnableArrays( 4 );
-	R_DrawElements( 6, tess.indexes );
+	tess.numIndexes = 6;
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 
 	return ( const void* )( cmd + 1 );

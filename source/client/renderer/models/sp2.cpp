@@ -150,6 +150,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
 
 	EnableArrays( 4 );
-	R_DrawElements( 6, tess.indexes );
+	tess.numIndexes = 6;
+	RB_IterateStagesGenericTemp( &tess );
+	tess.numIndexes = 0;
 	DisableArrays();
 }
