@@ -535,6 +535,7 @@ static const void* RB_Draw2DQuad( const void* data ) {
 		R_ScrapUpload();
 	}
 	backEnd.currentEntity = &backEnd.entity2D;
+	RB_BeginSurface( tr.defaultShader, 0 );
 	GL_Bind( cmd->image );
 
 	RB_Set2DVertexCoords( cmd, 0 );

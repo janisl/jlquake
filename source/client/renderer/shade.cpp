@@ -94,7 +94,7 @@ static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	if ( glState.currenttmu ) {
 		qglMultiTexCoord2fARB( 0, tess.svars.texcoords[ 0 ][ index ][ 0 ], tess.svars.texcoords[ 0 ][ index ][ 1 ] );
 		qglMultiTexCoord2fARB( 1, tess.svars.texcoords[ 1 ][ index ][ 0 ], tess.svars.texcoords[ 1 ][ index ][ 1 ] );
-	} else   {
+	} else {
 		qglTexCoord2fv( tess.svars.texcoords[ 0 ][ index ] );
 	}
 	qglVertex3fv( tess.xyz[ index ] );
@@ -141,7 +141,7 @@ static void R_DrawStripElements( int numIndexes, const glIndex_t* indexes, void 
 
 				even = false;
 			}
-		} else   {
+		} else {
 			// check previous triangle to see if we're continuing a strip
 			if ( ( last[ 2 ] == indexes[ i + 1 ] ) && ( last[ 0 ] == indexes[ i + 0 ] ) ) {
 				element( indexes[ i + 2 ] );
@@ -182,7 +182,7 @@ static void R_DrawElements( int numIndexes, const glIndex_t* indexes ) {
 	if ( primitives == 0 ) {
 		if ( qglLockArraysEXT ) {
 			primitives = 2;
-		} else   {
+		} else {
 			primitives = 1;
 		}
 	}
@@ -260,12 +260,12 @@ static void DrawTris( shaderCommands_t* input ) {
 				trisColor[ 3 ] = ( ( float )( gethex( *( s + 6 ) ) * 16 + gethex( *( s + 7 ) ) ) ) / 255.00;
 			}
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < 4; i++ ) {
 			char* token = String::Parse3( &s );
 			if ( token ) {
 				trisColor[ i ] = String::Atof( token );
-			} else   {
+			} else {
 				trisColor[ i ] = 1.f;
 			}
 		}
@@ -286,7 +286,7 @@ static void DrawTris( shaderCommands_t* input ) {
 		stateBits |= GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE;
 		GL_State( stateBits );
 		qglDepthRange( 0, 0 );
-	} else   {
+	} else {
 		stateBits |= GLS_POLYMODE_LINE;
 		GL_State( stateBits );
 		qglEnable( GL_POLYGON_OFFSET_LINE );
@@ -326,7 +326,7 @@ static void DrawNormals( shaderCommands_t* input ) {
 		vec3_t temp2;
 		if ( ent->e.renderfx & RF_LIGHTING_ORIGIN ) {
 			VectorSubtract( ent->e.lightingOrigin, backEnd.orient.origin, temp2 );
-		} else   {
+		} else {
 			VectorClear( temp2 );
 		}
 		vec3_t temp;
@@ -343,7 +343,7 @@ static void DrawNormals( shaderCommands_t* input ) {
 
 		if ( fabs( VectorLengthSquared( ent->lightDir ) - 1.0f ) > 0.2f ) {
 			qglColor3f( 1, 0, 0 );
-		} else   {
+		} else {
 			qglColor3f( ent->directedLight[ 0 ] / 255, ent->directedLight[ 1 ] / 255, ent->directedLight[ 2 ] / 255 );
 		}
 		qglLineWidth( 3 );
@@ -353,7 +353,7 @@ static void DrawNormals( shaderCommands_t* input ) {
 		qglVertex3fv( temp );
 		qglEnd();
 		qglLineWidth( 1 );
-	} else   {
+	} else {
 		// ydnar: normals drawing
 		qglBegin( GL_LINES );
 		for ( int i = 0; i < input->numVertexes; i++ ) {
@@ -398,9 +398,9 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 
 	if ( tess.shader->noFog && pStage->isFogged ) {
 		R_FogOn();
-	} else if ( tess.shader->noFog && !pStage->isFogged )     {
+	} else if ( tess.shader->noFog && !pStage->isFogged ) {
 		R_FogOff();	// turn it back off
-	} else   {
+	} else {
 		// make sure it's on
 		R_FogOn();
 	}
@@ -429,7 +429,7 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 
 	if ( r_lightmap->integer ) {
 		GL_TexEnv( GL_REPLACE );
-	} else   {
+	} else {
 		GL_TexEnv( tess.shader->multitextureEnv );
 	}
 
@@ -473,7 +473,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 		//
 		if ( pStage->bundle[ 1 ].image[ 0 ] != 0 ) {
 			DrawMultitextured( input, stage );
-		} else   {
+		} else {
 			if ( !setArraysOnce ) {
 				qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
 			}
@@ -483,16 +483,16 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 			//
 			if ( pStage->bundle[ 0 ].vertexLightmap && r_vertexLight->integer && !r_uiFullScreen->integer && r_lightmap->integer ) {
 				GL_Bind( tr.whiteImage );
-			} else   {
+			} else {
 				R_BindAnimatedImage( &pStage->bundle[ 0 ] );
 			}
 
 			// Ridah, per stage fogging (detail textures)
 			if ( tess.shader->noFog && pStage->isFogged ) {
 				R_FogOn();
-			} else if ( tess.shader->noFog && !pStage->isFogged )     {
+			} else if ( tess.shader->noFog && !pStage->isFogged ) {
 				R_FogOff();	// turn it back off
-			} else   {	// make sure it's on
+			} else {	// make sure it's on
 				R_FogOn();
 			}
 
@@ -502,7 +502,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 				if ( fadeStart > tr.refdef.time ) {
 					// has not started to fade yet
 					GL_State( pStage->stateBits );
-				} else   {
+				} else {
 					if ( fadeEnd < tr.refdef.time ) {	// entity faded out completely
 						continue;
 					}
@@ -529,7 +529,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
 										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 				GL_State( stateBits );
-			} else   {
+			} else {
 				GL_State( pStage->stateBits );
 			}
 
@@ -546,13 +546,22 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 }
 
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+			// Ridah, per stage fogging (detail textures)
+			if ( tess.shader->noFog && pStage->isFogged ) {
+				R_FogOn();
+			} else if ( tess.shader->noFog && !pStage->isFogged ) {
+				R_FogOff();	// turn it back off
+			} else {	// make sure it's on
+				R_FogOn();
+			}
+
 			int fadeStart = backEnd.currentEntity->e.fadeStartTime;
 			if ( fadeStart ) {
 				int fadeEnd = backEnd.currentEntity->e.fadeEndTime;
 				if ( fadeStart > tr.refdef.time ) {
 					// has not started to fade yet
 					GL_State( pStage->stateBits );
-				} else   {
+				} else {
 					if ( fadeEnd < tr.refdef.time ) {	// entity faded out completely
 						return;//continue;
 					}
@@ -579,7 +588,7 @@ void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage
 				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
 										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 				GL_State( stateBits );
-			} else   {
+			} else {
 				GL_State( pStage->stateBits );
 			}
 
@@ -631,12 +640,12 @@ static void ProjectDlightTexture() {
 			int clip = 0;
 			if ( texCoords[ 0 ] < 0.0f ) {
 				clip |= 1;
-			} else if ( texCoords[ 0 ] > 1.0f )       {
+			} else if ( texCoords[ 0 ] > 1.0f ) {
 				clip |= 2;
 			}
 			if ( texCoords[ 1 ] < 0.0f ) {
 				clip |= 4;
-			} else if ( texCoords[ 1 ] > 1.0f )       {
+			} else if ( texCoords[ 1 ] > 1.0f ) {
 				clip |= 8;
 			}
 			// modulate the strength based on the height and color
@@ -644,14 +653,14 @@ static void ProjectDlightTexture() {
 			if ( dist[ 2 ] > radius ) {
 				clip |= 16;
 				modulate = 0.0f;
-			} else if ( dist[ 2 ] < -radius )       {
+			} else if ( dist[ 2 ] < -radius ) {
 				clip |= 32;
 				modulate = 0.0f;
-			} else   {
+			} else {
 				dist[ 2 ] = idMath::Fabs( dist[ 2 ] );
 				if ( dist[ 2 ] < radius * 0.5f ) {
 					modulate = 1.0f;
-				} else   {
+				} else {
 					modulate = 2.0f * ( radius - dist[ 2 ] ) * scale;
 				}
 			}
@@ -700,7 +709,7 @@ static void ProjectDlightTexture() {
 				backEnd.pc.c_totalIndexes += numIndexes;
 				backEnd.pc.c_dlightIndexes += numIndexes;
 			}
-		} else   {
+		} else {
 			R_FogOff();
 
 			GL_Bind( tr.dlightImage );
@@ -708,7 +717,7 @@ static void ProjectDlightTexture() {
 			// where they aren't rendered
 			if ( dl->additive ) {
 				GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL );
-			} else   {
+			} else {
 				GL_State( GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL );
 			}
 			R_DrawElements( numIndexes, hitIndexes );
@@ -761,7 +770,7 @@ static void DynamicLightSinglePass() {
 		float remainder;
 		if ( dl->flags & REF_DIRECTED_DLIGHT ) {
 			remainder = intensity * 0.125;
-		} else   {
+		} else {
 			remainder = 0.0f;
 		}
 
@@ -802,7 +811,7 @@ static void DynamicLightSinglePass() {
 			// optimizations
 			if ( modulate < ( 1.0f / 128.0f ) ) {
 				continue;
-			} else if ( modulate > 1.0f )     {
+			} else if ( modulate > 1.0f ) {
 				modulate = 1.0f;
 			}
 
@@ -886,7 +895,7 @@ static void DynamicLightPass() {
 		float remainder;
 		if ( dl->flags & REF_DIRECTED_DLIGHT ) {
 			remainder = intensity * 0.125;
-		} else   {
+		} else {
 			remainder = 0.0f;
 		}
 
@@ -927,7 +936,7 @@ static void DynamicLightPass() {
 			// optimizations
 			if ( modulate < ( 1.0f / 128.0f ) ) {
 				continue;
-			} else if ( modulate > 1.0f )     {
+			} else if ( modulate > 1.0f ) {
 				modulate = 1.0f;
 			}
 
@@ -1013,7 +1022,7 @@ static void RB_FogPass() {
 
 	if ( tess.shader->fogPass == FP_EQUAL ) {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL );
-	} else   {
+	} else {
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	}
 
@@ -1030,7 +1039,7 @@ static void SetIteratorFog() {
 	if ( backEnd.refdef.rdflags & RDF_DRAWINGSKY ) {
 		if ( glfogsettings[ FOG_SKY ].registered ) {
 			R_Fog( &glfogsettings[ FOG_SKY ] );
-		} else   {
+		} else {
 			R_FogOff();
 		}
 		return;
@@ -1039,13 +1048,13 @@ static void SetIteratorFog() {
 	if ( skyboxportal && backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) {
 		if ( glfogsettings[ FOG_PORTALVIEW ].registered ) {
 			R_Fog( &glfogsettings[ FOG_PORTALVIEW ] );
-		} else   {
+		} else {
 			R_FogOff();
 		}
-	} else   {
+	} else {
 		if ( glfogNum > FOG_NONE ) {
 			R_Fog( &glfogsettings[ FOG_CURRENT ] );
-		} else   {
+		} else {
 			R_FogOff();
 		}
 	}
@@ -1095,7 +1104,7 @@ void RB_StageIteratorGeneric() {
 		setArraysOnce = false;
 		qglDisableClientState( GL_COLOR_ARRAY );
 		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	} else   {
+	} else {
 		setArraysOnce = true;
 
 		qglEnableClientState( GL_COLOR_ARRAY );
@@ -1145,11 +1154,11 @@ void RB_StageIteratorGeneric() {
 			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 			if ( r_dynamiclight->integer == 2 ) {
 				DynamicLightPass();
-			} else   {
+			} else {
 				DynamicLightSinglePass();
 			}
 		}
-	} else   {
+	} else {
 		if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
 			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 			ProjectDlightTexture();
@@ -1246,11 +1255,11 @@ void RB_StageIteratorVertexLitTexture() {
 			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 			if ( r_dynamiclight->integer == 2 ) {
 				DynamicLightPass();
-			} else   {
+			} else {
 				DynamicLightSinglePass();
 			}
 		}
-	} else   {
+	} else {
 		if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE ) {
 			ProjectDlightTexture();
 		}
@@ -1326,12 +1335,12 @@ void RB_StageIteratorLightmappedMultitexture() {
 	qglEnable( GL_TEXTURE_2D );
 	if ( r_lightmap->integer ) {
 		GL_TexEnv( GL_REPLACE );
-	} else   {
+	} else {
 		GL_TexEnv( GL_MODULATE );
 	}
 	if ( tess.xstages[ 0 ]->bundle[ 1 ].isLightmap && ( backEnd.refdef.rdflags & RDF_SNOOPERVIEW ) ) {
 		GL_Bind( tr.whiteImage );
-	} else   {
+	} else {
 		R_BindAnimatedImage( &tess.xstages[ 0 ]->bundle[ 1 ] );
 	}
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -1363,11 +1372,11 @@ void RB_StageIteratorLightmappedMultitexture() {
 			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
 			if ( r_dynamiclight->integer == 2 ) {
 				DynamicLightPass();
-			} else   {
+			} else {
 				DynamicLightSinglePass();
 			}
 		}
-	} else   {
+	} else {
 		if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE ) {
 			ProjectDlightTexture();
 		}
