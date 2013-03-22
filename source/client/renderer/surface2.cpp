@@ -512,15 +512,12 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
 	** lightmaps.
 	*/
 	// don't bother writing Z
-	if ( !r_lightmap->value ) {
-		if ( r_saturatelighting->value ) {
-			stage.stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		} else {
-			stage.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-		}
+	if ( r_saturatelighting->value ) {
+		stage.stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
 	} else {
-		stage.stateBits = 0;
+		stage.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
 	}
+	stage.bundle[ 0 ].isLightmap = true;
 
 	float* v = p->verts[ 0 ];
 	for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {

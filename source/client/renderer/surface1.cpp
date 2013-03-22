@@ -703,6 +703,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				}
 				shaderStage_t stage2 = {};
 				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+				stage2.bundle[ 0 ].isLightmap = true;
 				RB_IterateStagesGenericTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;
