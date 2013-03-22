@@ -549,21 +549,14 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 
 static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	shaderStage_t stage = {};
-	int alpha;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = 63;
-		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		alpha = 255;
-		stage.stateBits = GLS_DEFAULT;
-	}
+	stage.stateBits = GLS_DEFAULT;
 
 	GL_Bind( image );
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly( fa, alpha );
+		DrawGLFlowingPoly( fa, 255 );
 	} else {
-		DrawGLPolyQ2( fa->polys, alpha );
+		DrawGLPolyQ2( fa->polys, 255 );
 	}
 	EnableArrays( fa->polys->numverts );
 	EmitPolyIndexesQ2( fa->polys );
@@ -639,14 +632,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		return;
 	}
 
-	int alpha;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = 63;
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else {
-		alpha = 255;
-		GL_State( GLS_DEFAULT );
-	}
+	GL_State( GLS_DEFAULT );
 
 	int i, nv = surf->polys->numverts;
 	float* v;
@@ -676,7 +662,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			tess.svars.colors[ i ][ 0 ] = 255;
 			tess.svars.colors[ i ][ 1 ] = 255;
 			tess.svars.colors[ i ][ 2 ] = 255;
-			tess.svars.colors[ i ][ 3 ] = alpha;
+			tess.svars.colors[ i ][ 3 ] = 255;
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
@@ -690,7 +676,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			tess.svars.colors[ i ][ 0 ] = 255;
 			tess.svars.colors[ i ][ 1 ] = 255;
 			tess.svars.colors[ i ][ 2 ] = 255;
-			tess.svars.colors[ i ][ 3 ] = alpha;
+			tess.svars.colors[ i ][ 3 ] = 255;
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
