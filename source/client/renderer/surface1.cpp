@@ -494,7 +494,17 @@ static void DrawGLPolyQ1( mbrush29_glpoly_t* p ) {
 }
 
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
-static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
+static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
+	shaderStage_t stage = {};
+	int alpha;
+	if ( ( GGameType & GAME_Quake ) || ( fa->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
+		stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		alpha = r_wateralpha->value * 255;
+	} else {
+		stage.stateBits = GLS_DEFAULT;
+		alpha = 255;
+	}
+	GL_Bind( fa->texinfo->texture->gl_texture );
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -519,7 +529,7 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa, int alpha ) {
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
-		RB_IterateStagesGenericTemp( &tess );
+		RB_IterateStagesGenericTemp( &tess, &stage );
 		tess.numIndexes = 0;
 		DisableArrays();
 	}
@@ -533,11 +543,12 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 		return;
 	}
 	GL_Bind( t->fullBrightTexture );
-	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	DrawGLPolyQ1( p );
 	EnableArrays( p->numverts );
 	EmitPolyIndexesQ1( p );
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -551,32 +562,25 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// subdivided water surface warp
 		//
-		int alpha;
-		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-			GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-			alpha = r_wateralpha->value * 255;
-		} else {
-			GL_State( GLS_DEFAULT );
-			alpha = 255;
-		}
-		GL_Bind( s->texinfo->texture->gl_texture );
-		EmitWaterPolysQ1( s, alpha );
+		EmitWaterPolysQ1( s );
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
 		//
-		GL_State( GLS_DEFAULT );
 		GL_Bind( tr.solidskytexture );
 		speedscale = backEnd.refdef.floatTime * 8;
 		speedscale -= ( int )speedscale & ~127;
 
-		EmitSkyPolys( s );
+		shaderStage_t stage1 = {};
+		stage1.stateBits = GLS_DEFAULT;
+		EmitSkyPolys( s, &stage1 );
 
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		GL_Bind( tr.alphaskytexture );
 		speedscale = backEnd.refdef.floatTime * 16;
 		speedscale -= ( int )speedscale & ~127;
-		EmitSkyPolys( s );
+		shaderStage_t stage2 = {};
+		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		EmitSkyPolys( s, &stage2 );
 	} else {
 		//
 		// normal lightmaped poly
@@ -624,7 +628,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			EnableMultitexturedArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
-			DrawMultitexturedTemp( &tess );
+			shaderStage_t stage1 = {};
+			DrawMultitexturedTemp( &tess, &stage1 );
 
 			if ( r_drawOverBrights->integer ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -642,7 +647,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					theRect->h = 0;
 					theRect->w = 0;
 				}
-				DrawMultitexturedTemp( &tess );
+				shaderStage_t stage2 = {};
+				DrawMultitexturedTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;
 			DisableMultitexturedArrays();
@@ -653,11 +659,12 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		} else {
 			int alpha_val = 255;
 			int intensity = 255;
+			shaderStage_t stage1 = {};
 			if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-				GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+				stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 				alpha_val = r_wateralpha->value * 255;
 			} else {
-				GL_State( GLS_DEFAULT );
+				stage1.stateBits = GLS_DEFAULT;
 			}
 			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 				// backEnd.currentEntity->abslight   0 - 255
@@ -680,12 +687,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			EnableArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
-			RB_IterateStagesGenericTemp( &tess );
+			RB_IterateStagesGenericTemp( &tess, &stage1 );
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
 				!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
-				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					tess.svars.colors[ i ][ 0 ] = 255;
@@ -695,7 +701,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
 					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 				}
-				RB_IterateStagesGenericTemp( &tess );
+				shaderStage_t stage2 = {};
+				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+				RB_IterateStagesGenericTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;
 			DisableArrays();

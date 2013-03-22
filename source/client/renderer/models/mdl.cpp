@@ -652,7 +652,7 @@ void Mod_FreeMdlModel( model_t* mod ) {
 	Mem_Free( pheader );
 }
 
-static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights ) {
+static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
 	lastposenum = posenum;
 
 	dmdl_trivertx_t* verts = paliashdr->posedata;
@@ -688,12 +688,14 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	EnableArrays( paliashdr->poseverts );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	RB_IterateStagesGenericTemp( &tess );
+	RB_IterateStagesGenericTemp( &tess, pStage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
 
 static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
+	qglPushMatrix();
+	qglDisable( GL_TEXTURE_2D );
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = 0;
@@ -727,12 +729,16 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	EnableArrays( paliashdr->poseverts );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
+	qglEnable( GL_TEXTURE_2D );
+	qglPopMatrix();
 }
 
-static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights ) {
+static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
 	if ( frame >= paliashdr->numframes || frame < 0 ) {
 		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", frame );
 		frame = 0;
@@ -746,7 +752,7 @@ static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts
 		pose += ( int )( tr.refdef.floatTime / interval ) % numposes;
 	}
 
-	GL_DrawAliasFrame( paliashdr, pose, fullBrigts, overBrights );
+	GL_DrawAliasFrame( paliashdr, pose, fullBrigts, overBrights, pStage );
 }
 
 float R_CalcEntityLight( refEntity_t* e ) {
@@ -846,31 +852,32 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 
 	bool doOverBright = !!r_drawOverBrights->integer;
 	GL_Cull( CT_FRONT_SIDED );
+	shaderStage_t stage1 = {};
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			model_constant_alpha = 1.0f;
 			GL_Cull( CT_TWO_SIDED );
-			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA );
+			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 			model_constant_alpha = r_wateralpha->value;
-			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT ) {
 			model_constant_alpha = 1.0f;
-			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY ) {
 			model_constant_alpha = 1.0f;
-			GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else {
 			model_constant_alpha = 1.0f;
-			GL_State( GLS_DEPTHMASK_TRUE );
+			stage1.stateBits = GLS_DEPTHMASK_TRUE;
 		}
 	} else   {
 		model_constant_alpha = 1.0f;
-		GL_State( GLS_DEFAULT );
+		stage1.stateBits = GLS_DEFAULT;
 	}
 
 	int anim = ( int )( backEnd.refdef.floatTime * 10 ) & 3;
@@ -880,17 +887,19 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		GL_Bind( paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ] );
 	}
 
-	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false );
+	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false, &stage1 );
 
 	if ( doOverBright ) {
-		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true );
+		shaderStage_t stage2 = {};
+		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true, &stage2 );
 	}
 
 	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] ) {
 		GL_Bind( paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] );
-		GL_State( GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false );
+		shaderStage_t stage3 = {};
+		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false, &stage3 );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
@@ -900,12 +909,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	qglPopMatrix();
 
 	if ( r_shadows->value ) {
-		qglPushMatrix();
-		qglDisable( GL_TEXTURE_2D );
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 		GL_DrawAliasShadow( paliashdr, lastposenum );
-		qglEnable( GL_TEXTURE_2D );
-		qglPopMatrix();
 	}
 }
 

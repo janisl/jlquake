@@ -534,8 +534,8 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	if ( scrap_dirty ) {
 		R_ScrapUpload();
 	}
+	backEnd.currentEntity = &backEnd.entity2D;
 	GL_Bind( cmd->image );
-	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	RB_Set2DVertexCoords( cmd, 0 );
 
@@ -575,7 +575,9 @@ static const void* RB_Draw2DQuad( const void* data ) {
 
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 

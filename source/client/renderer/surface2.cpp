@@ -427,7 +427,7 @@ static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
 }
 
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
-static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha ) {
+static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* pStage ) {
 	float scroll;
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		scroll = -64 * ( ( tr.refdef.floatTime * 0.5 ) - ( int )( tr.refdef.floatTime * 0.5 ) );
@@ -461,7 +461,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha ) {
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ2( p );
-		RB_IterateStagesGenericTemp( &tess );
+		RB_IterateStagesGenericTemp( &tess, pStage );
 		tess.numIndexes = 0;
 		DisableArrays();
 	}
@@ -506,6 +506,22 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa, int alpha ) {
 }
 
 static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
+	shaderStage_t stage = {};
+	/*
+	** set the appropriate blending mode unless we're only looking at the
+	** lightmaps.
+	*/
+	// don't bother writing Z
+	if ( !r_lightmap->value ) {
+		if ( r_saturatelighting->value ) {
+			stage.stateBits = GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		} else {
+			stage.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+		}
+	} else {
+		stage.stateBits = 0;
+	}
+
 	float* v = p->verts[ 0 ];
 	for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
 		tess.svars.colors[ j ][ 0 ] = 255;
@@ -520,7 +536,7 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
 	}
 	EnableArrays( p->numverts );
 	EmitPolyIndexesQ2(  p );
-	RB_IterateStagesGenericTemp( &tess );
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -532,13 +548,23 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 
 	GL_Bind( image );
 
-	GL_State( GLS_DEFAULT );
-
 	// warp texture, no lightmaps
-	EmitWaterPolysQ2( fa, 255 );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_DEFAULT;
+	EmitWaterPolysQ2( fa, 255, &stage );
 }
 
-static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image, int alpha ) {
+static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
+	shaderStage_t stage = {};
+	int alpha;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = 63;
+		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		alpha = 255;
+		stage.stateBits = GLS_DEFAULT;
+	}
+
 	GL_Bind( image );
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
@@ -548,7 +574,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image, int alp
 	}
 	EnableArrays( fa->polys->numverts );
 	EmitPolyIndexesQ2( fa->polys );
-	RB_IterateStagesGenericTemp( &tess );
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -560,31 +586,11 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image, int alp
 		return;
 	}
 
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	// don't bother writing Z
-	if ( !r_lightmap->value ) {
-		if ( r_saturatelighting->value ) {
-			GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-		} else {
-			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
-		}
-	} else {
-		GL_State( 0 );
-	}
-
 	GL_Bind( tr.lightmaps[ fa->lightmaptexturenum ] );
 
 	if ( fa->polys ) {
 		DrawGLPolyChainQ2( fa->polys );
 	}
-
-	/*
-	** restore state
-	*/
-	GL_State( GLS_DEFAULT );
 }
 
 static void GL_MBind( int target, image_t* image ) {
@@ -595,7 +601,6 @@ static void GL_MBind( int target, image_t* image ) {
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	GL_Cull( CT_FRONT_SIDED );
 	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-		GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 		// the textures are prescaled up for a better lighting range,
 		// so scale it back down
@@ -609,12 +614,16 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			alpha = 168;
 		}
 		if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
-			EmitWaterPolysQ2( surf, alpha );
+			shaderStage_t stage = {};
+			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
 			DrawGLPolyQ2( surf->polys, alpha );
 			EnableArrays( surf->polys->numverts );
 			EmitPolyIndexesQ2( surf->polys );
-			RB_IterateStagesGenericTemp( &tess );
+			shaderStage_t stage = {};
+			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			RB_IterateStagesGenericTemp( &tess, &stage );
 			tess.numIndexes = 0;
 			DisableArrays();
 		}
@@ -626,15 +635,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		return;
 	}
 
-	int alpha;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = 63;
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else {
-		alpha = 255;
-		GL_State( GLS_DEFAULT );
-	}
-
 	R_UpdateSurfaceLightmap( surf );
 
 	c_brush_polys++;
@@ -642,8 +642,17 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	image_t* image = R_TextureAnimationQ2( surf->texinfo );
 
 	if ( !qglMultiTexCoord2fARB ) {
-		R_RenderBrushPolyQ2( surf, image, alpha );
+		R_RenderBrushPolyQ2( surf, image );
 		return;
+	}
+
+	int alpha;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = 63;
+		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	} else {
+		alpha = 255;
+		GL_State( GLS_DEFAULT );
 	}
 
 	int i, nv = surf->polys->numverts;
@@ -700,7 +709,8 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	EnableMultitexturedArrays( p->numverts );
 	EmitPolyIndexesQ2( p );
-	DrawMultitexturedTemp( &tess );
+	shaderStage_t stage = {};
+	DrawMultitexturedTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableMultitexturedArrays();
 

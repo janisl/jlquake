@@ -695,7 +695,6 @@ static void RB_SurfaceBeamQ2() {
 	qglEnd();
 
 	qglEnable( GL_TEXTURE_2D );
-	GL_State( GLS_DEPTHMASK_TRUE );
 }
 
 static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth ) {

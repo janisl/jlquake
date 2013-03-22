@@ -448,7 +448,7 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	GL_SelectTexture( 0 );
 }
 
-void DrawMultitexturedTemp( shaderCommands_t* input ) {
+void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
 	R_DrawElements( input->numIndexes, input->indexes );
 }
 
@@ -545,7 +545,44 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	}
 }
 
-void RB_IterateStagesGenericTemp( shaderCommands_t* input ) {
+void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+			int fadeStart = backEnd.currentEntity->e.fadeStartTime;
+			if ( fadeStart ) {
+				int fadeEnd = backEnd.currentEntity->e.fadeEndTime;
+				if ( fadeStart > tr.refdef.time ) {
+					// has not started to fade yet
+					GL_State( pStage->stateBits );
+				} else   {
+					if ( fadeEnd < tr.refdef.time ) {	// entity faded out completely
+						return;//continue;
+					}
+
+					float alphaval = ( float )( fadeEnd - tr.refdef.time ) / ( float )( fadeEnd - fadeStart );
+
+					unsigned int tempState = pStage->stateBits;
+					// remove the current blend, and don't write to Z buffer
+					tempState &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE );
+					// set the blend to src_alpha, dst_one_minus_src_alpha
+					tempState |= ( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+					GL_State( tempState );
+					GL_Cull( CT_FRONT_SIDED );
+					// modulate the alpha component of each vertex in the render list
+					for ( int i = 0; i < tess.numVertexes; i++ ) {
+						tess.svars.colors[ i ][ 0 ] *= alphaval;
+						tess.svars.colors[ i ][ 1 ] *= alphaval;
+						tess.svars.colors[ i ][ 2 ] *= alphaval;
+						tess.svars.colors[ i ][ 3 ] *= alphaval;
+					}
+				}
+			} else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )           {
+				// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
+				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
+										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
+				GL_State( stateBits );
+			} else   {
+				GL_State( pStage->stateBits );
+			}
+
 			//
 			// draw
 			//

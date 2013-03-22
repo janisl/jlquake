@@ -66,15 +66,6 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 		scale = p->size + scale * 0.004;
 	}
 
-	if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
-	{
-		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess );
-		DisableArrays();
-		tess.numVertexes = 0;
-		tess.numIndexes = 0;
-	}
-
 	int numVerts = tess.numVertexes;
 	int numIndexes = tess.numIndexes;
 
@@ -118,14 +109,24 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 
 static void R_DrawParticleTriangles() {
 	GL_Bind( tr.particleImage );
-	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );		// no z buffering
 
 	vec3_t up, right;
 	VectorScale( backEnd.viewParms.orient.axis[ 2 ], 1.5, up );
 	VectorScale( backEnd.viewParms.orient.axis[ 1 ], -1.5, right );
 
 	const particle_t* p = backEnd.refdef.particles;
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;		// no z buffering
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
+		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
+		{
+			EnableArrays( tess.numVertexes );
+			RB_IterateStagesGenericTemp( &tess, &stage );
+			DisableArrays();
+			tess.numVertexes = 0;
+			tess.numIndexes = 0;
+		}
+
 		switch ( p->Texture ) {
 		case PARTTEX_Default:
 			R_DrawParticle( p, up, right, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2 );
@@ -152,13 +153,11 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess );
+		RB_IterateStagesGenericTemp( &tess, &stage );
 		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
 	}
-
-	GL_State( GLS_DEPTHMASK_TRUE );			// back to normal Z buffering
 }
 
 static void R_DrawParticlePoints() {
@@ -175,7 +174,6 @@ static void R_DrawParticlePoints() {
 	}
 	qglEnd();
 
-	GL_State( GLS_DEPTHMASK_TRUE );
 	qglEnable( GL_TEXTURE_2D );
 }
 

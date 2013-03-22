@@ -83,11 +83,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
-	if ( alpha != 255 ) {
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else   {
-		GL_State( GLS_DEFAULT | GLS_ATEST_GE_80 );
-	}
 
 	GL_Bind( R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ] );
 
@@ -151,7 +146,13 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	if ( alpha != 255 ) {
+		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else   {
+		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
+	}
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }

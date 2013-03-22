@@ -218,12 +218,6 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
 static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	} else {
-		GL_State( GLS_DEFAULT );
-	}
-
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
@@ -254,7 +248,13 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stage.stateBits = GLS_DEFAULT;
+	}
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -286,11 +286,12 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 
 	GL_Cull( CT_FRONT_SIDED );
 	GL_Bind( tr.whiteImage );
-	GL_State( GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }

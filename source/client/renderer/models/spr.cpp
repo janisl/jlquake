@@ -218,7 +218,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
-	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
 
@@ -365,7 +364,9 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
-	RB_IterateStagesGenericTemp( &tess );
+	shaderStage_t stage = {};
+	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
