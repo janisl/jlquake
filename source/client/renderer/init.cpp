@@ -128,7 +128,6 @@ Cvar* r_ignore;
 
 Cvar* r_keeptjunctions;
 Cvar* r_dynamic;
-Cvar* r_saturatelighting;
 Cvar* r_fullBrightColours;
 Cvar* r_drawOverBrights;
 
@@ -508,7 +507,6 @@ static void R_Register() {
 	r_showsky = Cvar_Get( "r_showsky", "0", CVAR_CHEAT );
 	r_ignore = Cvar_Get( "r_ignore", "1", CVAR_CHEAT );
 	r_dynamic = Cvar_Get( "r_dynamic", "1", 0 );
-	r_saturatelighting = Cvar_Get( "r_saturatelighting", "0", CVAR_CHEAT );
 	r_fullBrightColours = Cvar_Get( "r_fullBrightColours", "1", 0 );
 	r_drawOverBrights = Cvar_Get( "r_drawOverBrights", "1", 0 );
 	r_nocurves = Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
