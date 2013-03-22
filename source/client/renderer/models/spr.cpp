@@ -302,8 +302,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		common->FatalError( "R_DrawSprite: Bad sprite type %d", psprite->type );
 	}
 
-	GL_Bind( frame->gl_texture );
-
 	int numVerts = 0;
 	int numIndexes = 0;
 
@@ -365,7 +363,10 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

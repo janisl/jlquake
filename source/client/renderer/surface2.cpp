@@ -506,15 +506,6 @@ static void DrawGLFlowingPoly( mbrush38_surface_t* fa, int alpha ) {
 }
 
 static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
-	shaderStage_t stage = {};
-	/*
-	** set the appropriate blending mode unless we're only looking at the
-	** lightmaps.
-	*/
-	// don't bother writing Z
-	stage.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-	stage.bundle[ 0 ].isLightmap = true;
-
 	float* v = p->verts[ 0 ];
 	for ( int j = 0; j < p->numverts; j++, v += BRUSH38_VERTEXSIZE ) {
 		tess.svars.colors[ j ][ 0 ] = 255;
@@ -527,11 +518,6 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
 		tess.xyz[ j ][ 1 ] = v[ 1 ];
 		tess.xyz[ j ][ 2 ] = v[ 2 ];
 	}
-	EnableArrays( p->numverts );
-	EmitPolyIndexesQ2(  p );
-	RB_IterateStagesGenericTemp( &tess, &stage );
-	tess.numIndexes = 0;
-	DisableArrays();
 }
 
 static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
@@ -548,8 +534,8 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 }
 
 static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
-	shaderStage_t stage = {};
-	stage.stateBits = GLS_DEFAULT;
+	shaderStage_t stage1 = {};
+	stage1.stateBits = GLS_DEFAULT;
 
 	GL_Bind( image );
 
@@ -560,7 +546,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	}
 	EnableArrays( fa->polys->numverts );
 	EmitPolyIndexesQ2( fa->polys );
-	RB_IterateStagesGenericTemp( &tess, &stage );
+	RB_IterateStagesGenericTemp( &tess, &stage1 );
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -572,16 +558,18 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 		return;
 	}
 
-	GL_Bind( tr.lightmaps[ fa->lightmaptexturenum ] );
-
-	if ( fa->polys ) {
-		DrawGLPolyChainQ2( fa->polys );
-	}
-}
-
-static void GL_MBind( int target, image_t* image ) {
-	GL_SelectTexture( target );
-	GL_Bind( image );
+	DrawGLPolyChainQ2( fa->polys );
+	shaderStage_t stage2 = {};
+	stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ fa->lightmaptexturenum ];
+	stage2.bundle[ 0 ].numImageAnimations = 1;
+	stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+	stage2.bundle[ 0 ].isLightmap = true;
+	EnableArrays( fa->polys->numverts );
+	EmitPolyIndexesQ2(  fa->polys );
+	R_BindAnimatedImage( &stage2.bundle[ 0 ] );
+	RB_IterateStagesGenericTemp( &tess, &stage2 );
+	tess.numIndexes = 0;
+	DisableArrays();
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
@@ -591,7 +579,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		// the textures are prescaled up for a better lighting range,
 		// so scale it back down
 
-		GL_Bind( surf->texinfo->image );
 		c_brush_polys++;
 		int alpha;
 		if ( surf->texinfo->flags & BSP38SURF_TRANS33 ) {
@@ -601,6 +588,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 		if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
 			shaderStage_t stage = {};
+			GL_Bind( surf->texinfo->image );
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
@@ -608,7 +596,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			EnableArrays( surf->polys->numverts );
 			EmitPolyIndexesQ2( surf->polys );
 			shaderStage_t stage = {};
+			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
+			stage.bundle[ 0 ].numImageAnimations = 1;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			R_BindAnimatedImage( &stage.bundle[ 0 ] );
 			RB_IterateStagesGenericTemp( &tess, &stage );
 			tess.numIndexes = 0;
 			DisableArrays();
@@ -647,8 +638,14 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		GL_TexEnv( GL_MODULATE );
 	}
 
-	GL_MBind( 0, image );
-	GL_MBind( 1, tr.lightmaps[ surf->lightmaptexturenum ] );
+	shaderStage_t stage = {};
+	stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
+	stage.bundle[ 1 ].numImageAnimations = 1;
+
+	GL_SelectTexture( 0 );
+	GL_Bind( image );
+	GL_SelectTexture( 1 );
+	R_BindAnimatedImage( &stage.bundle[ 1 ] );
 
 	p = surf->polys;
 	v = p->verts[ 0 ];
@@ -688,7 +685,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	EnableMultitexturedArrays( p->numverts );
 	EmitPolyIndexesQ2( p );
-	shaderStage_t stage = {};
 	DrawMultitexturedTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableMultitexturedArrays();

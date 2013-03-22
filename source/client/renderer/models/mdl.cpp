@@ -264,14 +264,14 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 							pheader->fullBrightTexture[ i ][ 3 ] =
 								R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
 				delete[] picFullBright;
-			} else   {
+			} else {
 				pheader->fullBrightTexture[ i ][ 0 ] =
 					pheader->fullBrightTexture[ i ][ 1 ] =
 						pheader->fullBrightTexture[ i ][ 2 ] =
 							pheader->fullBrightTexture[ i ][ 3 ] = NULL;
 			}
 			pskintype = ( dmdl_skintype_t* )( ( byte* )( pskintype + 1 ) + s );
-		} else   {
+		} else {
 			// animating skin group.  yuck.
 			pskintype++;
 			dmdl_skingroup_t* pinskingroup = ( dmdl_skingroup_t* )pskintype;
@@ -294,7 +294,7 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 					sprintf( fbname, "%s_%i_%i_fb", loadmodel->name, i, j );
 					pheader->fullBrightTexture[ i ][ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
 					delete[] picFullBright;
-				} else   {
+				} else {
 					pheader->fullBrightTexture[ i ][ j & 3 ] = NULL;
 				}
 				pskintype = ( dmdl_skintype_t* )( ( byte* )pskintype + s );
@@ -477,7 +477,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 		mdl_frametype_t frametype = ( mdl_frametype_t )LittleLong( pframetype->type );
 		if ( frametype == ALIAS_SINGLE ) {
 			pframetype = ( dmdl_frametype_t* )Mod_LoadAliasFrame( pframetype + 1, &pheader->frames[ i ] );
-		} else   {
+		} else {
 			pframetype = ( dmdl_frametype_t* )Mod_LoadAliasGroup( pframetype + 1, &pheader->frames[ i ] );
 		}
 	}
@@ -494,7 +494,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 		mod->q1_maxs[ 0 ] = maxs[ 0 ] + 10;
 		mod->q1_maxs[ 1 ] = maxs[ 1 ] + 10;
 		mod->q1_maxs[ 2 ] = maxs[ 2 ] + 10;
-	} else   {
+	} else {
 		mod->q1_mins[ 0 ] = mod->q1_mins[ 1 ] = mod->q1_mins[ 2 ] = -16;
 		mod->q1_maxs[ 0 ] = mod->q1_maxs[ 1 ] = mod->q1_maxs[ 2 ] = 16;
 	}
@@ -619,7 +619,7 @@ void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
 
 		if ( frametype == ALIAS_SINGLE ) {
 			pframetype = ( dmdl_frametype_t* )Mod_LoadAliasFrame( pframetype + 1, &pheader->frames[ i ] );
-		} else   {
+		} else {
 			pframetype = ( dmdl_frametype_t* )Mod_LoadAliasGroup( pframetype + 1, &pheader->frames[ i ] );
 		}
 	}
@@ -663,7 +663,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		r = backEnd.currentEntity->e.shaderRGBA[ 0 ];
 		g = backEnd.currentEntity->e.shaderRGBA[ 1 ];
 		b = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	} else   {
+	} else {
 		r = g = b = 255;
 	}
 
@@ -688,6 +688,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	EnableArrays( paliashdr->poseverts );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	R_BindAnimatedImage( &pStage->bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, pStage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -695,7 +696,6 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 
 static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	qglPushMatrix();
-	qglDisable( GL_TEXTURE_2D );
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = 0;
@@ -730,11 +730,13 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
-	qglEnable( GL_TEXTURE_2D );
 	qglPopMatrix();
 }
 
@@ -768,7 +770,7 @@ float R_CalcEntityLight( refEntity_t* e ) {
 		model_t* clmodel = R_GetModelByHandle( e->hModel );
 		adjust_origin[ 2 ] += ( clmodel->q1_mins[ 2 ] + clmodel->q1_maxs[ 2 ] ) / 2;
 		light = R_LightPointQ1( adjust_origin );
-	} else   {
+	} else {
 		light = R_LightPointQ1( lorg );
 	}
 
@@ -875,29 +877,36 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 			model_constant_alpha = 1.0f;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE;
 		}
-	} else   {
+	} else {
 		model_constant_alpha = 1.0f;
 		stage1.stateBits = GLS_DEFAULT;
 	}
 
+	shaderStage_t stage2 = {};
 	int anim = ( int )( backEnd.refdef.floatTime * 10 ) & 3;
 	if ( backEnd.currentEntity->e.customSkin ) {
-		GL_Bind( tr.images[ backEnd.currentEntity->e.customSkin ] );
-	} else   {
-		GL_Bind( paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ] );
+		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
+		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
+		stage1.bundle[ 0 ].numImageAnimations = 1;
+		stage2.bundle[ 0 ].numImageAnimations = 1;
+	} else {
+		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ];
+		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ];
+		stage1.bundle[ 0 ].numImageAnimations = 1;
+		stage2.bundle[ 0 ].numImageAnimations = 1;
 	}
 
 	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false, &stage1 );
 
 	if ( doOverBright ) {
-		shaderStage_t stage2 = {};
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
 		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true, &stage2 );
 	}
 
 	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] ) {
-		GL_Bind( paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] );
 		shaderStage_t stage3 = {};
+		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ];
+		stage3.bundle[ 0 ].numImageAnimations = 1;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false, &stage3 );
 	}

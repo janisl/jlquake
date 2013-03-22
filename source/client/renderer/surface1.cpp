@@ -504,7 +504,8 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		stage.stateBits = GLS_DEFAULT;
 		alpha = 255;
 	}
-	GL_Bind( fa->texinfo->texture->gl_texture );
+	stage.bundle[ 0 ].image[ 0 ] = fa->texinfo->texture->gl_texture;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -529,6 +530,7 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
+		R_BindAnimatedImage( &stage.bundle[ 0 ] );
 		RB_IterateStagesGenericTemp( &tess, &stage );
 		tess.numIndexes = 0;
 		DisableArrays();
@@ -567,18 +569,20 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// subdivided sky warp
 		//
-		GL_Bind( tr.solidskytexture );
 		speedscale = backEnd.refdef.floatTime * 8;
 		speedscale -= ( int )speedscale & ~127;
 
 		shaderStage_t stage1 = {};
+		stage1.bundle[ 0 ].image[ 0 ] = tr.solidskytexture;
+		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage1.stateBits = GLS_DEFAULT;
 		EmitSkyPolys( s, &stage1 );
 
-		GL_Bind( tr.alphaskytexture );
 		speedscale = backEnd.refdef.floatTime * 16;
 		speedscale -= ( int )speedscale & ~127;
 		shaderStage_t stage2 = {};
+		stage2.bundle[ 0 ].image[ 0 ] = tr.alphaskytexture;
+		stage2.bundle[ 0 ].numImageAnimations = 1;
 		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		EmitSkyPolys( s, &stage2 );
 	} else {
@@ -599,8 +603,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			qglEnable( GL_TEXTURE_2D );
 
 			int i = s->lightmaptexturenum;
-			GL_Bind( tr.lightmaps[ i ] );
 			if ( lightmap_modified[ i ] ) {
+				GL_Bind( tr.lightmaps[ i ] );
 				lightmap_modified[ i ] = false;
 				glRect_t* theRect = &lightmap_rectchange[ i ];
 				qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
@@ -629,14 +633,17 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EnableMultitexturedArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
 			shaderStage_t stage1 = {};
+			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+			stage1.bundle[ 1 ].numImageAnimations = 1;
+			R_BindAnimatedImage( &stage1.bundle[ 1 ] );
 			DrawMultitexturedTemp( &tess, &stage1 );
 
 			if ( r_drawOverBrights->integer ) {
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 
 				i = s->lightmaptexturenum;
-				GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
 				if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
+					GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
 					lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
 					glRect_t* theRect = &lightmap_rectchange[ i ];
 					qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
@@ -648,6 +655,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					theRect->w = 0;
 				}
 				shaderStage_t stage2 = {};
+				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
+				stage2.bundle[ 1 ].numImageAnimations = 1;
+				R_BindAnimatedImage( &stage2.bundle[ 1 ] );
 				DrawMultitexturedTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;
@@ -691,7 +701,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
 				!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
-				GL_Bind( tr.lightmaps[ s->lightmaptexturenum ] );
 				v = p->verts[ 0 ];
 				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 					tess.svars.colors[ i ][ 0 ] = 255;
@@ -703,7 +712,10 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				}
 				shaderStage_t stage2 = {};
 				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+				stage2.bundle[ 0 ].numImageAnimations = 1;
 				stage2.bundle[ 0 ].isLightmap = true;
+				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
 				RB_IterateStagesGenericTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;

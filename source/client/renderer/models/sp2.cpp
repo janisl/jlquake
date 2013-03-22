@@ -84,8 +84,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	GL_Cull( CT_FRONT_SIDED );
 
-	GL_Bind( R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ] );
-
 	int numVerts = 0;
 	int numIndexes = 0;
 
@@ -147,11 +145,14 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	if ( alpha != 255 ) {
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	} else   {
 		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
 	}
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

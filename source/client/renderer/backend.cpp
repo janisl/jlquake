@@ -536,7 +536,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	}
 	backEnd.currentEntity = &backEnd.entity2D;
 	RB_BeginSurface( tr.defaultShader, 0 );
-	GL_Bind( cmd->image );
 
 	RB_Set2DVertexCoords( cmd, 0 );
 
@@ -577,7 +576,10 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	EnableArrays( 4 );
 	tess.numIndexes = 6;
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = cmd->image;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

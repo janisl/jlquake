@@ -241,26 +241,41 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		}
 	}
 
+	// select skin
+	image_t* skin;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		qglDisable( GL_TEXTURE_2D );
+		skin = tr.whiteImage;
+	} else  if ( backEnd.currentEntity->e.customSkin ) {
+		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
+	} else {
+		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
+		} else {
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
+			if ( !skin ) {
+				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
+			}
+		}
+	}
+	if ( !skin ) {
+		skin = tr.defaultImage;	// fallback...
 	}
 
 	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = skin;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	} else {
 		stage.stateBits = GLS_DEFAULT;
 	}
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
-
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		qglEnable( GL_TEXTURE_2D );
-	}
 }
 
 static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
@@ -285,12 +300,14 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
-	GL_Bind( tr.whiteImage );
 	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -474,25 +491,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	}
 	else
 		GL_Cull( CT_FRONT_SIDED );
-
-	// select skin
-	image_t* skin;
-	if ( backEnd.currentEntity->e.customSkin ) {
-		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
-	} else {
-		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-		} else {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
-			if ( !skin ) {
-				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-			}
-		}
-	}
-	if ( !skin ) {
-		skin = tr.defaultImage;	// fallback...
-	}
-	GL_Bind( skin );
 
 	// draw it
 

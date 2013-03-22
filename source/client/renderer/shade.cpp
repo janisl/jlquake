@@ -213,7 +213,7 @@ SURFACE SHADERS
 =============================================================
 */
 
-static void R_BindAnimatedImage( textureBundle_t* bundle ) {
+void R_BindAnimatedImage( textureBundle_t* bundle ) {
 	if ( bundle->isVideoMap ) {
 		CIN_RunCinematic( bundle->videoMapHandle );
 		CIN_UploadCinematic( bundle->videoMapHandle );
