@@ -80,8 +80,8 @@ struct mbrush29_texture_t {
 	image_t* gl_texture;
 	image_t* fullBrightTexture;
 	int anim_total;						// total tenths in sequence ( 0 = no)
-	int anim_min, anim_max;				// time for this frame min <=time< max
 	mbrush29_texture_t* anim_next;		// in the animation sequence
+	mbrush29_texture_t* anim_base;		// first frame of animation
 	mbrush29_texture_t* alternate_anims;	// bmodels in frmae 1 use these
 	unsigned offsets[ BSP29_MIPLEVELS ];			// four mip maps stored
 };

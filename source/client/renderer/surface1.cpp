@@ -386,7 +386,7 @@ void GL_BuildLightmaps() {
 }
 
 //	Returns the proper texture for a given time and base texture
-static mbrush29_texture_t* R_TextureAnimationQ1( mbrush29_texture_t* base ) {
+static void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
 	if ( backEnd.currentEntity->e.frame ) {
 		if ( base->alternate_anims ) {
 			base = base->alternate_anims;
@@ -394,23 +394,55 @@ static mbrush29_texture_t* R_TextureAnimationQ1( mbrush29_texture_t* base ) {
 	}
 
 	if ( !base->anim_total ) {
-		return base;
+		bundle->image[ 0 ] = base->gl_texture;
+		bundle->numImageAnimations = 1;
+		return;
 	}
 
-	int reletive = ( int )( backEnd.refdef.floatTime * 10 ) % base->anim_total;
-
-	int count = 0;
-	while ( base->anim_min > reletive || base->anim_max <= reletive ) {
+	if ( !base->anim_base ) {
+		common->FatalError( "No anim base\n" );
+	}
+	base = base->anim_base;
+	for ( int i = 0; i < base->anim_total; i++ ) {
+		bundle->image[ i ] = base->gl_texture;
 		base = base->anim_next;
-		if ( !base ) {
-			common->FatalError( "R_TextureAnimationQ1: broken cycle" );
-		}
-		if ( ++count > 100 ) {
-			common->FatalError( "R_TextureAnimationQ1: infinite cycle" );
+	}
+	bundle->numImageAnimations = base->anim_total;
+	bundle->imageAnimationSpeed = 5;
+}
+
+//	Returns the proper texture for a given time and base texture
+static bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
+	if ( backEnd.currentEntity->e.frame ) {
+		if ( base->alternate_anims ) {
+			base = base->alternate_anims;
 		}
 	}
 
-	return base;
+	if ( !base->anim_total ) {
+		bundle->image[ 0 ] = base->fullBrightTexture;
+		bundle->numImageAnimations = 1;
+		return !!base->fullBrightTexture;
+	}
+
+	if ( !base->anim_base ) {
+		common->FatalError( "No anim base\n" );
+	}
+	base = base->anim_base;
+	bool haveFullBrights = false;
+	for ( int i = 0; i < base->anim_total; i++ ) {
+		if ( base->fullBrightTexture ) {
+			bundle->image[ i ] = base->fullBrightTexture;
+			haveFullBrights = true;
+		} else {
+			bundle->image[ i ] = tr.transparentImage;
+		}
+		base = base->anim_next;
+	}
+	bundle->numImageAnimations = base->anim_total;
+	bundle->imageAnimationSpeed = 5;
+
+	return haveFullBrights;
 }
 
 //	Multitexture
@@ -540,16 +572,15 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	mbrush29_glpoly_t* p = s->polys;
 
-	mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
-	if ( !t->fullBrightTexture ) {
+	shaderStage_t stage = {};
+	if ( !R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage.bundle[ 0 ] ) ) {
 		return;
 	}
-	GL_Bind( t->fullBrightTexture );
 	DrawGLPolyQ1( p );
 	EnableArrays( p->numverts );
 	EmitPolyIndexesQ1( p );
-	shaderStage_t stage = {};
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -591,13 +622,14 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
-		mbrush29_texture_t* t = R_TextureAnimationQ1( s->texinfo->texture );
 		if ( qglActiveTextureARB  && !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
 			!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
 
 			// Binds world to texture env 0
 			GL_SelectTexture( 0 );
-			GL_Bind( t->gl_texture );
+			shaderStage_t stage1 = {};
+			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
+			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 			// Binds lightmap to texenv 1
 			GL_SelectTexture( 1 );
 			qglEnable( GL_TEXTURE_2D );
@@ -632,13 +664,14 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			EnableMultitexturedArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
-			shaderStage_t stage1 = {};
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
 			R_BindAnimatedImage( &stage1.bundle[ 1 ] );
 			DrawMultitexturedTemp( &tess, &stage1 );
 
 			if ( r_drawOverBrights->integer ) {
+				shaderStage_t stage2 = {};
+				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 
 				i = s->lightmaptexturenum;
@@ -654,9 +687,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 					theRect->h = 0;
 					theRect->w = 0;
 				}
-				shaderStage_t stage2 = {};
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
+				GL_SelectTexture( 0 );
+				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
+				GL_SelectTexture( 1 );
 				R_BindAnimatedImage( &stage2.bundle[ 1 ] );
 				DrawMultitexturedTemp( &tess, &stage2 );
 			}
@@ -681,7 +716,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				intensity = backEnd.currentEntity->e.absoluteLight * 255;
 			}
 
-			GL_Bind( t->gl_texture );
+			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
+			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = intensity;

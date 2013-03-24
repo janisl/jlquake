@@ -21,8 +21,6 @@
 #include "../../../common/content_types.h"
 #include "../../../common/endian.h"
 
-#define ANIM_CYCLE      2
-
 #define SUBDIVIDE_SIZE  64
 
 mbrush29_texture_t* r_notexture_mip;
@@ -199,10 +197,9 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 			if ( !tx2 ) {
 				common->FatalError( "Missing frame %i of %s", j, tx->name );
 			}
-			tx2->anim_total = max * ANIM_CYCLE;
-			tx2->anim_min = j * ANIM_CYCLE;
-			tx2->anim_max = ( j + 1 ) * ANIM_CYCLE;
+			tx2->anim_total = max;
 			tx2->anim_next = anims[ ( j + 1 ) % max ];
+			tx2->anim_base = anims[ 0 ];
 			if ( altmax ) {
 				tx2->alternate_anims = altanims[ 0 ];
 			}
@@ -212,10 +209,9 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 			if ( !tx2 ) {
 				common->FatalError( "Missing frame %i of %s", j, tx->name );
 			}
-			tx2->anim_total = altmax * ANIM_CYCLE;
-			tx2->anim_min = j * ANIM_CYCLE;
-			tx2->anim_max = ( j + 1 ) * ANIM_CYCLE;
+			tx2->anim_total = altmax;
 			tx2->anim_next = altanims[ ( j + 1 ) % altmax ];
+			tx2->anim_base = altanims[ 0 ];
 			if ( max ) {
 				tx2->alternate_anims = anims[ 0 ];
 			}
