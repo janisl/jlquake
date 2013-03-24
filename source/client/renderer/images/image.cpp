@@ -1411,6 +1411,9 @@ static void R_CreateBuiltinImages() {
 		tr.scratchImage[ x ] = R_CreateImage( "*scratch", ( byte* )data, DEFAULT_SIZE, DEFAULT_SIZE, false, true, GL_CLAMP, false );
 	}
 
+	Com_Memset( data, 0, sizeof ( data ) );
+	tr.transparentImage = R_CreateImage( "*transparent", ( byte* )data, 8, 8, false, false, GL_REPEAT, false );
+
 	R_CreateDlightImage();
 
 	if ( GGameType & GAME_ET ) {

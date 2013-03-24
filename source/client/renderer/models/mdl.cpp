@@ -281,6 +281,7 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 			pskintype = ( dmdl_skintype_t* )( pinskinintervals + groupskins );
 
 			int j;
+			bool haveFullBrightFrame = false;
 			for ( j = 0; j < groupskins; j++ ) {
 				char name[ 32 ];
 				sprintf( name, "%s_%i_%i", loadmodel->name, i, j );
@@ -294,6 +295,7 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 					sprintf( fbname, "%s_%i_%i_fb", loadmodel->name, i, j );
 					pheader->fullBrightTexture[ i ][ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
 					delete[] picFullBright;
+					haveFullBrightFrame = true;
 				} else {
 					pheader->fullBrightTexture[ i ][ j & 3 ] = NULL;
 				}
@@ -303,6 +305,15 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 			for ( /* */; j < 4; j++ ) {
 				pheader->gl_texture[ i ][ j & 3 ] = pheader->gl_texture[ i ][ j - k ];
 				pheader->fullBrightTexture[ i ][ j & 3 ] = pheader->fullBrightTexture[ i ][ j - k ];
+			}
+			//	Make sure all fullbright textures are either all NULL or all are valid textures.
+			// If some frames don't have it, use a fully transparent image.
+			if ( haveFullBrightFrame ) {
+				for ( int j = 0; j < 4; j++ ) {
+					if ( !pheader->fullBrightTexture[ i ][ j ] ) {
+						pheader->fullBrightTexture[ i ][ j ] = tr.transparentImage;
+					}
+				}
 			}
 		}
 	}
@@ -883,17 +894,24 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	}
 
 	shaderStage_t stage2 = {};
-	int anim = ( int )( backEnd.refdef.floatTime * 10 ) & 3;
 	if ( backEnd.currentEntity->e.customSkin ) {
 		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
 		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
 		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
 	} else {
-		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ];
-		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ anim ];
-		stage1.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].numImageAnimations = 1;
+		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 0 ];
+		stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 1 ];
+		stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 2 ];
+		stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 3 ];
+		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 0 ];
+		stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 1 ];
+		stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 2 ];
+		stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 3 ];
+		stage1.bundle[ 0 ].numImageAnimations = 4;
+		stage1.bundle[ 0 ].imageAnimationSpeed = 10;
+		stage2.bundle[ 0 ].numImageAnimations = 4;
+		stage2.bundle[ 0 ].imageAnimationSpeed = 10;
 	}
 
 	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false, &stage1 );
@@ -903,10 +921,14 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true, &stage2 );
 	}
 
-	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ] ) {
+	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 0 ] ) {
 		shaderStage_t stage3 = {};
-		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ anim ];
-		stage3.bundle[ 0 ].numImageAnimations = 1;
+		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 0 ];
+		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 1 ];
+		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 2 ];
+		stage3.bundle[ 0 ].image[ 3 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 3 ];
+		stage3.bundle[ 0 ].numImageAnimations = 4;
+		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false, &stage3 );
 	}

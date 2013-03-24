@@ -363,6 +363,7 @@ struct trGlobals_t {
 	image_t* scrapImage;						// for small graphics
 	image_t* dlightImage;						// inverse-quare highlight for projective adding
 	image_t* whiteImage;						// full of 0xff
+	image_t* transparentImage;					// compltely transparent
 	image_t* scratchImage[ 32 ];
 	image_t* fogImage;
 	image_t* particleImage;						// little dot for particles
