@@ -560,8 +560,9 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
-		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
+		setArraysOnce = true;
+		EnableArrays( p->numverts );
 		RB_IterateStagesGenericTemp( &tess, &stage );
 		tess.numIndexes = 0;
 		DisableArrays();
@@ -576,9 +577,10 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 		return;
 	}
 	DrawGLPolyQ1( p );
-	EnableArrays( p->numverts );
 	EmitPolyIndexesQ1( p );
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	setArraysOnce = false;
+	EnableArrays( p->numverts );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -643,8 +645,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
-		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
+		setArraysOnce = true;
+		EnableArrays( p->numverts );
 		RB_IterateStagesGenericTemp( &tess, &stage1 );
 		tess.numIndexes = 0;
 		DisableArrays();
@@ -673,8 +676,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
-		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
+		setArraysOnce = false;
+		EnableArrays( p->numverts );
 		RB_IterateStagesGenericTemp( &tess, &stage1 );
 		DisableArrays();
 		tess.numIndexes = 0;
@@ -781,9 +785,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
 			}
-			EnableArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
+			setArraysOnce = false;
+			EnableArrays( p->numverts );
 			RB_IterateStagesGenericTemp( &tess, &stage1 );
+			DisableArrays();
 
 			v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -799,6 +805,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage2.bundle[ 0 ].numImageAnimations = 1;
 			stage2.bundle[ 0 ].isLightmap = true;
+			setArraysOnce = false;
+			EnableArrays( p->numverts );
 			RB_IterateStagesGenericTemp( &tess, &stage2 );
 			tess.numIndexes = 0;
 			DisableArrays();

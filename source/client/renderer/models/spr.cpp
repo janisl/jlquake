@@ -360,12 +360,13 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
 
-	EnableArrays( 4 );
 	tess.numIndexes = 6;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	setArraysOnce = true;
+	EnableArrays( 4 );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

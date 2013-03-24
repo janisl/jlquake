@@ -42,7 +42,9 @@ void EnableArrays( int numVertexes ) {
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	if ( setArraysOnce ) {
+		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	}
 	if ( qglLockArraysEXT && numVertexes ) {
 		qglLockArraysEXT( 0, numVertexes );
 		QGL_LogComment( "glLockArraysEXT\n" );
@@ -546,6 +548,10 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 }
 
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+			if ( !setArraysOnce ) {
+				qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
+			}
+
 			//
 			// set state
 			//

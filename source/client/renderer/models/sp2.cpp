@@ -142,7 +142,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
 
-	EnableArrays( 4 );
 	tess.numIndexes = 6;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
@@ -152,6 +151,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	} else   {
 		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
 	}
+	setArraysOnce = true;
+	EnableArrays( 4 );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

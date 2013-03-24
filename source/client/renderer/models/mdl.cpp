@@ -696,9 +696,10 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
 	}
 
-	EnableArrays( paliashdr->poseverts );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	setArraysOnce = true;
+	EnableArrays( paliashdr->poseverts );
 	RB_IterateStagesGenericTemp( &tess, pStage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -736,13 +737,14 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
-	EnableArrays( paliashdr->poseverts );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	setArraysOnce = true;
+	EnableArrays( paliashdr->poseverts );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

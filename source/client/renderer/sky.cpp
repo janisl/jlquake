@@ -177,8 +177,9 @@ void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage ) {
 			tess.xyz[ i ][ 1 ] = v[ 1 ];
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
-		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
+		setArraysOnce = false;
+		EnableArrays( p->numverts );
 		RB_IterateStagesGenericTemp( &tess, pStage );
 		tess.numIndexes = 0;
 		DisableArrays();

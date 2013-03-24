@@ -261,7 +261,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		skin = tr.defaultImage;	// fallback...
 	}
 
-	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
@@ -272,6 +271,8 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	} else {
 		stage.stateBits = GLS_DEFAULT;
 	}
+	setArraysOnce = true;
+	EnableArrays( paliashdr->numVertexes );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -299,13 +300,14 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
-	EnableArrays( paliashdr->numVertexes );
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	setArraysOnce = true;
+	EnableArrays( paliashdr->numVertexes );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

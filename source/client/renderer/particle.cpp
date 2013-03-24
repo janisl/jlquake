@@ -120,6 +120,7 @@ static void R_DrawParticleTriangles() {
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
+			setArraysOnce = true;
 			EnableArrays( tess.numVertexes );
 			RB_IterateStagesGenericTemp( &tess, &stage );
 			DisableArrays();
@@ -152,6 +153,7 @@ static void R_DrawParticleTriangles() {
 
 	if (tess.numVertexes)
 	{
+		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
 		RB_IterateStagesGenericTemp( &tess, &stage );
 		DisableArrays();
