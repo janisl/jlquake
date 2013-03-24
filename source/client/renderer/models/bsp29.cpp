@@ -447,7 +447,6 @@ static void SubdividePolygon( int numverts, float* verts ) {
 
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( numverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
 	poly->next = warpface->polys;
-	poly->chain = NULL;
 	warpface->polys = poly;
 	poly->numverts = numverts;
 	for ( int i = 0; i < numverts; i++, verts += 3 ) {

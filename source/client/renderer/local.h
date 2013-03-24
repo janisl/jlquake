@@ -850,7 +850,6 @@ void RB_CheckOverflow( int verts, int indexes );
 void RB_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, byte* color );
 void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2 );
 
-extern mbrush29_glpoly_t* lightmap_polys[ MAX_LIGHTMAPS ];
 extern mbrush29_leaf_t* r_viewleaf;
 extern mbrush29_leaf_t* r_oldviewleaf;
 extern mbrush29_surface_t* waterchain;

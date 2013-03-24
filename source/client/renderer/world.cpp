@@ -409,8 +409,6 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 		}
 	}
 
-	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
-
 	//
 	// draw texture
 	//
@@ -725,8 +723,6 @@ void R_DrawWorldQ1() {
 
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
-
-	Com_Memset( lightmap_polys, 0, sizeof ( lightmap_polys ) );
 
 	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
 }

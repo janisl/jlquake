@@ -20,8 +20,6 @@
 #include "../../common/strings.h"
 #include "../../common/content_types.h"
 
-mbrush29_glpoly_t* lightmap_polys[ MAX_LIGHTMAPS ];
-
 mbrush29_leaf_t* r_viewleaf;
 mbrush29_leaf_t* r_oldviewleaf;
 
@@ -242,7 +240,6 @@ static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
 	//
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( lnumverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
 	poly->next = fa->polys;
-	poly->chain = NULL;
 	fa->polys = poly;
 	poly->numverts = lnumverts;
 
@@ -449,13 +446,6 @@ static bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBun
 static void R_RenderDynamicLightmaps( mbrush29_surface_t* fa ) {
 	c_brush_polys++;
 
-	if ( fa->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB ) ) {
-		return;
-	}
-
-	fa->polys->chain = lightmap_polys[ fa->lightmaptexturenum ];
-	lightmap_polys[ fa->lightmaptexturenum ] = fa->polys;
-
 	// check for lightmap modification
 	for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && fa->styles[ maps ] != 255; maps++ ) {
 		if ( tr.refdef.lightstyles[ fa->styles[ maps ] ].rgb[ 0 ] * 256 != fa->cached_light[ maps ] ) {
@@ -496,6 +486,32 @@ dynamic:
 			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
 			R_BuildLightMapQ1( fa, base, overbrightBase, BLOCK_WIDTH * 4 );
 		}
+	}
+
+	int i = fa->lightmaptexturenum;
+	if ( lightmap_modified[ i ] ) {
+		GL_Bind( tr.lightmaps[ i ] );
+		lightmap_modified[ i ] = false;
+		glRect_t* theRect = &lightmap_rectchange[ i ];
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
+			BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+			lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
+		theRect->l = BLOCK_WIDTH;
+		theRect->t = BLOCK_HEIGHT;
+		theRect->h = 0;
+		theRect->w = 0;
+	}
+	if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
+		GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
+		lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
+		glRect_t* theRect = &lightmap_rectchange[ i ];
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
+			BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+			lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
+		theRect->l = BLOCK_WIDTH;
+		theRect->t = BLOCK_HEIGHT;
+		theRect->h = 0;
+		theRect->w = 0;
 	}
 }
 
@@ -620,7 +636,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// normal lightmaped poly
 		//
-		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
 		int intensity = 255;
 		shaderStage_t stage1 = {};
@@ -655,7 +670,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// normal lightmaped poly
 		//
-		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
 		shaderStage_t stage1 = {};
 		stage1.stateBits = GLS_DEFAULT;
@@ -701,22 +715,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			GL_SelectTexture( 1 );
 			qglEnable( GL_TEXTURE_2D );
 
-			int i = s->lightmaptexturenum;
-			if ( lightmap_modified[ i ] ) {
-				GL_Bind( tr.lightmaps[ i ] );
-				lightmap_modified[ i ] = false;
-				glRect_t* theRect = &lightmap_rectchange[ i ];
-				qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-					BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-					lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-				theRect->l = BLOCK_WIDTH;
-				theRect->t = BLOCK_HEIGHT;
-				theRect->h = 0;
-				theRect->w = 0;
-			}
 			GL_State( GLS_DEFAULT );
 			float* v = p->verts[ 0 ];
-			for ( i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = 255;
 				tess.svars.colors[ i ][ 1 ] = 255;
 				tess.svars.colors[ i ][ 2 ] = 255;
@@ -741,19 +742,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
 				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
 
-				i = s->lightmaptexturenum;
-				if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
-					GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
-					lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
-					glRect_t* theRect = &lightmap_rectchange[ i ];
-					qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-						BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-						lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-					theRect->l = BLOCK_WIDTH;
-					theRect->t = BLOCK_HEIGHT;
-					theRect->h = 0;
-					theRect->w = 0;
-				}
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
 				GL_SelectTexture( 0 );

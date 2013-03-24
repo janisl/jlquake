@@ -100,7 +100,6 @@ struct mbrush29_texinfo_t {
 
 struct mbrush29_glpoly_t {
 	mbrush29_glpoly_t* next;
-	mbrush29_glpoly_t* chain;
 	int numverts;
 	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
