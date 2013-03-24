@@ -717,7 +717,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = intensity;
@@ -733,6 +732,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			EnableArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
+			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 			RB_IterateStagesGenericTemp( &tess, &stage1 );
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&

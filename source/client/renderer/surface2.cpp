@@ -461,6 +461,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ2( p );
+		R_BindAnimatedImage( &pStage->bundle[ 0 ] );
 		RB_IterateStagesGenericTemp( &tess, pStage );
 		tess.numIndexes = 0;
 		DisableArrays();
@@ -525,19 +526,20 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 
 	image_t* image = R_TextureAnimationQ2( fa->texinfo );
 
-	GL_Bind( image );
 
 	// warp texture, no lightmaps
 	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = image;
+	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEFAULT;
 	EmitWaterPolysQ2( fa, 255, &stage );
 }
 
 static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	shaderStage_t stage1 = {};
+	stage1.bundle[ 0 ].image[ 0 ] = image;
+	stage1.bundle[ 0 ].numImageAnimations = 1;
 	stage1.stateBits = GLS_DEFAULT;
-
-	GL_Bind( image );
 
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		DrawGLFlowingPoly( fa, 255 );
@@ -546,6 +548,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	}
 	EnableArrays( fa->polys->numverts );
 	EmitPolyIndexesQ2( fa->polys );
+	R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage1 );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -588,7 +591,8 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 		if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
 			shaderStage_t stage = {};
-			GL_Bind( surf->texinfo->image );
+			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
+			stage.bundle[ 0 ].numImageAnimations = 1;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
