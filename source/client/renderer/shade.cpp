@@ -185,7 +185,7 @@ SURFACE SHADERS
 =============================================================
 */
 
-void R_BindAnimatedImage( textureBundle_t* bundle ) {
+static void R_BindAnimatedImage( textureBundle_t* bundle ) {
 	if ( bundle->isVideoMap ) {
 		CIN_RunCinematic( bundle->videoMapHandle );
 		CIN_UploadCinematic( bundle->videoMapHandle );
@@ -421,6 +421,17 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 }
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+	if ( tess.shader->noFog && pStage->isFogged ) {
+		R_FogOn();
+	} else if ( tess.shader->noFog && !pStage->isFogged ) {
+		R_FogOff();	// turn it back off
+	} else {
+		// make sure it's on
+		R_FogOn();
+	}
+
+	GL_State( pStage->stateBits );
+
 	// this is an ugly hack to work around a GeForce driver
 	// bug with multitexture and clip planes
 	if ( backEnd.viewParms.isPortal ) {

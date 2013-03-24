@@ -713,7 +713,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shaderStage_t stage1 = {};
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 
-			GL_State( GLS_DEFAULT );
+			stage1.stateBits = GLS_DEFAULT;
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
 				tess.svars.colors[ i ][ 0 ] = 255;
@@ -739,7 +739,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			if ( r_drawOverBrights->integer ) {
 				shaderStage_t stage2 = {};
 				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
-				GL_State( GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
 
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
