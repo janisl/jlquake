@@ -636,18 +636,13 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	float* v;
 	mbrush38_glpoly_t* p;
 
-	GL_SelectTexture( 1 );
-	qglEnable( GL_TEXTURE_2D );
-
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
 	stage.bundle[ 1 ].numImageAnimations = 1;
 
-	GL_SelectTexture( 0 );
 	R_BindAnimatedImage( &stage.bundle[ 0 ] );
-	GL_SelectTexture( 1 );
 
 	p = surf->polys;
 	v = p->verts[ 0 ];

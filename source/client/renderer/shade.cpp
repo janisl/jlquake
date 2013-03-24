@@ -64,13 +64,8 @@ void EnableMultitexturedArrays( int numVertexes ) {
 	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-
-	GL_SelectTexture( 0 );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
-
-	GL_SelectTexture( 1 );
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	if ( qglLockArraysEXT && numVertexes ) {
 		qglLockArraysEXT( 0, numVertexes );
 		QGL_LogComment( "glLockArraysEXT\n" );
@@ -447,6 +442,14 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 }
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+
+	//
+	// lightmap/secondary pass
+	//
+	GL_SelectTexture( 1 );
+	qglEnable( GL_TEXTURE_2D );
+	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
 	if ( r_lightmap->integer ) {
 		GL_TexEnv( GL_REPLACE );
 	} else {
