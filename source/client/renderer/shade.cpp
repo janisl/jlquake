@@ -65,7 +65,9 @@ void EnableMultitexturedArrays( int numVertexes ) {
 	qglEnableClientState( GL_COLOR_ARRAY );
 	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	if ( setArraysOnce ) {
+		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	}
 	if ( qglLockArraysEXT && numVertexes ) {
 		qglLockArraysEXT( 0, numVertexes );
 		QGL_LogComment( "glLockArraysEXT\n" );
@@ -442,6 +444,18 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 }
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+	// this is an ugly hack to work around a GeForce driver
+	// bug with multitexture and clip planes
+	if ( backEnd.viewParms.isPortal ) {
+		qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	}
+
+	//
+	// base
+	//
+	GL_SelectTexture( 0 );
+	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
+	R_BindAnimatedImage( &pStage->bundle[ 0 ] );
 
 	//
 	// lightmap/secondary pass

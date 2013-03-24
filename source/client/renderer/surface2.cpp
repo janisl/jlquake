@@ -642,8 +642,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
 	stage.bundle[ 1 ].numImageAnimations = 1;
 
-	R_BindAnimatedImage( &stage.bundle[ 0 ] );
-
 	p = surf->polys;
 	v = p->verts[ 0 ];
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
@@ -681,6 +679,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 	}
 	EmitPolyIndexesQ2( p );
+	setArraysOnce = false;
 	EnableMultitexturedArrays( p->numverts );
 	DrawMultitexturedTemp( &tess, &stage );
 	DisableMultitexturedArrays();

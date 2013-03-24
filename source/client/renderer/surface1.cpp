@@ -712,7 +712,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			// Binds world to texture env 0
 			shaderStage_t stage1 = {};
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 
 			GL_State( GLS_DEFAULT );
 			float* v = p->verts[ 0 ];
@@ -732,6 +731,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EmitPolyIndexesQ1( p );
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
+			setArraysOnce = false;
 			EnableMultitexturedArrays( p->numverts );
 			DrawMultitexturedTemp( &tess, &stage1 );
 			DisableMultitexturedArrays();
@@ -743,7 +743,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
-				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
+				setArraysOnce = false;
 				EnableMultitexturedArrays( p->numverts );
 				DrawMultitexturedTemp( &tess, &stage2 );
 				DisableMultitexturedArrays();
