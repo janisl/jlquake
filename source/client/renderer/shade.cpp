@@ -546,6 +546,15 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 }
 
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+			//
+			// set state
+			//
+			if ( pStage->bundle[ 0 ].vertexLightmap && r_vertexLight->integer && !r_uiFullScreen->integer && r_lightmap->integer ) {
+				GL_Bind( tr.whiteImage );
+			} else {
+				R_BindAnimatedImage( &pStage->bundle[ 0 ] );
+			}
+
 			// Ridah, per stage fogging (detail textures)
 			if ( tess.shader->noFog && pStage->isFogged ) {
 				R_FogOn();

@@ -579,7 +579,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.bundle[ 0 ].image[ 0 ] = cmd->image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

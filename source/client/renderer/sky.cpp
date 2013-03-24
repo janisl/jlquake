@@ -179,7 +179,6 @@ void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage ) {
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
-		R_BindAnimatedImage( &pStage->bundle[ 0 ] );
 		RB_IterateStagesGenericTemp( &tess, pStage );
 		tess.numIndexes = 0;
 		DisableArrays();

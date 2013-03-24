@@ -152,7 +152,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	} else   {
 		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
 	}
-	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

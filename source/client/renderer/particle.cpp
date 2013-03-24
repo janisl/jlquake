@@ -121,7 +121,6 @@ static void R_DrawParticleTriangles() {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
 			EnableArrays( tess.numVertexes );
-			R_BindAnimatedImage( &stage.bundle[ 0 ] );
 			RB_IterateStagesGenericTemp( &tess, &stage );
 			DisableArrays();
 			tess.numVertexes = 0;
@@ -154,7 +153,6 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		EnableArrays( tess.numVertexes );
-		R_BindAnimatedImage( &stage.bundle[ 0 ] );
 		RB_IterateStagesGenericTemp( &tess, &stage );
 		DisableArrays();
 		tess.numVertexes = 0;

@@ -366,7 +366,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();

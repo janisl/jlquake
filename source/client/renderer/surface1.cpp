@@ -562,7 +562,6 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		}
 		EnableArrays( p->numverts );
 		EmitPolyIndexesQ1( p );
-		R_BindAnimatedImage( &stage.bundle[ 0 ] );
 		RB_IterateStagesGenericTemp( &tess, &stage );
 		tess.numIndexes = 0;
 		DisableArrays();
@@ -580,7 +579,6 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	EnableArrays( p->numverts );
 	EmitPolyIndexesQ1( p );
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	RB_IterateStagesGenericTemp( &tess, &stage );
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -732,7 +730,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			}
 			EnableArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
-			R_BindAnimatedImage( &stage1.bundle[ 0 ] );
 			RB_IterateStagesGenericTemp( &tess, &stage1 );
 
 			if ( !( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) &&
@@ -751,7 +748,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 				stage2.bundle[ 0 ].numImageAnimations = 1;
 				stage2.bundle[ 0 ].isLightmap = true;
-				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
 				RB_IterateStagesGenericTemp( &tess, &stage2 );
 			}
 			tess.numIndexes = 0;
