@@ -579,7 +579,7 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		RB_IterateStagesGenericTemp( &tess, &stage );
+		RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 		tess.numIndexes = 0;
 		DisableArrays();
 	}
@@ -597,7 +597,7 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = false;
 	EnableArrays( p->numverts );
-	RB_IterateStagesGenericTemp( &tess, &stage );
+	RB_IterateStagesGenericTemp( &tess, &stage, 2 );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -626,7 +626,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].image[ 0 ] = tr.solidskytexture;
 		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage1.stateBits = GLS_DEFAULT;
-		EmitSkyPolys( s, &stage1 );
+		EmitSkyPolys( s, &stage1, 0 );
 
 		speedscale = backEnd.refdef.floatTime * 16;
 		speedscale -= ( int )speedscale & ~127;
@@ -634,7 +634,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage2.bundle[ 0 ].image[ 0 ] = tr.alphaskytexture;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
 		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		EmitSkyPolys( s, &stage2 );
+		EmitSkyPolys( s, &stage2, 1 );
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 		//
 		// normal lightmaped poly
@@ -666,7 +666,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		RB_IterateStagesGenericTemp( &tess, &stage1 );
+		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		tess.numIndexes = 0;
 		DisableArrays();
 	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
@@ -696,7 +696,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = false;
 		EnableArrays( p->numverts );
-		RB_IterateStagesGenericTemp( &tess, &stage1 );
+		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		DisableArrays();
 		tess.numIndexes = 0;
 
@@ -735,7 +735,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
 			tess.xstages[ 0 ] = &stage1;
-			DrawMultitextured( &tess, 0 );
+			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 			DisableArrays();
 
 			if ( r_drawOverBrights->integer ) {
@@ -748,7 +748,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				setArraysOnce = false;
 				EnableArrays( p->numverts );
 				tess.xstages[ 1 ] = &stage2;
-				DrawMultitextured( &tess, 1 );
+				RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 				DisableArrays();
 			}
 			tess.numIndexes = 0;
@@ -773,7 +773,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EmitPolyIndexesQ1( p );
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
-			RB_IterateStagesGenericTemp( &tess, &stage1 );
+			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 			DisableArrays();
 
 			v = p->verts[ 0 ];
@@ -792,7 +792,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage2.bundle[ 0 ].isLightmap = true;
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
-			RB_IterateStagesGenericTemp( &tess, &stage2 );
+			RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 			tess.numIndexes = 0;
 			DisableArrays();
 		}

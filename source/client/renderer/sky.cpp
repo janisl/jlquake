@@ -149,7 +149,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 	}
 }
 
-void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage ) {
+void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage, int stage ) {
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -180,7 +180,7 @@ void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = false;
 		EnableArrays( p->numverts );
-		RB_IterateStagesGenericTemp( &tess, pStage );
+		RB_IterateStagesGenericTemp( &tess, pStage, stage );
 		tess.numIndexes = 0;
 		DisableArrays();
 	}

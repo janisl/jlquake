@@ -580,7 +580,7 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( 4 );
-	RB_IterateStagesGenericTemp( &tess, &stage );
+	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	DisableArrays();
 

@@ -700,7 +700,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	setArraysOnce = true;
 	EnableArrays( paliashdr->poseverts );
-	RB_IterateStagesGenericTemp( &tess, pStage );
+	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -745,7 +745,7 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( paliashdr->poseverts );
-	RB_IterateStagesGenericTemp( &tess, &stage );
+	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	DisableArrays();
 	qglPopMatrix();

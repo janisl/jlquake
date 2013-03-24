@@ -462,7 +462,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		EmitPolyIndexesQ2( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		RB_IterateStagesGenericTemp( &tess, pStage );
+		RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 		tess.numIndexes = 0;
 		DisableArrays();
 	}
@@ -549,7 +549,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	EmitPolyIndexesQ2( fa->polys );
 	setArraysOnce = false;
 	EnableArrays( fa->polys->numverts );
-	RB_IterateStagesGenericTemp( &tess, &stage1 );
+	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -569,7 +569,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	stage2.bundle[ 0 ].isLightmap = true;
 	setArraysOnce = false;
 	EnableArrays( fa->polys->numverts );
-	RB_IterateStagesGenericTemp( &tess, &stage2 );
+	RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -603,7 +603,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			setArraysOnce = true;
 			EnableArrays( surf->polys->numverts );
-			RB_IterateStagesGenericTemp( &tess, &stage );
+			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			tess.numIndexes = 0;
 			DisableArrays();
 		}
@@ -682,7 +682,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( p->numverts );
 	tess.xstages[ 0 ] = &stage;
-	DrawMultitextured( &tess, 0 );
+	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 	tess.numIndexes = 0;
 }

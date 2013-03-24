@@ -365,7 +365,7 @@ void RB_BeginSurface( shader_t* shader, int fogNum ) {
 //
 //	t0 = most upstream according to spec
 //	t1 = most downstream according to spec
-void DrawMultitextured( shaderCommands_t* input, int stage ) {
+static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	shaderStage_t* pStage = tess.xstages[ stage ];
 
 	if ( tess.shader->noFog && pStage->isFogged ) {
@@ -513,7 +513,13 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	}
 }
 
-void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage, int stage ) {
+		//
+		// do multitexture
+		//
+		if ( pStage->bundle[ 1 ].image[ 0 ] != 0 ) {
+			DrawMultitextured( input, stage );
+		} else {
 			if ( !setArraysOnce ) {
 				qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
 			}
@@ -577,6 +583,7 @@ void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage
 			// draw
 			//
 			R_DrawElements( input->numIndexes, input->indexes );
+		}
 }
 
 //	Perform dynamic lighting with another rendering pass
