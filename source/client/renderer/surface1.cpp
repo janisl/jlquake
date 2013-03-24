@@ -735,7 +735,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
 			tess.xstages[ 0 ] = &stage1;
-			DrawMultitexturedTemp( &tess, 0 );
+			DrawMultitextured( &tess, 0 );
 			DisableArrays();
 
 			if ( r_drawOverBrights->integer ) {
@@ -748,7 +748,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				setArraysOnce = false;
 				EnableArrays( p->numverts );
 				tess.xstages[ 1 ] = &stage2;
-				DrawMultitexturedTemp( &tess, 1 );
+				DrawMultitextured( &tess, 1 );
 				DisableArrays();
 			}
 			tess.numIndexes = 0;

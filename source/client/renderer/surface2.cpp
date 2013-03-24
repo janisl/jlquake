@@ -682,7 +682,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( p->numverts );
 	tess.xstages[ 0 ] = &stage;
-	DrawMultitexturedTemp( &tess, 0 );
+	DrawMultitextured( &tess, 0 );
 	DisableArrays();
 	tess.numIndexes = 0;
 }

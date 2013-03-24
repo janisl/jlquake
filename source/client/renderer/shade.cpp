@@ -365,62 +365,7 @@ void RB_BeginSurface( shader_t* shader, int fogNum ) {
 //
 //	t0 = most upstream according to spec
 //	t1 = most downstream according to spec
-static void DrawMultitextured( shaderCommands_t* input, int stage ) {
-	shaderStage_t* pStage = tess.xstages[ stage ];
-
-	if ( tess.shader->noFog && pStage->isFogged ) {
-		R_FogOn();
-	} else if ( tess.shader->noFog && !pStage->isFogged ) {
-		R_FogOff();	// turn it back off
-	} else {
-		// make sure it's on
-		R_FogOn();
-	}
-
-	GL_State( pStage->stateBits );
-
-	// this is an ugly hack to work around a GeForce driver
-	// bug with multitexture and clip planes
-	if ( backEnd.viewParms.isPortal ) {
-		qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	}
-
-	//
-	// base
-	//
-	GL_SelectTexture( 0 );
-	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
-	R_BindAnimatedImage( &pStage->bundle[ 0 ] );
-
-	//
-	// lightmap/secondary pass
-	//
-	GL_SelectTexture( 1 );
-	qglEnable( GL_TEXTURE_2D );
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	if ( r_lightmap->integer ) {
-		GL_TexEnv( GL_REPLACE );
-	} else {
-		GL_TexEnv( tess.shader->multitextureEnv );
-	}
-
-	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 1 ] );
-
-	R_BindAnimatedImage( &pStage->bundle[ 1 ] );
-
-	R_DrawElements( input->numIndexes, input->indexes );
-
-	//
-	// disable texturing on TEXTURE1, then select TEXTURE0
-	//
-	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglDisable( GL_TEXTURE_2D );
-
-	GL_SelectTexture( 0 );
-}
-
-void DrawMultitexturedTemp( shaderCommands_t* input, int stage ) {
+void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	shaderStage_t* pStage = tess.xstages[ stage ];
 
 	if ( tess.shader->noFog && pStage->isFogged ) {
