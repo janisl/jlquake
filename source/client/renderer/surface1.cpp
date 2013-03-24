@@ -730,12 +730,13 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.xyz[ i ][ 1 ] = v[ 1 ];
 				tess.xyz[ i ][ 2 ] = v[ 2 ];
 			}
-			EnableMultitexturedArrays( p->numverts );
 			EmitPolyIndexesQ1( p );
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
 			R_BindAnimatedImage( &stage1.bundle[ 1 ] );
+			EnableMultitexturedArrays( p->numverts );
 			DrawMultitexturedTemp( &tess, &stage1 );
+			DisableMultitexturedArrays();
 
 			if ( r_drawOverBrights->integer ) {
 				shaderStage_t stage2 = {};
@@ -744,17 +745,15 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
-				GL_SelectTexture( 0 );
 				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
 				GL_SelectTexture( 1 );
+				qglEnable( GL_TEXTURE_2D );
 				R_BindAnimatedImage( &stage2.bundle[ 1 ] );
+				EnableMultitexturedArrays( p->numverts );
 				DrawMultitexturedTemp( &tess, &stage2 );
+				DisableMultitexturedArrays();
 			}
 			tess.numIndexes = 0;
-			DisableMultitexturedArrays();
-
-			qglDisable( GL_TEXTURE_2D );
-			GL_SelectTexture( 0 );
 		} else {
 			shaderStage_t stage1 = {};
 			stage1.stateBits = GLS_DEFAULT;

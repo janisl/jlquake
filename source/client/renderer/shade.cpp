@@ -79,15 +79,12 @@ void EnableMultitexturedArrays( int numVertexes ) {
 }
 
 void DisableMultitexturedArrays() {
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	GL_SelectTexture( 0 );
 	qglDisableClientState( GL_COLOR_ARRAY );
 	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	if ( qglUnlockArraysEXT ) {
 		qglUnlockArraysEXT();
 		QGL_LogComment( "glUnlockArraysEXT\n" );
 	}
-	GL_SelectTexture( 1 );
 }
 
 //	This is just for OpenGL conformance testing, it should never be the fastest
@@ -452,6 +449,14 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
 	R_DrawElements( input->numIndexes, input->indexes );
+
+	//
+	// disable texturing on TEXTURE1, then select TEXTURE0
+	//
+	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	qglDisable( GL_TEXTURE_2D );
+
+	GL_SelectTexture( 0 );
 }
 
 static void RB_IterateStagesGeneric( shaderCommands_t* input ) {

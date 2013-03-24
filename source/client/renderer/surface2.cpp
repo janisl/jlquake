@@ -688,15 +688,11 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
 	}
-	EnableMultitexturedArrays( p->numverts );
 	EmitPolyIndexesQ2( p );
+	EnableMultitexturedArrays( p->numverts );
 	DrawMultitexturedTemp( &tess, &stage );
-	tess.numIndexes = 0;
 	DisableMultitexturedArrays();
-
-	GL_SelectTexture( 1 );
-	qglDisable( GL_TEXTURE_2D );
-	GL_SelectTexture( 0 );
+	tess.numIndexes = 0;
 }
 
 //	Draw water surfaces and windows.
