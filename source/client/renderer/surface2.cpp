@@ -628,6 +628,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 
 	shader_t shader = {};
 	tess.shader = &shader;
+	tess.xstages = shader.stages;
 	shader.multitextureEnv = GL_MODULATE;
 
 	int i, nv = surf->polys->numverts;
@@ -680,7 +681,8 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	setArraysOnce = false;
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( p->numverts );
-	DrawMultitexturedTemp( &tess, &stage );
+	tess.xstages[ 0 ] = &stage;
+	DrawMultitexturedTemp( &tess, 0 );
 	DisableArrays();
 	tess.numIndexes = 0;
 }

@@ -607,6 +607,7 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shader_t shader = {};
 	tess.shader = &shader;
+	tess.xstages = shader.stages;
 	GL_Cull( CT_FRONT_SIDED );
 
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
@@ -733,7 +734,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage1.bundle[ 1 ].numImageAnimations = 1;
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
-			DrawMultitexturedTemp( &tess, &stage1 );
+			tess.xstages[ 0 ] = &stage1;
+			DrawMultitexturedTemp( &tess, 0 );
 			DisableArrays();
 
 			if ( r_drawOverBrights->integer ) {
@@ -745,7 +747,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				stage2.bundle[ 1 ].numImageAnimations = 1;
 				setArraysOnce = false;
 				EnableArrays( p->numverts );
-				DrawMultitexturedTemp( &tess, &stage2 );
+				tess.xstages[ 1 ] = &stage2;
+				DrawMultitexturedTemp( &tess, 1 );
 				DisableArrays();
 			}
 			tess.numIndexes = 0;

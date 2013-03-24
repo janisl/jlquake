@@ -420,7 +420,9 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 	GL_SelectTexture( 0 );
 }
 
-void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+void DrawMultitexturedTemp( shaderCommands_t* input, int stage ) {
+	shaderStage_t* pStage = tess.xstages[ stage ];
+
 	if ( tess.shader->noFog && pStage->isFogged ) {
 		R_FogOn();
 	} else if ( tess.shader->noFog && !pStage->isFogged ) {
