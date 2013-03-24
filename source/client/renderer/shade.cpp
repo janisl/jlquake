@@ -71,7 +71,6 @@ void EnableMultitexturedArrays( int numVertexes ) {
 
 	GL_SelectTexture( 1 );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 1 ] );
 	if ( qglLockArraysEXT && numVertexes ) {
 		qglLockArraysEXT( 0, numVertexes );
 		QGL_LogComment( "glLockArraysEXT\n" );
@@ -448,6 +447,10 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 }
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 1 ] );
+
+	R_BindAnimatedImage( &pStage->bundle[ 1 ] );
+
 	R_DrawElements( input->numIndexes, input->indexes );
 
 	//

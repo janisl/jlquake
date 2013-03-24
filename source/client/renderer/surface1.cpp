@@ -733,7 +733,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EmitPolyIndexesQ1( p );
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
-			R_BindAnimatedImage( &stage1.bundle[ 1 ] );
 			EnableMultitexturedArrays( p->numverts );
 			DrawMultitexturedTemp( &tess, &stage1 );
 			DisableMultitexturedArrays();
@@ -748,7 +747,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				R_BindAnimatedImage( &stage2.bundle[ 0 ] );
 				GL_SelectTexture( 1 );
 				qglEnable( GL_TEXTURE_2D );
-				R_BindAnimatedImage( &stage2.bundle[ 1 ] );
 				EnableMultitexturedArrays( p->numverts );
 				DrawMultitexturedTemp( &tess, &stage2 );
 				DisableMultitexturedArrays();

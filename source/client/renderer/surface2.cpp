@@ -650,7 +650,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	GL_SelectTexture( 0 );
 	R_BindAnimatedImage( &stage.bundle[ 0 ] );
 	GL_SelectTexture( 1 );
-	R_BindAnimatedImage( &stage.bundle[ 1 ] );
 
 	p = surf->polys;
 	v = p->verts[ 0 ];
