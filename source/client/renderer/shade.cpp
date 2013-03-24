@@ -447,6 +447,12 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 }
 
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage ) {
+	if ( r_lightmap->integer ) {
+		GL_TexEnv( GL_REPLACE );
+	} else {
+		GL_TexEnv( tess.shader->multitextureEnv );
+	}
+
 	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 1 ] );
 
 	R_BindAnimatedImage( &pStage->bundle[ 1 ] );

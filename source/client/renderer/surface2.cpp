@@ -626,6 +626,10 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		return;
 	}
 
+	shader_t shader = {};
+	tess.shader = &shader;
+	shader.multitextureEnv = GL_MODULATE;
+
 	GL_State( GLS_DEFAULT );
 
 	int i, nv = surf->polys->numverts;
@@ -634,12 +638,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 
 	GL_SelectTexture( 1 );
 	qglEnable( GL_TEXTURE_2D );
-
-	if ( r_lightmap->value ) {
-		GL_TexEnv( GL_REPLACE );
-	} else {
-		GL_TexEnv( GL_MODULATE );
-	}
 
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = image;

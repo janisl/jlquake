@@ -605,6 +605,8 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
+	shader_t shader = {};
+	tess.shader = &shader;
 	GL_Cull( CT_FRONT_SIDED );
 
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
@@ -705,6 +707,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
 		if ( qglActiveTextureARB ) {
+			shader.multitextureEnv = GL_MODULATE;
 
 			// Binds world to texture env 0
 			GL_SelectTexture( 0 );
