@@ -648,13 +648,45 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		RB_IterateStagesGenericTemp( &tess, &stage1 );
 		tess.numIndexes = 0;
 		DisableArrays();
+	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+		//
+		// normal lightmaped poly
+		//
+		R_RenderDynamicLightmaps( s );
+		mbrush29_glpoly_t* p = s->polys;
+		shaderStage_t stage1 = {};
+		stage1.stateBits = GLS_DEFAULT;
+		// backEnd.currentEntity->abslight   0 - 255
+		int intensity = backEnd.currentEntity->e.absoluteLight * 255;
+
+		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
+		float* v = p->verts[ 0 ];
+		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			tess.svars.colors[ i ][ 0 ] = intensity;
+			tess.svars.colors[ i ][ 1 ] = intensity;
+			tess.svars.colors[ i ][ 2 ] = intensity;
+			tess.svars.colors[ i ][ 3 ] = 255;
+
+			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
+			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
+		}
+		EnableArrays( p->numverts );
+		EmitPolyIndexesQ1( p );
+		RB_IterateStagesGenericTemp( &tess, &stage1 );
+		DisableArrays();
+		tess.numIndexes = 0;
+
+		R_DrawFullBrightPoly( s );
 	} else {
 		//
 		// normal lightmaped poly
 		//
 		R_RenderDynamicLightmaps( s );
 		mbrush29_glpoly_t* p = s->polys;
-		if ( qglActiveTextureARB  && !( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
+		if ( qglActiveTextureARB ) {
 
 			// Binds world to texture env 0
 			GL_SelectTexture( 0 );
@@ -731,24 +763,17 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 			qglDisable( GL_TEXTURE_2D );
 			GL_SelectTexture( 0 );
-			R_DrawFullBrightPoly( s );
 		} else {
-			int alpha_val = 255;
-			int intensity = 255;
 			shaderStage_t stage1 = {};
 			stage1.stateBits = GLS_DEFAULT;
-			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-				// backEnd.currentEntity->abslight   0 - 255
-				intensity = backEnd.currentEntity->e.absoluteLight * 255;
-			}
 
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 			float* v = p->verts[ 0 ];
 			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				tess.svars.colors[ i ][ 0 ] = intensity;
-				tess.svars.colors[ i ][ 1 ] = intensity;
-				tess.svars.colors[ i ][ 2 ] = intensity;
-				tess.svars.colors[ i ][ 3 ] = alpha_val;
+				tess.svars.colors[ i ][ 0 ] = 255;
+				tess.svars.colors[ i ][ 1 ] = 255;
+				tess.svars.colors[ i ][ 2 ] = 255;
+				tess.svars.colors[ i ][ 3 ] = 255;
 
 				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
 				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
@@ -760,29 +785,26 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EmitPolyIndexesQ1( p );
 			RB_IterateStagesGenericTemp( &tess, &stage1 );
 
-			if ( !( 0 ) &&
-				!( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) ) {
-				v = p->verts[ 0 ];
-				for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-					tess.svars.colors[ i ][ 0 ] = 255;
-					tess.svars.colors[ i ][ 1 ] = 255;
-					tess.svars.colors[ i ][ 2 ] = 255;
-					tess.svars.colors[ i ][ 3 ] = 255;
-					tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
-					tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
-				}
-				shaderStage_t stage2 = {};
-				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-				stage2.bundle[ 0 ].numImageAnimations = 1;
-				stage2.bundle[ 0 ].isLightmap = true;
-				RB_IterateStagesGenericTemp( &tess, &stage2 );
+			v = p->verts[ 0 ];
+			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+				tess.svars.colors[ i ][ 0 ] = 255;
+				tess.svars.colors[ i ][ 1 ] = 255;
+				tess.svars.colors[ i ][ 2 ] = 255;
+				tess.svars.colors[ i ][ 3 ] = 255;
+				tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 5 ];
+				tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 6 ];
 			}
+			shaderStage_t stage2 = {};
+			stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+			stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+			stage2.bundle[ 0 ].numImageAnimations = 1;
+			stage2.bundle[ 0 ].isLightmap = true;
+			RB_IterateStagesGenericTemp( &tess, &stage2 );
 			tess.numIndexes = 0;
 			DisableArrays();
-
-			R_DrawFullBrightPoly( s );
 		}
+
+		R_DrawFullBrightPoly( s );
 	}
 }
 
