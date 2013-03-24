@@ -60,29 +60,6 @@ void DisableArrays() {
 	}
 }
 
-void EnableMultitexturedArrays( int numVertexes ) {
-	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
-	qglEnableClientState( GL_COLOR_ARRAY );
-	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	if ( setArraysOnce ) {
-		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
-	}
-	if ( qglLockArraysEXT && numVertexes ) {
-		qglLockArraysEXT( 0, numVertexes );
-		QGL_LogComment( "glLockArraysEXT\n" );
-	}
-}
-
-void DisableMultitexturedArrays() {
-	qglDisableClientState( GL_COLOR_ARRAY );
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		QGL_LogComment( "glUnlockArraysEXT\n" );
-	}
-}
-
 //	This is just for OpenGL conformance testing, it should never be the fastest
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
 	qglColor4ubv( tess.svars.colors[ index ] );

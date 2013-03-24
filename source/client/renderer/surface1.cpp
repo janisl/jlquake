@@ -732,9 +732,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
 			setArraysOnce = false;
-			EnableMultitexturedArrays( p->numverts );
+			EnableArrays( p->numverts );
 			DrawMultitexturedTemp( &tess, &stage1 );
-			DisableMultitexturedArrays();
+			DisableArrays();
 
 			if ( r_drawOverBrights->integer ) {
 				shaderStage_t stage2 = {};
@@ -744,9 +744,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
 				setArraysOnce = false;
-				EnableMultitexturedArrays( p->numverts );
+				EnableArrays( p->numverts );
 				DrawMultitexturedTemp( &tess, &stage2 );
-				DisableMultitexturedArrays();
+				DisableArrays();
 			}
 			tess.numIndexes = 0;
 		} else {

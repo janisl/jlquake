@@ -391,8 +391,6 @@ void R_BackupShaders();
 
 void EnableArrays( int numVertexes );
 void DisableArrays();
-void EnableMultitexturedArrays( int numVertexes );
-void DisableMultitexturedArrays();
 void R_BindAnimatedImage( textureBundle_t* bundle );
 void DrawMultitexturedTemp( shaderCommands_t* input, shaderStage_t* pStage );
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage );

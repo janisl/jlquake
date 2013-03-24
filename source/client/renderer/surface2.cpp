@@ -680,9 +680,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	EmitPolyIndexesQ2( p );
 	setArraysOnce = false;
-	EnableMultitexturedArrays( p->numverts );
+	EnableArrays( p->numverts );
 	DrawMultitexturedTemp( &tess, &stage );
-	DisableMultitexturedArrays();
+	DisableArrays();
 	tess.numIndexes = 0;
 }
 
