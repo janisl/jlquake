@@ -515,6 +515,20 @@ static void RB_Set2DVertexCoords( const stretchPicCommand_t* cmd, int numVerts )
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 }
 
+static void RB_Set2DTextureCoords( const stretchPicCommand_t* cmd, int numVerts ) {
+	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
+	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
+
+	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
+	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
+
+	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
+	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
+
+	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
+	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
+}
+
 static void RB_Set2DIndexes( int numVerts, int numIndexes ) {
 	tess.indexes[ numIndexes ] = numVerts + 3;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
@@ -538,49 +552,42 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	RB_BeginSurface( tr.defaultShader, 0 );
 
 	RB_Set2DVertexCoords( cmd, 0 );
+	RB_Set2DTextureCoords( cmd, 0 );
 
 	tess.svars.colors[ 0 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 0 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 0 ][ 2 ] = cmd->b * 255;
 	tess.svars.colors[ 0 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.texcoords[ 0 ][ 0 ][ 0 ] = cmd->s1;
-	tess.svars.texcoords[ 0 ][ 0 ][ 1 ] = cmd->t1;
-
 	tess.svars.colors[ 1 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 1 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 1 ][ 2 ] = cmd->b * 255;
 	tess.svars.colors[ 1 ][ 3 ] = cmd->a * 255;
-
-	tess.svars.texcoords[ 0 ][ 1 ][ 0 ] = cmd->s2;
-	tess.svars.texcoords[ 0 ][ 1 ][ 1 ] = cmd->t1;
 
 	tess.svars.colors[ 2 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 2 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 2 ][ 2 ] = cmd->b * 255;
 	tess.svars.colors[ 2 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.texcoords[ 0 ][ 2 ][ 0 ] = cmd->s2;
-	tess.svars.texcoords[ 0 ][ 2 ][ 1 ] = cmd->t2;
-
 	tess.svars.colors[ 3 ][ 0 ] = cmd->r * 255;
 	tess.svars.colors[ 3 ][ 1 ] = cmd->g * 255;
 	tess.svars.colors[ 3 ][ 2 ] = cmd->b * 255;
 	tess.svars.colors[ 3 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.texcoords[ 0 ][ 3 ][ 0 ] = cmd->s1;
-	tess.svars.texcoords[ 0 ][ 3 ][ 1 ] = cmd->t2;
-
 	RB_Set2DIndexes( 0, 0 );
 
 	tess.numIndexes = 6;
+	tess.numVertexes = 4;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = cmd->image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( 4 );
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
+	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -618,18 +625,7 @@ static const void* RB_StretchPic( const void* data ) {
 				*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )backEnd.color2D;
 
 	RB_Set2DVertexCoords( cmd, numVerts );
-
-	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
-
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
-
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
+	RB_Set2DTextureCoords( cmd, numVerts );
 
 	return ( const void* )( cmd + 1 );
 }
@@ -666,18 +662,7 @@ static const void* RB_StretchPicGradient( const void* data ) {
 		*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )cmd->gradientColor;
 
 	RB_Set2DVertexCoords( cmd, numVerts );
-
-	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
-
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
-
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
-
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
+	RB_Set2DTextureCoords( cmd, numVerts );
 
 	return ( const void* )( cmd + 1 );
 }
@@ -717,32 +702,22 @@ static const void* RB_RotatedPic( const void* data ) {
 	tess.xyz[ numVerts ][ 1 ] = cmd->y + ( sin( angle ) * cmd->h );
 	tess.xyz[ numVerts ][ 2 ] = 0;
 
-	tess.texCoords[ numVerts ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts ][ 0 ][ 1 ] = cmd->t1;
-
 	angle = cmd->angle * idMath::TWO_PI + 0.25 * idMath::TWO_PI;
 	tess.xyz[ numVerts + 1 ][ 0 ] = cmd->x + ( cos( angle ) * cmd->w );
 	tess.xyz[ numVerts + 1 ][ 1 ] = cmd->y + ( sin( angle ) * cmd->h );
 	tess.xyz[ numVerts + 1 ][ 2 ] = 0;
-
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = cmd->t1;
 
 	angle = cmd->angle * idMath::TWO_PI + 0.50 * idMath::TWO_PI;
 	tess.xyz[ numVerts + 2 ][ 0 ] = cmd->x + ( cos( angle ) * cmd->w );
 	tess.xyz[ numVerts + 2 ][ 1 ] = cmd->y + ( sin( angle ) * cmd->h );
 	tess.xyz[ numVerts + 2 ][ 2 ] = 0;
 
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = cmd->t2;
-
 	angle = cmd->angle * idMath::TWO_PI + 0.75 * idMath::TWO_PI;
 	tess.xyz[ numVerts + 3 ][ 0 ] = cmd->x + ( cos( angle ) * cmd->w );
 	tess.xyz[ numVerts + 3 ][ 1 ] = cmd->y + ( sin( angle ) * cmd->h );
 	tess.xyz[ numVerts + 3 ][ 2 ] = 0;
 
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
+	RB_Set2DTextureCoords( cmd, numVerts );
 
 	return ( const void* )( cmd + 1 );
 }
