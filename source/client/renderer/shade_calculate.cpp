@@ -1423,6 +1423,18 @@ static void RB_CalcTurbulentTexCoords( const waveForm_t* wf, float* st ) {
 	}
 }
 
+static void RB_CalcOldTurbulentTexCoords( const waveForm_t* wf, float* st ) {
+	float now = wf->phase + tess.shaderTime * wf->frequency;
+
+	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
+		float s = st[ 0 ];
+		float t = st[ 1 ];
+
+		st[ 0 ] = s + tr.sinTable[ idMath::FtoiFast( ( t * 8 / idMath::TWO_PI + now ) * FUNCTABLE_SIZE ) & FUNCTABLE_MASK ] * wf->amplitude;
+		st[ 1 ] = t + tr.sinTable[ idMath::FtoiFast( ( s * 8 / idMath::TWO_PI + now ) * FUNCTABLE_SIZE ) & FUNCTABLE_MASK ] * wf->amplitude;
+	}
+}
+
 static void RB_CalcScrollTexCoords( const float scrollSpeed[ 2 ], float* st ) {
 	float timeScale = tess.shaderTime;
 
@@ -1561,6 +1573,11 @@ void ComputeTexCoords( shaderStage_t* pStage ) {
 
 			case TMOD_TURBULENT:
 				RB_CalcTurbulentTexCoords( &pStage->bundle[ b ].texMods[ tm ].wave,
+					( float* )tess.svars.texcoords[ b ] );
+				break;
+
+			case TMOD_TURBULENT_OLD:
+				RB_CalcOldTurbulentTexCoords( &pStage->bundle[ b ].texMods[ tm ].wave,
 					( float* )tess.svars.texcoords[ b ] );
 				break;
 

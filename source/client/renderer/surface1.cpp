@@ -526,17 +526,6 @@ void EmitPolyIndexesQ1( mbrush29_glpoly_t* p ) {
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
 }
 
-static void ApplyTurbSinQ1() {
-	float* st = tess.svars.texcoords[ 0 ][ 0 ];
-	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
-		float s = st[ 0 ];
-		float t = st[ 1 ];
-
-		st[ 0 ] = s + tr.sinTable[ idMath::FtoiFast( ( t * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 8.0f;
-		st[ 1 ] = t + tr.sinTable[ idMath::FtoiFast( ( s * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 8.0f;
-	}
-}
-
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	shaderStage_t stage = {};
@@ -548,9 +537,15 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		stage.stateBits = GLS_DEFAULT;
 		alpha = 255;
 	}
+	texModInfo_t texmod = {};
+	texmod.type = TMOD_TURBULENT_OLD;
+	texmod.wave.frequency = 1.0f / idMath::TWO_PI;
+	texmod.wave.amplitude = 1.0f / 8.0f;
 	stage.bundle[ 0 ].image[ 0 ] = fa->texinfo->texture->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.bundle[ 0 ].texMods = &texmod;
+	stage.bundle[ 0 ].numTexMods = 1;
 	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
@@ -569,7 +564,6 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( &stage );
-		ApplyTurbSinQ1();
 		RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;

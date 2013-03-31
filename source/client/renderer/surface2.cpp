@@ -445,19 +445,14 @@ static void FlowingWaterPolyQ2(mbrush38_glpoly_t* p ) {
 	}
 }
 
-static void ApplyTurbSinQ2() {
-	float* st = tess.svars.texcoords[ 0 ][ 0 ];
-	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
-		float s = st[ 0 ];
-		float t = st[ 1 ];
-
-		st[ 0 ] = s + tr.sinTable[ idMath::FtoiFast( ( t * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 16.0f;
-		st[ 1 ] = t + tr.sinTable[ idMath::FtoiFast( ( s * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 16.0f;
-	}
-}
-
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
 static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* pStage ) {
+	texModInfo_t texmods[2] = {};
+	texmods[0].type = TMOD_TURBULENT_OLD;
+	texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
+	texmods[0].wave.amplitude = 1.0f / 16.0f;
+	pStage->bundle[ 0 ].texMods = texmods;
+	pStage->bundle[ 0 ].numTexMods = 1;
 	for ( mbrush38_glpoly_t* bp = fa->polys; bp; bp = bp->next ) {
 		mbrush38_glpoly_t* p = bp;
 
@@ -478,7 +473,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( pStage );
-		ApplyTurbSinQ2();
 		if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 			FlowingWaterPolyQ2( p );
 		}
