@@ -210,8 +210,8 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 			lerp[ 1 ] += normal[ 1 ] * POWERSUIT_SCALE;
 			lerp[ 2 ] += normal[ 2 ] * POWERSUIT_SCALE;
 		}
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
+		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
 	}
 }
 
@@ -261,11 +261,13 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		skin = tr.defaultImage;	// fallback...
 	}
 
+	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = skin;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	} else {
@@ -273,8 +275,10 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	}
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	DisableArrays();
 }
 
@@ -300,16 +304,20 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	}
 
 	GL_Cull( CT_FRONT_SIDED );
+	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	DisableArrays();
 }
 

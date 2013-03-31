@@ -679,8 +679,8 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	}
 
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
+		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
 
 		// normals and vertexes come from the frame list
 		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
@@ -696,12 +696,15 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
 	}
 
+	tess.numVertexes = paliashdr->poseverts;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	setArraysOnce = true;
 	EnableArrays( paliashdr->poseverts );
+	ComputeTexCoords( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	DisableArrays();
 }
 
@@ -720,8 +723,6 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		tess.svars.colors[ i ][ 1 ] = 0;
 		tess.svars.colors[ i ][ 2 ] = 0;
 		tess.svars.colors[ i ][ 3 ] = 127;
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = paliashdr->texCoords[ i ].y;
 
 		// normals and vertexes come from the frame list
 		vec3_t point;
@@ -737,16 +738,20 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
+	tess.numVertexes = paliashdr->poseverts;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( paliashdr->poseverts );
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	DisableArrays();
 	qglPopMatrix();
 }
@@ -913,6 +918,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		stage2.bundle[ 0 ].numImageAnimations = 4;
 		stage2.bundle[ 0 ].imageAnimationSpeed = 10;
 	}
+	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 
 	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false, &stage1 );
 
@@ -929,6 +936,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		stage3.bundle[ 0 ].image[ 3 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 3 ];
 		stage3.bundle[ 0 ].numImageAnimations = 4;
 		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
+		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false, &stage3 );
 	}

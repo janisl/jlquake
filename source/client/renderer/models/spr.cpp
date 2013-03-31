@@ -309,8 +309,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.svars.colors[ numVerts ][ 1 ] = 255;
 	tess.svars.colors[ numVerts ][ 2 ] = 255;
 	tess.svars.colors[ numVerts ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ numVerts ][ 0 ] = 0;
-	tess.svars.texcoords[ 0 ][ numVerts ][ 1 ] = 1;
+	tess.texCoords[ numVerts ][ 0 ][ 0 ] = 0;
+	tess.texCoords[ numVerts ][ 0 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->left, right, point );
 	tess.xyz[ numVerts ][ 0 ] = point[ 0 ];
@@ -321,8 +321,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.svars.colors[ numVerts + 1 ][ 1 ] = 255;
 	tess.svars.colors[ numVerts + 1 ][ 2 ] = 255;
 	tess.svars.colors[ numVerts + 1 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 0 ] = 0;
-	tess.svars.texcoords[ 0 ][ numVerts + 1 ][ 1 ] = 0;
+	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = 0;
+	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->left, right, point );
 	tess.xyz[ numVerts + 1 ][ 0 ] = point[ 0 ];
@@ -333,8 +333,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.svars.colors[ numVerts + 2 ][ 1 ] = 255;
 	tess.svars.colors[ numVerts + 2 ][ 2 ] = 255;
 	tess.svars.colors[ numVerts + 2 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 0 ] = 1;
-	tess.svars.texcoords[ 0 ][ numVerts + 2 ][ 1 ] = 0;
+	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = 1;
+	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
 	VectorMA( point, frame->right, right, point );
 	tess.xyz[ numVerts + 2 ][ 0 ] = point[ 0 ];
@@ -345,8 +345,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.svars.colors[ numVerts + 3 ][ 1 ] = 255;
 	tess.svars.colors[ numVerts + 3 ][ 2 ] = 255;
 	tess.svars.colors[ numVerts + 3 ][ 3 ] = alpha;
-	tess.svars.texcoords[ 0 ][ numVerts + 3 ][ 0 ] = 1;
-	tess.svars.texcoords[ 0 ][ numVerts + 3 ][ 1 ] = 1;
+	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = 1;
+	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
 	VectorMA( point, frame->right, right, point );
 	tess.xyz[ numVerts + 3 ][ 0 ] = point[ 0 ];
@@ -361,13 +361,17 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
 
 	tess.numIndexes = 6;
+	tess.numVertexes = 4;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( 4 );
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	DisableArrays();
 }
