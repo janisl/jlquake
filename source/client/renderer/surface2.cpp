@@ -446,15 +446,13 @@ static void FlowingWaterPolyQ2(mbrush38_glpoly_t* p ) {
 }
 
 static void ApplyTurbSinQ2() {
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
-		float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
+	float* st = tess.svars.texcoords[ 0 ][ 0 ];
+	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
+		float s = st[ 0 ];
+		float t = st[ 1 ];
 
-		float s = os + r_turbsin[ idMath::FtoiFast( ( ot * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 128.0f;
-		float t = ot + r_turbsin[ idMath::FtoiFast( ( os * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 128.0f;
-
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
+		st[ 0 ] = s + tr.sinTable[ idMath::FtoiFast( ( t * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 16.0f;
+		st[ 1 ] = t + tr.sinTable[ idMath::FtoiFast( ( s * 8 + tess.shaderTime ) * ( FUNCTABLE_SIZE / idMath::TWO_PI ) ) & FUNCTABLE_MASK ] / 16.0f;
 	}
 }
 

@@ -636,9 +636,6 @@ extern vec3_t lightspot;
 extern int c_brush_polys;
 extern int c_alias_polys;
 
-#define TURBSCALE ( 256.0 / idMath::TWO_PI )
-extern float r_turbsin[ 256 ];
-
 extern int gl_NormalFontBase;
 
 extern glfog_t glfogsettings[ NUM_FOGS ];		// [0] never used (FOG_NONE)
