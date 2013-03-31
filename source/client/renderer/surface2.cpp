@@ -426,43 +426,67 @@ static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
 }
 
+static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
+	mbrush38_glpoly_t* p = fa->polys;
+
+	float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
+	if ( scroll == 0.0 ) {
+		scroll = -64.0;
+	}
+
+	for ( int i = 0; i < p->numverts; i++ ) {
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
+	}
+}
+
+static void FlowingWaterPolyQ2(mbrush38_glpoly_t* p ) {
+	float scroll = -( ( tr.refdef.floatTime * 0.5 ) - ( int )( tr.refdef.floatTime * 0.5 ) );
+
+	for ( int i = 0; i < p->numverts; i++ ) {
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
+	}
+}
+
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
 static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* pStage ) {
-	float scroll;
-	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-		scroll = -64 * ( ( tr.refdef.floatTime * 0.5 ) - ( int )( tr.refdef.floatTime * 0.5 ) );
-	} else {
-		scroll = 0;
-	}
 	for ( mbrush38_glpoly_t* bp = fa->polys; bp; bp = bp->next ) {
 		mbrush38_glpoly_t* p = bp;
 
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
-			float os = v[ 3 ];
-			float ot = v[ 4 ];
+			tess.svars.colors[ i ][ 0 ] = tr.identityLightByte;
+			tess.svars.colors[ i ][ 1 ] = tr.identityLightByte;
+			tess.svars.colors[ i ][ 2 ] = tr.identityLightByte;
+			tess.svars.colors[ i ][ 3 ] = alpha;
+			tess.xyz[ i ][ 0 ] = v[ 0 ];
+			tess.xyz[ i ][ 1 ] = v[ 1 ];
+			tess.xyz[ i ][ 2 ] = v[ 2 ];
+			tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
+			tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
+		}
+		tess.numVertexes = p->numverts;
+		EmitPolyIndexesQ2( p );
+		setArraysOnce = true;
+		EnableArrays( p->numverts );
+		ComputeTexCoords( pStage );
+		for ( int i = 0; i < p->numverts; i++ ) {
+			float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
+			float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
 
 			float s = os + r_turbsin[ idMath::FtoiFast( ( ( ot * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) ) & 255 ] * 0.5;
-			s += scroll;
 			s *= ( 1.0 / 64 );
 
 			float t = ot + r_turbsin[ idMath::FtoiFast( ( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) ) & 255 ] * 0.5;
 			t *= ( 1.0 / 64 );
 
-			tess.svars.colors[ i ][ 0 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 1 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 2 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 3 ] = alpha;
 			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
 			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
 		}
-		EmitPolyIndexesQ2( p );
-		setArraysOnce = true;
-		EnableArrays( p->numverts );
+		if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
+			FlowingWaterPolyQ2( p );
+		}
 		RB_IterateStagesGenericTemp( &tess, pStage, 0 );
+		tess.numVertexes = 0;
 		tess.numIndexes = 0;
 		DisableArrays();
 	}
@@ -475,34 +499,11 @@ static void DrawGLPolyQ2( mbrush38_glpoly_t* p, int alpha ) {
 		tess.svars.colors[ i ][ 1 ] = 255;
 		tess.svars.colors[ i ][ 2 ] = 255;
 		tess.svars.colors[ i ][ 3 ] = alpha;
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
 		tess.xyz[ i ][ 0 ] = v[ 0 ];
 		tess.xyz[ i ][ 1 ] = v[ 1 ];
 		tess.xyz[ i ][ 2 ] = v[ 2 ];
-	}
-}
-
-//	Version of DrawGLPolyQ2 that handles scrolling texture
-static void DrawGLFlowingPoly( mbrush38_surface_t* fa, int alpha ) {
-	mbrush38_glpoly_t* p = fa->polys;
-
-	float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
-	if ( scroll == 0.0 ) {
-		scroll = -64.0;
-	}
-
-	float* v = p->verts[ 0 ];
-	for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = alpha;
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
-		tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-		tess.xyz[ i ][ 0 ] = v[ 0 ];
-		tess.xyz[ i ][ 1 ] = v[ 1 ];
-		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
+		tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
 	}
 }
 
@@ -513,11 +514,11 @@ static void DrawGLPolyChainQ2( mbrush38_glpoly_t* p ) {
 		tess.svars.colors[ j ][ 1 ] = 255;
 		tess.svars.colors[ j ][ 2 ] = 255;
 		tess.svars.colors[ j ][ 3 ] = 255;
-		tess.svars.texcoords[ 0 ][ j ][ 0 ] = v[ 5 ];
-		tess.svars.texcoords[ 0 ][ j ][ 1 ] = v[ 6 ];
 		tess.xyz[ j ][ 0 ] = v[ 0 ];
 		tess.xyz[ j ][ 1 ] = v[ 1 ];
 		tess.xyz[ j ][ 2 ] = v[ 2 ];
+		tess.texCoords[ j ][ 0 ][ 0 ] = v[ 5 ];
+		tess.texCoords[ j ][ 0 ][ 1 ] = v[ 6 ];
 	}
 }
 
@@ -526,11 +527,11 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 
 	image_t* image = R_TextureAnimationQ2( fa->texinfo );
 
-
 	// warp texture, no lightmaps
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.stateBits = GLS_DEFAULT;
 	EmitWaterPolysQ2( fa, 255, &stage );
 }
@@ -541,15 +542,18 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	stage1.bundle[ 0 ].numImageAnimations = 1;
 	stage1.stateBits = GLS_DEFAULT;
 
-	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly( fa, 255 );
-	} else {
-		DrawGLPolyQ2( fa->polys, 255 );
-	}
+	tess.numVertexes = fa->polys->numverts;
+	DrawGLPolyQ2( fa->polys, 255 );
 	EmitPolyIndexesQ2( fa->polys );
 	setArraysOnce = false;
 	EnableArrays( fa->polys->numverts );
+	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	ComputeTexCoords( &stage1 );
+	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
+		DrawGLFlowingPoly( fa );
+	}
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
+	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 	DisableArrays();
 
@@ -565,11 +569,15 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	shaderStage_t stage2 = {};
 	stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ fa->lightmaptexturenum ];
 	stage2.bundle[ 0 ].numImageAnimations = 1;
+	stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
 	stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
 	stage2.bundle[ 0 ].isLightmap = true;
 	setArraysOnce = false;
+	tess.numVertexes = fa->polys->numverts;
 	EnableArrays( fa->polys->numverts );
+	ComputeTexCoords( &stage2 );
 	RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
+	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 	DisableArrays();
 }
@@ -592,19 +600,24 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			shaderStage_t stage = {};
 			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
 			stage.bundle[ 0 ].numImageAnimations = 1;
+			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
+			tess.numVertexes = surf->polys->numverts;
 			DrawGLPolyQ2( surf->polys, alpha );
 			EmitPolyIndexesQ2( surf->polys );
 			shaderStage_t stage = {};
 			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
 			stage.bundle[ 0 ].numImageAnimations = 1;
+			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			setArraysOnce = true;
 			EnableArrays( surf->polys->numverts );
+			ComputeTexCoords( &stage );
 			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			tess.numIndexes = 0;
+			tess.numVertexes = 0;
 			DisableArrays();
 		}
 		return;
@@ -638,52 +651,39 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
 	stage.bundle[ 1 ].numImageAnimations = 1;
+	stage.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
 
 	p = surf->polys;
 	v = p->verts[ 0 ];
-	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-		float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
-		if ( scroll == 0.0 ) {
-			scroll = -64.0;
-		}
-
-		for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-			tess.svars.colors[ i ][ 0 ] = 255;
-			tess.svars.colors[ i ][ 1 ] = 255;
-			tess.svars.colors[ i ][ 2 ] = 255;
-			tess.svars.colors[ i ][ 3 ] = 255;
-			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ] + scroll;
-			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-			tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
-		}
-	} else {
-		for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
-			tess.svars.colors[ i ][ 0 ] = 255;
-			tess.svars.colors[ i ][ 1 ] = 255;
-			tess.svars.colors[ i ][ 2 ] = 255;
-			tess.svars.colors[ i ][ 3 ] = 255;
-			tess.svars.texcoords[ 0 ][ i ][ 0 ] = v[ 3 ];
-			tess.svars.texcoords[ 0 ][ i ][ 1 ] = v[ 4 ];
-			tess.svars.texcoords[ 1 ][ i ][ 0 ] = v[ 5 ];
-			tess.svars.texcoords[ 1 ][ i ][ 1 ] = v[ 6 ];
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
-		}
+	for ( i = 0; i < nv; i++, v += BRUSH38_VERTEXSIZE ) {
+		tess.svars.colors[ i ][ 0 ] = 255;
+		tess.svars.colors[ i ][ 1 ] = 255;
+		tess.svars.colors[ i ][ 2 ] = 255;
+		tess.svars.colors[ i ][ 3 ] = 255;
+		tess.xyz[ i ][ 0 ] = v[ 0 ];
+		tess.xyz[ i ][ 1 ] = v[ 1 ];
+		tess.xyz[ i ][ 2 ] = v[ 2 ];
+		tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
+		tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
+		tess.texCoords[ i ][ 1 ][ 0 ] = v[ 5 ];
+		tess.texCoords[ i ][ 1 ][ 1 ] = v[ 6 ];
 	}
+	tess.numVertexes = p->numverts;
 	EmitPolyIndexesQ2( p );
 	setArraysOnce = false;
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( p->numverts );
 	tess.xstages[ 0 ] = &stage;
+	ComputeTexCoords( &stage );
+	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
+		DrawGLFlowingPoly( surf );
+	}
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
+	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 }
 
