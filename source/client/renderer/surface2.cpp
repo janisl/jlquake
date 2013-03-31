@@ -426,15 +426,13 @@ static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
 }
 
-static void DrawGLFlowingPoly( mbrush38_surface_t* fa ) {
-	mbrush38_glpoly_t* p = fa->polys;
-
+static void DrawGLFlowingPoly() {
 	float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
 	if ( scroll == 0.0 ) {
 		scroll = -64.0;
 	}
 
-	for ( int i = 0; i < p->numverts; i++ ) {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
 	}
 }
@@ -444,6 +442,19 @@ static void FlowingWaterPolyQ2(mbrush38_glpoly_t* p ) {
 
 	for ( int i = 0; i < p->numverts; i++ ) {
 		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
+	}
+}
+
+static void ApplyTurbSinQ2() {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
+		float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
+
+		float s = os + r_turbsin[ idMath::FtoiFast( ( ot * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 128.0f;
+		float t = ot + r_turbsin[ idMath::FtoiFast( ( os * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 128.0f;
+
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
 	}
 }
 
@@ -469,19 +480,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( pStage );
-		for ( int i = 0; i < p->numverts; i++ ) {
-			float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
-			float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
-
-			float s = os + r_turbsin[ idMath::FtoiFast( ( ( ot * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) ) & 255 ] * 0.5;
-			s *= ( 1.0 / 64 );
-
-			float t = ot + r_turbsin[ idMath::FtoiFast( ( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) ) & 255 ] * 0.5;
-			t *= ( 1.0 / 64 );
-
-			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
-			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
-		}
+		ApplyTurbSinQ2();
 		if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 			FlowingWaterPolyQ2( p );
 		}
@@ -550,7 +549,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	ComputeTexCoords( &stage1 );
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly( fa );
+		DrawGLFlowingPoly();
 	}
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	tess.numVertexes = 0;
@@ -679,7 +678,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	tess.xstages[ 0 ] = &stage;
 	ComputeTexCoords( &stage );
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly( surf );
+		DrawGLFlowingPoly();
 	}
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();

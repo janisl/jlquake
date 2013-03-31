@@ -14,44 +14,18 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
 
-// MACROS ------------------------------------------------------------------
-
 #define SUBDIVIDE_SIZE  64
-
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte* mod_base;
 
 static mbrush38_surface_t* warpface;
 
 static byte mod_novis[ BSP38MAX_MAP_LEAFS / 8 ];
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	Mod_LoadLighting
-//
-//==========================================================================
 
 static void Mod_LoadLighting( bsp38_lump_t* l ) {
 	if ( !l->filelen ) {
@@ -61,12 +35,6 @@ static void Mod_LoadLighting( bsp38_lump_t* l ) {
 	loadmodel->brush38_lightdata = new byte[ l->filelen ];
 	Com_Memcpy( loadmodel->brush38_lightdata, mod_base + l->fileofs, l->filelen );
 }
-
-//==========================================================================
-//
-//	Mod_LoadVisibility
-//
-//==========================================================================
 
 static void Mod_LoadVisibility( bsp38_lump_t* l ) {
 	if ( !l->filelen ) {
@@ -82,12 +50,6 @@ static void Mod_LoadVisibility( bsp38_lump_t* l ) {
 		loadmodel->brush38_vis->bitofs[ i ][ 1 ] = LittleLong( loadmodel->brush38_vis->bitofs[ i ][ 1 ] );
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadVertexes
-//
-//==========================================================================
 
 static void Mod_LoadVertexes( bsp38_lump_t* l ) {
 	bsp38_dvertex_t* in = ( bsp38_dvertex_t* )( mod_base + l->fileofs );
@@ -107,12 +69,6 @@ static void Mod_LoadVertexes( bsp38_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadEdges
-//
-//==========================================================================
-
 static void Mod_LoadEdges( bsp38_lump_t* l ) {
 	bsp38_dedge_t* in = ( bsp38_dedge_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -131,12 +87,6 @@ static void Mod_LoadEdges( bsp38_lump_t* l ) {
 		out->v[ 1 ] = ( unsigned short )LittleShort( in->v[ 1 ] );
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadTexinfo
-//
-//==========================================================================
 
 static void Mod_LoadTexinfo( bsp38_lump_t* l ) {
 	bsp38_texinfo_t* in = ( bsp38_texinfo_t* )( mod_base + l->fileofs );
@@ -181,14 +131,7 @@ static void Mod_LoadTexinfo( bsp38_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	CalcSurfaceExtents
-//
 //	Fills in s->texturemins[] and s->extents[]
-//
-//==========================================================================
-
 static void CalcSurfaceExtents( mbrush38_surface_t* s ) {
 	float mins[ 2 ];
 	mins[ 0 ] = mins[ 1 ] = 999999;
@@ -230,12 +173,6 @@ static void CalcSurfaceExtents( mbrush38_surface_t* s ) {
 	}
 }
 
-//==========================================================================
-//
-//	BoundPoly
-//
-//==========================================================================
-
 static void BoundPoly( int numverts, float* verts, vec3_t mins, vec3_t maxs ) {
 	ClearBounds( mins, maxs );
 	float* v = verts;
@@ -243,12 +180,6 @@ static void BoundPoly( int numverts, float* verts, vec3_t mins, vec3_t maxs ) {
 		AddPointToBounds( v, mins, maxs );
 	}
 }
-
-//==========================================================================
-//
-//	SubdividePolygon
-//
-//==========================================================================
 
 static void SubdividePolygon( int numverts, float* verts ) {
 	if ( numverts > 60 ) {
@@ -324,8 +255,8 @@ static void SubdividePolygon( int numverts, float* verts ) {
 	float total_t = 0;
 	for ( int i = 0; i < numverts; i++, verts += 3 ) {
 		VectorCopy( verts, poly->verts[ i + 1 ] );
-		float s = DotProduct( verts, warpface->texinfo->vecs[ 0 ] );
-		float t = DotProduct( verts, warpface->texinfo->vecs[ 1 ] );
+		float s = DotProduct( verts, warpface->texinfo->vecs[ 0 ] ) / 64.0f;
+		float t = DotProduct( verts, warpface->texinfo->vecs[ 1 ] ) / 64.0f;
 
 		total_s += s;
 		total_t += t;
@@ -343,15 +274,8 @@ static void SubdividePolygon( int numverts, float* verts ) {
 	Com_Memcpy( poly->verts[ numverts + 1 ], poly->verts[ 1 ], sizeof ( poly->verts[ 0 ] ) );
 }
 
-//==========================================================================
-//
-//	GL_SubdivideSurface
-//
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
-//
-//==========================================================================
-
 static void GL_SubdivideSurface( mbrush38_surface_t* fa ) {
 	warpface = fa;
 
@@ -375,12 +299,6 @@ static void GL_SubdivideSurface( mbrush38_surface_t* fa ) {
 
 	SubdividePolygon( numverts, verts[ 0 ] );
 }
-
-//==========================================================================
-//
-//	GL_BuildPolygonFromSurface
-//
-//==========================================================================
 
 static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 	// reconstruct the polygon
@@ -443,12 +361,6 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 	poly->numverts = lnumverts;
 
 }
-
-//==========================================================================
-//
-//	Mod_LoadFaces
-//
-//==========================================================================
 
 static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	bsp38_dface_t* in = ( bsp38_dface_t* )( mod_base + l->fileofs );
@@ -525,12 +437,6 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	GL_EndBuildingLightmaps();
 }
 
-//==========================================================================
-//
-//	Mod_SetParent
-//
-//==========================================================================
-
 static void Mod_SetParent( mbrush38_node_t* node, mbrush38_node_t* parent ) {
 	node->parent = parent;
 	if ( node->contents != -1 ) {
@@ -539,12 +445,6 @@ static void Mod_SetParent( mbrush38_node_t* node, mbrush38_node_t* parent ) {
 	Mod_SetParent( node->children[ 0 ], node );
 	Mod_SetParent( node->children[ 1 ], node );
 }
-
-//==========================================================================
-//
-//	Mod_LoadNodes
-//
-//==========================================================================
 
 static void Mod_LoadNodes( bsp38_lump_t* l ) {
 	bsp38_dnode_t* in = ( bsp38_dnode_t* )( mod_base + l->fileofs );
@@ -584,12 +484,6 @@ static void Mod_LoadNodes( bsp38_lump_t* l ) {
 	Mod_SetParent( loadmodel->brush38_nodes, NULL );	// sets nodes and leafs
 }
 
-//==========================================================================
-//
-//	Mod_LoadLeafs
-//
-//==========================================================================
-
 static void Mod_LoadLeafs( bsp38_lump_t* l ) {
 	bsp38_dleaf_t* in = ( bsp38_dleaf_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -620,12 +514,6 @@ static void Mod_LoadLeafs( bsp38_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	Mod_LoadMarksurfaces
-//
-//==========================================================================
-
 static void Mod_LoadMarksurfaces( bsp38_lump_t* l ) {
 	short* in = ( short* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -645,12 +533,6 @@ static void Mod_LoadMarksurfaces( bsp38_lump_t* l ) {
 		out[ i ] = loadmodel->brush38_surfaces + j;
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadSurfedges
-//
-//==========================================================================
 
 static void Mod_LoadSurfedges( bsp38_lump_t* l ) {
 	int* in = ( int* )( mod_base + l->fileofs );
@@ -672,12 +554,6 @@ static void Mod_LoadSurfedges( bsp38_lump_t* l ) {
 		out[ i ] = LittleLong( in[ i ] );
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadPlanes
-//
-//==========================================================================
 
 static void Mod_LoadPlanes( bsp38_lump_t* l ) {
 	bsp38_dplane_t* in = ( bsp38_dplane_t* )( mod_base + l->fileofs );
@@ -702,12 +578,6 @@ static void Mod_LoadPlanes( bsp38_lump_t* l ) {
 		SetPlaneSignbits( out );
 	}
 }
-
-//==========================================================================
-//
-//	Mod_LoadSubmodels
-//
-//==========================================================================
 
 static void Mod_LoadSubmodels( bsp38_lump_t* l ) {
 	bsp38_dmodel_t* in = ( bsp38_dmodel_t* )( mod_base + l->fileofs );
@@ -734,12 +604,6 @@ static void Mod_LoadSubmodels( bsp38_lump_t* l ) {
 		out->visleafs = 0;
 	}
 }
-
-//==========================================================================
-//
-//	Mod_FreeBsp38
-//
-//==========================================================================
 
 void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
 	Com_Memset( mod_novis, 0xff, sizeof ( mod_novis ) );
@@ -809,12 +673,6 @@ void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
 	}
 }
 
-//==========================================================================
-//
-//	Mod_FreeBsp38
-//
-//==========================================================================
-
 void Mod_FreeBsp38( model_t* mod ) {
 	if ( mod->name[ 0 ] == '*' ) {
 		return;
@@ -845,12 +703,6 @@ void Mod_FreeBsp38( model_t* mod ) {
 	delete[] mod->brush38_planes;
 	delete[] mod->brush38_submodels;
 }
-
-//==========================================================================
-//
-//	Mod_DecompressVis
-//
-//==========================================================================
 
 static byte* Mod_DecompressVis( byte* in, model_t* model ) {
 	static byte decompressed[ BSP38MAX_MAP_LEAFS / 8 ];
@@ -884,24 +736,12 @@ static byte* Mod_DecompressVis( byte* in, model_t* model ) {
 	return decompressed;
 }
 
-//==========================================================================
-//
-//	Mod_ClusterPVS
-//
-//==========================================================================
-
 byte* Mod_ClusterPVS( int cluster, model_t* model ) {
 	if ( cluster == -1 || !model->brush38_vis ) {
 		return mod_novis;
 	}
 	return Mod_DecompressVis( ( byte* )model->brush38_vis + model->brush38_vis->bitofs[ cluster ][ BSP38DVIS_PVS ], model );
 }
-
-//==========================================================================
-//
-//	Mod_PointInLeafQ2
-//
-//==========================================================================
 
 mbrush38_leaf_t* Mod_PointInLeafQ2( vec3_t p, model_t* model ) {
 	if ( !model || !model->brush38_nodes ) {

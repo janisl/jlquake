@@ -451,8 +451,8 @@ static void SubdividePolygon( int numverts, float* verts ) {
 	poly->numverts = numverts;
 	for ( int i = 0; i < numverts; i++, verts += 3 ) {
 		VectorCopy( verts, poly->verts[ i ] );
-		float s = DotProduct( verts, warpface->texinfo->vecs[ 0 ] );
-		float t = DotProduct( verts, warpface->texinfo->vecs[ 1 ] );
+		float s = DotProduct( verts, warpface->texinfo->vecs[ 0 ] ) / 64.0f;
+		float t = DotProduct( verts, warpface->texinfo->vecs[ 1 ] ) / 64.0f;
 		poly->verts[ i ][ 3 ] = s;
 		poly->verts[ i ][ 4 ] = t;
 	}

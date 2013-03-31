@@ -526,6 +526,19 @@ void EmitPolyIndexesQ1( mbrush29_glpoly_t* p ) {
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
 }
 
+static void ApplyTurbSinQ1() {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
+		float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
+
+		float s = os + r_turbsin[ idMath::FtoiFast( ( ot * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 64.0f;
+		float t = ot + r_turbsin[ idMath::FtoiFast( ( os * 8 + tess.shaderTime ) * TURBSCALE ) & 255 ] / 64.0f;
+
+		tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
+		tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
+	}
+}
+
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	shaderStage_t stage = {};
@@ -558,19 +571,7 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( &stage );
-		for ( int i = 0; i < p->numverts; i++ ) {
-			float os = tess.svars.texcoords[ 0 ][ i ][ 0 ];
-			float ot = tess.svars.texcoords[ 0 ][ i ][ 1 ];
-
-			float s = os + r_turbsin[ ( int )( ( ot * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) & 255 ];
-			s *= ( 1.0 / 64 );
-
-			float t = ot + r_turbsin[ ( int )( ( os * 0.125 + tr.refdef.floatTime ) * TURBSCALE ) & 255 ];
-			t *= ( 1.0 / 64 );
-
-			tess.svars.texcoords[ 0 ][ i ][ 0 ] = s;
-			tess.svars.texcoords[ 0 ][ i ][ 1 ] = t;
-		}
+		ApplyTurbSinQ1();
 		RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
