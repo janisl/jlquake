@@ -39,10 +39,10 @@ bool setArraysOnce;
 
 void EnableArrays( int numVertexes ) {
 	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
-	qglEnableClientState( GL_COLOR_ARRAY );
-	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	if ( setArraysOnce ) {
+		qglEnableClientState( GL_COLOR_ARRAY );
+		qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
 		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
 	}
 	if ( qglLockArraysEXT && numVertexes ) {
@@ -514,6 +514,11 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 }
 
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage, int stage ) {
+		if ( !setArraysOnce ) {
+			qglEnableClientState( GL_COLOR_ARRAY );
+			qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, input->svars.colors );
+		}
+
 		//
 		// do multitexture
 		//
