@@ -426,25 +426,6 @@ static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
 	tess.numIndexes = ( p->numverts - 2 ) * 3;
 }
 
-static void DrawGLFlowingPoly() {
-	float scroll = -64 * ( ( tr.refdef.floatTime / 40.0 ) - ( int )( tr.refdef.floatTime / 40.0 ) );
-	if ( scroll == 0.0 ) {
-		scroll = -64.0;
-	}
-
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
-	}
-}
-
-static void FlowingWaterPolyQ2(mbrush38_glpoly_t* p ) {
-	float scroll = -( ( tr.refdef.floatTime * 0.5 ) - ( int )( tr.refdef.floatTime * 0.5 ) );
-
-	for ( int i = 0; i < p->numverts; i++ ) {
-		tess.svars.texcoords[ 0 ][ i ][ 0 ] += scroll;
-	}
-}
-
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
 static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* pStage ) {
 	texModInfo_t texmods[2] = {};
@@ -453,6 +434,11 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	texmods[0].wave.amplitude = 1.0f / 16.0f;
 	pStage->bundle[ 0 ].texMods = texmods;
 	pStage->bundle[ 0 ].numTexMods = 1;
+	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
+		texmods[ 1 ].type = TMOD_SCROLL;
+		texmods[ 1 ].scroll[ 0 ] = -0.5;
+		pStage->bundle[ 0 ].numTexMods = 2;
+	}
 	for ( mbrush38_glpoly_t* bp = fa->polys; bp; bp = bp->next ) {
 		mbrush38_glpoly_t* p = bp;
 
@@ -473,9 +459,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( pStage );
-		if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-			FlowingWaterPolyQ2( p );
-		}
 		RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -529,6 +512,7 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 
 static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	shaderStage_t stage1 = {};
+	texModInfo_t texmod = {};
 	stage1.bundle[ 0 ].image[ 0 ] = image;
 	stage1.bundle[ 0 ].numImageAnimations = 1;
 	stage1.stateBits = GLS_DEFAULT;
@@ -539,10 +523,13 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	setArraysOnce = false;
 	EnableArrays( fa->polys->numverts );
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	ComputeTexCoords( &stage1 );
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly();
+		texmod.type = TMOD_SCROLL;
+		texmod.scroll[ 0 ] = -1.6;
+		stage1.bundle[ 0 ].texMods = &texmod;
+		stage1.bundle[ 0 ].numTexMods = 1;
 	}
+	ComputeTexCoords( &stage1 );
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
@@ -640,6 +627,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	mbrush38_glpoly_t* p;
 
 	shaderStage_t stage = {};
+	texModInfo_t texmod = {};
 	stage.bundle[ 0 ].image[ 0 ] = image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
@@ -668,10 +656,13 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( p->numverts );
 	tess.xstages[ 0 ] = &stage;
-	ComputeTexCoords( &stage );
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-		DrawGLFlowingPoly();
+		texmod.type = TMOD_SCROLL;
+		texmod.scroll[ 0 ] = -1.6;
+		stage.bundle[ 0 ].texMods = &texmod;
+		stage.bundle[ 0 ].numTexMods = 1;
 	}
+	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 	tess.numVertexes = 0;
