@@ -68,7 +68,6 @@ static mesh1hdr_t* paliashdr;
 static idMdlVertexRemap vertexorder[ 8192 ];
 static int numorder;
 
-static int lastposenum;
 static float shadelight;
 static float ambientlight;
 static float model_constant_alpha;
@@ -695,44 +694,21 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	}
 }
 
-static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
-	lastposenum = posenum;
-
-	dmdl_trivertx_t* verts = paliashdr->posedata;
-	verts += posenum * paliashdr->poseverts;
-
-	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
-		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
-		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
-		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
-		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
-		tess.normal[ i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
-		tess.normal[ i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
-		tess.normal[ i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
-	}
-
-	tess.numVertexes = paliashdr->poseverts;
+static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
 	CalcMdlColours( overBrights, fullBrigts );
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
 	}
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	setArraysOnce = true;
-	EnableArrays( paliashdr->poseverts );
+	EnableArrays( tess.numVertexes );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
 	DisableArrays();
 }
 
-static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
+static void GL_DrawAliasShadow() {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = 0;
-	dmdl_trivertx_t* verts = paliashdr->posedata;
-	verts += posenum * paliashdr->poseverts;
 
 	height = -lheight + 1.0;
 
@@ -741,12 +717,12 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	shadevector[ 2 ] = 1;
 	VectorNormalize( shadevector );
 
-	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		// normals and vertexes come from the frame list
 		vec3_t point;
-		point[ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
-		point[ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
-		point[ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
+		point[ 0 ] = tess.xyz[ i ][ 0 ];
+		point[ 1 ] = tess.xyz[ i ][ 1 ];
+		point[ 2 ] = tess.xyz[ i ][ 2 ];
 
 		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
 		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
@@ -756,9 +732,6 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
-	tess.numVertexes = paliashdr->poseverts;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -768,29 +741,12 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	stage.alphaGen = AGEN_CONST;
 	stage.constantColor[ 3 ] = 127;
 	setArraysOnce = true;
-	EnableArrays( paliashdr->poseverts );
+	EnableArrays( tess.numVertexes );
 	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();
-}
-
-static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
-	if ( frame >= paliashdr->numframes || frame < 0 ) {
-		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", frame );
-		frame = 0;
-	}
-
-	int pose = paliashdr->frames[ frame ].firstpose;
-	int numposes = paliashdr->frames[ frame ].numposes;
-
-	if ( numposes > 1 ) {
-		float interval = paliashdr->frames[ frame ].interval;
-		pose += ( int )( tr.refdef.floatTime / interval ) % numposes;
-	}
-
-	GL_DrawAliasFrame( paliashdr, pose, fullBrigts, overBrights, pStage );
 }
 
 float R_CalcEntityLight( refEntity_t* e ) {
@@ -839,50 +795,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
-void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	//
-	// get lighting information
-	//
-	ambientlight = shadelight = R_CalcEntityLight( &ent->e );
-
-	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
-		r_lightlevel->value = ambientlight;
-	}
-
-	// clamp lighting so it doesn't overbright as much
-	if ( ambientlight > 128 ) {
-		ambientlight = 128;
-	}
-	if ( ambientlight + shadelight > 192 ) {
-		shadelight = 192 - ambientlight;
-	}
-
-	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
-
-	// ZOID: never allow players to go totally black
-	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
-		if ( ambientlight < 8 ) {
-			ambientlight = shadelight = 8;
-		}
-	}
-
-	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
-	}
-
-	shadelight = shadelight / 200.0;
-
-	// transform the direction to local space
-	float lightDir[3] = {1, 0, 1};
-	VectorNormalize( lightDir );
-	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
-	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
-	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
-
-	c_alias_polys += paliashdr->numtris;
-
+static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel, int pose ) {
 	//
 	// draw all the triangles
 	//
@@ -940,11 +853,11 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 
-	R_SetupAliasFrame( ent->e.frame, paliashdr, false, false, &stage1 );
+	GL_DrawAliasFrame( false, false, &stage1 );
 
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		R_SetupAliasFrame( ent->e.frame, paliashdr, false, true, &stage2 );
+		GL_DrawAliasFrame( false, true, &stage2 );
 	}
 
 	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
@@ -957,15 +870,98 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		R_SetupAliasFrame( ent->e.frame, paliashdr, true, false, &stage3 );
+		GL_DrawAliasFrame( true, false, &stage3 );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+}
+
+static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {
+		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", ent->e.frame );
+		ent->e.frame = 0;
+	}
+
+	int posenum = paliashdr->frames[ ent->e.frame ].firstpose;
+	int numposes = paliashdr->frames[ ent->e.frame ].numposes;
+
+	if ( numposes > 1 ) {
+		float interval = paliashdr->frames[ ent->e.frame ].interval;
+		posenum += ( int )( tr.refdef.floatTime / interval ) % numposes;
+	}
+
+	dmdl_trivertx_t* verts = paliashdr->posedata;
+	verts += posenum * paliashdr->poseverts;
+
+	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
+		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
+		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
+		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
+		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
+		tess.normal[ i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
+		tess.normal[ i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
+		tess.normal[ i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
+	}
+	tess.numVertexes = paliashdr->poseverts;
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+}
+
+void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
+	//
+	// get lighting information
+	//
+	ambientlight = shadelight = R_CalcEntityLight( &ent->e );
+
+	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
+		r_lightlevel->value = ambientlight;
+	}
+
+	// clamp lighting so it doesn't overbright as much
+	if ( ambientlight > 128 ) {
+		ambientlight = 128;
+	}
+	if ( ambientlight + shadelight > 192 ) {
+		shadelight = 192 - ambientlight;
+	}
+
+	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
+
+	// ZOID: never allow players to go totally black
+	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
+		if ( ambientlight < 8 ) {
+			ambientlight = shadelight = 8;
+		}
+	}
+
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
+	}
+
+	shadelight = shadelight / 200.0;
+
+	// transform the direction to local space
+	float lightDir[3] = {1, 0, 1};
+	VectorNormalize( lightDir );
+	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
+	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
+	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
+
+	c_alias_polys += paliashdr->numtris;
+
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
+
+	R_DrawBaseMdlSurface( ent, paliashdr, clmodel, posenum );
 
 	if ( r_shadows->value ) {
-		GL_DrawAliasShadow( paliashdr, lastposenum );
+		GL_DrawAliasShadow();
 	}
 }
 
