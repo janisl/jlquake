@@ -155,7 +155,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	}
 	setArraysOnce = true;
 	EnableArrays( 4 );
-	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

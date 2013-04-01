@@ -458,7 +458,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		EmitPolyIndexesQ2( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		ComputeTexCoords( pStage );
 		RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -529,7 +528,6 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 		stage1.bundle[ 0 ].texMods = &texmod;
 		stage1.bundle[ 0 ].numTexMods = 1;
 	}
-	ComputeTexCoords( &stage1 );
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
@@ -553,7 +551,6 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	setArraysOnce = false;
 	tess.numVertexes = fa->polys->numverts;
 	EnableArrays( fa->polys->numverts );
-	ComputeTexCoords( &stage2 );
 	RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
@@ -592,7 +589,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			setArraysOnce = true;
 			EnableArrays( surf->polys->numverts );
-			ComputeTexCoords( &stage );
 			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
@@ -662,7 +658,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		stage.bundle[ 0 ].texMods = &texmod;
 		stage.bundle[ 0 ].numTexMods = 1;
 	}
-	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 	tess.numVertexes = 0;

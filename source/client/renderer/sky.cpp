@@ -163,7 +163,6 @@ void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage, int stage ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = false;
 		EnableArrays( p->numverts );
-		ComputeTexCoords( pStage );
 		RB_IterateStagesGenericTemp( &tess, pStage, stage );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

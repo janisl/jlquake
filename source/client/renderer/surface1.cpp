@@ -563,7 +563,6 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		ComputeTexCoords( &stage );
 		RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -596,7 +595,6 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = false;
 	EnableArrays( p->numverts );
-	ComputeTexCoords( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 2 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -678,7 +676,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = true;
 		EnableArrays( p->numverts );
-		ComputeTexCoords( &stage1 );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -712,7 +709,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		EmitPolyIndexesQ1( p );
 		setArraysOnce = false;
 		EnableArrays( p->numverts );
-		ComputeTexCoords( &stage1 );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		DisableArrays();
 		tess.numIndexes = 0;
@@ -756,7 +752,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
 			tess.xstages[ 0 ] = &stage1;
-			ComputeTexCoords( &stage1 );
 			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 			DisableArrays();
 
@@ -771,7 +766,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				setArraysOnce = false;
 				EnableArrays( p->numverts );
 				tess.xstages[ 1 ] = &stage2;
-				ComputeTexCoords( &stage2 );
 				RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 				DisableArrays();
 			}
@@ -802,7 +796,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			EmitPolyIndexesQ1( p );
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
-			ComputeTexCoords( &stage1 );
 			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 			DisableArrays();
 
@@ -814,7 +807,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage1.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
 			setArraysOnce = false;
 			EnableArrays( p->numverts );
-			ComputeTexCoords( &stage2 );
 			RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
