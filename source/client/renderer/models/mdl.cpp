@@ -681,8 +681,13 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
 		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
 		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
+		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ];
+		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ];
+		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
+	}
 
-		// normals and vertexes come from the frame list
+	tess.numVertexes = paliashdr->poseverts;
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
 		if ( overBrights ) {
 			l -= 1;
@@ -691,12 +696,7 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		tess.svars.colors[ i ][ 1 ] = g * l;
 		tess.svars.colors[ i ][ 2 ] = b * l;
 		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
-		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ];
-		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ];
-		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
 	}
-
-	tess.numVertexes = paliashdr->poseverts;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	setArraysOnce = true;
@@ -718,11 +718,6 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	height = -lheight + 1.0;
 
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 0;
-		tess.svars.colors[ i ][ 1 ] = 0;
-		tess.svars.colors[ i ][ 2 ] = 0;
-		tess.svars.colors[ i ][ 3 ] = 127;
-
 		// normals and vertexes come from the frame list
 		vec3_t point;
 		point[ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
@@ -738,6 +733,12 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	}
 
 	tess.numVertexes = paliashdr->poseverts;
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = 0;
+		tess.svars.colors[ i ][ 1 ] = 0;
+		tess.svars.colors[ i ][ 2 ] = 0;
+		tess.svars.colors[ i ][ 3 ] = 127;
+	}
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};

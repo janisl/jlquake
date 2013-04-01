@@ -287,10 +287,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	float height = -lheight + 1.0;
 
 	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 0;
-		tess.svars.colors[ i ][ 1 ] = 0;
-		tess.svars.colors[ i ][ 2 ] = 0;
-		tess.svars.colors[ i ][ 3 ] = 127;
 		vec3_t point;
 		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
 
@@ -304,6 +300,12 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 
 	GL_Cull( CT_FRONT_SIDED );
 	tess.numVertexes = paliashdr->numVertexes;
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = 0;
+		tess.svars.colors[ i ][ 1 ] = 0;
+		tess.svars.colors[ i ][ 2 ] = 0;
+		tess.svars.colors[ i ][ 3 ] = 127;
+	}
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
