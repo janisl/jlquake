@@ -793,9 +793,12 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( r_shadows->value ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+	}
 }
 
-static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel, int pose ) {
+static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel ) {
 	//
 	// draw all the triangles
 	//
@@ -958,10 +961,10 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 
 	EmitMdlVertexesAndIndexes( ent, paliashdr );
 
-	R_DrawBaseMdlSurface( ent, paliashdr, clmodel, posenum );
-
-	if ( r_shadows->value ) {
+	if ( tess.shader == tr.shadowShader ) {
 		GL_DrawAliasShadow();
+	} else {
+		R_DrawBaseMdlSurface( ent, paliashdr, clmodel );
 	}
 }
 
