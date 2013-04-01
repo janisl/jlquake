@@ -1411,6 +1411,21 @@ static void RB_CalcFireRiseEnvTexCoords( float* st ) {
 	}
 }
 
+static void RB_CalcQuakeSkyTexCoords( float* st ) {
+	for ( int i = 0; i < tess.numVertexes; i++, st += 2 ) {
+		vec3_t dir;
+		VectorSubtract( tess.xyz[ i ], tr.viewParms.orient.origin, dir );
+		dir[ 2 ] *= 3;		// flatten the sphere
+
+		float length = dir[ 0 ] * dir[ 0 ] + dir[ 1 ] * dir[ 1 ] + dir[ 2 ] * dir[ 2 ];
+		length = sqrt( length );
+		length = 6 * 63 / length * ( 1.0 / 128 );
+
+		st[ 0 ] = dir[ 0 ] * length;
+		st[ 1 ] = dir[ 1 ] * length;
+	}
+}
+
 static void RB_CalcTurbulentTexCoords( const waveForm_t* wf, float* st ) {
 	float now = wf->phase + tess.shaderTime * wf->frequency;
 
@@ -1556,6 +1571,10 @@ void ComputeTexCoords( shaderStage_t* pStage ) {
 
 		case TCGEN_FIRERISEENV_MAPPED:
 			RB_CalcFireRiseEnvTexCoords( ( float* )tess.svars.texcoords[ b ] );
+			break;
+
+		case TCGEN_QUAKE_SKY:
+			RB_CalcQuakeSkyTexCoords( ( float* )tess.svars.texcoords[ b ] );
 			break;
 
 		case TCGEN_BAD:

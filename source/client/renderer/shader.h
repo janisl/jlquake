@@ -107,7 +107,8 @@ enum texCoordGen_t
 	TCGEN_ENVIRONMENT_MAPPED,
 	TCGEN_FIRERISEENV_MAPPED,
 	TCGEN_FOG,
-	TCGEN_VECTOR			// S and T from world coordinates
+	TCGEN_VECTOR,			// S and T from world coordinates
+	TCGEN_QUAKE_SKY,
 };
 
 enum colorGen_t

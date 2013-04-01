@@ -626,6 +626,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shaderStage_t stage1 = {};
 		stage1.bundle[ 0 ].image[ 0 ] = tr.solidskytexture;
 		stage1.bundle[ 0 ].numImageAnimations = 1;
+		stage1.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
 		stage1.stateBits = GLS_DEFAULT;
 		EmitSkyPolys( s, &stage1, 0 );
 
@@ -634,6 +635,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shaderStage_t stage2 = {};
 		stage2.bundle[ 0 ].image[ 0 ] = tr.alphaskytexture;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
+		stage2.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
 		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		EmitSkyPolys( s, &stage2, 1 );
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
