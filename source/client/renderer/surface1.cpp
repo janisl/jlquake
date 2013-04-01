@@ -644,49 +644,39 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		tess.numIndexes = 0;
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 		//
-		// normal lightmaped poly
+		// translucent poly
 		//
-		int intensity = 255;
 		shaderStage_t stage1 = {};
-		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		int alpha_val = r_wateralpha->value * 255;
 		if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-			// backEnd.currentEntity->abslight   0 - 255
-			intensity = backEnd.currentEntity->e.absoluteLight * 255;
+			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+		} else {
+			stage1.rgbGen = CGEN_IDENTITY;
 		}
-
+		stage1.alphaGen = AGEN_CONST;
+		stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
+		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		for ( int i = 0; i < tess.numVertexes; i++ ) {
-			tess.svars.colors[ i ][ 0 ] = intensity;
-			tess.svars.colors[ i ][ 1 ] = intensity;
-			tess.svars.colors[ i ][ 2 ] = intensity;
-			tess.svars.colors[ i ][ 3 ] = alpha_val;
-		}
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
+		ComputeColors( &stage1 );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		DisableArrays();
 	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		//
-		// normal lightmaped poly
+		// absolute light poly
 		//
 		shaderStage_t stage1 = {};
 		stage1.stateBits = GLS_DEFAULT;
-		// backEnd.currentEntity->abslight   0 - 255
-		int intensity = backEnd.currentEntity->e.absoluteLight * 255;
+		stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+		stage1.alphaGen = AGEN_IDENTITY;
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		for ( int i = 0; i < tess.numVertexes; i++ ) {
-			tess.svars.colors[ i ][ 0 ] = intensity;
-			tess.svars.colors[ i ][ 1 ] = intensity;
-			tess.svars.colors[ i ][ 2 ] = intensity;
-			tess.svars.colors[ i ][ 3 ] = 255;
-		}
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
+		ComputeColors( &stage1 );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		DisableArrays();
 

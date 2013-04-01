@@ -124,7 +124,8 @@ enum colorGen_t
 	CGEN_WAVEFORM,			// programmatically generated
 	CGEN_LIGHTING_DIFFUSE,
 	CGEN_FOG,				// standard fog
-	CGEN_CONST				// fixed color
+	CGEN_CONST,				// fixed color
+	CGEN_ENTITY_ABSOLUTE_LIGHT,
 };
 
 enum alphaGen_t

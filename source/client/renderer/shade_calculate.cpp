@@ -649,6 +649,24 @@ static void RB_CalcColorFromOneMinusEntity( byte* dstColors ) {
 	}
 }
 
+static void RB_CalcColorFromEntityAbsoluteLight( byte* dstColors ) {
+	if ( !backEnd.currentEntity ) {
+		return;
+	}
+
+	byte temp[ 4 ];
+	temp[ 0 ] = backEnd.currentEntity->e.absoluteLight * 255;
+	temp[ 1 ] = backEnd.currentEntity->e.absoluteLight * 255;
+	temp[ 2 ] = backEnd.currentEntity->e.absoluteLight * 255;
+	temp[ 3 ] = backEnd.currentEntity->e.absoluteLight * 255;	// this trashes alpha, but the AGEN block fixes it
+	int c = *( int* )temp;
+	int* pColors = ( int* )dstColors;
+
+	for ( int i = 0; i < tess.numVertexes; i++, pColors++ ) {
+		*pColors = c;
+	}
+}
+
 static void RB_CalcWaveAlpha( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
@@ -954,6 +972,10 @@ void ComputeColors( shaderStage_t* pStage ) {
 
 	case CGEN_ONE_MINUS_ENTITY:
 		RB_CalcColorFromOneMinusEntity( ( byte* )tess.svars.colors );
+		break;
+
+	case CGEN_ENTITY_ABSOLUTE_LIGHT:
+		RB_CalcColorFromEntityAbsoluteLight( ( byte* )tess.svars.colors );
 		break;
 	}
 
