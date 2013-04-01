@@ -215,30 +215,45 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 	}
 }
 
+static void CalcMd2Colours( dmd2_trivertx_t* v ) {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		float l = shadedots[ v[ i ].lightnormalindex ];
+
+		tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
+		tess.svars.colors[ i ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
+		tess.svars.colors[ i ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+	}
+}
+
+static void CalcMd2ShellColours( dmd2_trivertx_t* v ) {
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = md2_shadelight[ 0 ];
+		tess.svars.colors[ i ][ 1 ] = md2_shadelight[ 1 ];
+		tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
+	}
+}
+
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
 static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
+	tess.numVertexes = paliashdr->numVertexes;
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		CalcMd2ShellColours( v );
+	} else {
+		CalcMd2Colours( v );
+	}
+
 	int alpha;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
 	} else {
 		alpha = 255;
 	}
-
-	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
-		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-			tess.svars.colors[ i ][ 0 ] = md2_shadelight[ 0 ];
-			tess.svars.colors[ i ][ 1 ] = md2_shadelight[ 1 ];
-			tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
-			tess.svars.colors[ i ][ 3 ] = alpha;
-		} else {
-			float l = shadedots[ v[ i ].lightnormalindex ];
-
-			tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
-			tess.svars.colors[ i ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
-			tess.svars.colors[ i ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
-			tess.svars.colors[ i ][ 3 ] = alpha;
-		}
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.svars.colors[ i ][ 3 ] = alpha;
 	}
 
 	// select skin
@@ -261,9 +276,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		skin = tr.defaultImage;	// fallback...
 	}
 
-	tess.numVertexes = paliashdr->numVertexes;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = skin;
 	stage.bundle[ 0 ].numImageAnimations = 1;

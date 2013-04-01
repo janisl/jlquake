@@ -663,12 +663,7 @@ void Mod_FreeMdlModel( model_t* mod ) {
 	Mem_Free( pheader );
 }
 
-static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
-	lastposenum = posenum;
-
-	dmdl_trivertx_t* verts = paliashdr->posedata;
-	verts += posenum * paliashdr->poseverts;
-
+static void CalcMdlColours( dmdl_trivertx_t* verts, bool overBrights, bool fullBrigts ) {
 	int r, g, b;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
 		r = backEnd.currentEntity->e.shaderRGBA[ 0 ];
@@ -677,6 +672,23 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	} else {
 		r = g = b = 255;
 	}
+
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
+		if ( overBrights ) {
+			l -= 1;
+		}
+		tess.svars.colors[ i ][ 0 ] = r * l;
+		tess.svars.colors[ i ][ 1 ] = g * l;
+		tess.svars.colors[ i ][ 2 ] = b * l;
+	}
+}
+
+static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
+	lastposenum = posenum;
+
+	dmdl_trivertx_t* verts = paliashdr->posedata;
+	verts += posenum * paliashdr->poseverts;
 
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
 		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
@@ -687,14 +699,8 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	}
 
 	tess.numVertexes = paliashdr->poseverts;
+	CalcMdlColours( verts, overBrights, fullBrigts );
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
-		if ( overBrights ) {
-			l -= 1;
-		}
-		tess.svars.colors[ i ][ 0 ] = r * l;
-		tess.svars.colors[ i ][ 1 ] = g * l;
-		tess.svars.colors[ i ][ 2 ] = b * l;
 		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
 	}
 	tess.numIndexes = paliashdr->numIndexes;
