@@ -704,9 +704,9 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
 		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
 		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
-		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ];
-		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ];
-		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
+		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
+		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
+		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
 		tess.normal[ i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
 		tess.normal[ i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
 		tess.normal[ i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
@@ -728,7 +728,6 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 }
 
 static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
-	qglPushMatrix();
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
 	float height = 0;
@@ -775,7 +774,6 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();
-	qglPopMatrix();
 }
 
 static void R_SetupAliasFrame( int frame, mesh1hdr_t* paliashdr, bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
@@ -889,10 +887,6 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	// draw all the triangles
 	//
 
-	qglPushMatrix();
-	qglTranslatef( paliashdr->scale_origin[ 0 ], paliashdr->scale_origin[ 1 ], paliashdr->scale_origin[ 2 ] );
-	qglScalef( paliashdr->scale[ 0 ], paliashdr->scale[ 1 ], paliashdr->scale[ 2 ] );
-
 	bool doOverBright = !!r_drawOverBrights->integer;
 	GL_Cull( CT_FRONT_SIDED );
 	shaderStage_t stage1 = {};
@@ -969,8 +963,6 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
-
-	qglPopMatrix();
 
 	if ( r_shadows->value ) {
 		GL_DrawAliasShadow( paliashdr, lastposenum );
