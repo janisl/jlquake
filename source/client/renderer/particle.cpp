@@ -72,30 +72,30 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.numVertexes += 3;
 	tess.numIndexes += 3;
 
-	tess.svars.colors[ numVerts ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ numVerts ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ numVerts ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ numVerts ][ 3 ] = p->rgba[3];
+	tess.vertexColors[ numVerts ][ 0 ] = p->rgba[0];
+	tess.vertexColors[ numVerts ][ 1 ] = p->rgba[1];
+	tess.vertexColors[ numVerts ][ 2 ] = p->rgba[2];
+	tess.vertexColors[ numVerts ][ 3 ] = p->rgba[3];
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = s1;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = t1;
 	tess.xyz[ numVerts ][ 0 ] = p->origin[ 0 ];
 	tess.xyz[ numVerts ][ 1 ] = p->origin[ 1 ];
 	tess.xyz[ numVerts ][ 2 ] = p->origin[ 2 ];
 
-	tess.svars.colors[ numVerts + 1 ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ numVerts + 1 ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ numVerts + 1 ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ numVerts + 1 ][ 3 ] = p->rgba[3];
+	tess.vertexColors[ numVerts + 1 ][ 0 ] = p->rgba[0];
+	tess.vertexColors[ numVerts + 1 ][ 1 ] = p->rgba[1];
+	tess.vertexColors[ numVerts + 1 ][ 2 ] = p->rgba[2];
+	tess.vertexColors[ numVerts + 1 ][ 3 ] = p->rgba[3];
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = s2;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = t1;
 	tess.xyz[ numVerts + 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
 	tess.xyz[ numVerts + 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
 	tess.xyz[ numVerts + 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
 
-	tess.svars.colors[ numVerts + 2 ][ 0 ] = p->rgba[0];
-	tess.svars.colors[ numVerts + 2 ][ 1 ] = p->rgba[1];
-	tess.svars.colors[ numVerts + 2 ][ 2 ] = p->rgba[2];
-	tess.svars.colors[ numVerts + 2 ][ 3 ] = p->rgba[3];
+	tess.vertexColors[ numVerts + 2 ][ 0 ] = p->rgba[0];
+	tess.vertexColors[ numVerts + 2 ][ 1 ] = p->rgba[1];
+	tess.vertexColors[ numVerts + 2 ][ 2 ] = p->rgba[2];
+	tess.vertexColors[ numVerts + 2 ][ 3 ] = p->rgba[3];
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = s1;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = t2;
 	tess.xyz[ numVerts + 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
@@ -118,11 +118,14 @@ static void R_DrawParticleTriangles() {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;		// no z buffering
+	stage.rgbGen = CGEN_VERTEX;
+	stage.alphaGen = AGEN_VERTEX;
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
 			setArraysOnce = true;
 			EnableArrays( tess.numVertexes );
+			ComputeColors( &stage );
 			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			DisableArrays();
 			tess.numVertexes = 0;
@@ -156,6 +159,7 @@ static void R_DrawParticleTriangles() {
 	{
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
+		ComputeColors( &stage );
 		RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 		DisableArrays();
 		tess.numVertexes = 0;

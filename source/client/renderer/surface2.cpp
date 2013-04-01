@@ -428,36 +428,14 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		texmods[ 1 ].scroll[ 0 ] = -0.5;
 		pStage->bundle[ 0 ].numTexMods = 2;
 	}
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = tr.identityLightByte;
-		tess.svars.colors[ i ][ 1 ] = tr.identityLightByte;
-		tess.svars.colors[ i ][ 2 ] = tr.identityLightByte;
-		tess.svars.colors[ i ][ 3 ] = alpha;
-	}
+	pStage->rgbGen = CGEN_IDENTITY_LIGHTING;
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
+	ComputeColors( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 	DisableArrays();
-}
-
-static void DrawGLPolyQ2( int alpha ) {
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = alpha;
-	}
-}
-
-static void DrawGLPolyChainQ2() {
-	for ( int j = 0; j < tess.numVertexes; j++ ) {
-		tess.svars.colors[ j ][ 0 ] = 255;
-		tess.svars.colors[ j ][ 1 ] = 255;
-		tess.svars.colors[ j ][ 2 ] = 255;
-		tess.svars.colors[ j ][ 3 ] = 255;
-	}
 }
 
 static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
@@ -470,6 +448,7 @@ static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
 	stage.bundle[ 0 ].image[ 0 ] = image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.alphaGen = AGEN_IDENTITY;
 	stage.stateBits = GLS_DEFAULT;
 	EmitWaterPolysQ2( fa, 255, &stage );
 }
@@ -479,11 +458,9 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	texModInfo_t texmod = {};
 	stage1.bundle[ 0 ].image[ 0 ] = image;
 	stage1.bundle[ 0 ].numImageAnimations = 1;
+	stage1.rgbGen = CGEN_IDENTITY;
+	stage1.alphaGen = AGEN_IDENTITY;
 	stage1.stateBits = GLS_DEFAULT;
-
-	DrawGLPolyQ2( 255 );
-	setArraysOnce = false;
-	EnableArrays( tess.numVertexes );
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	if ( fa->texinfo->flags & BSP38SURF_FLOWING ) {
 		texmod.type = TMOD_SCROLL;
@@ -491,6 +468,9 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 		stage1.bundle[ 0 ].texMods = &texmod;
 		stage1.bundle[ 0 ].numTexMods = 1;
 	}
+	setArraysOnce = false;
+	EnableArrays( tess.numVertexes );
+	ComputeColors( &stage1 );
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	DisableArrays();
 
@@ -502,15 +482,17 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 		return;
 	}
 
-	DrawGLPolyChainQ2();
 	shaderStage_t stage2 = {};
 	stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ fa->lightmaptexturenum ];
 	stage2.bundle[ 0 ].numImageAnimations = 1;
 	stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+	stage2.rgbGen = CGEN_IDENTITY;
+	stage2.alphaGen = AGEN_IDENTITY;
 	stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
 	stage2.bundle[ 0 ].isLightmap = true;
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
+	ComputeColors( &stage2 );
 	RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 	DisableArrays();
 }
@@ -568,16 +550,21 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			stage.bundle[ 0 ].numImageAnimations = 1;
 			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage.alphaGen = AGEN_CONST;
+			stage.constantColor[ 3 ] = alpha;
 			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
-			DrawGLPolyQ2( alpha );
 			shaderStage_t stage = {};
 			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
 			stage.bundle[ 0 ].numImageAnimations = 1;
 			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+			stage.rgbGen = CGEN_IDENTITY;
+			stage.alphaGen = AGEN_CONST;
+			stage.constantColor[ 3 ] = alpha;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			setArraysOnce = true;
 			EnableArrays( tess.numVertexes );
+			ComputeColors( &stage );
 			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
@@ -617,16 +604,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
 	stage.bundle[ 1 ].numImageAnimations = 1;
 	stage.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = 255;
-	}
-	setArraysOnce = false;
+	stage.rgbGen = CGEN_IDENTITY;
+	stage.alphaGen = AGEN_IDENTITY;
 	stage.stateBits = GLS_DEFAULT;
-	EnableArrays( tess.numVertexes );
 	tess.xstages[ 0 ] = &stage;
 	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
 		texmod.type = TMOD_SCROLL;
@@ -634,6 +614,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		stage.bundle[ 0 ].texMods = &texmod;
 		stage.bundle[ 0 ].numTexMods = 1;
 	}
+	setArraysOnce = false;
+	EnableArrays( tess.numVertexes );
+	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 	tess.numVertexes = 0;

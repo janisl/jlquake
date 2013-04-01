@@ -554,25 +554,25 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	RB_Set2DVertexCoords( cmd, 0 );
 	RB_Set2DTextureCoords( cmd, 0 );
 
-	tess.svars.colors[ 0 ][ 0 ] = cmd->r * 255;
-	tess.svars.colors[ 0 ][ 1 ] = cmd->g * 255;
-	tess.svars.colors[ 0 ][ 2 ] = cmd->b * 255;
-	tess.svars.colors[ 0 ][ 3 ] = cmd->a * 255;
+	tess.vertexColors[ 0 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ 0 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ 0 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ 0 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.colors[ 1 ][ 0 ] = cmd->r * 255;
-	tess.svars.colors[ 1 ][ 1 ] = cmd->g * 255;
-	tess.svars.colors[ 1 ][ 2 ] = cmd->b * 255;
-	tess.svars.colors[ 1 ][ 3 ] = cmd->a * 255;
+	tess.vertexColors[ 1 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ 1 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ 1 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ 1 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.colors[ 2 ][ 0 ] = cmd->r * 255;
-	tess.svars.colors[ 2 ][ 1 ] = cmd->g * 255;
-	tess.svars.colors[ 2 ][ 2 ] = cmd->b * 255;
-	tess.svars.colors[ 2 ][ 3 ] = cmd->a * 255;
+	tess.vertexColors[ 2 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ 2 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ 2 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ 2 ][ 3 ] = cmd->a * 255;
 
-	tess.svars.colors[ 3 ][ 0 ] = cmd->r * 255;
-	tess.svars.colors[ 3 ][ 1 ] = cmd->g * 255;
-	tess.svars.colors[ 3 ][ 2 ] = cmd->b * 255;
-	tess.svars.colors[ 3 ][ 3 ] = cmd->a * 255;
+	tess.vertexColors[ 3 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ 3 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ 3 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ 3 ][ 3 ] = cmd->a * 255;
 
 	RB_Set2DIndexes( 0, 0 );
 
@@ -583,8 +583,11 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage.rgbGen = CGEN_VERTEX;
+	stage.alphaGen = AGEN_VERTEX;
 	setArraysOnce = true;
 	EnableArrays( 4 );
+	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;

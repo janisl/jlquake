@@ -148,14 +148,9 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 }
 
 void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage, int stage ) {
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 255;
-		tess.svars.colors[ i ][ 1 ] = 255;
-		tess.svars.colors[ i ][ 2 ] = 255;
-		tess.svars.colors[ i ][ 3 ] = 255;
-	}
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
+	ComputeColors( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, stage );
 	DisableArrays();
 }

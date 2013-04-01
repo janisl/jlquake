@@ -210,15 +210,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	int alpha;
-	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		alpha = r_wateralpha->value * 255;
-	} else {
-		alpha = 255;
-	}
-
-	GL_Cull( CT_FRONT_SIDED );
-
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
 
 	vec3_t up;
@@ -305,10 +296,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	int numVerts = 0;
 	int numIndexes = 0;
 
-	tess.svars.colors[ numVerts ][ 0 ] = 255;
-	tess.svars.colors[ numVerts ][ 1 ] = 255;
-	tess.svars.colors[ numVerts ][ 2 ] = 255;
-	tess.svars.colors[ numVerts ][ 3 ] = alpha;
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = 0;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
@@ -317,10 +304,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ numVerts ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ numVerts + 1 ][ 0 ] = 255;
-	tess.svars.colors[ numVerts + 1 ][ 1 ] = 255;
-	tess.svars.colors[ numVerts + 1 ][ 2 ] = 255;
-	tess.svars.colors[ numVerts + 1 ][ 3 ] = alpha;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = 0;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
@@ -329,10 +312,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ numVerts + 1 ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts + 1 ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ numVerts + 2 ][ 0 ] = 255;
-	tess.svars.colors[ numVerts + 2 ][ 1 ] = 255;
-	tess.svars.colors[ numVerts + 2 ][ 2 ] = 255;
-	tess.svars.colors[ numVerts + 2 ][ 3 ] = alpha;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = 1;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = 0;
 	VectorScale( up, frame->up, point );
@@ -341,10 +320,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.xyz[ numVerts + 2 ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts + 2 ][ 2 ] = point[ 2 ];
 
-	tess.svars.colors[ numVerts + 3 ][ 0 ] = 255;
-	tess.svars.colors[ numVerts + 3 ][ 1 ] = 255;
-	tess.svars.colors[ numVerts + 3 ][ 2 ] = 255;
-	tess.svars.colors[ numVerts + 3 ][ 3 ] = alpha;
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = 1;
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = 1;
 	VectorScale( up, frame->down, point );
@@ -355,20 +330,31 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	tess.indexes[ numIndexes ] = numVerts + 3;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
+	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
+	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
+	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
 	tess.numIndexes = 6;
 	tess.numVertexes = 4;
+
+	GL_Cull( CT_FRONT_SIDED );
+
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.rgbGen = CGEN_IDENTITY;
+	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
+		stage.alphaGen = AGEN_CONST;
+		stage.constantColor[ 3 ] = r_wateralpha->value * 255;
+	} else {
+		stage.alphaGen = AGEN_IDENTITY;
+	}
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( 4 );
+	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

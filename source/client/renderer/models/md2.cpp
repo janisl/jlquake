@@ -300,12 +300,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 
 	GL_Cull( CT_FRONT_SIDED );
 	tess.numVertexes = paliashdr->numVertexes;
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = 0;
-		tess.svars.colors[ i ][ 1 ] = 0;
-		tess.svars.colors[ i ][ 2 ] = 0;
-		tess.svars.colors[ i ][ 3 ] = 127;
-	}
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 	shaderStage_t stage = {};
@@ -313,8 +307,12 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage.rgbGen = CGEN_CONST;
+	stage.alphaGen = AGEN_CONST;
+	stage.constantColor[ 3 ] = 127;
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
+	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
