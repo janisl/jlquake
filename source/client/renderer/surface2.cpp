@@ -415,15 +415,14 @@ static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	return tex->image;
 }
 
-static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p ) {
-	int numVerts = 0;
-	int numIndexes = 0;
+static void EmitPolyIndexesQ2( mbrush38_glpoly_t* p, int numVerts ) {
+	int numIndexes = tess.numIndexes;
 	for ( int i = 0; i < p->numverts - 2; i++ ) {
 		tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
 		tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
 		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 	}
-	tess.numIndexes = ( p->numverts - 2 ) * 3;
+	tess.numIndexes += ( p->numverts - 2 ) * 3;
 }
 
 //	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
@@ -439,32 +438,31 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		texmods[ 1 ].scroll[ 0 ] = -0.5;
 		pStage->bundle[ 0 ].numTexMods = 2;
 	}
-	for ( mbrush38_glpoly_t* bp = fa->polys; bp; bp = bp->next ) {
-		mbrush38_glpoly_t* p = bp;
-
+	for ( mbrush38_glpoly_t* p = fa->polys; p; p = p->next ) {
+		int numVerts = tess.numVertexes;
 		float* v = p->verts[ 0 ];
 		for ( int i = 0; i < p->numverts; i++, v += BRUSH38_VERTEXSIZE ) {
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
+			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
+			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
+			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
 		}
-		tess.numVertexes = p->numverts;
-		for ( int i = 0; i < tess.numVertexes; i++ ) {
-			tess.svars.colors[ i ][ 0 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 1 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 2 ] = tr.identityLightByte;
-			tess.svars.colors[ i ][ 3 ] = alpha;
-		}
-		EmitPolyIndexesQ2( p );
-		setArraysOnce = true;
-		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, pStage, 0 );
-		tess.numVertexes = 0;
-		tess.numIndexes = 0;
-		DisableArrays();
+		tess.numVertexes += p->numverts;
+		EmitPolyIndexesQ2( p, numVerts );
 	}
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.svars.colors[ i ][ 0 ] = tr.identityLightByte;
+		tess.svars.colors[ i ][ 1 ] = tr.identityLightByte;
+		tess.svars.colors[ i ][ 2 ] = tr.identityLightByte;
+		tess.svars.colors[ i ][ 3 ] = alpha;
+	}
+	setArraysOnce = true;
+	EnableArrays( tess.numVertexes );
+	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
+	DisableArrays();
 }
 
 static void DrawGLPolyQ2( mbrush38_glpoly_t* p, int alpha ) {
@@ -525,7 +523,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	stage1.stateBits = GLS_DEFAULT;
 
 	DrawGLPolyQ2( fa->polys, 255 );
-	EmitPolyIndexesQ2( fa->polys );
+	EmitPolyIndexesQ2( fa->polys, 0 );
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
@@ -586,7 +584,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			EmitWaterPolysQ2( surf, alpha, &stage );
 		} else {
 			DrawGLPolyQ2( surf->polys, alpha );
-			EmitPolyIndexesQ2( surf->polys );
+			EmitPolyIndexesQ2( surf->polys, 0 );
 			shaderStage_t stage = {};
 			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
 			stage.bundle[ 0 ].numImageAnimations = 1;
@@ -654,7 +652,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		tess.svars.colors[ i ][ 2 ] = 255;
 		tess.svars.colors[ i ][ 3 ] = 255;
 	}
-	EmitPolyIndexesQ2( p );
+	EmitPolyIndexesQ2( p, 0 );
 	setArraysOnce = false;
 	stage.stateBits = GLS_DEFAULT;
 	EnableArrays( tess.numVertexes );
