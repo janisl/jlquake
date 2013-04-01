@@ -30,8 +30,6 @@
 #define SKY_SUBDIVISIONS        8
 #define HALF_SKY_SUBDIVISIONS   ( SKY_SUBDIVISIONS / 2 )
 
-float speedscale;					// for top sky and bottom sky
-
 static char skyname[ MAX_QPATH ];
 static float skyrotate;
 static vec3_t skyaxis;
@@ -166,10 +164,6 @@ void EmitSkyPolys( mbrush29_surface_t* fa, shaderStage_t* pStage, int stage ) {
 		setArraysOnce = false;
 		EnableArrays( p->numverts );
 		ComputeTexCoords( pStage );
-		for ( int i = 0; i < tess.numVertexes; i++ ) {
-			tess.svars.texcoords[ 0 ][ i ][ 0 ] += speedscale * ( 1.0 / 128 );
-			tess.svars.texcoords[ 0 ][ i ][ 1 ] += speedscale * ( 1.0 / 128 );
-		}
 		RB_IterateStagesGenericTemp( &tess, pStage, stage );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

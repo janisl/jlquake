@@ -875,8 +875,6 @@ void R_InitSkyTexCoords( float cloudLayerHeight );
 void RB_StageIteratorSky();
 void RB_DrawSun();
 
-extern float speedscale;		// for top sky and bottom sky
-
 /*
 ====================================================================
 
