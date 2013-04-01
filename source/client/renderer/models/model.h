@@ -987,4 +987,3 @@ extern byte q1_player_8bit_texels[ 320 * 200 ];
 extern byte h2_player_8bit_texels[ MAX_PLAYER_CLASS ][ 620 * 245 ];
 extern mbrush29_texture_t* r_notexture_mip;
 extern world_t s_worldData;
-extern vec3_t shadevector;

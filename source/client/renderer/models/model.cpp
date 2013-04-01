@@ -23,8 +23,6 @@
 
 model_t* loadmodel;
 
-vec3_t shadevector;
-
 static model_t* backupModels[ MAX_MOD_KNOWN ];
 static int numBackupModels = 0;
 

@@ -303,6 +303,11 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 
 	float height = -lheight + 1.0;
 
+	vec3_t shadevector;
+	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
+	shadevector[ 2 ] = 1;
+	VectorNormalize( shadevector );
+
 	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
 		vec3_t point;
 		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
@@ -493,10 +498,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
 	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
 	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
-
-	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
-	shadevector[ 2 ] = 1;
-	VectorNormalize( shadevector );
 
 	//
 	// locate the proper data

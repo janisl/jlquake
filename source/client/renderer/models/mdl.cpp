@@ -737,6 +737,11 @@ static void GL_DrawAliasShadow( mesh1hdr_t* paliashdr, int posenum ) {
 
 	height = -lheight + 1.0;
 
+	vec3_t shadevector;
+	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
+	shadevector[ 2 ] = 1;
+	VectorNormalize( shadevector );
+
 	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
 		// normals and vertexes come from the frame list
 		vec3_t point;
@@ -877,10 +882,6 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
 	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
 	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
-
-	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
-	shadevector[ 2 ] = 1;
-	VectorNormalize( shadevector );
 
 	c_alias_polys += paliashdr->numtris;
 
