@@ -663,7 +663,7 @@ void Mod_FreeMdlModel( model_t* mod ) {
 	Mem_Free( pheader );
 }
 
-static void CalcMdlColours( dmdl_trivertx_t* verts, bool overBrights, bool fullBrigts ) {
+static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	int r, g, b;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
 		r = backEnd.currentEntity->e.shaderRGBA[ 0 ];
@@ -674,9 +674,20 @@ static void CalcMdlColours( dmdl_trivertx_t* verts, bool overBrights, bool fullB
 	}
 
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float l = fullBrigts ? 1 : ambientlight / 256 + ( shadedots[ verts[ i ].lightnormalindex ] - 1 ) * shadelight;
-		if ( overBrights ) {
-			l -= 1;
+		float l;
+		if ( fullBrigts ) {
+			l = 1;
+		} else {
+			float dot = DotProduct( backEnd.currentEntity->lightDir, tess.normal[ i ] );
+			if ( dot < 0 ) {
+				dot = 1 + dot * 0.3;
+			} else {
+				dot = 1 + dot;
+			}
+			l = ambientlight / 256 + ( dot - 1 ) * shadelight;
+			if ( overBrights ) {
+				l -= 1;
+			}
 		}
 		tess.svars.colors[ i ][ 0 ] = r * l;
 		tess.svars.colors[ i ][ 1 ] = g * l;
@@ -696,10 +707,13 @@ static void GL_DrawAliasFrame( mesh1hdr_t* paliashdr, int posenum, bool fullBrig
 		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ];
 		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ];
 		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ];
+		tess.normal[ i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
+		tess.normal[ i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
+		tess.normal[ i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
 	}
 
 	tess.numVertexes = paliashdr->poseverts;
-	CalcMdlColours( verts, overBrights, fullBrigts );
+	CalcMdlColours( overBrights, fullBrigts );
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
 	}
@@ -823,12 +837,14 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 }
 
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
 	//
 	// get lighting information
 	//
-	ambientlight = shadelight = R_CalcEntityLight( &backEnd.currentEntity->e );
+	ambientlight = shadelight = R_CalcEntityLight( &ent->e );
 
-	if ( backEnd.currentEntity->e.renderfx & RF_FIRST_PERSON ) {
+	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
 		r_lightlevel->value = ambientlight;
 	}
 
@@ -840,7 +856,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		shadelight = 192 - ambientlight;
 	}
 
-	model_t* clmodel = R_GetModelByHandle( backEnd.currentEntity->e.hModel );
+	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
 
 	// ZOID: never allow players to go totally black
 	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
@@ -849,13 +865,18 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		}
 	}
 
-	if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		ambientlight = shadelight = backEnd.currentEntity->e.absoluteLight * 256.0;
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
 	}
 
-	float tmp_yaw = VecToYaw( backEnd.currentEntity->e.axis[ 0 ] );
-	shadedots = r_avertexnormal_dots[ ( ( int )( tmp_yaw * ( SHADEDOT_QUANT / 360.0 ) ) ) & ( SHADEDOT_QUANT - 1 ) ];
 	shadelight = shadelight / 200.0;
+
+	// transform the direction to local space
+	float lightDir[3] = {1, 0, 1};
+	VectorNormalize( lightDir );
+	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
+	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
+	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
 
 	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
 	shadevector[ 2 ] = 1;
@@ -902,20 +923,20 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	}
 
 	shaderStage_t stage2 = {};
-	if ( backEnd.currentEntity->e.customSkin ) {
-		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
-		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ backEnd.currentEntity->e.customSkin ];
+	if ( ent->e.customSkin ) {
+		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
+		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
 		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
 	} else {
-		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 0 ];
-		stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 1 ];
-		stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 2 ];
-		stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 3 ];
-		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 0 ];
-		stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 1 ];
-		stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 2 ];
-		stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ backEnd.currentEntity->e.skinNum ][ 3 ];
+		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
+		stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
+		stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
+		stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
+		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
+		stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
+		stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
+		stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
 		stage1.bundle[ 0 ].numImageAnimations = 4;
 		stage1.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage2.bundle[ 0 ].numImageAnimations = 4;
@@ -924,24 +945,24 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 
-	R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, false, &stage1 );
+	R_SetupAliasFrame( ent->e.frame, paliashdr, false, false, &stage1 );
 
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, false, true, &stage2 );
+		R_SetupAliasFrame( ent->e.frame, paliashdr, false, true, &stage2 );
 	}
 
-	if ( !backEnd.currentEntity->e.customSkin && paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 0 ] ) {
+	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
 		shaderStage_t stage3 = {};
-		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 0 ];
-		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 1 ];
-		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 2 ];
-		stage3.bundle[ 0 ].image[ 3 ] = paliashdr->fullBrightTexture[ backEnd.currentEntity->e.skinNum ][ 3 ];
+		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ];
+		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 1 ];
+		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 2 ];
+		stage3.bundle[ 0 ].image[ 3 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 3 ];
 		stage3.bundle[ 0 ].numImageAnimations = 4;
 		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		R_SetupAliasFrame( backEnd.currentEntity->e.frame, paliashdr, true, false, &stage3 );
+		R_SetupAliasFrame( ent->e.frame, paliashdr, true, false, &stage3 );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
