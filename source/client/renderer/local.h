@@ -830,8 +830,6 @@ struct gllightmapstate_t {
 
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
-void EmitPolyIndexesQ1( mbrush29_glpoly_t* p, int numVerts );
-void R_DrawFullBrightPoly( mbrush29_surface_t* s );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);

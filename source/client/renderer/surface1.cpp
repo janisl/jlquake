@@ -515,16 +515,6 @@ dynamic:
 	}
 }
 
-void EmitPolyIndexesQ1( mbrush29_glpoly_t* p, int numVerts ) {
-	int numIndexes = tess.numIndexes;
-	for ( int i = 0; i < p->numverts - 2; i++ ) {
-		tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
-		tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
-		tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
-	}
-	tess.numIndexes += ( p->numverts - 2 ) * 3;
-}
-
 //	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	shaderStage_t stage = {};
@@ -545,19 +535,6 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.bundle[ 0 ].texMods = &texmod;
 	stage.bundle[ 0 ].numTexMods = 1;
-	for ( mbrush29_glpoly_t* p = fa->polys; p; p = p->next ) {
-		int numVerts = tess.numVertexes;
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-		}
-		tess.numVertexes += p->numverts;
-		EmitPolyIndexesQ1( p, numVerts );
-	}
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 0 ] = 255;
 		tess.svars.colors[ i ][ 1 ] = 255;
@@ -572,22 +549,11 @@ static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
 	DisableArrays();
 }
 
-void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
-	mbrush29_glpoly_t* p = s->polys;
-
+static void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 	shaderStage_t stage = {};
 	if ( !R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage.bundle[ 0 ] ) ) {
 		return;
 	}
-	float* v = p->verts[ 0 ];
-	for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-		tess.xyz[ i ][ 0 ] = v[ 0 ];
-		tess.xyz[ i ][ 1 ] = v[ 1 ];
-		tess.xyz[ i ][ 2 ] = v[ 2 ];
-		tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-		tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
-	}
-	tess.numVertexes = p->numverts;
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 0 ] = 255;
 		tess.svars.colors[ i ][ 1 ] = 255;
@@ -595,19 +561,49 @@ void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
 		tess.svars.colors[ i ][ 3 ] = 255;
 	}
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	EmitPolyIndexesQ1( p, 0 );
 	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
 	RB_IterateStagesGenericTemp( &tess, &stage, 2 );
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
 	DisableArrays();
 }
 
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
+	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
+		int numVerts = tess.numVertexes;
+		int numIndexes = tess.numIndexes;
+
+		tess.numVertexes += p->numverts;
+		tess.numIndexes += ( p->numverts - 2 ) * 3;
+
+		float* v = p->verts[ 0 ];
+		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
+			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
+			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
+			tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
+			tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
+			if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
+				tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
+				tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
+				tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
+			} else {
+				tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
+				tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
+				tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
+			}
+		}
+		for ( int i = 0; i < p->numverts - 2; i++ ) {
+			tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
+			tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
+			tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
+		}
+	}
+
 	shader_t shader = {};
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
@@ -619,17 +615,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		EmitWaterPolysQ1( s );
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
-		for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
-			int numVerts = tess.numVertexes;
-			tess.numVertexes += p->numverts;
-			float* v = p->verts[ 0 ];
-			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-				tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-				tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-			}
-			EmitPolyIndexesQ1( p, numVerts );
-		}
 		//
 		// subdivided sky warp
 		//
@@ -664,7 +649,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// normal lightmaped poly
 		//
-		mbrush29_glpoly_t* p = s->polys;
 		int intensity = 255;
 		shaderStage_t stage1 = {};
 		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
@@ -675,15 +659,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		}
 
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
-		}
-		tess.numVertexes = p->numverts;
 		for ( int i = 0; i < tess.numVertexes; i++ ) {
 			tess.svars.colors[ i ][ 0 ] = intensity;
 			tess.svars.colors[ i ][ 1 ] = intensity;
@@ -691,7 +666,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.svars.colors[ i ][ 3 ] = alpha_val;
 		}
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		EmitPolyIndexesQ1( p, 0 );
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
@@ -702,22 +676,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// normal lightmaped poly
 		//
-		mbrush29_glpoly_t* p = s->polys;
 		shaderStage_t stage1 = {};
 		stage1.stateBits = GLS_DEFAULT;
 		// backEnd.currentEntity->abslight   0 - 255
 		int intensity = backEnd.currentEntity->e.absoluteLight * 255;
-
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			tess.xyz[ i ][ 0 ] = v[ 0 ];
-			tess.xyz[ i ][ 1 ] = v[ 1 ];
-			tess.xyz[ i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
-		}
-		tess.numVertexes = p->numverts;
 		for ( int i = 0; i < tess.numVertexes; i++ ) {
 			tess.svars.colors[ i ][ 0 ] = intensity;
 			tess.svars.colors[ i ][ 1 ] = intensity;
@@ -725,21 +688,19 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.svars.colors[ i ][ 3 ] = 255;
 		}
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		EmitPolyIndexesQ1( p, 0 );
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
 		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 		DisableArrays();
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
 
 		R_DrawFullBrightPoly( s );
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
 	} else {
 		//
 		// normal lightmaped poly
 		//
 		R_RenderDynamicLightmaps( s );
-		mbrush29_glpoly_t* p = s->polys;
 		if ( qglActiveTextureARB ) {
 			shader.multitextureEnv = GL_MODULATE;
 
@@ -748,24 +709,12 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 
 			stage1.stateBits = GLS_DEFAULT;
-			float* v = p->verts[ 0 ];
-			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				tess.xyz[ i ][ 0 ] = v[ 0 ];
-				tess.xyz[ i ][ 1 ] = v[ 1 ];
-				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-				tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
-				tess.texCoords[ i ][ 1 ][ 0 ] = v[ 5 ];
-				tess.texCoords[ i ][ 1 ][ 1 ] = v[ 6 ];
-			}
-			tess.numVertexes = p->numverts;
 			for ( int i = 0; i < tess.numVertexes; i++ ) {
 				tess.svars.colors[ i ][ 0 ] = 255;
 				tess.svars.colors[ i ][ 1 ] = 255;
 				tess.svars.colors[ i ][ 2 ] = 255;
 				tess.svars.colors[ i ][ 3 ] = 255;
 			}
-			EmitPolyIndexesQ1( p, 0 );
 			stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
@@ -790,24 +739,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 				DisableArrays();
 			}
-			tess.numVertexes = 0;
-			tess.numIndexes = 0;
 		} else {
 			shaderStage_t stage1 = {};
 			stage1.stateBits = GLS_DEFAULT;
 
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-			float* v = p->verts[ 0 ];
-			for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-				tess.xyz[ i ][ 0 ] = v[ 0 ];
-				tess.xyz[ i ][ 1 ] = v[ 1 ];
-				tess.xyz[ i ][ 2 ] = v[ 2 ];
-				tess.texCoords[ i ][ 0 ][ 0 ] = v[ 3 ];
-				tess.texCoords[ i ][ 0 ][ 1 ] = v[ 4 ];
-				tess.texCoords[ i ][ 1 ][ 0 ] = v[ 5 ];
-				tess.texCoords[ i ][ 1 ][ 1 ] = v[ 6 ];
-			}
-			tess.numVertexes = p->numverts;
 			for ( int i = 0; i < tess.numVertexes; i++ ) {
 				tess.svars.colors[ i ][ 0 ] = 255;
 				tess.svars.colors[ i ][ 1 ] = 255;
@@ -815,7 +751,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				tess.svars.colors[ i ][ 3 ] = 255;
 			}
 			stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			EmitPolyIndexesQ1( p, 0 );
 			setArraysOnce = false;
 			EnableArrays( tess.numVertexes );
 			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
@@ -830,12 +765,12 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			setArraysOnce = false;
 			EnableArrays( tess.numVertexes );
 			RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
-			tess.numVertexes = 0;
-			tess.numIndexes = 0;
 			DisableArrays();
 		}
 
 		R_DrawFullBrightPoly( s );
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
 	}
 }
 
