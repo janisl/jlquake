@@ -234,13 +234,11 @@ static void CalcMd2Colours() {
 
 static void CalcMd2ShellColours() {
 	trRefEntity_t* ent = backEnd.currentEntity;
-	vec3_t directedLight;
-	VectorCopy( ent->directedLight, directedLight );
 
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = directedLight[ 0 ];
-		tess.svars.colors[ i ][ 1 ] = directedLight[ 1 ];
-		tess.svars.colors[ i ][ 2 ] = directedLight[ 2 ];
+		tess.svars.colors[ i ][ 0 ] = ent->e.shaderRGBA[ 0 ];
+		tess.svars.colors[ i ][ 1 ] = ent->e.shaderRGBA[ 1 ];
+		tess.svars.colors[ i ][ 2 ] = ent->e.shaderRGBA[ 2 ];
 	}
 }
 
@@ -426,11 +424,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	// get lighting information
 	//
 	vec3_t md2_shadelight;
-	if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
-		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = ent->e.shaderRGBA[ i ];
-		}
-	} else if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT )     {
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT )     {
 		for ( int i = 0; i < 3; i++ ) {
 			md2_shadelight[ i ] = ent->e.absoluteLight * 255;
 		}
