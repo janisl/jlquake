@@ -21,8 +21,6 @@
 
 #define POWERSUIT_SCALE         4.0F
 
-static int md2_shadelight[ 3 ];
-
 struct idMd2VertexRemap {
 	int xyzIndex;
 	float s;
@@ -216,6 +214,10 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 }
 
 static void CalcMd2Colours() {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t directedLight;
+	VectorCopy( ent->directedLight, directedLight );
+
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		float l = DotProduct( backEnd.currentEntity->lightDir, tess.normal[ i ] );
 		if ( l < 0 ) {
@@ -224,17 +226,21 @@ static void CalcMd2Colours() {
 			l = 1 + l;
 		}
 
-		tess.svars.colors[ i ][ 0 ] = Min(l * md2_shadelight[ 0 ], 255.0f);
-		tess.svars.colors[ i ][ 1 ] = Min(l * md2_shadelight[ 1 ], 255.0f);
-		tess.svars.colors[ i ][ 2 ] = Min(l * md2_shadelight[ 2 ], 255.0f);
+		tess.svars.colors[ i ][ 0 ] = Min(l * directedLight[ 0 ], 255.0f);
+		tess.svars.colors[ i ][ 1 ] = Min(l * directedLight[ 1 ], 255.0f);
+		tess.svars.colors[ i ][ 2 ] = Min(l * directedLight[ 2 ], 255.0f);
 	}
 }
 
 static void CalcMd2ShellColours() {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t directedLight;
+	VectorCopy( ent->directedLight, directedLight );
+
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = md2_shadelight[ 0 ];
-		tess.svars.colors[ i ][ 1 ] = md2_shadelight[ 1 ];
-		tess.svars.colors[ i ][ 2 ] = md2_shadelight[ 2 ];
+		tess.svars.colors[ i ][ 0 ] = directedLight[ 0 ];
+		tess.svars.colors[ i ][ 1 ] = directedLight[ 1 ];
+		tess.svars.colors[ i ][ 2 ] = directedLight[ 2 ];
 	}
 }
 
@@ -419,6 +425,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	//
 	// get lighting information
 	//
+	vec3_t md2_shadelight;
 	if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
 		for ( int i = 0; i < 3; i++ ) {
 			md2_shadelight[ i ] = ent->e.shaderRGBA[ i ];
@@ -433,7 +440,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		md2_shadelight[0] = Min(l[0] * 255, 255.0f);
 		md2_shadelight[1] = Min(l[1] * 255, 255.0f);
 		md2_shadelight[2] = Min(l[2] * 255, 255.0f);
-		md2_shadelight[3] = Min(l[3] * 255, 255.0f);
 
 		// player lighting hack for communication back to server
 		// big hack!
@@ -475,7 +481,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		int scale = 25 * sin( backEnd.refdef.floatTime * 7 );
 		for ( int i = 0; i < 3; i++ ) {
 			int min = md2_shadelight[ i ] * 0.8;
-			md2_shadelight[ i ] = Min(md2_shadelight[ i ] + scale, 255);
+			md2_shadelight[ i ] = Min(md2_shadelight[ i ] + scale, 255.0f);
 			if ( md2_shadelight[ i ] < min ) {
 				md2_shadelight[ i ] = min;
 			}
@@ -491,6 +497,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	}
 	// PGM
 	// =================
+	VectorCopy( md2_shadelight, ent->directedLight );
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};

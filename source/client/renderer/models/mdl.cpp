@@ -68,10 +68,6 @@ static mesh1hdr_t* paliashdr;
 static idMdlVertexRemap vertexorder[ 8192 ];
 static int numorder;
 
-static float shadelight;
-static float ambientlight;
-static float model_constant_alpha;
-
 static void R_AliasTransformVector( const vec3_t in, vec3_t out ) {
 	out[ 0 ] = DotProduct( in, aliastransform[ 0 ] ) + aliastransform[ 0 ][ 3 ];
 	out[ 1 ] = DotProduct( in, aliastransform[ 1 ] ) + aliastransform[ 1 ][ 3 ];
@@ -663,11 +659,19 @@ void Mod_FreeMdlModel( model_t* mod ) {
 }
 
 static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t ambientLight;
+	VectorCopy( ent->ambientLight, ambientLight );
+	vec3_t directedLight;
+	VectorCopy( ent->directedLight, directedLight );
+	vec3_t lightDir;
+	VectorCopy( ent->lightDir, lightDir );
+
 	int r, g, b;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLORSHADE ) {
-		r = backEnd.currentEntity->e.shaderRGBA[ 0 ];
-		g = backEnd.currentEntity->e.shaderRGBA[ 1 ];
-		b = backEnd.currentEntity->e.shaderRGBA[ 2 ];
+	if ( ent->e.renderfx & RF_COLORSHADE ) {
+		r = ent->e.shaderRGBA[ 0 ];
+		g = ent->e.shaderRGBA[ 1 ];
+		b = ent->e.shaderRGBA[ 2 ];
 	} else {
 		r = g = b = 255;
 	}
@@ -677,13 +681,13 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 		if ( fullBrigts ) {
 			l = 1;
 		} else {
-			float dot = DotProduct( backEnd.currentEntity->lightDir, tess.normal[ i ] );
+			float dot = DotProduct( lightDir, tess.normal[ i ] );
 			if ( dot < 0 ) {
 				dot = 1 + dot * 0.3;
 			} else {
 				dot = 1 + dot;
 			}
-			l = ambientlight / 256 + ( dot - 1 ) * shadelight;
+			l = ambientLight[ 0 ] / 256 + ( dot - 1 ) * directedLight[ 0 ];
 			if ( overBrights ) {
 				l -= 1;
 			}
@@ -694,10 +698,10 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	}
 }
 
-static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage ) {
+static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage, int alpha ) {
 	CalcMdlColours( overBrights, fullBrigts );
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 3 ] = model_constant_alpha * 255;
+		tess.svars.colors[ i ][ 3 ] = alpha;
 	}
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
@@ -806,30 +810,31 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	bool doOverBright = !!r_drawOverBrights->integer;
 	GL_Cull( CT_FRONT_SIDED );
 	shaderStage_t stage1 = {};
+	int model_constant_alpha;
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
-			model_constant_alpha = 1.0f;
+			model_constant_alpha = 255;
 			GL_Cull( CT_TWO_SIDED );
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-			model_constant_alpha = r_wateralpha->value;
+			model_constant_alpha = r_wateralpha->value * 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT ) {
-			model_constant_alpha = 1.0f;
+			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY ) {
-			model_constant_alpha = 1.0f;
+			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			doOverBright = false;
 		} else {
-			model_constant_alpha = 1.0f;
+			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE;
 		}
 	} else {
-		model_constant_alpha = 1.0f;
+		model_constant_alpha = 255;
 		stage1.stateBits = GLS_DEFAULT;
 	}
 
@@ -856,11 +861,11 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 
-	GL_DrawAliasFrame( false, false, &stage1 );
+	GL_DrawAliasFrame( false, false, &stage1, model_constant_alpha );
 
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		GL_DrawAliasFrame( false, true, &stage2 );
+		GL_DrawAliasFrame( false, true, &stage2, model_constant_alpha );
 	}
 
 	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
@@ -873,7 +878,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		GL_DrawAliasFrame( true, false, &stage3 );
+		GL_DrawAliasFrame( true, false, &stage3, model_constant_alpha );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
@@ -921,7 +926,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	//
 	// get lighting information
 	//
-	ambientlight = shadelight = R_CalcEntityLight( &ent->e );
+	float ambientlight = R_CalcEntityLight( &ent->e );
+	float shadelight = ambientlight;
 
 	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
 		r_lightlevel->value = ambientlight;
@@ -949,6 +955,9 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	}
 
 	shadelight = shadelight / 200.0;
+
+	ent->ambientLight[ 0 ] = ambientlight;
+	ent->directedLight[ 0 ] = shadelight;
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};
