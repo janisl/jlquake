@@ -213,71 +213,12 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 	}
 }
 
-static void CalcMd2Colours() {
-	trRefEntity_t* ent = backEnd.currentEntity;
-	vec3_t directedLight;
-	VectorCopy( ent->directedLight, directedLight );
-
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float l = DotProduct( backEnd.currentEntity->lightDir, tess.normal[ i ] );
-		if ( l < 0 ) {
-			l = 1;
-		} else {
-			l = 1 + l;
-		}
-
-		int j = idMath::FtoiFast( l * directedLight[ 0 ] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		tess.svars.colors[ i ][ 0 ] = j;
-
-		j = idMath::FtoiFast( l * directedLight[ 1 ] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		tess.svars.colors[ i ][ 1 ] = j;
-
-		j = idMath::FtoiFast( l * directedLight[ 2 ] );
-		if ( j > 255 ) {
-			j = 255;
-		}
-		tess.svars.colors[ i ][ 2 ] = j;
-	}
-}
-
-static void CalcMd2ShellColours() {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 0 ] = ent->e.shaderRGBA[ 0 ];
-		tess.svars.colors[ i ][ 1 ] = ent->e.shaderRGBA[ 1 ];
-		tess.svars.colors[ i ][ 2 ] = ent->e.shaderRGBA[ 2 ];
-	}
-}
-
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
 static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		CalcMd2ShellColours();
-	} else {
-		CalcMd2Colours();
-	}
-
-	int alpha;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	} else {
-		alpha = 255;
-	}
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 3 ] = alpha;
-	}
 
 	// select skin
 	image_t* skin;
@@ -303,13 +244,21 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	stage.bundle[ 0 ].image[ 0 ] = skin;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		stage.rgbGen = CGEN_ENTITY;
+	} else {
+		stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
+	}
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		stage.alphaGen = AGEN_ENTITY;
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	} else {
+		stage.alphaGen = AGEN_IDENTITY;
 		stage.stateBits = GLS_DEFAULT;
 	}
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
+	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -505,7 +454,21 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	}
 	// PGM
 	// =================
+	VectorCopy( md2_shadelight, ent->ambientLight );
 	VectorCopy( md2_shadelight, ent->directedLight );
+
+	// clamp ambient
+	for ( int i = 0; i < 3; i++ ) {
+		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
+			ent->ambientLight[ i ] = tr.identityLightByte;
+		}
+	}
+
+	// save out the byte packet version
+	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
+	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
+	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
+	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};

@@ -559,16 +559,16 @@ void RB_CalcDiffuseColor( byte* colors ) {
 	vec3_t lightDir;
 	VectorCopy( ent->lightDir, lightDir );
 
-	float* v = tess.xyz[ 0 ];
 	float* normal = tess.normal[ 0 ];
 
 	int numVertexes = tess.numVertexes;
-	for ( int i = 0; i < numVertexes; i++, v += 4, normal += 4 ) {
+	for ( int i = 0; i < numVertexes; i++, normal += 4 ) {
 		float incoming = DotProduct( normal, lightDir );
 		if ( incoming <= 0 ) {
 			*( int* )&colors[ i * 4 ] = ambientLightInt;
 			continue;
 		}
+
 		int j = idMath::FtoiFast( ambientLight[ 0 ] + incoming * directedLight[ 0 ] );
 		if ( j > 255 ) {
 			j = 255;
