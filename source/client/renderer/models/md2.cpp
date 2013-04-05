@@ -221,14 +221,28 @@ static void CalcMd2Colours() {
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		float l = DotProduct( backEnd.currentEntity->lightDir, tess.normal[ i ] );
 		if ( l < 0 ) {
-			l = 1 + l * 0.3;
+			l = 1;
 		} else {
 			l = 1 + l;
 		}
 
-		tess.svars.colors[ i ][ 0 ] = Min(l * directedLight[ 0 ], 255.0f);
-		tess.svars.colors[ i ][ 1 ] = Min(l * directedLight[ 1 ], 255.0f);
-		tess.svars.colors[ i ][ 2 ] = Min(l * directedLight[ 2 ], 255.0f);
+		int j = idMath::FtoiFast( l * directedLight[ 0 ] );
+		if ( j > 255 ) {
+			j = 255;
+		}
+		tess.svars.colors[ i ][ 0 ] = j;
+
+		j = idMath::FtoiFast( l * directedLight[ 1 ] );
+		if ( j > 255 ) {
+			j = 255;
+		}
+		tess.svars.colors[ i ][ 1 ] = j;
+
+		j = idMath::FtoiFast( l * directedLight[ 2 ] );
+		if ( j > 255 ) {
+			j = 255;
+		}
+		tess.svars.colors[ i ][ 2 ] = j;
 	}
 }
 

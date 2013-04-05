@@ -683,13 +683,14 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 		} else {
 			float dot = DotProduct( lightDir, tess.normal[ i ] );
 			if ( dot < 0 ) {
-				dot = 1 + dot * 0.3;
-			} else {
-				dot = 1 + dot;
+				dot = 0;
 			}
-			l = ambientLight[ 0 ] / 256 + ( dot - 1 ) * directedLight[ 0 ];
+			l = ambientLight[ 0 ] / 256 + dot * directedLight[ 0 ];
 			if ( overBrights ) {
 				l -= 1;
+			}
+			if ( l > 1 ) {
+				l = 1;
 			}
 		}
 		tess.svars.colors[ i ][ 0 ] = r * l;
