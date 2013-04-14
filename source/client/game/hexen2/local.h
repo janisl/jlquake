@@ -103,7 +103,6 @@ void CLH2_UpdateEffects();
 //
 //	Entities
 //
-void CLH2_InitColourShadeTables();
 void CLH2_ClearEntityTextureArrays();
 int CLH2_GetMaxPlayerClasses();
 h2entity_t* CLH2_EntityNum( int num );

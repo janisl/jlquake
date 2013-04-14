@@ -658,6 +658,21 @@ void Mod_FreeMdlModel( model_t* mod ) {
 	Mem_Free( pheader );
 }
 
+void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
+	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+		return;
+	}
+
+	if ( R_CullLocalBox( &tr.currentModel->q1_mins ) == CULL_OUT ) {
+		return;
+	}
+	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( r_shadows->value ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+	}
+}
+
 static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 	vec3_t ambientLight;
@@ -666,15 +681,6 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	VectorCopy( ent->directedLight, directedLight );
 	vec3_t lightDir;
 	VectorCopy( ent->lightDir, lightDir );
-
-	int r, g, b;
-	if ( ent->e.renderfx & RF_COLORSHADE ) {
-		r = ent->e.shaderRGBA[ 0 ];
-		g = ent->e.shaderRGBA[ 1 ];
-		b = ent->e.shaderRGBA[ 2 ];
-	} else {
-		r = g = b = 255;
-	}
 
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		float l;
@@ -693,9 +699,9 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 				l = 1;
 			}
 		}
-		tess.svars.colors[ i ][ 0 ] = r * l;
-		tess.svars.colors[ i ][ 1 ] = g * l;
-		tess.svars.colors[ i ][ 2 ] = b * l;
+		tess.svars.colors[ i ][ 0 ] = 255 * l;
+		tess.svars.colors[ i ][ 1 ] = 255 * l;
+		tess.svars.colors[ i ][ 2 ] = 255 * l;
 	}
 }
 
@@ -707,6 +713,21 @@ static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t*
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
+	DisableArrays();
+}
+
+static void GL_DrawAliasFrameColourShade() {
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage.rgbGen = CGEN_ENTITY;
+	stage.alphaGen = AGEN_ENTITY;
+	setArraysOnce = true;
+	EnableArrays( tess.numVertexes );
+	ComputeColors( &stage );
+	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 }
 
@@ -788,21 +809,6 @@ float R_CalcEntityLight( refEntity_t* e ) {
 	return light;
 }
 
-void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
-	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
-		return;
-	}
-
-	if ( R_CullLocalBox( &tr.currentModel->q1_mins ) == CULL_OUT ) {
-		return;
-	}
-	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-	if ( r_shadows->value ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
-	}
-}
-
 static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel ) {
 	//
 	// draw all the triangles
@@ -880,6 +886,10 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		GL_DrawAliasFrame( true, false, &stage3, model_constant_alpha );
+	}
+
+	if ( ent->e.renderfx & RF_COLORSHADE ) {
+		GL_DrawAliasFrameColourShade();
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {

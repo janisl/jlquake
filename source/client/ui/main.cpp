@@ -149,7 +149,6 @@ void CL_InitRenderer() {
 
 		SCRQH_InitImages();
 		if ( GGameType & GAME_Hexen2 ) {
-			CLH2_InitColourShadeTables();
 			CLH2_InitPlayerTranslation();
 			CLH2_ClearEntityTextureArrays();
 			SbarH2_InitImages();

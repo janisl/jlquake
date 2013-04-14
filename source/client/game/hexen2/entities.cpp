@@ -36,10 +36,6 @@ h2entity_state_t clh2_baselines[ MAX_EDICTS_QH ];
 h2entity_t h2cl_entities[ MAX_EDICTS_QH ];
 static h2entity_t h2cl_static_entities[ MAX_STATIC_ENTITIES_H2 ];
 
-static float RTint[ 256 ];
-static float GTint[ 256 ];
-static float BTint[ 256 ];
-
 qhandle_t clh2_player_models[ MAX_PLAYER_CLASS ];
 static image_t* clh2_playertextures[ BIGGEST_MAX_CLIENTS_QH ];		// color translated skins
 
@@ -70,22 +66,6 @@ static const char* parsedelta_strings[] =
 	"HWU_DRAWFLAGS",//18
 	"HWU_ABSLIGHT"	//19
 };
-
-void CLH2_InitColourShadeTables() {
-	for ( int i = 0; i < 16; i++ ) {
-		int c = ColorIndex[ i ];
-
-		int r = r_palette[ c ][ 0 ];
-		int g = r_palette[ c ][ 1 ];
-		int b = r_palette[ c ][ 2 ];
-
-		for ( int p = 0; p < 16; p++ ) {
-			RTint[ i * 16 + p ] = ( ( float )r ) / ( ( float )ColorPercent[ 15 - p ] );
-			GTint[ i * 16 + p ] = ( ( float )g ) / ( ( float )ColorPercent[ 15 - p ] );
-			BTint[ i * 16 + p ] = ( ( float )b ) / ( ( float )ColorPercent[ 15 - p ] );
-		}
-	}
-}
 
 void CLH2_ClearEntityTextureArrays() {
 	Com_Memset( clh2_playertextures, 0, sizeof ( clh2_playertextures ) );
@@ -933,11 +913,17 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 		AnglesToAxis( angles, entity->axis );
 	}
 
+	//FIXME use separate refEnt
 	if ( colourShade ) {
 		entity->renderfx |= RF_COLORSHADE;
-		entity->shaderRGBA[ 0 ] = ( int )( RTint[ colourShade ] * 255 );
-		entity->shaderRGBA[ 1 ] = ( int )( GTint[ colourShade ] * 255 );
-		entity->shaderRGBA[ 2 ] = ( int )( BTint[ colourShade ] * 255 );
+		int c = ColorIndex[ colourShade >> 4 ];
+		entity->shaderRGBA[ 0 ] = r_palette[ c ][ 0 ];
+		entity->shaderRGBA[ 1 ] = r_palette[ c ][ 1 ];
+		entity->shaderRGBA[ 2 ] = r_palette[ c ][ 2 ];
+		entity->shaderRGBA[ 3 ] = 255 - ColorPercent[ colourShade & 0x0f ];
+		if ( drawFlags & H2DRF_TRANSLUCENT ) {
+			entity->shaderRGBA[ 3 ] *= 0.4f;
+		}
 	}
 
 	int mls = drawFlags & H2MLS_MASKIN;
