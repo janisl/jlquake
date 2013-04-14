@@ -216,6 +216,24 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
 static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
+	//
+	// draw all the triangles
+	//
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPushMatrix();
+		qglLoadIdentity();
+		qglScalef( -1, 1, 1 );
+		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
+		qglMatrixMode( GL_MODELVIEW );
+
+		GL_Cull( CT_BACK_SIDED );
+	}
+	else
+		GL_Cull( CT_FRONT_SIDED );
+
 	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
@@ -264,7 +282,13 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-}
+
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPopMatrix();
+		qglMatrixMode( GL_MODELVIEW );
+	}
+ }
 
 static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
@@ -288,7 +312,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 		tess.xyz[ i ][ 2 ] = point[ 2 ];
 	}
 
-	GL_Cull( CT_FRONT_SIDED );
 	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
@@ -305,6 +328,8 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -485,22 +510,6 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 
 	c_alias_polys += paliashdr->numIndexes / 3;
 
-	//
-	// draw all the triangles
-	//
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPushMatrix();
-		qglLoadIdentity();
-		qglScalef( -1, 1, 1 );
-		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
-		qglMatrixMode( GL_MODELVIEW );
-
-		GL_Cull( CT_BACK_SIDED );
-	}
-	else
-		GL_Cull( CT_FRONT_SIDED );
-
 	// draw it
 
 	if ( ( ent->e.frame >= paliashdr->num_frames ) || ( ent->e.frame < 0 ) ) {
@@ -559,11 +568,5 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		GL_DrawMd2Shadow( paliashdr );
 	} else {
 		GL_DrawMd2FrameLerp( paliashdr, v );
-	}
-
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPopMatrix();
-		qglMatrixMode( GL_MODELVIEW );
 	}
 }

@@ -124,10 +124,12 @@ static void R_DrawParticleTriangles() {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
+	shader.cullType = CT_FRONT_SIDED;
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
 			tess.dlightBits = 0;
+			GL_Cull( shader.cullType );
 			RB_StageIteratorGenericTemp( &tess );
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -159,6 +161,7 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		tess.dlightBits = 0;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

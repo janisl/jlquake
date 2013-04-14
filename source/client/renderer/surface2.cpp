@@ -434,6 +434,8 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
@@ -488,7 +490,11 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	}
 
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
@@ -525,7 +531,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 	}
 
-	GL_Cull( CT_FRONT_SIDED );
 	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 
 		// the textures are prescaled up for a better lighting range,
@@ -561,6 +566,8 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			tess.shader = &shader;
 			tess.xstages = shader.stages;
 			tess.dlightBits = 0;
+			shader.cullType = CT_FRONT_SIDED;
+			GL_Cull( shader.cullType );
 			RB_StageIteratorGenericTemp( &tess );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
@@ -581,8 +588,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 
 	if ( !qglMultiTexCoord2fARB ) {
 		R_RenderBrushPolyQ2( surf, image );
-		tess.numVertexes = 0;
-		tess.numIndexes = 0;
 		return;
 	}
 
@@ -609,7 +614,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		stage.bundle[ 0 ].texMods = &texmod;
 		stage.bundle[ 0 ].numTexMods = 1;
 	}
+	shader.cullType = CT_FRONT_SIDED;
 	tess.dlightBits = 0;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;

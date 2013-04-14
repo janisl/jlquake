@@ -1084,6 +1084,12 @@ void RB_StageIteratorGeneric() {
 }
 
 void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
+	// set polygon offset if necessary
+	if ( input->shader->polygonOffset ) {
+		qglEnable( GL_POLYGON_OFFSET_FILL );
+		qglPolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
+	}
+
 	//
 	// if there is only a single pass then we can enable color
 	// and texture arrays before we compile, otherwise we need

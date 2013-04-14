@@ -713,6 +713,8 @@ static void GL_DrawAliasShadow() {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -758,15 +760,15 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	//
 
 	bool doOverBright = !!r_drawOverBrights->integer;
-	GL_Cull( CT_FRONT_SIDED );
 	shader_t shader = {};
+	shader.cullType = CT_FRONT_SIDED;
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
 	shaderStage_t stage4 = {};
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
-			GL_Cull( CT_TWO_SIDED );
+			shader.cullType = CT_TWO_SIDED;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
 			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
@@ -852,11 +854,9 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 
-	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
-		GL_Cull( CT_FRONT_SIDED );
-	}
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }

@@ -122,8 +122,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.numIndexes = 6;
 	tess.numVertexes = 4;
 
-	GL_Cull( CT_FRONT_SIDED );
-
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -146,6 +144,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

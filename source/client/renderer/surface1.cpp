@@ -554,7 +554,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shader_t shader = {};
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	GL_Cull( CT_FRONT_SIDED );
 
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
 		//
@@ -581,6 +580,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage.bundle[ 0 ].numTexMods = 1;
 		shader.stages[ 0 ] = &stage;
 		tess.dlightBits = 0;
+		shader.cullType = CT_FRONT_SIDED;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -623,6 +624,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shader.stages[ 1 ] = &stage2;
 
 		tess.dlightBits = 0;
+		shader.cullType = CT_FRONT_SIDED;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -643,6 +646,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		shader.stages[ 0 ] = &stage1;
 		tess.dlightBits = 0;
+		shader.cullType = CT_FRONT_SIDED;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -668,6 +673,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		}
 
 		tess.dlightBits = 0;
+		shader.cullType = CT_FRONT_SIDED;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -732,6 +739,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		}
 
 		tess.dlightBits = 0;
+		shader.cullType = CT_FRONT_SIDED;
+		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;

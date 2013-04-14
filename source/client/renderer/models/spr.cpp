@@ -338,8 +338,6 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.numIndexes = 6;
 	tess.numVertexes = 4;
 
-	GL_Cull( CT_FRONT_SIDED );
-
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -357,6 +355,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
