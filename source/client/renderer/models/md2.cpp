@@ -262,6 +262,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -308,6 +309,7 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

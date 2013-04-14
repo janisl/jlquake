@@ -358,6 +358,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

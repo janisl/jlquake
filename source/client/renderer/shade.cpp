@@ -1061,9 +1061,6 @@ void RB_StageIteratorGeneric() {
 	//
 	// now do any dynamic lighting needed
 	//
-	//
-	// now do any dynamic lighting needed
-	//
 	if ( GGameType & GAME_ET ) {
 		if ( tess.dlightBits && tess.shader->fogPass &&
 			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
@@ -1114,6 +1111,32 @@ void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
 	// call shader function
 	//
 	RB_IterateStagesGeneric( input );
+
+	//
+	// now do any dynamic lighting needed
+	//
+	if ( GGameType & GAME_ET ) {
+		if ( tess.dlightBits && tess.shader->fogPass &&
+			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
+			if ( r_dynamiclight->integer == 2 ) {
+				DynamicLightPass();
+			} else {
+				DynamicLightSinglePass();
+			}
+		}
+	} else {
+		if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
+			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
+			ProjectDlightTexture();
+		}
+	}
+
+	//
+	// now do fog
+	//
+	if ( tess.fogNum && tess.shader->fogPass ) {
+		RB_FogPass();
+	}
 }
 
 void RB_StageIteratorVertexLitTexture() {
