@@ -991,7 +991,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	}
 
 	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
+		ambientlight = ent->e.absoluteLight * 128.0;
+		shadelight = 0;
 	}
 
 	ent->ambientLight[ 0 ] = ambientlight * 2;

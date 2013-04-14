@@ -654,11 +654,15 @@ static void RB_CalcColorFromEntityAbsoluteLight( byte* dstColors ) {
 		return;
 	}
 
+	int value = backEnd.currentEntity->e.absoluteLight * 255;
+	if ( value > 255 ) {
+		value = 255;
+	}
 	byte temp[ 4 ];
-	temp[ 0 ] = backEnd.currentEntity->e.absoluteLight * 255;
-	temp[ 1 ] = backEnd.currentEntity->e.absoluteLight * 255;
-	temp[ 2 ] = backEnd.currentEntity->e.absoluteLight * 255;
-	temp[ 3 ] = backEnd.currentEntity->e.absoluteLight * 255;	// this trashes alpha, but the AGEN block fixes it
+	temp[ 0 ] = value;
+	temp[ 1 ] = value;
+	temp[ 2 ] = value;
+	temp[ 3 ] = 255;	// this trashes alpha, but the AGEN block fixes it
 	int c = *( int* )temp;
 	int* pColors = ( int* )dstColors;
 

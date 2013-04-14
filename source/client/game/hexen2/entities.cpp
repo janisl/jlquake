@@ -929,7 +929,7 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 	int mls = drawFlags & H2MLS_MASKIN;
 	if ( mls == H2MLS_ABSLIGHT ) {
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
-		entity->absoluteLight = absoluteLight / 256.0;
+		entity->absoluteLight = absoluteLight / 128.0;
 	} else if ( mls != H2MLS_NONE )     {
 		// Use a model light style (25-30)
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
