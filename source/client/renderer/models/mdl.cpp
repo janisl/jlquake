@@ -673,13 +673,10 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage, int alpha ) {
-	ComputeColors( pStage );
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		tess.svars.colors[ i ][ 3 ] = alpha;
-	}
+static void GL_DrawAliasFrame( shaderStage_t* pStage ) {
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
+	ComputeColors( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	DisableArrays();
 }
@@ -786,32 +783,32 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	GL_Cull( CT_FRONT_SIDED );
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
-	int model_constant_alpha;
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
-			model_constant_alpha = 255;
 			GL_Cull( CT_TWO_SIDED );
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
+			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-			model_constant_alpha = r_wateralpha->value * 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage1.alphaGen = AGEN_CONST;
+			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT ) {
-			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
 		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY ) {
-			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
 		} else {
-			model_constant_alpha = 255;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE;
+			stage1.alphaGen = AGEN_IDENTITY;
 		}
 	} else {
-		model_constant_alpha = 255;
 		stage1.stateBits = GLS_DEFAULT;
+		stage1.alphaGen = AGEN_IDENTITY;
 	}
 
 	if ( ent->e.customSkin ) {
@@ -837,12 +834,13 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
 	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+	stage2.alphaGen = AGEN_IDENTITY;
 
-	GL_DrawAliasFrame( false, false, &stage1, model_constant_alpha );
+	GL_DrawAliasFrame( &stage1 );
 
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		GL_DrawAliasFrame( false, true, &stage2, model_constant_alpha );
+		GL_DrawAliasFrame( &stage2 );
 	}
 
 	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
@@ -856,7 +854,8 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		stage3.rgbGen = CGEN_IDENTITY;
-		GL_DrawAliasFrame( true, false, &stage3, model_constant_alpha );
+		stage3.alphaGen = AGEN_IDENTITY;
+		GL_DrawAliasFrame( &stage3 );
 	}
 
 	if ( ent->e.renderfx & RF_COLORSHADE ) {
