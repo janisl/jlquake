@@ -690,6 +690,9 @@ static void CalcMdlColours( bool overBrights ) {
 		float l = ambientLight[ 0 ] + dot * directedLight[ 0 ];
 		if ( overBrights ) {
 			l -= 256;
+			if ( l < 0 ) {
+				l = 0;
+			}
 		}
 		if ( l > 255 ) {
 			l = 255;
