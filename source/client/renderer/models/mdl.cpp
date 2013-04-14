@@ -673,7 +673,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
+static void CalcMdlColours( bool overBrights ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 	vec3_t ambientLight;
 	VectorCopy( ent->ambientLight, ambientLight );
@@ -683,21 +683,16 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 	VectorCopy( ent->lightDir, lightDir );
 
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float l;
-		if ( fullBrigts ) {
+		float dot = DotProduct( lightDir, tess.normal[ i ] );
+		if ( dot < 0 ) {
+			dot = 0;
+		}
+		float l = ambientLight[ 0 ] / 256 + dot * directedLight[ 0 ];
+		if ( overBrights ) {
+			l -= 1;
+		}
+		if ( l > 1 ) {
 			l = 1;
-		} else {
-			float dot = DotProduct( lightDir, tess.normal[ i ] );
-			if ( dot < 0 ) {
-				dot = 0;
-			}
-			l = ambientLight[ 0 ] / 256 + dot * directedLight[ 0 ];
-			if ( overBrights ) {
-				l -= 1;
-			}
-			if ( l > 1 ) {
-				l = 1;
-			}
 		}
 		tess.svars.colors[ i ][ 0 ] = 255 * l;
 		tess.svars.colors[ i ][ 1 ] = 255 * l;
@@ -706,7 +701,11 @@ static void CalcMdlColours( bool overBrights, bool fullBrigts ) {
 }
 
 static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage, int alpha ) {
-	CalcMdlColours( overBrights, fullBrigts );
+	if ( fullBrigts ) {
+		ComputeColors( pStage );
+	} else {
+		CalcMdlColours( overBrights );
+	}
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 3 ] = alpha;
 	}
@@ -885,6 +884,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stage3.rgbGen = CGEN_IDENTITY;
 		GL_DrawAliasFrame( true, false, &stage3, model_constant_alpha );
 	}
 
