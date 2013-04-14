@@ -687,16 +687,16 @@ static void CalcMdlColours( bool overBrights ) {
 		if ( dot < 0 ) {
 			dot = 0;
 		}
-		float l = ambientLight[ 0 ] / 256 + dot * directedLight[ 0 ];
+		float l = ambientLight[ 0 ] + dot * directedLight[ 0 ];
 		if ( overBrights ) {
-			l -= 1;
+			l -= 256;
 		}
-		if ( l > 1 ) {
-			l = 1;
+		if ( l > 255 ) {
+			l = 255;
 		}
-		tess.svars.colors[ i ][ 0 ] = 255 * l;
-		tess.svars.colors[ i ][ 1 ] = 255 * l;
-		tess.svars.colors[ i ][ 2 ] = 255 * l;
+		tess.svars.colors[ i ][ 0 ] = l;
+		tess.svars.colors[ i ][ 1 ] = l;
+		tess.svars.colors[ i ][ 2 ] = l;
 	}
 }
 
@@ -965,10 +965,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
 	}
 
-	shadelight = shadelight / 200.0;
-
 	ent->ambientLight[ 0 ] = ambientlight;
-	ent->directedLight[ 0 ] = shadelight;
+	ent->directedLight[ 0 ] = shadelight * 255 / 200;
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};
