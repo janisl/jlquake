@@ -968,8 +968,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		ambientlight = shadelight = ent->e.absoluteLight * 256.0;
 	}
 
-	ent->ambientLight[ 0 ] = ambientlight;
-	ent->directedLight[ 0 ] = shadelight * 255 / 200;
+	ent->ambientLight[ 0 ] = ambientlight * 2;
+	ent->directedLight[ 0 ] = shadelight * 2;
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};
