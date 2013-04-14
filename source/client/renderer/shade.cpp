@@ -514,6 +514,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 }
 
 void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage, int stage ) {
+		ComputeColors( pStage );
 		ComputeTexCoords( pStage );
 
 		if ( !setArraysOnce ) {

@@ -587,7 +587,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.alphaGen = AGEN_VERTEX;
 	setArraysOnce = true;
 	EnableArrays( 4 );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;

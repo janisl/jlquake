@@ -258,7 +258,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	}
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -301,7 +300,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	stage.constantColor[ 3 ] = 127;
 	setArraysOnce = true;
 	EnableArrays( paliashdr->numVertexes );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

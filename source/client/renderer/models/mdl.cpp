@@ -676,7 +676,6 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 static void GL_DrawAliasFrame( shaderStage_t* pStage ) {
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	DisableArrays();
 }
@@ -691,7 +690,6 @@ static void GL_DrawAliasFrameColourShade() {
 	stage.alphaGen = AGEN_ENTITY;
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 }
@@ -733,7 +731,6 @@ static void GL_DrawAliasShadow() {
 	stage.constantColor[ 3 ] = 127;
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

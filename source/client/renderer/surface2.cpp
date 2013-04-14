@@ -431,7 +431,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	pStage->rgbGen = CGEN_IDENTITY_LIGHTING;
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( pStage );
 	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
@@ -470,7 +469,6 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	}
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( &stage1 );
 	RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
 	DisableArrays();
 
@@ -492,7 +490,6 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 	stage2.bundle[ 0 ].isLightmap = true;
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( &stage2 );
 	RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
 	DisableArrays();
 }
@@ -564,7 +561,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			setArraysOnce = true;
 			EnableArrays( tess.numVertexes );
-			ComputeColors( &stage );
 			RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
@@ -616,7 +612,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
-	ComputeColors( &stage );
 	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
 	DisableArrays();
 	tess.numVertexes = 0;
