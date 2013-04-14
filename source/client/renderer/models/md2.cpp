@@ -256,8 +256,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		stage.alphaGen = AGEN_IDENTITY;
 		stage.stateBits = GLS_DEFAULT;
 	}
-	setArraysOnce = true;
-	EnableArrays( paliashdr->numVertexes );
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
@@ -266,7 +264,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	DisableArrays();
 }
 
 static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
@@ -303,8 +300,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	stage.rgbGen = CGEN_CONST;
 	stage.alphaGen = AGEN_CONST;
 	stage.constantColor[ 3 ] = 127;
-	setArraysOnce = true;
-	EnableArrays( paliashdr->numVertexes );
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
@@ -313,7 +308,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	DisableArrays();
 }
 
 static bool R_CullMd2Model( trRefEntity_t* e ) {

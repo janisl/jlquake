@@ -393,8 +393,6 @@ void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
 
-void EnableArrays( int numVertexes );
-void DisableArrays();
 void RB_StageIteratorGenericTemp( shaderCommands_t* input );
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
@@ -417,4 +415,3 @@ void RB_ShadowTessEnd();
 void RB_ShadowFinish();
 
 extern shaderCommands_t tess;
-extern bool setArraysOnce;

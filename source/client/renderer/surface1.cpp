@@ -579,14 +579,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage.bundle[ 0 ].texMods = &texmod;
 		stage.bundle[ 0 ].numTexMods = 1;
-		setArraysOnce = true;
-		EnableArrays( tess.numVertexes );
 		shader.stages[ 0 ] = &stage;
 		tess.dlightBits = 0;
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
-		DisableArrays();
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
@@ -625,11 +622,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shader.stages[ 0 ] = &stage1;
 		shader.stages[ 1 ] = &stage2;
 
-		setArraysOnce = false;
-		EnableArrays( tess.numVertexes );
 		tess.dlightBits = 0;
 		RB_StageIteratorGenericTemp( &tess );
-		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
@@ -647,14 +641,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		setArraysOnce = true;
-		EnableArrays( tess.numVertexes );
 		shader.stages[ 0 ] = &stage1;
 		tess.dlightBits = 0;
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
-		DisableArrays();
 	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		//
 		// absolute light poly
@@ -676,11 +667,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 1 ] = &stage3;
 		}
 
-		setArraysOnce = false;
-		EnableArrays( tess.numVertexes );
 		tess.dlightBits = 0;
 		RB_StageIteratorGenericTemp( &tess );
-		DisableArrays();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 	} else {
@@ -743,11 +731,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 2 ] = &stage3;
 		}
 
-		setArraysOnce = false;
-		EnableArrays( tess.numVertexes );
 		tess.dlightBits = 0;
 		RB_StageIteratorGenericTemp( &tess );
-		DisableArrays();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 	}

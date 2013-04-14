@@ -35,26 +35,7 @@
 
 shaderCommands_t tess;
 
-bool setArraysOnce;
-
-void EnableArrays( int numVertexes ) {
-	qglVertexPointer( 3, GL_FLOAT, 16, tess.xyz );	// padded for SIMD
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	if ( setArraysOnce ) {
-		qglEnableClientState( GL_COLOR_ARRAY );
-		qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
-	}
-	if ( qglLockArraysEXT && numVertexes ) {
-		qglLockArraysEXT( 0, numVertexes );
-		QGL_LogComment( "glLockArraysEXT\n" );
-	}
-}
-
-void DisableArrays() {
-	qglDisableClientState( GL_COLOR_ARRAY );
-	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
+static bool setArraysOnce;
 
 //	This is just for OpenGL conformance testing, it should never be the fastest
 static void APIENTRY R_ArrayElementDiscrete( GLint index ) {
@@ -1103,6 +1084,50 @@ void RB_StageIteratorGeneric() {
 }
 
 void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
+	//
+	// if there is only a single pass then we can enable color
+	// and texture arrays before we compile, otherwise we need
+	// to avoid compiling those arrays since they will change
+	// during multipass rendering
+	//
+	if ( tess.numPasses > 1 || input->shader->multitextureEnv ) {
+		setArraysOnce = false;
+		qglDisableClientState( GL_COLOR_ARRAY );
+		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	} else {
+		setArraysOnce = true;
+
+		qglEnableClientState( GL_COLOR_ARRAY );
+		qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
+
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
+	}
+
+	// RF, send normals only if required
+	// This must be done first, since we can't change the arrays once they have been
+	// locked
+	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
+		qglNormalPointer( GL_FLOAT, 16, input->normal );
+	}
+
+	//
+	// lock XYZ
+	//
+	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );	// padded for SIMD
+	if ( qglLockArraysEXT ) {
+		qglLockArraysEXT( 0, input->numVertexes );
+		QGL_LogComment( "glLockArraysEXT\n" );
+	}
+
+	//
+	// enable color and texcoord arrays after the lock if necessary
+	//
+	if ( !setArraysOnce ) {
+		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
+		qglEnableClientState( GL_COLOR_ARRAY );
+	}
+
 	//
 	// call shader function
 	//

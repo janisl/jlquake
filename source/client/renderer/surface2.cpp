@@ -429,8 +429,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 		pStage->bundle[ 0 ].numTexMods = 2;
 	}
 	pStage->rgbGen = CGEN_IDENTITY_LIGHTING;
-	setArraysOnce = true;
-	EnableArrays( tess.numVertexes );
 	shader_t shader = {};
 	shader.stages[ 0 ] = pStage;
 	tess.shader = &shader;
@@ -439,7 +437,6 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
-	DisableArrays();
 }
 
 static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
@@ -490,11 +487,8 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 		shader.stages[ 1 ] = &stage2;
 	}
 
-	setArraysOnce = false;
-	EnableArrays( tess.numVertexes );
 	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp( &tess );
-	DisableArrays();
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
@@ -562,8 +556,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			stage.alphaGen = AGEN_CONST;
 			stage.constantColor[ 3 ] = alpha;
 			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			setArraysOnce = true;
-			EnableArrays( tess.numVertexes );
 			shader_t shader = {};
 			shader.stages[ 0 ] = &stage;
 			tess.shader = &shader;
@@ -572,7 +564,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			RB_StageIteratorGenericTemp( &tess );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
-			DisableArrays();
 		}
 		return;
 	}
@@ -618,11 +609,8 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		stage.bundle[ 0 ].texMods = &texmod;
 		stage.bundle[ 0 ].numTexMods = 1;
 	}
-	setArraysOnce = false;
-	EnableArrays( tess.numVertexes );
 	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp( &tess );
-	DisableArrays();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 }

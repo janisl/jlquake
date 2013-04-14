@@ -593,8 +593,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	stage.rgbGen = CGEN_VERTEX;
 	stage.alphaGen = AGEN_VERTEX;
-	setArraysOnce = true;
-	EnableArrays( 4 );
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
@@ -603,7 +601,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
-	DisableArrays();
 
 	return ( const void* )( cmd + 1 );
 }

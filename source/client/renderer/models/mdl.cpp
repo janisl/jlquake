@@ -708,8 +708,6 @@ static void GL_DrawAliasShadow() {
 	stage.rgbGen = CGEN_CONST;
 	stage.alphaGen = AGEN_CONST;
 	stage.constantColor[ 3 ] = 127;
-	setArraysOnce = true;
-	EnableArrays( tess.numVertexes );
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
@@ -718,7 +716,6 @@ static void GL_DrawAliasShadow() {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	DisableArrays();
 }
 
 float R_CalcEntityLight( refEntity_t* e ) {
@@ -852,8 +849,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		shader.stages[ numStages++ ] = &stage4;
 	}
 
-	setArraysOnce = false;
-	EnableArrays( tess.numVertexes );
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
@@ -862,7 +857,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
-	DisableArrays();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }

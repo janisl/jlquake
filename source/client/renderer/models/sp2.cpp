@@ -141,8 +141,6 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 		stage.alphaGen = AGEN_IDENTITY;
 		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
 	}
-	setArraysOnce = true;
-	EnableArrays( 4 );
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
@@ -151,5 +149,4 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	DisableArrays();
 }
