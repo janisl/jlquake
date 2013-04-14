@@ -673,27 +673,6 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void GL_DrawAliasFrame( shaderStage_t* pStage ) {
-	setArraysOnce = true;
-	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, pStage, 0 );
-	DisableArrays();
-}
-
-static void GL_DrawAliasFrameColourShade() {
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage.rgbGen = CGEN_ENTITY;
-	stage.alphaGen = AGEN_ENTITY;
-	setArraysOnce = true;
-	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
-	DisableArrays();
-}
-
 static void GL_DrawAliasShadow() {
 	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
 
@@ -731,7 +710,11 @@ static void GL_DrawAliasShadow() {
 	stage.constantColor[ 3 ] = 127;
 	setArraysOnce = true;
 	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	RB_IterateStagesGenericTemp( &tess, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();
@@ -778,8 +761,11 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 
 	bool doOverBright = !!r_drawOverBrights->integer;
 	GL_Cull( CT_FRONT_SIDED );
+	shader_t shader = {};
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
+	shaderStage_t stage3 = {};
+	shaderStage_t stage4 = {};
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			GL_Cull( CT_TWO_SIDED );
@@ -833,15 +819,15 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
 	stage2.alphaGen = AGEN_IDENTITY;
 
-	GL_DrawAliasFrame( &stage1 );
+	int numStages = 0;
+	shader.stages[ numStages++ ] = &stage1;
 
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		GL_DrawAliasFrame( &stage2 );
+		shader.stages[ numStages++ ] = &stage2;
 	}
 
 	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
-		shaderStage_t stage3 = {};
 		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ];
 		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 1 ];
 		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 2 ];
@@ -852,16 +838,31 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		stage3.rgbGen = CGEN_IDENTITY;
 		stage3.alphaGen = AGEN_IDENTITY;
-		GL_DrawAliasFrame( &stage3 );
+		shader.stages[ numStages++ ] = &stage3;
 	}
 
 	if ( ent->e.renderfx & RF_COLORSHADE ) {
-		GL_DrawAliasFrameColourShade();
+		stage4.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+		stage4.bundle[ 0 ].numImageAnimations = 1;
+		stage4.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage4.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stage4.rgbGen = CGEN_ENTITY;
+		stage4.alphaGen = AGEN_ENTITY;
+		shader.stages[ numStages++ ] = &stage4;
+	}
+
+	setArraysOnce = false;
+	EnableArrays( tess.numVertexes );
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	for ( int i = 0; i < numStages; i++ ) {
+		RB_IterateStagesGenericTemp( &tess, i );
 	}
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );
 	}
+	DisableArrays();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }

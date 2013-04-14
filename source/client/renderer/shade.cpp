@@ -513,7 +513,13 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	}
 }
 
-void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage, int stage ) {
+void RB_IterateStagesGenericTemp( shaderCommands_t* input, int stage ) {
+		shaderStage_t* pStage = tess.xstages[ stage ];
+
+		if ( !pStage ) {
+			return;//break;
+		}
+
 		ComputeColors( pStage );
 		ComputeTexCoords( pStage );
 

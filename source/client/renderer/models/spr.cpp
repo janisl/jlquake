@@ -354,7 +354,11 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	setArraysOnce = true;
 	EnableArrays( 4 );
-	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	RB_IterateStagesGenericTemp( &tess, 0 );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();

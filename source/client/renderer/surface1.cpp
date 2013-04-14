@@ -515,50 +515,6 @@ dynamic:
 	}
 }
 
-//	Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
-static void EmitWaterPolysQ1( mbrush29_surface_t* fa ) {
-	shaderStage_t stage = {};
-	stage.rgbGen = CGEN_IDENTITY;
-	if ( ( GGameType & GAME_Quake ) || ( fa->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-		stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		stage.alphaGen = AGEN_CONST;
-		stage.constantColor[ 3 ] = r_wateralpha->value * 255;
-	} else {
-		stage.stateBits = GLS_DEFAULT;
-		stage.alphaGen = AGEN_IDENTITY;
-	}
-	texModInfo_t texmod = {};
-	texmod.type = TMOD_TURBULENT_OLD;
-	texmod.wave.frequency = 1.0f / idMath::TWO_PI;
-	texmod.wave.amplitude = 1.0f / 8.0f;
-	stage.bundle[ 0 ].image[ 0 ] = fa->texinfo->texture->gl_texture;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.bundle[ 0 ].texMods = &texmod;
-	stage.bundle[ 0 ].numTexMods = 1;
-	setArraysOnce = true;
-	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, &stage, 0 );
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-	DisableArrays();
-}
-
-static void R_DrawFullBrightPoly( mbrush29_surface_t* s ) {
-	shaderStage_t stage = {};
-	if ( !R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage.bundle[ 0 ] ) ) {
-		return;
-	}
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_IDENTITY;
-	stage.alphaGen = AGEN_IDENTITY;
-	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	setArraysOnce = false;
-	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, &stage, 2 );
-	DisableArrays();
-}
-
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
@@ -604,7 +560,32 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// subdivided water surface warp
 		//
-		EmitWaterPolysQ1( s );
+		shaderStage_t stage = {};
+		stage.rgbGen = CGEN_IDENTITY;
+		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
+			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage.alphaGen = AGEN_CONST;
+			stage.constantColor[ 3 ] = r_wateralpha->value * 255;
+		} else {
+			stage.stateBits = GLS_DEFAULT;
+			stage.alphaGen = AGEN_IDENTITY;
+		}
+		texModInfo_t texmod = {};
+		texmod.type = TMOD_TURBULENT_OLD;
+		texmod.wave.frequency = 1.0f / idMath::TWO_PI;
+		texmod.wave.amplitude = 1.0f / 8.0f;
+		stage.bundle[ 0 ].image[ 0 ] = s->texinfo->texture->gl_texture;
+		stage.bundle[ 0 ].numImageAnimations = 1;
+		stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage.bundle[ 0 ].texMods = &texmod;
+		stage.bundle[ 0 ].numTexMods = 1;
+		setArraysOnce = true;
+		EnableArrays( tess.numVertexes );
+		shader.stages[ 0 ] = &stage;
+		RB_IterateStagesGenericTemp( &tess, 0 );
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
+		DisableArrays();
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
@@ -622,7 +603,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.stateBits = GLS_DEFAULT;
 		stage1.rgbGen = CGEN_IDENTITY;
 		stage1.alphaGen = AGEN_IDENTITY;
-		EmitSkyPolys( s, &stage1, 0 );
 
 		shaderStage_t stage2 = {};
 		texModInfo_t texmod2;
@@ -637,7 +617,18 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		stage2.rgbGen = CGEN_IDENTITY;
 		stage2.alphaGen = AGEN_IDENTITY;
-		EmitSkyPolys( s, &stage2, 1 );
+
+		shader_t shader;
+		tess.shader = &shader;
+		tess.xstages = shader.stages;
+		shader.stages[ 0 ] = &stage1;
+		shader.stages[ 1 ] = &stage2;
+
+		setArraysOnce = false;
+		EnableArrays( tess.numVertexes );
+		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_IterateStagesGenericTemp( &tess, 1 );
+		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
@@ -657,7 +648,8 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
+		shader.stages[ 0 ] = &stage1;
+		RB_IterateStagesGenericTemp( &tess, 0 );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		DisableArrays();
@@ -671,12 +663,22 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.alphaGen = AGEN_IDENTITY;
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		shader.stages[ 0 ] = &stage1;
+
+		shaderStage_t stage3 = {};
+		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
+			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+			stage3.rgbGen = CGEN_IDENTITY;
+			stage3.alphaGen = AGEN_IDENTITY;
+			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			shader.stages[ 1 ] = &stage3;
+		}
+
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
+		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_IterateStagesGenericTemp( &tess, 1 );
 		DisableArrays();
-
-		R_DrawFullBrightPoly( s );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 	} else {
@@ -684,11 +686,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		// normal lightmaped poly
 		//
 		R_RenderDynamicLightmaps( s );
+		shaderStage_t stage1 = {};
+		shaderStage_t stage2 = {};
 		if ( qglActiveTextureARB ) {
 			shader.multitextureEnv = GL_MODULATE;
 
-			// Binds world to texture env 0
-			shaderStage_t stage1 = {};
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 
 			stage1.rgbGen = CGEN_IDENTITY;
@@ -698,14 +700,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
 			stage1.bundle[ 1 ].numImageAnimations = 1;
 			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-			setArraysOnce = false;
-			EnableArrays( tess.numVertexes );
-			tess.xstages[ 0 ] = &stage1;
-			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
-			DisableArrays();
+			shader.stages[ 0 ] = &stage1;
 
 			if ( r_drawOverBrights->integer ) {
-				shaderStage_t stage2 = {};
 				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
 				stage2.rgbGen = CGEN_IDENTITY;
 				stage2.alphaGen = AGEN_IDENTITY;
@@ -714,25 +711,15 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
 				stage2.bundle[ 1 ].numImageAnimations = 1;
 				stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-				setArraysOnce = false;
-				EnableArrays( tess.numVertexes );
-				tess.xstages[ 1 ] = &stage2;
-				RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
-				DisableArrays();
+				shader.stages[ 1 ] = &stage2;
 			}
 		} else {
-			shaderStage_t stage1 = {};
 			stage1.rgbGen = CGEN_IDENTITY;
 			stage1.alphaGen = AGEN_IDENTITY;
 			stage1.stateBits = GLS_DEFAULT;
 			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 			stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			setArraysOnce = false;
-			EnableArrays( tess.numVertexes );
-			RB_IterateStagesGenericTemp( &tess, &stage1, 0 );
-			DisableArrays();
 
-			shaderStage_t stage2 = {};
 			stage2.rgbGen = CGEN_IDENTITY;
 			stage2.alphaGen = AGEN_IDENTITY;
 			stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
@@ -740,13 +727,26 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage2.bundle[ 0 ].numImageAnimations = 1;
 			stage2.bundle[ 0 ].isLightmap = true;
 			stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-			setArraysOnce = false;
-			EnableArrays( tess.numVertexes );
-			RB_IterateStagesGenericTemp( &tess, &stage2, 1 );
-			DisableArrays();
+
+			shader.stages[ 0 ] = &stage1;
+			shader.stages[ 1 ] = &stage2;
 		}
 
-		R_DrawFullBrightPoly( s );
+		shaderStage_t stage3 = {};
+		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
+			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+			stage3.rgbGen = CGEN_IDENTITY;
+			stage3.alphaGen = AGEN_IDENTITY;
+			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			shader.stages[ 2 ] = &stage3;
+		}
+
+		setArraysOnce = false;
+		EnableArrays( tess.numVertexes );
+		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_IterateStagesGenericTemp( &tess, 1 );
+		RB_IterateStagesGenericTemp( &tess, 2 );
+		DisableArrays();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 	}

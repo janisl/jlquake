@@ -395,7 +395,7 @@ void R_BackupShaders();
 
 void EnableArrays( int numVertexes );
 void DisableArrays();
-void RB_IterateStagesGenericTemp( shaderCommands_t* input, shaderStage_t* pStage, int stage );
+void RB_IterateStagesGenericTemp( shaderCommands_t* input, int stage );
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();
