@@ -54,10 +54,6 @@ void EnableArrays( int numVertexes ) {
 void DisableArrays() {
 	qglDisableClientState( GL_COLOR_ARRAY );
 	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		QGL_LogComment( "glUnlockArraysEXT\n" );
-	}
 }
 
 //	This is just for OpenGL conformance testing, it should never be the fastest
@@ -1136,6 +1132,27 @@ void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
 	//
 	if ( tess.fogNum && tess.shader->fogPass ) {
 		RB_FogPass();
+	}
+
+	//
+	// unlock arrays
+	//
+	if ( qglUnlockArraysEXT ) {
+		qglUnlockArraysEXT();
+		QGL_LogComment( "glUnlockArraysEXT\n" );
+	}
+
+	//
+	// reset polygon offset
+	//
+	if ( input->shader->polygonOffset ) {
+		qglDisable( GL_POLYGON_OFFSET_FILL );
+	}
+
+	// turn truform back off
+	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
+		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
+		qglDisableClientState( GL_NORMAL_ARRAY );
 	}
 }
 
