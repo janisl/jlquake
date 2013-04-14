@@ -673,7 +673,9 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void CalcMdlColours( bool overBrights ) {
+static void CalcMdlOverBrightColours() {
+	byte* colors = tess.svars.colors[ 0 ];
+
 	trRefEntity_t* ent = backEnd.currentEntity;
 	vec3_t ambientLight;
 	VectorCopy( ent->ambientLight, ambientLight );
@@ -682,32 +684,55 @@ static void CalcMdlColours( bool overBrights ) {
 	vec3_t lightDir;
 	VectorCopy( ent->lightDir, lightDir );
 
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		float dot = DotProduct( lightDir, tess.normal[ i ] );
-		if ( dot < 0 ) {
-			dot = 0;
+	float* normal = tess.normal[ 0 ];
+
+	int numVertexes = tess.numVertexes;
+	for ( int i = 0; i < numVertexes; i++, normal += 4 ) {
+		float incoming = DotProduct( normal, lightDir );
+		if ( incoming <= 0 ) {
+			*( int* )&colors[ i * 4 ] = 0;
+			continue;
 		}
-		float l = ambientLight[ 0 ] + dot * directedLight[ 0 ];
-		if ( overBrights ) {
-			l -= 256;
-			if ( l < 0 ) {
-				l = 0;
-			}
+
+		int j = idMath::FtoiFast( ambientLight[ 0 ] + incoming * directedLight[ 0 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
 		}
-		if ( l > 255 ) {
-			l = 255;
+		if ( j > 255 ) {
+			j = 255;
 		}
-		tess.svars.colors[ i ][ 0 ] = l;
-		tess.svars.colors[ i ][ 1 ] = l;
-		tess.svars.colors[ i ][ 2 ] = l;
+		colors[ i * 4 + 0 ] = j;
+
+		j = idMath::FtoiFast( ambientLight[ 1 ] + incoming * directedLight[ 1 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
+		}
+		if ( j > 255 ) {
+			j = 255;
+		}
+		colors[ i * 4 + 1 ] = j;
+
+		j = idMath::FtoiFast( ambientLight[ 2 ] + incoming * directedLight[ 2 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
+		}
+		if ( j > 255 ) {
+			j = 255;
+		}
+		colors[ i * 4 + 2 ] = j;
+
+		colors[ i * 4 + 3 ] = 255;
 	}
 }
 
 static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage, int alpha ) {
-	if ( fullBrigts ) {
-		ComputeColors( pStage );
+	if ( overBrights ) {
+		CalcMdlOverBrightColours();
 	} else {
-		CalcMdlColours( overBrights );
+		ComputeColors( pStage );
 	}
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 3 ] = alpha;
@@ -869,6 +894,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	}
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
 
 	GL_DrawAliasFrame( false, false, &stage1, model_constant_alpha );
 
@@ -969,7 +995,24 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	}
 
 	ent->ambientLight[ 0 ] = ambientlight * 2;
+	ent->ambientLight[ 1 ] = ambientlight * 2;
+	ent->ambientLight[ 2 ] = ambientlight * 2;
 	ent->directedLight[ 0 ] = shadelight * 2;
+	ent->directedLight[ 1 ] = shadelight * 2;
+	ent->directedLight[ 2 ] = shadelight * 2;
+
+	// clamp ambient
+	for ( int i = 0; i < 3; i++ ) {
+		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
+			ent->ambientLight[ i ] = tr.identityLightByte;
+		}
+	}
+
+	// save out the byte packet version
+	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
+	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
+	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
+	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
 
 	// transform the direction to local space
 	float lightDir[3] = {1, 0, 1};
