@@ -129,7 +129,7 @@ static void R_DrawParticleTriangles() {
 		{
 			setArraysOnce = true;
 			EnableArrays( tess.numVertexes );
-			RB_IterateStagesGenericTemp( &tess, 0 );
+			RB_StageIteratorGenericTemp( &tess );
 			DisableArrays();
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -162,7 +162,7 @@ static void R_DrawParticleTriangles() {
 	{
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_StageIteratorGenericTemp( &tess );
 		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

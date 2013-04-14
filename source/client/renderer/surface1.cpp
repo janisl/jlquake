@@ -582,7 +582,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
 		shader.stages[ 0 ] = &stage;
-		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		DisableArrays();
@@ -626,8 +626,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, 0 );
-		RB_IterateStagesGenericTemp( &tess, 1 );
+		RB_StageIteratorGenericTemp( &tess );
 		DisableArrays();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -649,7 +648,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		setArraysOnce = true;
 		EnableArrays( tess.numVertexes );
 		shader.stages[ 0 ] = &stage1;
-		RB_IterateStagesGenericTemp( &tess, 0 );
+		RB_StageIteratorGenericTemp( &tess );
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 		DisableArrays();
@@ -676,8 +675,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, 0 );
-		RB_IterateStagesGenericTemp( &tess, 1 );
+		RB_StageIteratorGenericTemp( &tess );
 		DisableArrays();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -743,9 +741,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		setArraysOnce = false;
 		EnableArrays( tess.numVertexes );
-		RB_IterateStagesGenericTemp( &tess, 0 );
-		RB_IterateStagesGenericTemp( &tess, 1 );
-		RB_IterateStagesGenericTemp( &tess, 2 );
+		RB_StageIteratorGenericTemp( &tess );
 		DisableArrays();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;

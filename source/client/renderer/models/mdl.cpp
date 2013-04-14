@@ -714,7 +714,7 @@ static void GL_DrawAliasShadow() {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	RB_IterateStagesGenericTemp( &tess, 0 );
+	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();
@@ -855,9 +855,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	EnableArrays( tess.numVertexes );
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	for ( int i = 0; i < numStages; i++ ) {
-		RB_IterateStagesGenericTemp( &tess, i );
-	}
+	RB_StageIteratorGenericTemp( &tess );
 
 	if ( ( GGameType & GAME_Hexen2 ) && ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) ) {
 		GL_Cull( CT_FRONT_SIDED );

@@ -147,7 +147,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	shader.stages[ 0 ] = &stage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	RB_IterateStagesGenericTemp( &tess, 0 );
+	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 	DisableArrays();

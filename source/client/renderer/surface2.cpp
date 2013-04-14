@@ -435,7 +435,7 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	shader.stages[ 0 ] = pStage;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	RB_IterateStagesGenericTemp( &tess, 0 );
+	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 	DisableArrays();
@@ -491,8 +491,7 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, 0 );
-	RB_IterateStagesGenericTemp( &tess, 1 );
+	RB_StageIteratorGenericTemp( &tess );
 	DisableArrays();
 }
 
@@ -567,7 +566,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			shader.stages[ 0 ] = &stage;
 			tess.shader = &shader;
 			tess.xstages = shader.stages;
-			RB_IterateStagesGenericTemp( &tess, 0 );
+			RB_StageIteratorGenericTemp( &tess );
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
 			DisableArrays();
@@ -618,7 +617,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	setArraysOnce = false;
 	EnableArrays( tess.numVertexes );
-	RB_IterateStagesGenericTemp( &tess, 0 );
+	RB_StageIteratorGenericTemp( &tess );
 	DisableArrays();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;

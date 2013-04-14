@@ -513,93 +513,6 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 	}
 }
 
-void RB_IterateStagesGenericTemp( shaderCommands_t* input, int stage ) {
-		shaderStage_t* pStage = tess.xstages[ stage ];
-
-		if ( !pStage ) {
-			return;//break;
-		}
-
-		ComputeColors( pStage );
-		ComputeTexCoords( pStage );
-
-		if ( !setArraysOnce ) {
-			qglEnableClientState( GL_COLOR_ARRAY );
-			qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, input->svars.colors );
-		}
-
-		//
-		// do multitexture
-		//
-		if ( pStage->bundle[ 1 ].image[ 0 ] != 0 ) {
-			DrawMultitextured( input, stage );
-		} else {
-			if ( !setArraysOnce ) {
-				qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[ 0 ] );
-			}
-
-			//
-			// set state
-			//
-			if ( pStage->bundle[ 0 ].vertexLightmap && r_vertexLight->integer && !r_uiFullScreen->integer && r_lightmap->integer ) {
-				GL_Bind( tr.whiteImage );
-			} else {
-				R_BindAnimatedImage( &pStage->bundle[ 0 ] );
-			}
-
-			// Ridah, per stage fogging (detail textures)
-			if ( tess.shader->noFog && pStage->isFogged ) {
-				R_FogOn();
-			} else if ( tess.shader->noFog && !pStage->isFogged ) {
-				R_FogOff();	// turn it back off
-			} else {	// make sure it's on
-				R_FogOn();
-			}
-
-			int fadeStart = backEnd.currentEntity->e.fadeStartTime;
-			if ( fadeStart ) {
-				int fadeEnd = backEnd.currentEntity->e.fadeEndTime;
-				if ( fadeStart > tr.refdef.time ) {
-					// has not started to fade yet
-					GL_State( pStage->stateBits );
-				} else {
-					if ( fadeEnd < tr.refdef.time ) {	// entity faded out completely
-						return;//continue;
-					}
-
-					float alphaval = ( float )( fadeEnd - tr.refdef.time ) / ( float )( fadeEnd - fadeStart );
-
-					unsigned int tempState = pStage->stateBits;
-					// remove the current blend, and don't write to Z buffer
-					tempState &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE );
-					// set the blend to src_alpha, dst_one_minus_src_alpha
-					tempState |= ( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-					GL_State( tempState );
-					GL_Cull( CT_FRONT_SIDED );
-					// modulate the alpha component of each vertex in the render list
-					for ( int i = 0; i < tess.numVertexes; i++ ) {
-						tess.svars.colors[ i ][ 0 ] *= alphaval;
-						tess.svars.colors[ i ][ 1 ] *= alphaval;
-						tess.svars.colors[ i ][ 2 ] *= alphaval;
-						tess.svars.colors[ i ][ 3 ] *= alphaval;
-					}
-				}
-			} else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )           {
-				// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
-				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
-										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
-				GL_State( stateBits );
-			} else {
-				GL_State( pStage->stateBits );
-			}
-
-			//
-			// draw
-			//
-			R_DrawElements( input->numIndexes, input->indexes );
-		}
-}
-
 //	Perform dynamic lighting with another rendering pass
 static void ProjectDlightTexture() {
 	if ( !backEnd.refdef.num_dlights ) {
@@ -1194,6 +1107,13 @@ void RB_StageIteratorGeneric() {
 		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
 		qglDisableClientState( GL_NORMAL_ARRAY );
 	}
+}
+
+void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
+	//
+	// call shader function
+	//
+	RB_IterateStagesGeneric( input );
 }
 
 void RB_StageIteratorVertexLitTexture() {
