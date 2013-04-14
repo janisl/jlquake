@@ -673,67 +673,8 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void CalcMdlOverBrightColours() {
-	byte* colors = tess.svars.colors[ 0 ];
-
-	trRefEntity_t* ent = backEnd.currentEntity;
-	vec3_t ambientLight;
-	VectorCopy( ent->ambientLight, ambientLight );
-	vec3_t directedLight;
-	VectorCopy( ent->directedLight, directedLight );
-	vec3_t lightDir;
-	VectorCopy( ent->lightDir, lightDir );
-
-	float* normal = tess.normal[ 0 ];
-
-	int numVertexes = tess.numVertexes;
-	for ( int i = 0; i < numVertexes; i++, normal += 4 ) {
-		float incoming = DotProduct( normal, lightDir );
-		if ( incoming <= 0 ) {
-			*( int* )&colors[ i * 4 ] = 0;
-			continue;
-		}
-
-		int j = idMath::FtoiFast( ambientLight[ 0 ] + incoming * directedLight[ 0 ] );
-		j -= 256;
-		if ( j < 0 ) {
-			j = 0;
-		}
-		if ( j > 255 ) {
-			j = 255;
-		}
-		colors[ i * 4 + 0 ] = j;
-
-		j = idMath::FtoiFast( ambientLight[ 1 ] + incoming * directedLight[ 1 ] );
-		j -= 256;
-		if ( j < 0 ) {
-			j = 0;
-		}
-		if ( j > 255 ) {
-			j = 255;
-		}
-		colors[ i * 4 + 1 ] = j;
-
-		j = idMath::FtoiFast( ambientLight[ 2 ] + incoming * directedLight[ 2 ] );
-		j -= 256;
-		if ( j < 0 ) {
-			j = 0;
-		}
-		if ( j > 255 ) {
-			j = 255;
-		}
-		colors[ i * 4 + 2 ] = j;
-
-		colors[ i * 4 + 3 ] = 255;
-	}
-}
-
 static void GL_DrawAliasFrame( bool fullBrigts, bool overBrights, shaderStage_t* pStage, int alpha ) {
-	if ( overBrights ) {
-		CalcMdlOverBrightColours();
-	} else {
-		ComputeColors( pStage );
-	}
+	ComputeColors( pStage );
 	for ( int i = 0; i < tess.numVertexes; i++ ) {
 		tess.svars.colors[ i ][ 3 ] = alpha;
 	}
@@ -844,6 +785,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	bool doOverBright = !!r_drawOverBrights->integer;
 	GL_Cull( CT_FRONT_SIDED );
 	shaderStage_t stage1 = {};
+	shaderStage_t stage2 = {};
 	int model_constant_alpha;
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
@@ -872,7 +814,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		stage1.stateBits = GLS_DEFAULT;
 	}
 
-	shaderStage_t stage2 = {};
 	if ( ent->e.customSkin ) {
 		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
 		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
@@ -895,6 +836,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
+	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
 
 	GL_DrawAliasFrame( false, false, &stage1, model_constant_alpha );
 

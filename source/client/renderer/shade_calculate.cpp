@@ -591,6 +591,59 @@ void RB_CalcDiffuseColor( byte* colors ) {
 	}
 }
 
+void RB_CalcDiffuseOverBrightColor( byte* colors ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t ambientLight;
+	VectorCopy( ent->ambientLight, ambientLight );
+	vec3_t directedLight;
+	VectorCopy( ent->directedLight, directedLight );
+	vec3_t lightDir;
+	VectorCopy( ent->lightDir, lightDir );
+
+	float* normal = tess.normal[ 0 ];
+
+	int numVertexes = tess.numVertexes;
+	for ( int i = 0; i < numVertexes; i++, normal += 4 ) {
+		float incoming = DotProduct( normal, lightDir );
+		if ( incoming <= 0 ) {
+			*( int* )&colors[ i * 4 ] = 0;
+			continue;
+		}
+
+		int j = idMath::FtoiFast( ambientLight[ 0 ] + incoming * directedLight[ 0 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
+		}
+		if ( j > 255 ) {
+			j = 255;
+		}
+		colors[ i * 4 + 0 ] = j;
+
+		j = idMath::FtoiFast( ambientLight[ 1 ] + incoming * directedLight[ 1 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
+		}
+		if ( j > 255 ) {
+			j = 255;
+		}
+		colors[ i * 4 + 1 ] = j;
+
+		j = idMath::FtoiFast( ambientLight[ 2 ] + incoming * directedLight[ 2 ] );
+		j -= 256;
+		if ( j < 0 ) {
+			j = 0;
+		}
+		if ( j > 255 ) {
+			j = 255;
+		}
+		colors[ i * 4 + 2 ] = j;
+
+		colors[ i * 4 + 3 ] = 255;
+	}
+}
+
 static void RB_CalcWaveColor( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
@@ -915,6 +968,10 @@ void ComputeColors( shaderStage_t* pStage ) {
 
 	case CGEN_LIGHTING_DIFFUSE:
 		RB_CalcDiffuseColor( ( byte* )tess.svars.colors );
+		break;
+
+	case CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT:
+		RB_CalcDiffuseOverBrightColor( ( byte* )tess.svars.colors );
 		break;
 
 	case CGEN_EXACT_VERTEX:

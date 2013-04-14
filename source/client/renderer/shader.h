@@ -123,6 +123,7 @@ enum colorGen_t
 	CGEN_ONE_MINUS_VERTEX,
 	CGEN_WAVEFORM,			// programmatically generated
 	CGEN_LIGHTING_DIFFUSE,
+	CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT,
 	CGEN_FOG,				// standard fog
 	CGEN_CONST,				// fixed color
 	CGEN_ENTITY_ABSOLUTE_LIGHT,
