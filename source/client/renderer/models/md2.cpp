@@ -228,11 +228,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		qglScalef( -1, 1, 1 );
 		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
 		qglMatrixMode( GL_MODELVIEW );
-
-		GL_Cull( CT_BACK_SIDED );
 	}
-	else
-		GL_Cull( CT_FRONT_SIDED );
 
 	tess.numVertexes = paliashdr->numVertexes;
 	tess.numIndexes = paliashdr->numIndexes;
@@ -276,9 +272,21 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	}
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
+	shader.cullType = CT_FRONT_SIDED;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
+	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
+		if ( shader.cullType == CT_FRONT_SIDED ) {
+			GL_Cull( CT_BACK_SIDED );
+		} else if ( shader.cullType == CT_BACK_SIDED ) {
+			GL_Cull( CT_FRONT_SIDED );
+		} else {
+			GL_Cull( CT_TWO_SIDED );
+		}
+	} else {
+		GL_Cull( shader.cullType );
+	}
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
