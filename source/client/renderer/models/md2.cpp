@@ -195,142 +195,6 @@ void Mod_FreeMd2Model( model_t* mod ) {
 	Mem_Free( mod->q2_md2 );
 }
 
-static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
-	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
-	for ( int i = 0; i < paliashdr->numVertexes; i++, lerp += 4, normals += 4 ) {
-		lerp[ 0 ] = move[ 0 ] + ov[ i ].v[ 0 ] * backv[ 0 ] + v[ i ].v[ 0 ] * frontv[ 0 ];
-		lerp[ 1 ] = move[ 1 ] + ov[ i ].v[ 1 ] * backv[ 1 ] + v[ i ].v[ 1 ] * frontv[ 1 ];
-		lerp[ 2 ] = move[ 2 ] + ov[ i ].v[ 2 ] * backv[ 2 ] + v[ i ].v[ 2 ] * frontv[ 2 ];
-		const float* normal = bytedirs[ v[ i ].lightnormalindex ];
-		VectorCopy( normal, normals );
-		if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-			lerp[ 0 ] += normal[ 0 ] * POWERSUIT_SCALE;
-			lerp[ 1 ] += normal[ 1 ] * POWERSUIT_SCALE;
-			lerp[ 2 ] += normal[ 2 ] * POWERSUIT_SCALE;
-		}
-		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
-	}
-}
-
-//	interpolates between two frames and origins
-//	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	//
-	// draw all the triangles
-	//
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPushMatrix();
-		qglLoadIdentity();
-		qglScalef( -1, 1, 1 );
-		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
-		qglMatrixMode( GL_MODELVIEW );
-	}
-
-	tess.numVertexes = paliashdr->numVertexes;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-
-	// select skin
-	image_t* skin;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		skin = tr.whiteImage;
-	} else  if ( backEnd.currentEntity->e.customSkin ) {
-		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
-	} else {
-		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-		} else {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
-			if ( !skin ) {
-				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-			}
-		}
-	}
-	if ( !skin ) {
-		skin = tr.defaultImage;	// fallback...
-	}
-
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = skin;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		stage.rgbGen = CGEN_ENTITY;
-	} else {
-		stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	}
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		stage.alphaGen = AGEN_ENTITY;
-		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		stage.alphaGen = AGEN_IDENTITY;
-		stage.stateBits = GLS_DEFAULT;
-	}
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPopMatrix();
-		qglMatrixMode( GL_MODELVIEW );
-	}
- }
-
-static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
-	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
-
-	float height = -lheight + 1.0;
-
-	vec3_t shadevector;
-	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
-	shadevector[ 2 ] = 1;
-	VectorNormalize( shadevector );
-
-	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
-		vec3_t point;
-		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
-
-		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
-		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
-		point[ 2 ] = height;
-		tess.xyz[ i ][ 0 ] = point[ 0 ];
-		tess.xyz[ i ][ 1 ] = point[ 1 ];
-		tess.xyz[ i ][ 2 ] = point[ 2 ];
-	}
-
-	tess.numVertexes = paliashdr->numVertexes;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
-	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage.rgbGen = CGEN_CONST;
-	stage.alphaGen = AGEN_CONST;
-	stage.constantColor[ 3 ] = 127;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	shader.cullType = CT_FRONT_SIDED;
-	RB_StageIteratorGenericTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-}
-
 static bool R_CullMd2Model( trRefEntity_t* e ) {
 	mmd2_t* paliashdr = tr.currentModel->q2_md2;
 
@@ -401,6 +265,137 @@ void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
+}
+
+static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t* ov,
+	float* lerp, float* normals, float move[ 3 ], float frontv[ 3 ], float backv[ 3 ] ) {
+	for ( int i = 0; i < paliashdr->numVertexes; i++, lerp += 4, normals += 4 ) {
+		lerp[ 0 ] = move[ 0 ] + ov[ i ].v[ 0 ] * backv[ 0 ] + v[ i ].v[ 0 ] * frontv[ 0 ];
+		lerp[ 1 ] = move[ 1 ] + ov[ i ].v[ 1 ] * backv[ 1 ] + v[ i ].v[ 1 ] * frontv[ 1 ];
+		lerp[ 2 ] = move[ 2 ] + ov[ i ].v[ 2 ] * backv[ 2 ] + v[ i ].v[ 2 ] * frontv[ 2 ];
+		const float* normal = bytedirs[ v[ i ].lightnormalindex ];
+		VectorCopy( normal, normals );
+		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
+	}
+}
+
+//	interpolates between two frames and origins
+//	FIXME: batch lerp all vertexes
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
+	//
+	// draw all the triangles
+	//
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPushMatrix();
+		qglLoadIdentity();
+		qglScalef( -1, 1, 1 );
+		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
+		qglMatrixMode( GL_MODELVIEW );
+	}
+
+	// select skin
+	image_t* skin;
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		skin = tr.whiteImage;
+	} else  if ( backEnd.currentEntity->e.customSkin ) {
+		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
+	} else {
+		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
+		} else {
+			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
+			if ( !skin ) {
+				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
+			}
+		}
+	}
+	if ( !skin ) {
+		skin = tr.defaultImage;	// fallback...
+	}
+
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = skin;
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		stage.rgbGen = CGEN_ENTITY;
+	} else {
+		stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
+	}
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		stage.alphaGen = AGEN_ENTITY;
+		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stage.alphaGen = AGEN_IDENTITY;
+		stage.stateBits = GLS_DEFAULT;
+	}
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	shader.cullType = CT_FRONT_SIDED;
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
+	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
+		shader.deforms[0].deformation = DEFORM_WAVE;
+		shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
+		shader.deforms[0].deformationWave.func = GF_SIN;
+		shader.numDeforms = 1;
+	}
+	RB_DeformTessGeometry();
+	RB_StageIteratorGenericTemp();
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPopMatrix();
+		qglMatrixMode( GL_MODELVIEW );
+	}
+ }
+
+static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
+	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
+
+	float height = -lheight + 1.0;
+
+	vec3_t shadevector;
+	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
+	shadevector[ 2 ] = 1;
+	VectorNormalize( shadevector );
+
+	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
+		vec3_t point;
+		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
+
+		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
+		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
+		point[ 2 ] = height;
+		tess.xyz[ i ][ 0 ] = point[ 0 ];
+		tess.xyz[ i ][ 1 ] = point[ 1 ];
+		tess.xyz[ i ][ 2 ] = point[ 2 ];
+	}
+
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
+	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage.rgbGen = CGEN_CONST;
+	stage.alphaGen = AGEN_CONST;
+	stage.constantColor[ 3 ] = 127;
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	RB_StageIteratorGenericTemp();
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 }
 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
@@ -559,6 +554,9 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	}
 
 	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
+	tess.numVertexes = paliashdr->numVertexes;
+	tess.numIndexes = paliashdr->numIndexes;
+	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 
 	if ( tess.shader == tr.shadowShader ) {
 		GL_DrawMd2Shadow( paliashdr );
