@@ -1084,6 +1084,21 @@ void RB_StageIteratorGeneric() {
 }
 
 void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
+	//
+	// set face culling appropriately
+	//
+	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
+		if ( input->shader->cullType == CT_FRONT_SIDED ) {
+			GL_Cull( CT_BACK_SIDED );
+		} else if ( input->shader->cullType == CT_BACK_SIDED ) {
+			GL_Cull( CT_FRONT_SIDED );
+		} else {
+			GL_Cull( CT_TWO_SIDED );
+		}
+	} else {
+		GL_Cull( input->shader->cullType );
+	}
+
 	// set polygon offset if necessary
 	if ( input->shader->polygonOffset ) {
 		qglEnable( GL_POLYGON_OFFSET_FILL );

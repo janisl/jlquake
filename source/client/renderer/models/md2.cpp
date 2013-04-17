@@ -276,17 +276,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
-	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
-		if ( shader.cullType == CT_FRONT_SIDED ) {
-			GL_Cull( CT_BACK_SIDED );
-		} else if ( shader.cullType == CT_BACK_SIDED ) {
-			GL_Cull( CT_FRONT_SIDED );
-		} else {
-			GL_Cull( CT_TWO_SIDED );
-		}
-	} else {
-		GL_Cull( shader.cullType );
-	}
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -337,7 +326,6 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

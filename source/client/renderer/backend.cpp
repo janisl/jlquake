@@ -599,7 +599,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	GL_Cull( shader.cullType );
 	RB_StageIteratorGenericTemp( &tess );
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;

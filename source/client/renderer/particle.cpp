@@ -129,7 +129,6 @@ static void R_DrawParticleTriangles() {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
 			tess.dlightBits = 0;
-			GL_Cull( shader.cullType );
 			RB_StageIteratorGenericTemp( &tess );
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -161,7 +160,6 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		tess.dlightBits = 0;
-		GL_Cull( shader.cullType );
 		RB_StageIteratorGenericTemp( &tess );
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
