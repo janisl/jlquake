@@ -1083,7 +1083,27 @@ void RB_StageIteratorGeneric() {
 	}
 }
 
-void RB_StageIteratorGenericTemp( shaderCommands_t* input ) {
+void RB_StageIteratorGenericTemp() {
+	shaderCommands_t* input = &tess;
+
+	//
+	// log this call
+	//
+	if ( r_logFile->integer ) {
+		// don't just call LogComment, or we will get
+		// a call to va() every frame!
+		QGL_LogComment( va( "--- RB_StageIteratorGeneric( %s ) ---\n", tess.shader->name ) );
+	}
+
+	// set GL fog
+	SetIteratorFog();
+
+	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
+		// RF< so we can send the normals as an array
+		qglEnableClientState( GL_NORMAL_ARRAY );
+		qglEnable( GL_PN_TRIANGLES_ATI );	// ATI PN-Triangles extension
+	}
+
 	//
 	// set face culling appropriately
 	//

@@ -714,7 +714,7 @@ static void GL_DrawAliasShadow() {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	RB_StageIteratorGenericTemp( &tess );
+	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }
@@ -853,7 +853,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp( &tess );
+	RB_StageIteratorGenericTemp();
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
