@@ -129,6 +129,7 @@ static void R_DrawParticleTriangles() {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
 			tess.dlightBits = 0;
+			RB_DeformTessGeometry();
 			RB_StageIteratorGenericTemp();
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
@@ -160,6 +161,7 @@ static void R_DrawParticleTriangles() {
 	if (tess.numVertexes)
 	{
 		tess.dlightBits = 0;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;

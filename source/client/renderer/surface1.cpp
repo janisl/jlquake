@@ -581,6 +581,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shader.stages[ 0 ] = &stage;
 		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -624,6 +625,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numVertexes = 0;
 		tess.numIndexes = 0;
@@ -645,6 +647,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		shader.stages[ 0 ] = &stage1;
 		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -671,6 +674,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
@@ -736,6 +740,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
+		RB_DeformTessGeometry();
 		RB_StageIteratorGenericTemp();
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
