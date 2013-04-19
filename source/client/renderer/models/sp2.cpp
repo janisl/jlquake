@@ -145,7 +145,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }

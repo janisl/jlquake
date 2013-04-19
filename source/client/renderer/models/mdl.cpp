@@ -676,7 +676,8 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 static void GL_DrawAliasShadow() {
 	tess.xstages = tess.shader->stages;
 	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp();
+	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }
@@ -815,7 +816,9 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;

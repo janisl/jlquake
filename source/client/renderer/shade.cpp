@@ -1093,10 +1093,6 @@ void RB_StageIteratorGeneric() {
 	}
 }
 
-void RB_StageIteratorGenericTemp() {
-	RB_StageIteratorGeneric();
-}
-
 void RB_StageIteratorVertexLitTexture() {
 	shaderCommands_t* input = &tess;
 
@@ -1374,4 +1370,11 @@ void RB_EndSurface() {
 	tess.numIndexes = 0;
 
 	QGL_LogComment( "----------\n" );
+}
+
+void RB_EndSurfaceTemp() {
+	//
+	// call off to shader specific tess end function
+	//
+	tess.currentStageIteratorFunc();
 }

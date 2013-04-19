@@ -393,7 +393,7 @@ void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
 
-void RB_StageIteratorGenericTemp();
+void RB_EndSurfaceTemp();
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();
 void RB_StageIteratorVertexLitTexture();

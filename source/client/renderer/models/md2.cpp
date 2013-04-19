@@ -345,7 +345,9 @@ static void GL_DrawMd2FrameLerp() {
 		shader.deforms[0].deformationWave.func = GF_SIN;
 		shader.numDeforms = 1;
 	}
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 
@@ -359,7 +361,8 @@ static void GL_DrawMd2FrameLerp() {
 static void GL_DrawMd2Shadow() {
 	tess.xstages = tess.shader->stages;
 	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp();
+	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
 }

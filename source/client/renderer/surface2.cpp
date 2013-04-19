@@ -435,7 +435,9 @@ static void EmitWaterPolysQ2( mbrush38_surface_t* fa, int alpha, shaderStage_t* 
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 }
@@ -490,7 +492,9 @@ static void R_RenderBrushPolyQ2( mbrush38_surface_t* fa, image_t* image ) {
 
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 }
@@ -565,7 +569,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 			tess.xstages = shader.stages;
 			tess.dlightBits = 0;
 			shader.cullType = CT_FRONT_SIDED;
-			RB_StageIteratorGenericTemp();
+			shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+			tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+			RB_EndSurfaceTemp();
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
 		}
@@ -613,7 +619,9 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	shader.cullType = CT_FRONT_SIDED;
 	tess.dlightBits = 0;
-	RB_StageIteratorGenericTemp();
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_EndSurfaceTemp();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
 }
