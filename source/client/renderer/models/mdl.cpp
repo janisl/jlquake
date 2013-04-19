@@ -674,22 +674,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 }
 
 static void GL_DrawAliasShadow() {
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_IDENTITY;
-	stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage.rgbGen = CGEN_CONST;
-	stage.alphaGen = AGEN_CONST;
-	stage.constantColor[ 3 ] = 127;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.polygonOffset = true;
-	shader.numDeforms = 1;
-	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
+	tess.xstages = tess.shader->stages;
 	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;

@@ -3124,6 +3124,29 @@ static void ScanAndLoadShaderFiles() {
 	}
 }
 
+static shader_t* CreateProjectionShader() {
+	Com_Memset( &shader, 0, sizeof ( shader ) );
+	Com_Memset( &stages, 0, sizeof ( stages ) );
+
+	String::NCpyZ( shader.name, "projectionShadow", sizeof ( shader.name ) );
+
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+	shader.polygonOffset = true;
+	shader.numDeforms = 1;
+	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
+
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_IDENTITY;
+	stages[ 0 ].active = true;
+	stages[ 0 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stages[ 0 ].rgbGen = CGEN_CONST;
+	stages[ 0 ].alphaGen = AGEN_CONST;
+	stages[ 0 ].constantColor[ 3 ] = 127;
+
+	return FinishShader();
+}
+
 static void CreateExternalShaders() {
 	if ( GGameType & GAME_Tech3 ) {
 		if ( !( GGameType & GAME_WolfSP ) ) {
@@ -3139,7 +3162,7 @@ static void CreateExternalShaders() {
 			tr.spotFlareShader = R_FindShader( "spotLight", LIGHTMAP_NONE, true );
 		}
 	} else   {
-		tr.projectionShadowShader = tr.defaultShader;
+		tr.projectionShadowShader = CreateProjectionShader();
 		tr.flareShader = tr.defaultShader;
 		tr.sunShader = tr.defaultShader;
 	}
