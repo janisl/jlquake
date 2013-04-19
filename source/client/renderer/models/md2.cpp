@@ -355,30 +355,9 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		qglPopMatrix();
 		qglMatrixMode( GL_MODELVIEW );
 	}
- }
+}
 
 static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
-	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
-
-	float height = -lheight + 1.0;
-
-	vec3_t shadevector;
-	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
-	shadevector[ 2 ] = 1;
-	VectorNormalize( shadevector );
-
-	for ( int i = 0; i < paliashdr->numVertexes; i++ ) {
-		vec3_t point;
-		Com_Memcpy( point, tess.xyz[ i ], sizeof ( point ) );
-
-		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
-		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
-		point[ 2 ] = height;
-		tess.xyz[ i ][ 0 ] = point[ 0 ];
-		tess.xyz[ i ][ 1 ] = point[ 1 ];
-		tess.xyz[ i ][ 2 ] = point[ 2 ];
-	}
-
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -393,6 +372,10 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
+	shader.polygonOffset = true;
+	shader.numDeforms = 1;
+	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
+	RB_DeformTessGeometry();
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -436,6 +419,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 			}
 		}
 	}
+	backEnd.currentEntity->e.shadowPlane = lightspot[ 2 ];
 
 	if ( ent->e.renderfx & RF_MINLIGHT ) {
 		int i;

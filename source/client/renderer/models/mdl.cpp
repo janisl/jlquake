@@ -674,32 +674,6 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 }
 
 static void GL_DrawAliasShadow() {
-	float lheight = backEnd.currentEntity->e.origin[ 2 ] - lightspot[ 2 ];
-
-	float height = 0;
-
-	height = -lheight + 1.0;
-
-	vec3_t shadevector;
-	VectorCopy( backEnd.currentEntity->e.axis[ 0 ], shadevector );
-	shadevector[ 2 ] = 1;
-	VectorNormalize( shadevector );
-
-	for ( int i = 0; i < tess.numVertexes; i++ ) {
-		// normals and vertexes come from the frame list
-		vec3_t point;
-		point[ 0 ] = tess.xyz[ i ][ 0 ];
-		point[ 1 ] = tess.xyz[ i ][ 1 ];
-		point[ 2 ] = tess.xyz[ i ][ 2 ];
-
-		point[ 0 ] -= shadevector[ 0 ] * ( point[ 2 ] + lheight );
-		point[ 1 ] -= shadevector[ 1 ] * ( point[ 2 ] + lheight );
-		point[ 2 ] = height;
-		tess.xyz[ i ][ 0 ] = point[ 0 ];
-		tess.xyz[ i ][ 1 ] = point[ 1 ];
-		tess.xyz[ i ][ 2 ] = point[ 2 ];
-	}
-
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -714,6 +688,10 @@ static void GL_DrawAliasShadow() {
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
+	shader.polygonOffset = true;
+	shader.numDeforms = 1;
+	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
+	RB_DeformTessGeometry();
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -899,6 +877,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	// get lighting information
 	//
 	float ambientlight = R_CalcEntityLight( &ent->e );
+	ent->e.shadowPlane = lightspot[ 2 ];
 	float shadelight = ambientlight;
 
 	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
