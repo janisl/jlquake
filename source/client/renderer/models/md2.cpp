@@ -263,7 +263,7 @@ void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	mmd2_t* paliashdr = tr.currentModel->q2_md2;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.shadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 
@@ -540,7 +540,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	tess.numIndexes = paliashdr->numIndexes;
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 
-	if ( tess.shader == tr.shadowShader ) {
+	if ( tess.shader == tr.projectionShadowShader ) {
 		GL_DrawMd2Shadow();
 	} else {
 		GL_DrawMd2FrameLerp();
