@@ -684,14 +684,13 @@ static void GL_DrawAliasShadow() {
 	stage.constantColor[ 3 ] = 127;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
 	shader.polygonOffset = true;
 	shader.numDeforms = 1;
 	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
-	RB_DeformTessGeometry();
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -831,7 +830,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	tess.dlightBits = 0;
-	RB_DeformTessGeometry();
 	RB_StageIteratorGenericTemp();
 
 	tess.numIndexes = 0;

@@ -1086,6 +1086,8 @@ void RB_StageIteratorGeneric() {
 void RB_StageIteratorGenericTemp() {
 	shaderCommands_t* input = &tess;
 
+	RB_DeformTessGeometry();
+
 	//
 	// log this call
 	//

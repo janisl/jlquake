@@ -282,7 +282,7 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
+static void GL_DrawMd2FrameLerp() {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	//
@@ -345,7 +345,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 		shader.deforms[0].deformationWave.func = GF_SIN;
 		shader.numDeforms = 1;
 	}
-	RB_DeformTessGeometry();
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -357,7 +356,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr, dmd2_trivertx_t* v ) {
 	}
 }
 
-static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
+static void GL_DrawMd2Shadow() {
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -368,14 +367,13 @@ static void GL_DrawMd2Shadow( mmd2_t* paliashdr ) {
 	stage.constantColor[ 3 ] = 127;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
 	shader.polygonOffset = true;
 	shader.numDeforms = 1;
 	shader.deforms[ 0 ].deformation = DEFORM_PROJECTION_SHADOW;
-	RB_DeformTessGeometry();
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
 	RB_StageIteratorGenericTemp();
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
@@ -543,8 +541,8 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 
 	if ( tess.shader == tr.shadowShader ) {
-		GL_DrawMd2Shadow( paliashdr );
+		GL_DrawMd2Shadow();
 	} else {
-		GL_DrawMd2FrameLerp( paliashdr, v );
+		GL_DrawMd2FrameLerp();
 	}
 }
