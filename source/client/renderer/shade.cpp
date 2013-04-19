@@ -978,137 +978,6 @@ void RB_StageIteratorGeneric() {
 	//
 	// set face culling appropriately
 	//
-	GL_Cull( input->shader->cullType );
-
-	// set polygon offset if necessary
-	if ( input->shader->polygonOffset ) {
-		qglEnable( GL_POLYGON_OFFSET_FILL );
-		qglPolygonOffset( r_offsetFactor->value, r_offsetUnits->value );
-	}
-
-	//
-	// if there is only a single pass then we can enable color
-	// and texture arrays before we compile, otherwise we need
-	// to avoid compiling those arrays since they will change
-	// during multipass rendering
-	//
-	if ( tess.numPasses > 1 || input->shader->multitextureEnv ) {
-		setArraysOnce = false;
-		qglDisableClientState( GL_COLOR_ARRAY );
-		qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	} else {
-		setArraysOnce = true;
-
-		qglEnableClientState( GL_COLOR_ARRAY );
-		qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-
-		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-		qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[ 0 ] );
-	}
-
-	// RF, send normals only if required
-	// This must be done first, since we can't change the arrays once they have been
-	// locked
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-		qglNormalPointer( GL_FLOAT, 16, input->normal );
-	}
-
-	//
-	// lock XYZ
-	//
-	qglVertexPointer( 3, GL_FLOAT, 16, input->xyz );	// padded for SIMD
-	if ( qglLockArraysEXT ) {
-		qglLockArraysEXT( 0, input->numVertexes );
-		QGL_LogComment( "glLockArraysEXT\n" );
-	}
-
-	//
-	// enable color and texcoord arrays after the lock if necessary
-	//
-	if ( !setArraysOnce ) {
-		qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
-		qglEnableClientState( GL_COLOR_ARRAY );
-	}
-
-	//
-	// call shader function
-	//
-	RB_IterateStagesGeneric( input );
-
-	//
-	// now do any dynamic lighting needed
-	//
-	if ( GGameType & GAME_ET ) {
-		if ( tess.dlightBits && tess.shader->fogPass &&
-			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
-			if ( r_dynamiclight->integer == 2 ) {
-				DynamicLightPass();
-			} else {
-				DynamicLightSinglePass();
-			}
-		}
-	} else {
-		if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE &&
-			 !( tess.shader->surfaceFlags & ( BSP46SURF_NODLIGHT | BSP46SURF_SKY ) ) ) {
-			ProjectDlightTexture();
-		}
-	}
-
-	//
-	// now do fog
-	//
-	if ( tess.fogNum && tess.shader->fogPass ) {
-		RB_FogPass();
-	}
-
-	//
-	// unlock arrays
-	//
-	if ( qglUnlockArraysEXT ) {
-		qglUnlockArraysEXT();
-		QGL_LogComment( "glUnlockArraysEXT\n" );
-	}
-
-	//
-	// reset polygon offset
-	//
-	if ( input->shader->polygonOffset ) {
-		qglDisable( GL_POLYGON_OFFSET_FILL );
-	}
-
-	// turn truform back off
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
-		qglDisableClientState( GL_NORMAL_ARRAY );
-	}
-}
-
-void RB_StageIteratorGenericTemp() {
-	shaderCommands_t* input = &tess;
-
-	RB_DeformTessGeometry();
-
-	//
-	// log this call
-	//
-	if ( r_logFile->integer ) {
-		// don't just call LogComment, or we will get
-		// a call to va() every frame!
-		QGL_LogComment( va( "--- RB_StageIteratorGeneric( %s ) ---\n", tess.shader->name ) );
-	}
-
-	// set GL fog
-	SetIteratorFog();
-
-	if ( qglPNTrianglesiATI && tess.ATI_tess ) {
-		// RF< so we can send the normals as an array
-		qglEnableClientState( GL_NORMAL_ARRAY );
-		qglEnable( GL_PN_TRIANGLES_ATI );	// ATI PN-Triangles extension
-	}
-
-	//
-	// set face culling appropriately
-	//
 	if ( backEnd.currentEntity->e.renderfx & RF_LEFTHAND ) {
 		if ( input->shader->cullType == CT_FRONT_SIDED ) {
 			GL_Cull( CT_BACK_SIDED );
@@ -1222,6 +1091,10 @@ void RB_StageIteratorGenericTemp() {
 		qglDisable( GL_PN_TRIANGLES_ATI );		// ATI PN-Triangles extension
 		qglDisableClientState( GL_NORMAL_ARRAY );
 	}
+}
+
+void RB_StageIteratorGenericTemp() {
+	RB_StageIteratorGeneric();
 }
 
 void RB_StageIteratorVertexLitTexture() {
