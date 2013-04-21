@@ -77,6 +77,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	float* up = backEnd.viewParms.orient.axis[ 2 ];
 	float* left = backEnd.viewParms.orient.axis[ 1 ];
 
+	vec3_t normal;
+	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
+
 	int numVerts = 0;
 	int numIndexes = 0;
 
@@ -87,6 +90,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ numVerts ][ 0 ] = point[ 0 ];
 	tess.xyz[ numVerts ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts ][ 2 ] = point[ 2 ];
+	tess.normal[ numVerts ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts ][ 2 ] = normal[ 2 ];
 
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 0 ] = 0;
 	tess.texCoords[ numVerts + 1 ][ 0 ][ 1 ] = 0;
@@ -95,6 +101,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ numVerts + 1 ][ 0 ] = point[ 0 ];
 	tess.xyz[ numVerts + 1 ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts + 1 ][ 2 ] = point[ 2 ];
+	tess.normal[ numVerts + 1 ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts + 1 ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts + 1 ][ 2 ] = normal[ 2 ];
 
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 0 ] = 1;
 	tess.texCoords[ numVerts + 2 ][ 0 ][ 1 ] = 0;
@@ -103,6 +112,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ numVerts + 2 ][ 0 ] = point[ 0 ];
 	tess.xyz[ numVerts + 2 ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts + 2 ][ 2 ] = point[ 2 ];
+	tess.normal[ numVerts + 2 ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts + 2 ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts + 2 ][ 2 ] = normal[ 2 ];
 
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 0 ] = 1;
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = 1;
@@ -111,6 +123,9 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.xyz[ numVerts + 3 ][ 0 ] = point[ 0 ];
 	tess.xyz[ numVerts + 3 ][ 1 ] = point[ 1 ];
 	tess.xyz[ numVerts + 3 ][ 2 ] = point[ 2 ];
+	tess.normal[ numVerts + 3 ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts + 3 ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts + 3 ][ 2 ] = normal[ 2 ];
 
 	tess.indexes[ numIndexes ] = numVerts + 3;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;

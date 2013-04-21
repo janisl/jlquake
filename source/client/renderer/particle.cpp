@@ -53,7 +53,7 @@ void R_InitParticleTexture() {
 	tr.particleImage = R_CreateImage( "*particle", ( byte* )data, 16, 16, true, false, GL_CLAMP, false );
 }
 
-static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t right,
+static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t right, vec3_t normal,
 	float s1, float t1, float s2, float t2 ) {
 	// hack a scale up to keep particles from disapearing
 	float scale = ( p->origin[ 0 ] - tr.viewParms.orient.origin[ 0 ] ) * tr.viewParms.orient.axis[ 0 ][ 0 ] +
@@ -81,6 +81,9 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ numVerts ][ 0 ] = p->origin[ 0 ];
 	tess.xyz[ numVerts ][ 1 ] = p->origin[ 1 ];
 	tess.xyz[ numVerts ][ 2 ] = p->origin[ 2 ];
+	tess.normal[ numVerts ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts ][ 2 ] = normal[ 2 ];
 
 	tess.vertexColors[ numVerts + 1 ][ 0 ] = p->rgba[0];
 	tess.vertexColors[ numVerts + 1 ][ 1 ] = p->rgba[1];
@@ -91,6 +94,9 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ numVerts + 1 ][ 0 ] = p->origin[ 0 ] + up[ 0 ] * scale;
 	tess.xyz[ numVerts + 1 ][ 1 ] = p->origin[ 1 ] + up[ 1 ] * scale;
 	tess.xyz[ numVerts + 1 ][ 2 ] = p->origin[ 2 ] + up[ 2 ] * scale;
+	tess.normal[ numVerts + 1 ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts + 1 ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts + 1 ][ 2 ] = normal[ 2 ];
 
 	tess.vertexColors[ numVerts + 2 ][ 0 ] = p->rgba[0];
 	tess.vertexColors[ numVerts + 2 ][ 1 ] = p->rgba[1];
@@ -101,6 +107,9 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 	tess.xyz[ numVerts + 2 ][ 0 ] = p->origin[ 0 ] + right[ 0 ] * scale;
 	tess.xyz[ numVerts + 2 ][ 1 ] = p->origin[ 1 ] + right[ 1 ] * scale;
 	tess.xyz[ numVerts + 2 ][ 2 ] = p->origin[ 2 ] + right[ 2 ] * scale;
+	tess.normal[ numVerts + 2 ][ 0 ] = normal[ 0 ];
+	tess.normal[ numVerts + 2 ][ 1 ] = normal[ 1 ];
+	tess.normal[ numVerts + 2 ][ 2 ] = normal[ 2 ];
 
 	tess.indexes[ numIndexes ] = numVerts;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 1;
@@ -108,9 +117,12 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 }
 
 static void R_DrawParticleTriangles() {
-	vec3_t up, right;
+	vec3_t up;
 	VectorScale( backEnd.viewParms.orient.axis[ 2 ], 1.5, up );
+	vec3_t right;
 	VectorScale( backEnd.viewParms.orient.axis[ 1 ], -1.5, right );
+	vec3_t normal;
+	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
 	const particle_t* p = backEnd.refdef.particles;
 	shaderStage_t stage = {};
@@ -138,23 +150,23 @@ static void R_DrawParticleTriangles() {
 
 		switch ( p->Texture ) {
 		case PARTTEX_Default:
-			R_DrawParticle( p, up, right, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2 );
+			R_DrawParticle( p, up, right, normal, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2 );
 			break;
 
 		case PARTTEX_Snow1:
-			R_DrawParticle( p, up, right, 1, 1, .18, .18 );
+			R_DrawParticle( p, up, right, normal, 1, 1, .18, .18 );
 			break;
 
 		case PARTTEX_Snow2:
-			R_DrawParticle( p, up, right, 0, 0, .815, .815 );
+			R_DrawParticle( p, up, right, normal, 0, 0, .815, .815 );
 			break;
 
 		case PARTTEX_Snow3:
-			R_DrawParticle( p, up, right, 1, 0, 0.5, 0.5 );
+			R_DrawParticle( p, up, right, normal, 1, 0, 0.5, 0.5 );
 			break;
 
 		case PARTTEX_Snow4:
-			R_DrawParticle( p, up, right, 0, 1, 0.5, 0.5 );
+			R_DrawParticle( p, up, right, normal, 0, 1, 0.5, 0.5 );
 			break;
 		}
 	}
