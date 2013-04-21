@@ -485,12 +485,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 	}
 
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	tess.numVertexes = 0;
-	tess.numIndexes = 0;
+	RB_BeginSurface( &shader, 0 );
 
 	for ( mbrush38_glpoly_t* p = surf->polys; p; p = p->next ) {
 		int numVerts = tess.numVertexes;

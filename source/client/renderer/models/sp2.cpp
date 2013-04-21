@@ -74,16 +74,38 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	dsp2_frame_t* frame = &psprite->frames[ backEnd.currentEntity->e.frame ];
 
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.rgbGen = CGEN_IDENTITY;
+	int alpha = 255;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
+	}
+
+	if ( alpha != 255 ) {
+		stage.alphaGen = AGEN_ENTITY;
+		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else   {
+		stage.alphaGen = AGEN_IDENTITY;
+		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
+	}
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+
+	RB_BeginSurface( &shader, 0 );
+
 	float* up = backEnd.viewParms.orient.axis[ 2 ];
 	float* left = backEnd.viewParms.orient.axis[ 1 ];
 
 	vec3_t normal;
 	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-	int numVerts = 0;
-	int numIndexes = 0;
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
 
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = 0;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = 1;
@@ -136,33 +158,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	tess.numIndexes = 6;
-	tess.numVertexes = 4;
+	tess.numIndexes += 6;
+	tess.numVertexes += 4;
 
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_IDENTITY;
-	int alpha = 255;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	}
-
-	if ( alpha != 255 ) {
-		stage.alphaGen = AGEN_ENTITY;
-		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else   {
-		stage.alphaGen = AGEN_IDENTITY;
-		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
-	}
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
 	RB_EndSurface();
 }

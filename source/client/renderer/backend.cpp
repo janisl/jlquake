@@ -48,7 +48,7 @@ void R_InitBackEndData() {
 		backEndData[ 1 ] = ( backEndData_t* )ptr;
 		backEndData[ 1 ]->polys = ( srfPoly_t* )( ( char* )ptr + sizeof ( *backEndData[ 1 ] ) );
 		backEndData[ 1 ]->polyVerts = ( polyVert_t* )( ( char* )ptr + sizeof ( *backEndData[ 1 ] ) + sizeof ( srfPoly_t ) * max_polys );
-	} else   {
+	} else {
 		backEndData[ 1 ] = NULL;
 	}
 	R_ToggleSmpFrame();
@@ -179,10 +179,10 @@ static void RB_BeginDrawingView() {
 						qglClearColor( glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], glfogsettings[ FOG_PORTALVIEW ].color[ 1 ], glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
 					} else if ( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )       {
 						qglClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ], glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-					} else   {
+					} else {
 						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
 					}
-				} else   {
+				} else {
 					// rendered sky (either clear color or draw quake sky)
 					if ( glfogsettings[ FOG_PORTALVIEW ].registered ) {
 						qglClearColor( glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], glfogsettings[ FOG_PORTALVIEW ].color[ 1 ], glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
@@ -193,7 +193,7 @@ static void RB_BeginDrawingView() {
 						}
 					}
 				}
-			} else   {
+			} else {
 				// world scene with portal sky, don't clear any buffers, just set the fog color if there is one
 				clearBits |= GL_DEPTH_BUFFER_BIT;	// this will go when I get the portal sky rendering way out in the zbuffer (or not writing to zbuffer at all)
 
@@ -213,7 +213,7 @@ static void RB_BeginDrawingView() {
 					qglClearColor( 0.5, 0.5, 0.5, 1.0 );
 				}
 			}
-		} else   {
+		} else {
 			// world scene with no portal sky
 			clearBits |= GL_DEPTH_BUFFER_BIT;
 
@@ -228,14 +228,14 @@ static void RB_BeginDrawingView() {
 				if ( glfogsettings[ FOG_CURRENT ].registered ) {
 					// try to clear fastsky with current fog color
 					qglClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ], glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-				} else   {
+				} else {
 					if ( GGameType & GAME_WolfSP ) {
 						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
-					} else   {
+					} else {
 						qglClearColor( 0.05, 0.05, 0.05, 1.0 );		// JPW NERVE changed per id req was 0.5s
 					}
 				}
-			} else   {
+			} else {
 				// world scene, no portal sky, not fastsky, clear color if fog says to, otherwise, just set the clearcolor
 				if ( glfogsettings[ FOG_CURRENT ].registered ) {
 					// try to clear fastsky with current fog color
@@ -252,7 +252,7 @@ static void RB_BeginDrawingView() {
 		if ( GGameType & GAME_ET && backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
 			clearBits &= ~GL_COLOR_BUFFER_BIT;
 		}
-	} else   {
+	} else {
 		clearBits = GL_DEPTH_BUFFER_BIT;
 
 		if ( r_measureOverdraw->integer || ( ( GGameType & GAME_Quake3 ) && r_shadows->integer == 2 ) ) {
@@ -274,7 +274,7 @@ static void RB_BeginDrawingView() {
 	if ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) {
 		RB_Hyperspace();
 		return;
-	} else   {
+	} else {
 		backEnd.isHyperspace = false;
 	}
 
@@ -300,7 +300,7 @@ static void RB_BeginDrawingView() {
 		qglLoadMatrixf( s_flipMatrix );
 		qglClipPlane( GL_CLIP_PLANE0, plane2 );
 		qglEnable( GL_CLIP_PLANE0 );
-	} else   {
+	} else {
 		qglDisable( GL_CLIP_PLANE0 );
 	}
 }
@@ -377,7 +377,7 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 				backEnd.currentEntity = &backEnd.refdef.entities[ entityNum ];
 				if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 					backEnd.refdef.floatTime = originalTime;
-				} else   {
+				} else {
 					backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
 				}
 				// we have to reset the shaderTime as well otherwise image animations start
@@ -398,7 +398,7 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 					// hack the depth range to prevent view model from poking into walls
 					depthRange = true;
 				}
-			} else   {
+			} else {
 				backEnd.currentEntity = &tr.worldEntity;
 				backEnd.refdef.floatTime = originalTime;
 				backEnd.orient = backEnd.viewParms.world;
@@ -418,7 +418,7 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 			if ( oldDepthRange != depthRange ) {
 				if ( depthRange ) {
 					qglDepthRange( 0, 0.3 );
-				} else   {
+				} else {
 					qglDepthRange( 0, 1 );
 				}
 				oldDepthRange = depthRange;
@@ -566,14 +566,9 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	stage.alphaGen = AGEN_VERTEX;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	tess.numVertexes = 0;
-	tess.numIndexes = 0;
+	RB_BeginSurface( &shader, 0 );
 
 	int numVerts = tess.numVertexes;
 	int numIndexes = tess.numIndexes;
@@ -925,7 +920,7 @@ void RB_ExecuteRenderCommands( const void* data ) {
 
 	if ( !r_smp->integer || data == backEndData[ 0 ]->commands.cmds ) {
 		backEnd.smpFrame = 0;
-	} else   {
+	} else {
 		backEnd.smpFrame = 1;
 	}
 

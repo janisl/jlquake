@@ -772,21 +772,57 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void GL_DrawAliasShadow() {
-	tess.xstages = tess.shader->stages;
-	tess.dlightBits = 0;
-	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
+static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {
+		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", ent->e.frame );
+		ent->e.frame = 0;
+	}
+
+	int posenum = paliashdr->frames[ ent->e.frame ].firstpose;
+	int numposes = paliashdr->frames[ ent->e.frame ].numposes;
+
+	if ( numposes > 1 ) {
+		float interval = paliashdr->frames[ ent->e.frame ].interval;
+		posenum += ( int )( tr.refdef.floatTime / interval ) % numposes;
+	}
+
+	dmdl_trivertx_t* verts = paliashdr->posedata;
+	verts += posenum * paliashdr->poseverts;
+
+	int numVerts = tess.numVertexes;
+	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
+		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
+		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
+		tess.xyz[ numVerts + i ][ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
+		tess.xyz[ numVerts + i ][ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
+		tess.xyz[ numVerts + i ][ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
+		tess.normal[ numVerts + i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
+		tess.normal[ numVerts + i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
+		tess.normal[ numVerts + i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
+	}
+	tess.numVertexes += paliashdr->poseverts;
+
+	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	tess.numIndexes += paliashdr->numIndexes;
+}
+
+static void GL_DrawAliasShadow( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	RB_BeginSurface( tr.projectionShadowShader, 0 );
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
 }
 
-static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel ) {
+static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	//
 	// draw all the triangles
 	//
 
+	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
+
 	bool doOverBright = !!r_drawOverBrights->integer;
 	shader_t shader = {};
 	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
@@ -876,44 +912,9 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 		shader.stages[ numStages++ ] = &stage4;
 	}
 
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	RB_BeginSurface( &shader, 0 );
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
-}
-
-static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {
-		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", ent->e.frame );
-		ent->e.frame = 0;
-	}
-
-	int posenum = paliashdr->frames[ ent->e.frame ].firstpose;
-	int numposes = paliashdr->frames[ ent->e.frame ].numposes;
-
-	if ( numposes > 1 ) {
-		float interval = paliashdr->frames[ ent->e.frame ].interval;
-		posenum += ( int )( tr.refdef.floatTime / interval ) % numposes;
-	}
-
-	dmdl_trivertx_t* verts = paliashdr->posedata;
-	verts += posenum * paliashdr->poseverts;
-
-	for ( int i = 0; i < paliashdr->poseverts; i++ ) {
-		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
-		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
-		tess.xyz[ i ][ 0 ] = verts[ i ].v[ 0 ] * paliashdr->scale[ 0 ] + paliashdr->scale_origin[ 0 ];
-		tess.xyz[ i ][ 1 ] = verts[ i ].v[ 1 ] * paliashdr->scale[ 1 ] + paliashdr->scale_origin[ 1 ];
-		tess.xyz[ i ][ 2 ] = verts[ i ].v[ 2 ] * paliashdr->scale[ 2 ] + paliashdr->scale_origin[ 2 ];
-		tess.normal[ i ][ 0 ] = bytedirs[ verts[ i ].lightnormalindex ][ 0 ];
-		tess.normal[ i ][ 1 ] = bytedirs[ verts[ i ].lightnormalindex ][ 1 ];
-		tess.normal[ i ][ 2 ] = bytedirs[ verts[ i ].lightnormalindex ][ 2 ];
-	}
-	tess.numVertexes = paliashdr->poseverts;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
 }
 
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
@@ -921,16 +922,10 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 
 	c_alias_polys += paliashdr->numtris;
 
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
-
 	if ( tess.shader == tr.projectionShadowShader ) {
-		GL_DrawAliasShadow();
+		GL_DrawAliasShadow( ent, paliashdr );
 	} else {
-		model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
-
-		R_DrawBaseMdlSurface( ent, paliashdr, clmodel );
+		R_DrawBaseMdlSurface( ent, paliashdr );
 	}
 }
 

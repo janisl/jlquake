@@ -224,14 +224,10 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+
+	RB_BeginSurface( &shader, 0 );
 
 	vec3_t up;
 	vec3_t right;

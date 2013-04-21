@@ -440,7 +440,7 @@ static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr 
 
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp() {
+static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	//
@@ -494,8 +494,6 @@ static void GL_DrawMd2FrameLerp() {
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	shader.cullType = CT_FRONT_SIDED;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		shader.deforms[0].deformation = DEFORM_WAVE;
 		shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
@@ -503,7 +501,9 @@ static void GL_DrawMd2FrameLerp() {
 		shader.numDeforms = 1;
 	}
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+
+	RB_BeginSurface( &shader, 0 );
+	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
 
 	if ( ent->e.renderfx & RF_LEFTHAND ) {
@@ -513,9 +513,9 @@ static void GL_DrawMd2FrameLerp() {
 	}
 }
 
-static void GL_DrawMd2Shadow() {
-	tess.xstages = tess.shader->stages;
-	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
+static void GL_DrawMd2Shadow( trRefEntity_t* ent, mmd2_t* paliashdr ) {
+	RB_BeginSurface( tr.projectionShadowShader, 0 );
+	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
 }
 
@@ -524,15 +524,9 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 
 	c_alias_polys += paliashdr->numIndexes / 3;
 
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
-	tess.dlightBits = 0;
-
-	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-
 	if ( tess.shader == tr.projectionShadowShader ) {
-		GL_DrawMd2Shadow();
+		GL_DrawMd2Shadow( ent, paliashdr );
 	} else {
-		GL_DrawMd2FrameLerp();
+		GL_DrawMd2FrameLerp( paliashdr );
 	}
 }

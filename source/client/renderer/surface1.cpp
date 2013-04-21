@@ -652,12 +652,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_BeginSurface( &shader, 0 );
 
 	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
 		int numVerts = tess.numVertexes;
