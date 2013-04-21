@@ -547,8 +547,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].texMods = &texmod1;
 		stage1.bundle[ 0 ].numTexMods = 1;
 		shader.stages[ 0 ] = &stage1;
-		shader.cullType = CT_FRONT_SIDED;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
@@ -579,107 +577,80 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 		shader.stages[ 0 ] = &stage1;
 		shader.stages[ 1 ] = &stage2;
-
-		shader.cullType = CT_FRONT_SIDED;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		//
-		// translucent poly
-		//
-		if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
-		} else {
-			stage1.rgbGen = CGEN_IDENTITY;
-		}
-		stage1.alphaGen = AGEN_CONST;
-		stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
-		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		shader.stages[ 0 ] = &stage1;
-		shader.cullType = CT_FRONT_SIDED;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		//
-		// absolute light poly
-		//
-		stage1.stateBits = GLS_DEFAULT;
-		stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
-		stage1.alphaGen = AGEN_IDENTITY;
-		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		shader.stages[ 0 ] = &stage1;
-
-		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
-			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage3.rgbGen = CGEN_IDENTITY;
-			stage3.alphaGen = AGEN_IDENTITY;
-			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			shader.stages[ 1 ] = &stage3;
-		}
-
-		shader.cullType = CT_FRONT_SIDED;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	} else {
-		//
-		// normal lightmaped poly
-		//
-		R_RenderDynamicLightmaps( s );
-		if ( qglActiveTextureARB ) {
-			shader.multitextureEnv = GL_MODULATE;
-
-			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
+		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
+		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		shader.stages[ 0 ] = &stage1;
+		if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
+			//
+			// translucent poly
+			//
+			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+				stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+			} else {
+				stage1.rgbGen = CGEN_IDENTITY;
+			}
+			stage1.alphaGen = AGEN_CONST;
+			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
+			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+			//
+			// absolute light poly
+			//
+			stage1.stateBits = GLS_DEFAULT;
+			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+			stage1.alphaGen = AGEN_IDENTITY;
+		} else {
+			//
+			// normal lightmaped poly
+			//
+			R_RenderDynamicLightmaps( s );
 
 			stage1.rgbGen = CGEN_IDENTITY;
 			stage1.alphaGen = AGEN_IDENTITY;
 			stage1.stateBits = GLS_DEFAULT;
-			stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-			stage1.bundle[ 1 ].numImageAnimations = 1;
-			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-			shader.stages[ 0 ] = &stage1;
+			if ( qglActiveTextureARB ) {
+				shader.multitextureEnv = GL_MODULATE;
 
-			if ( r_drawOverBrights->integer ) {
-				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
+				stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+				stage1.bundle[ 1 ].numImageAnimations = 1;
+				stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+
+				if ( r_drawOverBrights->integer ) {
+					R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
+					stage2.rgbGen = CGEN_IDENTITY;
+					stage2.alphaGen = AGEN_IDENTITY;
+					stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+					stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+					stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
+					stage2.bundle[ 1 ].numImageAnimations = 1;
+					stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+					shader.stages[ 1 ] = &stage2;
+				}
+			} else {
 				stage2.rgbGen = CGEN_IDENTITY;
 				stage2.alphaGen = AGEN_IDENTITY;
-				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-				stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
-				stage2.bundle[ 1 ].numImageAnimations = 1;
-				stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+				stage2.bundle[ 0 ].numImageAnimations = 1;
+				stage2.bundle[ 0 ].isLightmap = true;
+				stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+
 				shader.stages[ 1 ] = &stage2;
 			}
-		} else {
-			stage1.rgbGen = CGEN_IDENTITY;
-			stage1.alphaGen = AGEN_IDENTITY;
-			stage1.stateBits = GLS_DEFAULT;
-			R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-			stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 
-			stage2.rgbGen = CGEN_IDENTITY;
-			stage2.alphaGen = AGEN_IDENTITY;
-			stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-			stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-			stage2.bundle[ 0 ].numImageAnimations = 1;
-			stage2.bundle[ 0 ].isLightmap = true;
-			stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-
-			shader.stages[ 0 ] = &stage1;
-			shader.stages[ 1 ] = &stage2;
+			if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
+				stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+				stage3.rgbGen = CGEN_IDENTITY;
+				stage3.alphaGen = AGEN_IDENTITY;
+				stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+				shader.stages[ 2 ] = &stage3;
+			}
 		}
-
-		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
-			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage3.rgbGen = CGEN_IDENTITY;
-			stage3.alphaGen = AGEN_IDENTITY;
-			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			shader.stages[ 2 ] = &stage3;
-		}
-
-		shader.cullType = CT_FRONT_SIDED;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	}
+
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
