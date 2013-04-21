@@ -658,28 +658,6 @@ void Mod_FreeMdlModel( model_t* mod ) {
 	Mem_Free( pheader );
 }
 
-void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
-	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
-		return;
-	}
-
-	if ( R_CullLocalBox( &tr.currentModel->q1_mins ) == CULL_OUT ) {
-		return;
-	}
-	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-	if ( r_shadows->value ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
-	}
-}
-
-static void GL_DrawAliasShadow() {
-	tess.xstages = tess.shader->stages;
-	tess.dlightBits = 0;
-	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
-	RB_EndSurface();
-}
-
 float R_CalcEntityLight( refEntity_t* e ) {
 	float* lorg = e->origin;
 	if ( e->renderfx & RF_LIGHTING_ORIGIN ) {
@@ -712,6 +690,93 @@ float R_CalcEntityLight( refEntity_t* e ) {
 		}
 	}
 	return light;
+}
+
+static void R_MdlSetupEntityLighting( trRefEntity_t* ent ) {
+	//
+	// get lighting information
+	//
+	float ambientlight = R_CalcEntityLight( &ent->e );
+	ent->e.shadowPlane = lightspot[ 2 ];
+	float shadelight = ambientlight;
+
+	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
+		r_lightlevel->value = ambientlight;
+	}
+
+	// clamp lighting so it doesn't overbright as much
+	if ( ambientlight > 128 ) {
+		ambientlight = 128;
+	}
+	if ( ambientlight + shadelight > 192 ) {
+		shadelight = 192 - ambientlight;
+	}
+
+	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
+
+	// ZOID: never allow players to go totally black
+	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
+		if ( ambientlight < 8 ) {
+			ambientlight = shadelight = 8;
+		}
+	}
+
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
+		ambientlight = ent->e.absoluteLight * 128.0;
+		shadelight = 0;
+	}
+
+	ent->ambientLight[ 0 ] = ambientlight * 2;
+	ent->ambientLight[ 1 ] = ambientlight * 2;
+	ent->ambientLight[ 2 ] = ambientlight * 2;
+	ent->directedLight[ 0 ] = shadelight * 2;
+	ent->directedLight[ 1 ] = shadelight * 2;
+	ent->directedLight[ 2 ] = shadelight * 2;
+
+	// clamp ambient
+	for ( int i = 0; i < 3; i++ ) {
+		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
+			ent->ambientLight[ i ] = tr.identityLightByte;
+		}
+	}
+
+	// save out the byte packet version
+	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
+	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
+	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
+	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
+
+	// transform the direction to local space
+	float lightDir[3] = {1, 0, 1};
+	VectorNormalize( lightDir );
+	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
+	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
+	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
+}
+
+void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
+	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+		return;
+	}
+
+	if ( R_CullLocalBox( &tr.currentModel->q1_mins ) == CULL_OUT ) {
+		return;
+	}
+
+	R_MdlSetupEntityLighting( e );
+
+	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( r_shadows->value ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+	}
+}
+
+static void GL_DrawAliasShadow() {
+	tess.xstages = tess.shader->stages;
+	tess.dlightBits = 0;
+	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
+	RB_EndSurface();
 }
 
 static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, model_t* clmodel ) {
@@ -854,66 +919,6 @@ static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
-	//
-	// get lighting information
-	//
-	float ambientlight = R_CalcEntityLight( &ent->e );
-	ent->e.shadowPlane = lightspot[ 2 ];
-	float shadelight = ambientlight;
-
-	if ( ent->e.renderfx & RF_FIRST_PERSON ) {
-		r_lightlevel->value = ambientlight;
-	}
-
-	// clamp lighting so it doesn't overbright as much
-	if ( ambientlight > 128 ) {
-		ambientlight = 128;
-	}
-	if ( ambientlight + shadelight > 192 ) {
-		shadelight = 192 - ambientlight;
-	}
-
-	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
-
-	// ZOID: never allow players to go totally black
-	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
-		if ( ambientlight < 8 ) {
-			ambientlight = shadelight = 8;
-		}
-	}
-
-	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-		ambientlight = ent->e.absoluteLight * 128.0;
-		shadelight = 0;
-	}
-
-	ent->ambientLight[ 0 ] = ambientlight * 2;
-	ent->ambientLight[ 1 ] = ambientlight * 2;
-	ent->ambientLight[ 2 ] = ambientlight * 2;
-	ent->directedLight[ 0 ] = shadelight * 2;
-	ent->directedLight[ 1 ] = shadelight * 2;
-	ent->directedLight[ 2 ] = shadelight * 2;
-
-	// clamp ambient
-	for ( int i = 0; i < 3; i++ ) {
-		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
-			ent->ambientLight[ i ] = tr.identityLightByte;
-		}
-	}
-
-	// save out the byte packet version
-	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
-	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
-	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
-	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
-
-	// transform the direction to local space
-	float lightDir[3] = {1, 0, 1};
-	VectorNormalize( lightDir );
-	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
-	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
-	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
-
 	c_alias_polys += paliashdr->numtris;
 
 	tess.numIndexes = 0;
@@ -923,6 +928,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	if ( tess.shader == tr.projectionShadowShader ) {
 		GL_DrawAliasShadow();
 	} else {
+		model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
+
 		R_DrawBaseMdlSurface( ent, paliashdr, clmodel );
 	}
 }

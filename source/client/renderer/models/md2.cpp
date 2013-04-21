@@ -249,18 +249,136 @@ static bool R_CullMd2Model( trRefEntity_t* e ) {
 	return R_CullLocalBox( bounds ) == CULL_OUT;
 }
 
-void R_AddMd2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
+static void R_Md2SetupEntityLighting( trRefEntity_t* ent ) {
+	//
+	// get lighting information
+	//
+	vec3_t md2_shadelight;
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT )     {
+		for ( int i = 0; i < 3; i++ ) {
+			md2_shadelight[ i ] = ent->e.absoluteLight * 255;
+		}
+	} else {
+		float l[4];
+		R_LightPointQ2( ent->e.origin, l, backEnd.refdef );
+		md2_shadelight[0] = Min(l[0] * 255, 255.0f);
+		md2_shadelight[1] = Min(l[1] * 255, 255.0f);
+		md2_shadelight[2] = Min(l[2] * 255, 255.0f);
+
+		// player lighting hack for communication back to server
+		// big hack!
+		if ( ent->e.renderfx & RF_FIRST_PERSON ) {
+			// pick the greatest component, which should be the same
+			// as the mono value returned by software
+			if ( md2_shadelight[ 0 ] > md2_shadelight[ 1 ] ) {
+				if ( md2_shadelight[ 0 ] > md2_shadelight[ 2 ] ) {
+					r_lightlevel->value = 150 * md2_shadelight[ 0 ] / 255;
+				} else {
+					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
+				}
+			} else {
+				if ( md2_shadelight[ 1 ] > md2_shadelight[ 2 ] ) {
+					r_lightlevel->value = 150 * md2_shadelight[ 1 ] / 255;
+				} else {
+					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
+				}
+			}
+		}
+	}
+	ent->e.shadowPlane = lightspot[ 2 ];
+
+	if ( ent->e.renderfx & RF_MINLIGHT ) {
+		int i;
+		for ( i = 0; i < 3; i++ ) {
+			if ( md2_shadelight[ i ] > 25 ) {
+				break;
+			}
+		}
+		if ( i == 3 ) {
+			md2_shadelight[ 0 ] = 25;
+			md2_shadelight[ 1 ] = 25;
+			md2_shadelight[ 2 ] = 25;
+		}
+	}
+
+	if ( ent->e.renderfx & RF_GLOW ) {
+		// bonus items will pulse with time
+		int scale = 25 * sin( backEnd.refdef.floatTime * 7 );
+		for ( int i = 0; i < 3; i++ ) {
+			int min = md2_shadelight[ i ] * 0.8;
+			md2_shadelight[ i ] = Min(md2_shadelight[ i ] + scale, 255.0f);
+			if ( md2_shadelight[ i ] < min ) {
+				md2_shadelight[ i ] = min;
+			}
+		}
+	}
+
+	// =================
+	// PGM	ir goggles color override
+	if ( backEnd.refdef.rdflags & RDF_IRGOGGLES && ent->e.renderfx & RF_IR_VISIBLE ) {
+		md2_shadelight[ 0 ] = 255;
+		md2_shadelight[ 1 ] = 0;
+		md2_shadelight[ 2 ] = 0;
+	}
+	// PGM
+	// =================
+	VectorCopy( md2_shadelight, ent->ambientLight );
+	VectorCopy( md2_shadelight, ent->directedLight );
+
+	// clamp ambient
+	for ( int i = 0; i < 3; i++ ) {
+		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
+			ent->ambientLight[ i ] = tr.identityLightByte;
+		}
+	}
+
+	// save out the byte packet version
+	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
+	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
+	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
+	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
+
+	// transform the direction to local space
+	float lightDir[3] = {1, 0, 1};
+	VectorNormalize( lightDir );
+	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
+	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
+	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
+}
+
+void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 	if ( ( tr.currentEntity->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
 
-	if ( !( e->e.renderfx & RF_FIRST_PERSON ) ) {
-		if ( R_CullMd2Model( e ) ) {
+	if ( !( ent->e.renderfx & RF_FIRST_PERSON ) ) {
+		if ( R_CullMd2Model( ent ) ) {
 			return;
 		}
 	}
 
+	R_Md2SetupEntityLighting( ent );
+
 	mmd2_t* paliashdr = tr.currentModel->q2_md2;
+
+	if ( ( ent->e.frame >= paliashdr->num_frames ) || ( ent->e.frame < 0 ) ) {
+		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
+			R_GetModelByHandle( ent->e.hModel )->name, ent->e.frame );
+		ent->e.frame = 0;
+		ent->e.oldframe = 0;
+	}
+
+	if ( ( ent->e.oldframe >= paliashdr->num_frames ) || ( ent->e.oldframe < 0 ) ) {
+		common->Printf( "R_AddMd2Surfaces %s: no such oldframe %d\n",
+			R_GetModelByHandle( ent->e.hModel )->name, ent->e.oldframe );
+		ent->e.frame = 0;
+		ent->e.oldframe = 0;
+	}
+
+	if ( !r_lerpmodels->value ) {
+		ent->e.backlerp = 0;
+	}
+
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
@@ -278,6 +396,46 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 		tess.texCoords[ i ][ 0 ][ 0 ] = paliashdr->texCoords[ i ].x;
 		tess.texCoords[ i ][ 0 ][ 1 ] = paliashdr->texCoords[ i ].y;
 	}
+}
+
+static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr ) {
+	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
+											 ent->e.frame * paliashdr->framesize );
+	dmd2_trivertx_t* v = frame->verts;
+
+	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
+												ent->e.oldframe * paliashdr->framesize );
+	dmd2_trivertx_t* ov = oldframe->verts;
+
+	float backlerp = ent->e.backlerp;
+	float frontlerp = 1.0 - backlerp;
+
+	// move should be the delta back to the previous frame * backlerp
+	vec3_t delta;
+	VectorSubtract( ent->e.oldorigin, ent->e.origin, delta );
+
+	vec3_t move;
+	move[ 0 ] = DotProduct( delta, ent->e.axis[ 0 ] );		// forward
+	move[ 1 ] = DotProduct( delta, ent->e.axis[ 1 ] );		// left
+	move[ 2 ] = DotProduct( delta, ent->e.axis[ 2 ] );		// up
+
+	VectorAdd( move, oldframe->translate, move );
+
+	for ( int i = 0; i < 3; i++ ) {
+		move[ i ] = backlerp * move[ i ] + frontlerp * frame->translate[ i ];
+	}
+
+	vec3_t frontv, backv;
+	for ( int i = 0; i < 3; i++ ) {
+		frontv[ i ] = frontlerp * frame->scale[ i ];
+		backv[ i ] = backlerp * oldframe->scale[ i ];
+	}
+
+	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ tess.numVertexes ], tess.normal[ tess.numVertexes ], move, frontv, backv );
+	tess.numVertexes += paliashdr->numVertexes;
+
+	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	tess.numIndexes += paliashdr->numIndexes;
 }
 
 //	interpolates between two frames and origins
@@ -338,7 +496,6 @@ static void GL_DrawMd2FrameLerp() {
 	shader.cullType = CT_FRONT_SIDED;
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
 	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
 		shader.deforms[0].deformation = DEFORM_WAVE;
 		shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
@@ -358,7 +515,6 @@ static void GL_DrawMd2FrameLerp() {
 
 static void GL_DrawMd2Shadow() {
 	tess.xstages = tess.shader->stages;
-	tess.dlightBits = 0;
 	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
 	RB_EndSurface();
 }
@@ -366,165 +522,13 @@ static void GL_DrawMd2Shadow() {
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
-	//
-	// get lighting information
-	//
-	vec3_t md2_shadelight;
-	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT )     {
-		for ( int i = 0; i < 3; i++ ) {
-			md2_shadelight[ i ] = ent->e.absoluteLight * 255;
-		}
-	} else {
-		float l[4];
-		R_LightPointQ2( ent->e.origin, l, backEnd.refdef );
-		md2_shadelight[0] = Min(l[0] * 255, 255.0f);
-		md2_shadelight[1] = Min(l[1] * 255, 255.0f);
-		md2_shadelight[2] = Min(l[2] * 255, 255.0f);
-
-		// player lighting hack for communication back to server
-		// big hack!
-		if ( ent->e.renderfx & RF_FIRST_PERSON ) {
-			// pick the greatest component, which should be the same
-			// as the mono value returned by software
-			if ( md2_shadelight[ 0 ] > md2_shadelight[ 1 ] ) {
-				if ( md2_shadelight[ 0 ] > md2_shadelight[ 2 ] ) {
-					r_lightlevel->value = 150 * md2_shadelight[ 0 ] / 255;
-				} else {
-					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
-				}
-			} else {
-				if ( md2_shadelight[ 1 ] > md2_shadelight[ 2 ] ) {
-					r_lightlevel->value = 150 * md2_shadelight[ 1 ] / 255;
-				} else {
-					r_lightlevel->value = 150 * md2_shadelight[ 2 ] / 255;
-				}
-			}
-		}
-	}
-	backEnd.currentEntity->e.shadowPlane = lightspot[ 2 ];
-
-	if ( ent->e.renderfx & RF_MINLIGHT ) {
-		int i;
-		for ( i = 0; i < 3; i++ ) {
-			if ( md2_shadelight[ i ] > 25 ) {
-				break;
-			}
-		}
-		if ( i == 3 ) {
-			md2_shadelight[ 0 ] = 25;
-			md2_shadelight[ 1 ] = 25;
-			md2_shadelight[ 2 ] = 25;
-		}
-	}
-
-	if ( ent->e.renderfx & RF_GLOW ) {
-		// bonus items will pulse with time
-		int scale = 25 * sin( backEnd.refdef.floatTime * 7 );
-		for ( int i = 0; i < 3; i++ ) {
-			int min = md2_shadelight[ i ] * 0.8;
-			md2_shadelight[ i ] = Min(md2_shadelight[ i ] + scale, 255.0f);
-			if ( md2_shadelight[ i ] < min ) {
-				md2_shadelight[ i ] = min;
-			}
-		}
-	}
-
-	// =================
-	// PGM	ir goggles color override
-	if ( backEnd.refdef.rdflags & RDF_IRGOGGLES && ent->e.renderfx & RF_IR_VISIBLE ) {
-		md2_shadelight[ 0 ] = 255;
-		md2_shadelight[ 1 ] = 0;
-		md2_shadelight[ 2 ] = 0;
-	}
-	// PGM
-	// =================
-	VectorCopy( md2_shadelight, ent->ambientLight );
-	VectorCopy( md2_shadelight, ent->directedLight );
-
-	// clamp ambient
-	for ( int i = 0; i < 3; i++ ) {
-		if ( ent->ambientLight[ i ] > tr.identityLightByte ) {
-			ent->ambientLight[ i ] = tr.identityLightByte;
-		}
-	}
-
-	// save out the byte packet version
-	( ( byte* )&ent->ambientLightInt )[ 0 ] = idMath::FtoiFast( ent->ambientLight[ 0 ] );
-	( ( byte* )&ent->ambientLightInt )[ 1 ] = idMath::FtoiFast( ent->ambientLight[ 1 ] );
-	( ( byte* )&ent->ambientLightInt )[ 2 ] = idMath::FtoiFast( ent->ambientLight[ 2 ] );
-	( ( byte* )&ent->ambientLightInt )[ 3 ] = 0xff;
-
-	// transform the direction to local space
-	float lightDir[3] = {1, 0, 1};
-	VectorNormalize( lightDir );
-	ent->lightDir[ 0 ] = DotProduct( lightDir, ent->e.axis[ 0 ] );
-	ent->lightDir[ 1 ] = DotProduct( lightDir, ent->e.axis[ 1 ] );
-	ent->lightDir[ 2 ] = DotProduct( lightDir, ent->e.axis[ 2 ] );
-
-	//
-	// locate the proper data
-	//
-
 	c_alias_polys += paliashdr->numIndexes / 3;
-
-	// draw it
-
-	if ( ( ent->e.frame >= paliashdr->num_frames ) || ( ent->e.frame < 0 ) ) {
-		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
-			R_GetModelByHandle( ent->e.hModel )->name, ent->e.frame );
-		ent->e.frame = 0;
-		ent->e.oldframe = 0;
-	}
-
-	if ( ( ent->e.oldframe >= paliashdr->num_frames ) || ( ent->e.oldframe < 0 ) ) {
-		common->Printf( "R_AddMd2Surfaces %s: no such oldframe %d\n",
-			R_GetModelByHandle( ent->e.hModel )->name, ent->e.oldframe );
-		ent->e.frame = 0;
-		ent->e.oldframe = 0;
-	}
-
-	if ( !r_lerpmodels->value ) {
-		ent->e.backlerp = 0;
-	}
-
-	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
-											 ent->e.frame * paliashdr->framesize );
-	dmd2_trivertx_t* v = frame->verts;
-
-	dmd2_frame_t* oldframe = ( dmd2_frame_t* )( paliashdr->frames +
-												ent->e.oldframe * paliashdr->framesize );
-	dmd2_trivertx_t* ov = oldframe->verts;
-
-	float backlerp = ent->e.backlerp;
-	float frontlerp = 1.0 - backlerp;
-
-	// move should be the delta back to the previous frame * backlerp
-	vec3_t delta;
-	VectorSubtract( ent->e.oldorigin, ent->e.origin, delta );
-
-	vec3_t move;
-	move[ 0 ] = DotProduct( delta, ent->e.axis[ 0 ] );		// forward
-	move[ 1 ] = DotProduct( delta, ent->e.axis[ 1 ] );		// left
-	move[ 2 ] = DotProduct( delta, ent->e.axis[ 2 ] );		// up
-
-	VectorAdd( move, oldframe->translate, move );
-
-	for ( int i = 0; i < 3; i++ ) {
-		move[ i ] = backlerp * move[ i ] + frontlerp * frame->translate[ i ];
-	}
-
-	vec3_t frontv, backv;
-	for ( int i = 0; i < 3; i++ ) {
-		frontv[ i ] = frontlerp * frame->scale[ i ];
-		backv[ i ] = backlerp * oldframe->scale[ i ];
-	}
 
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ tess.numVertexes ], tess.normal[ tess.numVertexes ], move, frontv, backv );
-	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
-	tess.numVertexes += paliashdr->numVertexes;
-	tess.numIndexes += paliashdr->numIndexes;
+	tess.dlightBits = 0;
+
+	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 
 	if ( tess.shader == tr.projectionShadowShader ) {
 		GL_DrawMd2Shadow();
