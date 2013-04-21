@@ -80,6 +80,8 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	vec3_t normal;
 	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	int numVerts = 0;
 	int numIndexes = 0;
 
@@ -162,7 +164,5 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 }

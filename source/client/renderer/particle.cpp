@@ -137,13 +137,18 @@ static void R_DrawParticleTriangles() {
 	tess.shader = &shader;
 	tess.xstages = shader.stages;
 	shader.cullType = CT_FRONT_SIDED;
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
+	tess.dlightBits = 0;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		if (tess.numVertexes + 3 > SHADER_MAX_VERTEXES)
 		{
+			RB_EndSurface();
 			tess.dlightBits = 0;
 			shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 			tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-			RB_EndSurfaceTemp();
 			tess.numVertexes = 0;
 			tess.numIndexes = 0;
 		}
@@ -171,15 +176,7 @@ static void R_DrawParticleTriangles() {
 		}
 	}
 
-	if (tess.numVertexes)
-	{
-		tess.dlightBits = 0;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numVertexes = 0;
-		tess.numIndexes = 0;
-	}
+	RB_EndSurface();
 }
 
 static void R_DrawParticlePoints() {

@@ -136,7 +136,7 @@ void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
 		if ( frametype == SPR_SINGLE ) {
 			pframetype = ( dsprite1frametype_t* )Mod_LoadSpriteFrame( pframetype + 1,
 				&psprite->frames[ i ].frameptr, i );
-		} else   {
+		} else {
 			pframetype = ( dsprite1frametype_t* )Mod_LoadSpriteGroup( pframetype + 1,
 				&psprite->frames[ i ].frameptr, i );
 		}
@@ -150,7 +150,7 @@ void Mod_FreeSpriteModel( model_t* mod ) {
 	for ( int i = 0; i < psprite->numframes; i++ ) {
 		if ( psprite->frames[ i ].type == SPR_SINGLE ) {
 			delete psprite->frames[ i ].frameptr;
-		} else   {
+		} else {
 			msprite1group_t* pspritegroup = ( msprite1group_t* )psprite->frames[ i ].frameptr;
 			for ( int j = 0; j < pspritegroup->numframes; j++ ) {
 				delete pspritegroup->frames[ j ];
@@ -172,7 +172,7 @@ static msprite1frame_t* R_GetSpriteFrame( msprite1_t* psprite, trRefEntity_t* cu
 
 	if ( psprite->frames[ frame ].type == SPR_SINGLE ) {
 		return psprite->frames[ frame ].frameptr;
-	} else   {
+	} else {
 		msprite1group_t* pspritegroup = ( msprite1group_t* )psprite->frames[ frame ].frameptr;
 		float* pintervals = pspritegroup->intervals;
 		int numframes = pspritegroup->numframes;
@@ -200,17 +200,38 @@ void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 		return;
 	}
 
+	// don't even bother culling, because it's just a single
+	// polygon without a surface cache
+
 	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
 	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {
-	vec3_t point;
-
-	// don't even bother culling, because it's just a single
-	// polygon without a surface cache
-
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
+
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.rgbGen = CGEN_IDENTITY;
+	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
+		stage.alphaGen = AGEN_CONST;
+		stage.constantColor[ 3 ] = r_wateralpha->value * 255;
+	} else {
+		stage.alphaGen = AGEN_IDENTITY;
+	}
+	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 
 	vec3_t up;
 	vec3_t right;
@@ -238,13 +259,13 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		right[ 1 ] = -tvec[ 0 ];	//              r_spritedesc.vright)
 		right[ 2 ] = 0;
 		VectorNormalize( right );
-	} else if ( psprite->type == SPR_VP_PARALLEL )     {
+	} else if ( psprite->type == SPR_VP_PARALLEL ) {
 		// generate the sprite's axes, completely parallel to the viewplane. There
 		// are no problem situations, because the sprite is always in the same
 		// position relative to the viewer
 		VectorCopy( backEnd.viewParms.orient.axis[ 2 ], up );
 		VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 1 ], right );
-	} else if ( psprite->type == SPR_VP_PARALLEL_UPRIGHT )     {
+	} else if ( psprite->type == SPR_VP_PARALLEL_UPRIGHT ) {
 		// generate the sprite's axes, with vup straight up in worldspace, and
 		// r_spritedesc.vright parallel to the viewplane.
 		// This will not work if the view direction is very close to straight up or
@@ -263,11 +284,11 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		right[ 1 ] = -backEnd.viewParms.orient.axis[ 0 ][ 0 ];	//  r_spritedesc.vright)
 		right[ 2 ] = 0;
 		VectorNormalize( right );
-	} else if ( psprite->type == SPR_ORIENTED )     {
+	} else if ( psprite->type == SPR_ORIENTED ) {
 		// generate the sprite's axes, according to the sprite's world orientation
 		VectorCopy( backEnd.currentEntity->e.axis[ 2 ], up );
 		VectorSubtract( vec3_origin, backEnd.currentEntity->e.axis[ 1 ], right );
-	} else if ( psprite->type == SPR_VP_PARALLEL_ORIENTED )     {
+	} else if ( psprite->type == SPR_VP_PARALLEL_ORIENTED ) {
 		// generate the sprite's axes, parallel to the viewplane, but rotated in
 		// that plane around the center according to the sprite entity's roll
 		// angle. So vpn stays the same, but vright and vup rotate
@@ -276,10 +297,10 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		if ( backEnd.currentEntity->e.axis[ 0 ][ 2 ] == 1 ) {
 			sr = -backEnd.currentEntity->e.axis[ 1 ][ 0 ];
 			cr = backEnd.currentEntity->e.axis[ 1 ][ 1 ];
-		} else if ( backEnd.currentEntity->e.axis[ 0 ][ 2 ] == -1 )         {
+		} else if ( backEnd.currentEntity->e.axis[ 0 ][ 2 ] == -1 ) {
 			sr = backEnd.currentEntity->e.axis[ 1 ][ 0 ];
 			cr = backEnd.currentEntity->e.axis[ 1 ][ 1 ];
-		} else   {
+		} else {
 			float cp = sqrt( 1 - backEnd.currentEntity->e.axis[ 0 ][ 2 ] * backEnd.currentEntity->e.axis[ 0 ][ 2 ] );
 			sr = backEnd.currentEntity->e.axis[ 1 ][ 2 ] / cp;
 			cr = backEnd.currentEntity->e.axis[ 2 ][ 2 ] / cp;
@@ -289,15 +310,17 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 			right[ i ] = -backEnd.viewParms.orient.axis[ 1 ][ i ] * cr + backEnd.viewParms.orient.axis[ 2 ][ i ] * sr;
 			up[ i ] = backEnd.viewParms.orient.axis[ 1 ][ i ] * sr + backEnd.viewParms.orient.axis[ 2 ][ i ] * cr;
 		}
-	} else   {
+	} else {
 		common->FatalError( "R_DrawSprite: Bad sprite type %d", psprite->type );
 	}
 
 	vec3_t normal;
 	CrossProduct( right, up, normal );
 
-	int numVerts = 0;
-	int numIndexes = 0;
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
+
+	vec3_t point;
 
 	tess.texCoords[ numVerts ][ 0 ][ 0 ] = 0;
 	tess.texCoords[ numVerts ][ 0 ][ 1 ] = 1;
@@ -350,30 +373,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 
-	tess.numIndexes = 6;
-	tess.numVertexes = 4;
+	tess.numIndexes += 6;
+	tess.numVertexes += 4;
 
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_IDENTITY;
-	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		stage.alphaGen = AGEN_CONST;
-		stage.constantColor[ 3 ] = r_wateralpha->value * 255;
-	} else {
-		stage.alphaGen = AGEN_IDENTITY;
-	}
-	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 }

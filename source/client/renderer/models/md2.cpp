@@ -347,9 +347,7 @@ static void GL_DrawMd2FrameLerp() {
 	}
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 
 	if ( ent->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
@@ -362,9 +360,7 @@ static void GL_DrawMd2Shadow() {
 	tess.xstages = tess.shader->stages;
 	tess.dlightBits = 0;
 	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 }
 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
@@ -523,10 +519,12 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ 0 ], tess.normal[ 0 ], move, frontv, backv );
-	tess.numVertexes = paliashdr->numVertexes;
-	tess.numIndexes = paliashdr->numIndexes;
-	Com_Memcpy( tess.indexes, paliashdr->indexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ tess.numVertexes ], tess.normal[ tess.numVertexes ], move, frontv, backv );
+	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	tess.numVertexes += paliashdr->numVertexes;
+	tess.numIndexes += paliashdr->numIndexes;
 
 	if ( tess.shader == tr.projectionShadowShader ) {
 		GL_DrawMd2Shadow();

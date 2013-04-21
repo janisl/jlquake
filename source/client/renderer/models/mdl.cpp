@@ -677,9 +677,7 @@ static void GL_DrawAliasShadow() {
 	tess.xstages = tess.shader->stages;
 	tess.dlightBits = 0;
 	tess.currentStageIteratorFunc = tess.shader->optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 }
 
 float R_CalcEntityLight( refEntity_t* e ) {
@@ -818,10 +816,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr, mod
 	tess.dlightBits = 0;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
-
-	tess.numIndexes = 0;
-	tess.numVertexes = 0;
+	RB_EndSurface();
 }
 
 static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
@@ -921,6 +916,8 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 
 	c_alias_polys += paliashdr->numtris;
 
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
 	EmitMdlVertexesAndIndexes( ent, paliashdr );
 
 	if ( tess.shader == tr.projectionShadowShader ) {

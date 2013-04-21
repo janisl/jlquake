@@ -518,80 +518,41 @@ dynamic:
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
-	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
-		int numVerts = tess.numVertexes;
-		int numIndexes = tess.numIndexes;
-
-		tess.numVertexes += p->numverts;
-		tess.numIndexes += ( p->numverts - 2 ) * 3;
-
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-			tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
-			tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
-			if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
-				tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
-				tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
-				tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
-			} else {
-				tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
-				tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
-				tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
-			}
-		}
-		for ( int i = 0; i < p->numverts - 2; i++ ) {
-			tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
-			tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
-			tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
-		}
-	}
-
 	shader_t shader = {};
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
+	shaderStage_t stage1 = {};
+	shaderStage_t stage2 = {};
+	shaderStage_t stage3 = {};
+	texModInfo_t texmod1 = {};
+	texModInfo_t texmod2 = {};
 
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
 		//
 		// subdivided water surface warp
 		//
-		shaderStage_t stage = {};
-		stage.rgbGen = CGEN_IDENTITY;
+		stage1.rgbGen = CGEN_IDENTITY;
 		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
-			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage.alphaGen = AGEN_CONST;
-			stage.constantColor[ 3 ] = r_wateralpha->value * 255;
+			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage1.alphaGen = AGEN_CONST;
+			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
 		} else {
-			stage.stateBits = GLS_DEFAULT;
-			stage.alphaGen = AGEN_IDENTITY;
+			stage1.stateBits = GLS_DEFAULT;
+			stage1.alphaGen = AGEN_IDENTITY;
 		}
-		texModInfo_t texmod = {};
-		texmod.type = TMOD_TURBULENT_OLD;
-		texmod.wave.frequency = 1.0f / idMath::TWO_PI;
-		texmod.wave.amplitude = 1.0f / 8.0f;
-		stage.bundle[ 0 ].image[ 0 ] = s->texinfo->texture->gl_texture;
-		stage.bundle[ 0 ].numImageAnimations = 1;
-		stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage.bundle[ 0 ].texMods = &texmod;
-		stage.bundle[ 0 ].numTexMods = 1;
-		shader.stages[ 0 ] = &stage;
-		tess.dlightBits = 0;
+		texmod1.type = TMOD_TURBULENT_OLD;
+		texmod1.wave.frequency = 1.0f / idMath::TWO_PI;
+		texmod1.wave.amplitude = 1.0f / 8.0f;
+		stage1.bundle[ 0 ].image[ 0 ] = s->texinfo->texture->gl_texture;
+		stage1.bundle[ 0 ].numImageAnimations = 1;
+		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage1.bundle[ 0 ].texMods = &texmod1;
+		stage1.bundle[ 0 ].numTexMods = 1;
+		shader.stages[ 0 ] = &stage1;
 		shader.cullType = CT_FRONT_SIDED;
 		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
 		//
-		shaderStage_t stage1 = {};
-		texModInfo_t texmod1;
 		stage1.bundle[ 0 ].image[ 0 ] = tr.solidskytexture;
 		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage1.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
@@ -604,8 +565,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.rgbGen = CGEN_IDENTITY;
 		stage1.alphaGen = AGEN_IDENTITY;
 
-		shaderStage_t stage2 = {};
-		texModInfo_t texmod2;
 		stage2.bundle[ 0 ].image[ 0 ] = tr.alphaskytexture;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
 		stage2.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
@@ -618,24 +577,15 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage2.rgbGen = CGEN_IDENTITY;
 		stage2.alphaGen = AGEN_IDENTITY;
 
-		shader_t shader;
-		tess.shader = &shader;
-		tess.xstages = shader.stages;
 		shader.stages[ 0 ] = &stage1;
 		shader.stages[ 1 ] = &stage2;
 
-		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
 		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numVertexes = 0;
-		tess.numIndexes = 0;
 	} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
 		//
 		// translucent poly
 		//
-		shaderStage_t stage1 = {};
 		if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
 		} else {
@@ -647,18 +597,12 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		shader.stages[ 0 ] = &stage1;
-		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
 		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
 	} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		//
 		// absolute light poly
 		//
-		shaderStage_t stage1 = {};
 		stage1.stateBits = GLS_DEFAULT;
 		stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
 		stage1.alphaGen = AGEN_IDENTITY;
@@ -666,7 +610,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		shader.stages[ 0 ] = &stage1;
 
-		shaderStage_t stage3 = {};
 		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
 			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage3.rgbGen = CGEN_IDENTITY;
@@ -675,20 +618,13 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 1 ] = &stage3;
 		}
 
-		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
 		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
 	} else {
 		//
 		// normal lightmaped poly
 		//
 		R_RenderDynamicLightmaps( s );
-		shaderStage_t stage1 = {};
-		shaderStage_t stage2 = {};
 		if ( qglActiveTextureARB ) {
 			shader.multitextureEnv = GL_MODULATE;
 
@@ -733,7 +669,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 1 ] = &stage2;
 		}
 
-		shaderStage_t stage3 = {};
 		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
 			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			stage3.rgbGen = CGEN_IDENTITY;
@@ -742,14 +677,51 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 2 ] = &stage3;
 		}
 
-		tess.dlightBits = 0;
 		shader.cullType = CT_FRONT_SIDED;
 		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurfaceTemp();
-		tess.numIndexes = 0;
-		tess.numVertexes = 0;
 	}
+
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+
+	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
+		int numVerts = tess.numVertexes;
+		int numIndexes = tess.numIndexes;
+
+		tess.numVertexes += p->numverts;
+		tess.numIndexes += ( p->numverts - 2 ) * 3;
+
+		float* v = p->verts[ 0 ];
+		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
+			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
+			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
+			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
+			tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
+			tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
+			if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
+				tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
+				tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
+				tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
+			} else {
+				tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
+				tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
+				tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
+			}
+		}
+		for ( int i = 0; i < p->numverts - 2; i++ ) {
+			tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
+			tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
+			tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
+		}
+	}
+
+	RB_EndSurface();
 }
 
 void R_DrawWaterSurfaces(int& forcedSortIndex) {

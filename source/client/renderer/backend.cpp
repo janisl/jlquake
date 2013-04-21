@@ -557,35 +557,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 		R_ScrapUpload();
 	}
 	backEnd.currentEntity = &backEnd.entity2D;
-	RB_BeginSurface( tr.defaultShader, 0 );
-
-	RB_Set2DVertexCoords( cmd, 0 );
-	RB_Set2DTextureCoords( cmd, 0 );
-
-	tess.vertexColors[ 0 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ 0 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ 0 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ 0 ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ 1 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ 1 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ 1 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ 1 ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ 2 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ 2 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ 2 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ 2 ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ 3 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ 3 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ 3 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ 3 ][ 3 ] = cmd->a * 255;
-
-	RB_Set2DIndexes( 0, 0 );
-
-	tess.numIndexes = 6;
-	tess.numVertexes = 4;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = cmd->image;
 	stage.bundle[ 0 ].numImageAnimations = 1;
@@ -601,9 +572,41 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurfaceTemp();
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
+
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
+
+	tess.numIndexes += 6;
+	tess.numVertexes += 4;
+
+	RB_Set2DVertexCoords( cmd, numVerts );
+	RB_Set2DTextureCoords( cmd, numVerts );
+
+	tess.vertexColors[ numVerts ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ numVerts ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ numVerts ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ numVerts ][ 3 ] = cmd->a * 255;
+
+	tess.vertexColors[ numVerts + 1 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ numVerts + 1 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ numVerts + 1 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ numVerts + 1 ][ 3 ] = cmd->a * 255;
+
+	tess.vertexColors[ numVerts + 2 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ numVerts + 2 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ numVerts + 2 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ numVerts + 2 ][ 3 ] = cmd->a * 255;
+
+	tess.vertexColors[ numVerts + 3 ][ 0 ] = cmd->r * 255;
+	tess.vertexColors[ numVerts + 3 ][ 1 ] = cmd->g * 255;
+	tess.vertexColors[ numVerts + 3 ][ 2 ] = cmd->b * 255;
+	tess.vertexColors[ numVerts + 3 ][ 3 ] = cmd->a * 255;
+
+	RB_Set2DIndexes( numVerts, numIndexes );
+
+	RB_EndSurface();
 
 	return ( const void* )( cmd + 1 );
 }
