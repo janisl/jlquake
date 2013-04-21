@@ -188,7 +188,6 @@ struct mbrush29_submodel_t {
 
 #define BRUSH38_SURF_PLANEBACK      2
 #define BRUSH38_SURF_DRAWSKY        4
-#define BRUSH38_SURF_DRAWTURB       0x10
 
 struct mbrush38_vertex_t {
 	vec3_t position;

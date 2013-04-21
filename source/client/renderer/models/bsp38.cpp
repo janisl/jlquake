@@ -416,7 +416,6 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 		// set the drawing flags
 
 		if ( out->texinfo->flags & BSP38SURF_WARP ) {
-			out->flags |= BRUSH38_SURF_DRAWTURB;
 			for ( int i = 0; i < 2; i++ ) {
 				out->extents[ i ] = 16384;
 				out->texturemins[ i ] = -8192;

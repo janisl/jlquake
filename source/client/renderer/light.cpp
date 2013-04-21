@@ -177,7 +177,7 @@ static int RecursiveLightPointQ2( mbrush38_node_t* node, vec3_t start, vec3_t en
 
 	mbrush38_surface_t* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->flags & ( BRUSH38_SURF_DRAWTURB | BRUSH38_SURF_DRAWSKY ) ) {
+		if ( surf->texinfo->flags & BSP38SURF_WARP || surf->flags & BRUSH38_SURF_DRAWSKY ) {
 			continue;	// no lightmaps
 		}
 

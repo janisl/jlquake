@@ -331,7 +331,7 @@ void GL_BeginBuildingLightmaps( model_t* m ) {
 }
 
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
-	if ( surf->flags & ( BRUSH38_SURF_DRAWSKY | BRUSH38_SURF_DRAWTURB ) ) {
+	if ( surf->texinfo->flags & BSP38SURF_WARP || surf->flags & BRUSH38_SURF_DRAWSKY ) {
 		return;
 	}
 
@@ -415,87 +415,87 @@ static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	return tex->image;
 }
 
-//	Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
-static void EmitWaterPolysQ2( mbrush38_surface_t* surf, int alpha, shaderStage_t* pStage ) {
-	texModInfo_t texmods[2] = {};
-	texmods[0].type = TMOD_TURBULENT_OLD;
-	texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
-	texmods[0].wave.amplitude = 1.0f / 16.0f;
-	pStage->bundle[ 0 ].texMods = texmods;
-	pStage->bundle[ 0 ].numTexMods = 1;
-	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-		texmods[ 1 ].type = TMOD_SCROLL;
-		texmods[ 1 ].scroll[ 0 ] = -0.5;
-		pStage->bundle[ 0 ].numTexMods = 2;
-	}
-	pStage->rgbGen = CGEN_IDENTITY_LIGHTING;
-	shader_t shader = {};
-	shader.stages[ 0 ] = pStage;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-	tess.dlightBits = 0;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurface();
-}
-
-static void R_RenderBrushWaterPolyQ2( mbrush38_surface_t* fa ) {
-	image_t* image = R_TextureAnimationQ2( fa->texinfo );
-
-	// warp texture, no lightmaps
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = image;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.alphaGen = AGEN_IDENTITY;
-	stage.stateBits = GLS_DEFAULT;
-	EmitWaterPolysQ2( fa, 255, &stage );
-}
-
-static void R_RenderBrushPolyQ2( mbrush38_surface_t* surf, image_t* image ) {
+void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	shaderStage_t stage1 = {};
-	texModInfo_t texmod = {};
-	stage1.bundle[ 0 ].image[ 0 ] = image;
+	texModInfo_t texmods[2] = {};
 	stage1.bundle[ 0 ].numImageAnimations = 1;
-	stage1.rgbGen = CGEN_IDENTITY;
-	stage1.alphaGen = AGEN_IDENTITY;
-	stage1.stateBits = GLS_DEFAULT;
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-		texmod.type = TMOD_SCROLL;
-		texmod.scroll[ 0 ] = -1.6;
-		stage1.bundle[ 0 ].texMods = &texmod;
+	stage1.bundle[ 0 ].texMods = texmods;
+	if ( surf->texinfo->flags & BSP38SURF_WARP ) {
+		texmods[0].type = TMOD_TURBULENT_OLD;
+		texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
+		texmods[0].wave.amplitude = 1.0f / 16.0f;
 		stage1.bundle[ 0 ].numTexMods = 1;
 	}
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage1;
-	tess.shader = &shader;
-	tess.xstages = shader.stages;
-
-	// don't bother if we're set to fullbright
-	if ( !r_fullbright->value && tr.worldModel->brush38_lightdata ) {
-		shaderStage_t stage2 = {};
-		stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
-		stage2.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-		stage2.rgbGen = CGEN_IDENTITY;
-		stage2.alphaGen = AGEN_IDENTITY;
-		stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-		stage2.bundle[ 0 ].isLightmap = true;
-		shader.stages[ 1 ] = &stage2;
+	//	Hmmm, no flowing on translucent non-turbulent surfaces
+	if ( surf->texinfo->flags & BSP38SURF_FLOWING &&
+		( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) || surf->texinfo->flags & BSP38SURF_WARP ) ) {
+		int i = stage1.bundle[ 0 ].numTexMods;
+		texmods[ i ].type = TMOD_SCROLL;
+		if ( surf->texinfo->flags & BSP38SURF_WARP ) {
+			texmods[ i ].scroll[ 0 ] = -0.5;
+		} else {
+			texmods[ i ].scroll[ 0 ] = -1.6;
+		}
+		stage1.bundle[ 0 ].numTexMods++;
+	}
+	if ( surf->texinfo->flags & BSP38SURF_WARP ) {
+		stage1.rgbGen = CGEN_IDENTITY_LIGHTING;
+	} else {
+		stage1.rgbGen = CGEN_IDENTITY;
+	}
+	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		stage1.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
+		stage1.alphaGen = AGEN_CONST;
+		if ( surf->texinfo->flags & BSP38SURF_TRANS33 ) {
+			stage1.constantColor[ 3 ] = 84;
+		} else {
+			stage1.constantColor[ 3 ] = 168;
+		}
+		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stage1.bundle[ 0 ].image[ 0 ] = R_TextureAnimationQ2( surf->texinfo );
+		stage1.alphaGen = AGEN_IDENTITY;
+		stage1.stateBits = GLS_DEFAULT;
 	}
 
-	tess.dlightBits = 0;
+	shaderStage_t stage2 = {};
+
+	shader_t shader = {};
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-	RB_EndSurface();
-}
+	shader.stages[ 0 ] = &stage1;
 
-void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
+	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
+		R_UpdateSurfaceLightmap( surf );
+		if ( !qglMultiTexCoord2fARB ) {
+			// don't bother if we're set to fullbright
+			if ( !r_fullbright->value && tr.worldModel->brush38_lightdata ) {
+				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
+				stage2.bundle[ 0 ].numImageAnimations = 1;
+				stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+				stage2.rgbGen = CGEN_IDENTITY;
+				stage2.alphaGen = AGEN_IDENTITY;
+				stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+				stage2.bundle[ 0 ].isLightmap = true;
+				shader.stages[ 1 ] = &stage2;
+			}
+		} else {
+			shader.multitextureEnv = GL_MODULATE;
+
+			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
+			stage1.bundle[ 1 ].numImageAnimations = 1;
+			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+		}
+	}
+
+	tess.shader = &shader;
+	tess.xstages = shader.stages;
+	tess.dlightBits = 0;
+	tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
+
 	for ( mbrush38_glpoly_t* p = surf->polys; p; p = p->next ) {
 		int numVerts = tess.numVertexes;
 		int numIndexes = tess.numIndexes;
@@ -530,90 +530,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 	}
 	c_brush_polys++;
 
-	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-
-		// the textures are prescaled up for a better lighting range,
-		// so scale it back down
-
-		int alpha;
-		if ( surf->texinfo->flags & BSP38SURF_TRANS33 ) {
-			alpha = 84;
-		} else {
-			alpha = 168;
-		}
-		if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
-			shaderStage_t stage = {};
-			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
-			stage.bundle[ 0 ].numImageAnimations = 1;
-			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage.alphaGen = AGEN_CONST;
-			stage.constantColor[ 3 ] = alpha;
-			EmitWaterPolysQ2( surf, alpha, &stage );
-		} else {
-			shaderStage_t stage = {};
-			stage.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
-			stage.bundle[ 0 ].numImageAnimations = 1;
-			stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage.rgbGen = CGEN_IDENTITY;
-			stage.alphaGen = AGEN_CONST;
-			stage.constantColor[ 3 ] = alpha;
-			stage.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			shader_t shader = {};
-			shader.stages[ 0 ] = &stage;
-			tess.shader = &shader;
-			tess.xstages = shader.stages;
-			tess.dlightBits = 0;
-			shader.cullType = CT_FRONT_SIDED;
-			shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-			tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-			RB_EndSurface();
-		}
-		return;
-	}
-
-	if ( surf->flags & BRUSH38_SURF_DRAWTURB ) {
-
-		R_RenderBrushWaterPolyQ2( surf );
-		return;
-	}
-
-	R_UpdateSurfaceLightmap( surf );
-
-	image_t* image = R_TextureAnimationQ2( surf->texinfo );
-
-	if ( !qglMultiTexCoord2fARB ) {
-		R_RenderBrushPolyQ2( surf, image );
-	} else {
-		shader_t shader = {};
-		tess.shader = &shader;
-		tess.xstages = shader.stages;
-		shader.multitextureEnv = GL_MODULATE;
-
-		shaderStage_t stage = {};
-		texModInfo_t texmod = {};
-		stage.bundle[ 0 ].image[ 0 ] = image;
-		stage.bundle[ 0 ].numImageAnimations = 1;
-		stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
-		stage.bundle[ 1 ].numImageAnimations = 1;
-		stage.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-		stage.rgbGen = CGEN_IDENTITY;
-		stage.alphaGen = AGEN_IDENTITY;
-		stage.stateBits = GLS_DEFAULT;
-		shader.stages[ 0 ] = &stage;
-		if ( surf->texinfo->flags & BSP38SURF_FLOWING ) {
-			texmod.type = TMOD_SCROLL;
-			texmod.scroll[ 0 ] = -1.6;
-			stage.bundle[ 0 ].texMods = &texmod;
-			stage.bundle[ 0 ].numTexMods = 1;
-		}
-		shader.cullType = CT_FRONT_SIDED;
-		tess.dlightBits = 0;
-		shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-		tess.currentStageIteratorFunc = shader.optimalStageIteratorFunc;
-		RB_EndSurface();
-	}
+	RB_EndSurface();
 }
 
 //	Draw water surfaces and windows.
