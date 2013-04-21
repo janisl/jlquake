@@ -331,10 +331,6 @@ void GL_BeginBuildingLightmaps( model_t* m ) {
 }
 
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
-	if ( surf->texinfo->flags & BSP38SURF_WARP || surf->flags & BRUSH38_SURF_DRAWSKY ) {
-		return;
-	}
-
 	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
 	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
 
