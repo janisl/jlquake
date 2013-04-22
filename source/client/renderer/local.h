@@ -518,11 +518,6 @@ struct stretchPicCommand_t {
 	byte gradientColor[ 4 ];	// color values 0-255
 	int gradientType;
 	float angle;
-
-	float r;
-	float g;
-	float b;
-	float a;
 };
 
 struct drawSurfsCommand_t {

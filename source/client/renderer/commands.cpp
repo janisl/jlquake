@@ -222,8 +222,7 @@ void R_SetColor( const float* rgba ) {
 }
 
 void R_Draw2DQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a ) {
+	image_t* image, float s1, float t1, float s2, float t2 ) {
 	if ( !tr.registered ) {
 		return;
 	}
@@ -256,10 +255,6 @@ void R_Draw2DQuad( float x, float y, float width, float height,
 	cmd->t1 = t1;
 	cmd->s2 = s2;
 	cmd->t2 = t2;
-	cmd->r = r;
-	cmd->g = g;
-	cmd->b = b;
-	cmd->a = a;
 }
 
 void R_StretchPic( float x, float y, float w, float h,

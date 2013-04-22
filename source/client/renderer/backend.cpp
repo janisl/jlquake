@@ -537,6 +537,13 @@ static void RB_Set2DTextureCoords( const stretchPicCommand_t* cmd, int numVerts 
 	tess.texCoords[ numVerts + 3 ][ 0 ][ 1 ] = cmd->t2;
 }
 
+static void RB_Set2DColours( int numVerts ) {
+	*( int* )tess.vertexColors[ numVerts ] =
+		*( int* )tess.vertexColors[ numVerts + 1 ] =
+			*( int* )tess.vertexColors[ numVerts + 2 ] =
+				*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )backEnd.color2D;
+}
+
 static void RB_Set2DIndexes( int numVerts, int numIndexes ) {
 	tess.indexes[ numIndexes ] = numVerts + 3;
 	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
@@ -573,32 +580,12 @@ static const void* RB_Draw2DQuad( const void* data ) {
 	int numVerts = tess.numVertexes;
 	int numIndexes = tess.numIndexes;
 
-	tess.numIndexes += 6;
 	tess.numVertexes += 4;
+	tess.numIndexes += 6;
 
 	RB_Set2DVertexCoords( cmd, numVerts );
 	RB_Set2DTextureCoords( cmd, numVerts );
-
-	tess.vertexColors[ numVerts ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ numVerts ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ numVerts ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ numVerts ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ numVerts + 1 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ numVerts + 1 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ numVerts + 1 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ numVerts + 1 ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ numVerts + 2 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ numVerts + 2 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ numVerts + 2 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ numVerts + 2 ][ 3 ] = cmd->a * 255;
-
-	tess.vertexColors[ numVerts + 3 ][ 0 ] = cmd->r * 255;
-	tess.vertexColors[ numVerts + 3 ][ 1 ] = cmd->g * 255;
-	tess.vertexColors[ numVerts + 3 ][ 2 ] = cmd->b * 255;
-	tess.vertexColors[ numVerts + 3 ][ 3 ] = cmd->a * 255;
-
+	RB_Set2DColours( numVerts );
 	RB_Set2DIndexes( numVerts, numIndexes );
 
 	RB_EndSurface();
@@ -630,12 +617,7 @@ static const void* RB_StretchPic( const void* data ) {
 	tess.numIndexes += 6;
 
 	RB_Set2DIndexes( numVerts, numIndexes );
-
-	*( int* )tess.vertexColors[ numVerts ] =
-		*( int* )tess.vertexColors[ numVerts + 1 ] =
-			*( int* )tess.vertexColors[ numVerts + 2 ] =
-				*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )backEnd.color2D;
-
+	RB_Set2DColours( numVerts );
 	RB_Set2DVertexCoords( cmd, numVerts );
 	RB_Set2DTextureCoords( cmd, numVerts );
 
@@ -703,11 +685,7 @@ static const void* RB_RotatedPic( const void* data ) {
 	tess.numIndexes += 6;
 
 	RB_Set2DIndexes( numVerts, numIndexes );
-
-	*( int* )tess.vertexColors[ numVerts ] =
-		*( int* )tess.vertexColors[ numVerts + 1 ] =
-			*( int* )tess.vertexColors[ numVerts + 2 ] =
-				*( int* )tess.vertexColors[ numVerts + 3 ] = *( int* )backEnd.color2D;
+	RB_Set2DColours( numVerts );
 
 	float angle = cmd->angle * idMath::TWO_PI;
 	tess.xyz[ numVerts ][ 0 ] = cmd->x + ( cos( angle ) * cmd->w );

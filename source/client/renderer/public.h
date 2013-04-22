@@ -487,8 +487,7 @@ void R_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader );
 void R_RenderToTexture( qhandle_t textureid, int x, int y, int w, int h );
 void R_Finish();
 void R_Draw2DQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a );
+	image_t* image, float s1, float t1, float s2, float t2 );
 bool R_GetScreenPosFromWorldPos( vec3_t origin, int& u, int& v );
 
 void R_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty );

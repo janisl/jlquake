@@ -80,8 +80,8 @@ void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h ) {
 	}
 }
 
-void UI_DrawPic( int x, int y, image_t* pic, float alpha ) {
-	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic, alpha );
+void UI_DrawPic( int x, int y, image_t* pic ) {
+	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic );
 }
 
 void UI_DrawNamedPic( int x, int y, const char* pic ) {
@@ -94,15 +94,14 @@ void UI_DrawNamedPic( int x, int y, const char* pic ) {
 }
 
 static void DoQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a ) {
+	image_t* image, float s1, float t1, float s2, float t2 ) {
 	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 
-	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2, r, g, b, a );
+	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2 );
 }
 
-void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic, float alpha ) {
-	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha );
+void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic ) {
+	DoQuad( x, y, w, h, pic, 0, 0, 1, 1 );
 }
 
 void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
@@ -114,10 +113,6 @@ void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
 	UI_DrawStretchPic( x, y, w, h, gl );
 }
 
-void UI_DrawStretchPicWithColour( int x, int y, int w, int h, image_t* pic, byte* colour ) {
-	DoQuad( x, y, w, h, pic, 0, 0, 1, 1, colour[ 0 ] / 255.0, colour[ 1 ] / 255.0, colour[ 2 ] / 255.0, colour[ 3 ] / 255.0 );
-}
-
 void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
 	float newsl = ( float )srcx / ( float )R_GetImageWidth( pic );
 	float newsh = newsl + ( float )width / ( float )R_GetImageWidth( pic );
@@ -125,13 +120,13 @@ void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, i
 	float newtl = ( float )srcy / ( float )R_GetImageHeight( pic );
 	float newth = newtl + ( float )height / ( float )R_GetImageHeight( pic );
 
-	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1 );
+	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth );
 }
 
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
 void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
-	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0, 1, 1, 1, 1 );
+	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0 );
 }
 
 void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
@@ -144,7 +139,10 @@ void UI_NamedTileClear( int x, int y, int w, int h, const char* pic ) {
 }
 
 void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a ) {
-	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a );
+	float colour[ 4 ] = { r, g, b, a };
+	R_SetColor( colour );
+	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0 );
+	R_SetColor( NULL );
 }
 
 void UI_FillPal( int x, int y, int w, int h, int c ) {
@@ -155,7 +153,7 @@ void UI_FillPal( int x, int y, int w, int h, int c ) {
 }
 
 void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
-	int numberOfRows, float r, float g, float b, float a ) {
+	int numberOfRows ) {
 	if ( y <= -h || y >= viddef.height ) {
 		// Totally off screen
 		return;
@@ -169,10 +167,10 @@ void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int n
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, r, g, b, a );
+	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize );
 }
 
-void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
+void UI_DrawChar( int x, int y, int num ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		num &= 511;
 
@@ -180,20 +178,21 @@ void UI_DrawChar( int x, int y, int num, float r, float g, float b, float a ) {
 			return;		// space
 
 		}
-		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 32, 16, r, g, b, a );
+		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 32, 16 );
 	} else   {
 		num &= 255;
 
 		if ( ( num & 127 ) == 32 ) {
 			return;		// space
 		}
-		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 16, 16, r, g, b, a );
+		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 16, 16 );
 	}
 }
 
 void UI_DrawString( int x, int y, const char* str, int mask ) {
 	vec4_t color;
 	Vector4Set( color, 1, 1, 1, 1 );
+	R_SetColor( color );
 	while ( *str ) {
 		if ( Q_IsColorString( str ) ) {
 			if ( *( str + 1 ) == COLOR_NULL ) {
@@ -202,15 +201,17 @@ void UI_DrawString( int x, int y, const char* str, int mask ) {
 				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
+			R_SetColor( color );
 			continue;
 		}
-		UI_DrawChar( x, y, ( ( byte ) * str ) | mask, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+		UI_DrawChar( x, y, ( ( byte ) * str ) | mask );
 		str++;
 		x += 8;
 	}
+	R_SetColor( NULL );
 }
 
-static void UI_SmallCharacter( int x, int y, int num, float r, float g, float b, float a ) {
+static void UI_SmallCharacter( int x, int y, int num ) {
 	if ( num < 32 ) {
 		num = 0;
 	} else if ( num >= 'a' && num <= 'z' )     {
@@ -225,12 +226,13 @@ static void UI_SmallCharacter( int x, int y, int num, float r, float g, float b,
 		return;
 	}
 
-	UI_DrawCharBase( x, y, num, 8, 8, char_smalltexture, 16, 4, r, g, b, a );
+	UI_DrawCharBase( x, y, num, 8, 8, char_smalltexture, 16, 4 );
 }
 
 void UI_DrawSmallString( int x, int y, const char* str ) {
 	vec4_t color;
 	Vector4Set( color, 1, 1, 1, 1 );
+	R_SetColor( color );
 	while ( *str ) {
 		if ( Q_IsColorString( str ) ) {
 			if ( *( str + 1 ) == COLOR_NULL ) {
@@ -239,12 +241,14 @@ void UI_DrawSmallString( int x, int y, const char* str ) {
 				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
+			R_SetColor( color );
 			continue;
 		}
-		UI_SmallCharacter( x, y, *str, color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+		UI_SmallCharacter( x, y, *str );
 		str++;
 		x += 6;
 	}
+	R_SetColor( NULL );
 }
 
 void SCR_FillRect( float x, float y, float width, float height, const float* color ) {
@@ -360,10 +364,6 @@ void SCR_DrawBigString( int x, int y, const char* s, float alpha ) {
 	color[ 0 ] = color[ 1 ] = color[ 2 ] = 1.0;
 	color[ 3 ] = alpha;
 	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, false );
-}
-
-void SCR_DrawBigStringColor( int x, int y, const char* s, vec4_t color ) {
-	SCR_DrawStringExt( x, y, BIGCHAR_WIDTH, s, color, true );
 }
 
 static void SCR_DrawSmallStringExt( int x, int y, const char* string, float* setColor, bool forceColor ) {

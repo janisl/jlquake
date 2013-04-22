@@ -73,7 +73,7 @@ static void Con_CheckResize() {
 	int width;
 	if ( GGameType & GAME_Tech3 ) {
 		width = ( cls.glconfig.vidWidth / SMALLCHAR_WIDTH ) - 2;
-	} else   {
+	} else {
 		width = ( viddef.width / SMALLCHAR_WIDTH ) - 2;
 	}
 
@@ -86,7 +86,7 @@ static void Con_CheckResize() {
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
 		Con_ClearText();
-	} else   {
+	} else {
 		int oldwidth = con.linewidth;
 		con.linewidth = width;
 		int oldtotallines = con.totallines;
@@ -131,7 +131,7 @@ static void Con_Linefeed( bool skipNotify ) {
 	if ( con.current >= 0 ) {
 		if ( skipNotify ) {
 			con.times[ con.current % NUM_CON_TIMES ] = 0;
-		} else   {
+		} else {
 			con.times[ con.current % NUM_CON_TIMES ] = cls.realtime;
 		}
 	}
@@ -180,7 +180,7 @@ void Con_ConsolePrint( const char* txt ) {
 		if ( Q_IsColorString( txt ) ) {
 			if ( *( txt + 1 ) == COLOR_NULL ) {
 				color = ColorIndex( COLOR_WHITE );
-			} else   {
+			} else {
 				color = ColorIndex( *( txt + 1 ) );
 			}
 			txt += 2;
@@ -233,7 +233,7 @@ void Con_ConsolePrint( const char* txt ) {
 				prev = NUM_CON_TIMES - 1;
 			}
 			con.times[ prev ] = 0;
-		} else   {
+		} else {
 			// -NERVE - SMF
 			con.times[ con.current % NUM_CON_TIMES ] = cls.realtime;
 		}
@@ -257,38 +257,33 @@ void Con_ConsolePrint( const char* txt ) {
 
 static void Con_DrawBackground( float frac, int lines ) {
 	if ( GGameType & GAME_QuakeHexen ) {
-		int y = ( viddef.height * 3 ) >> 2;
-		if ( lines > y ) {
-			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback );
-		} else   {
-			UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback, ( float )( 1.2 * lines ) / y );
-		}
+		UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback );
 
 		if ( !clc.download ) {
 			const char* version;
 			if ( GGameType & GAME_QuakeWorld ) {
 				version = S_COLOR_ORANGE "JLQuakeWorld " JLQUAKE_VERSION_STRING;
-			} else if ( GGameType & GAME_Quake )     {
+			} else if ( GGameType & GAME_Quake ) {
 				version = S_COLOR_ORANGE "JLQuake " JLQUAKE_VERSION_STRING;
-			} else if ( GGameType & GAME_HexenWorld )     {
+			} else if ( GGameType & GAME_HexenWorld ) {
 				version = S_COLOR_RED "JLHexenWorld " JLQUAKE_VERSION_STRING;
-			} else   {
+			} else {
 				version = S_COLOR_RED "JLHexen II " JLQUAKE_VERSION_STRING;
 			}
 			int y = lines - 14;
 			int x = viddef.width - ( String::LengthWithoutColours( version ) * 8 + 11 );
 			UI_DrawString( x, y, version );
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );
-	} else   {
+	} else {
 		int y = frac * viddef.height - 2;
 		if ( y < 1 ) {
 			y = 0;
-		} else   {
+		} else {
 			SCR_DrawPic( 0, 0, viddef.width, y, cls.consoleShader );
 
 			// only draw when the console is down all the way (for now)
@@ -305,7 +300,7 @@ static void Con_DrawBackground( float frac, int lines ) {
 			color[ 2 ] = 0;
 			color[ 3 ] = 0.6f;
 			SCR_FillRect( 0, y, viddef.width, 2, color );
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			// ydnar: matching light text
 			color[ 0 ] = 0.75;
 			color[ 1 ] = 0.75;
@@ -314,7 +309,7 @@ static void Con_DrawBackground( float frac, int lines ) {
 			if ( frac < 1.0 ) {
 				SCR_FillRect( 0, y, viddef.width, 1.25, color );
 			}
-		} else   {
+		} else {
 			color[ 0 ] = 1;
 			color[ 1 ] = 0;
 			color[ 2 ] = 0;
@@ -326,11 +321,11 @@ static void Con_DrawBackground( float frac, int lines ) {
 		const char* version;
 		if ( GGameType & GAME_Quake3 ) {
 			version = S_COLOR_RED "JLQuake III " JLQUAKE_VERSION_STRING;
-		} else if ( GGameType & GAME_WolfSP )     {
+		} else if ( GGameType & GAME_WolfSP ) {
 			version = S_COLOR_WHITE "JLWolfSP " JLQUAKE_VERSION_STRING;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			version = S_COLOR_WHITE "JLWolfMP " JLQUAKE_VERSION_STRING;
-		} else   {
+		} else {
 			version = S_COLOR_WHITE "JLET " JLQUAKE_VERSION_STRING;
 		}
 		int i = String::LengthWithoutColours( version );
@@ -361,8 +356,8 @@ static void Con_DrawText( int lines ) {
 		}
 		for ( int x = 0; x < con.linewidth; x += 4 ) {
 			if ( !( GGameType & GAME_Tech3 ) ) {
-				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, '^', 1, 1, 1, 1 );
-			} else   {
+				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, '^' );
+			} else {
 				SCR_DrawSmallChar( con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, '^' );
 			}
 		}
@@ -376,9 +371,7 @@ static void Con_DrawText( int lines ) {
 	}
 
 	int currentColor = 7;
-	if ( GGameType & GAME_Tech3 ) {
-		R_SetColor( g_color_table[ currentColor ] );
-	}
+	R_SetColor( g_color_table[ currentColor ] );
 
 	for ( int i = 0; i < rows; i++, y -= charHeight, row-- ) {
 		if ( row < 0 ) {
@@ -398,14 +391,11 @@ static void Con_DrawText( int lines ) {
 
 			if ( ( ( text[ x ] >> 8 ) & COLOR_BITS ) != currentColor ) {
 				currentColor = ( text[ x ] >> 8 ) & COLOR_BITS;
-				if ( GGameType & GAME_Tech3 ) {
-					R_SetColor( g_color_table[ currentColor ] );
-				}
+				R_SetColor( g_color_table[ currentColor ] );
 			}
 			if ( !( GGameType & GAME_Tech3 ) ) {
-				float* c = g_color_table[ currentColor ];
-				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff, c[ 0 ], c[ 1 ], c[ 2 ], c[ 3 ] );
-			} else   {
+				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
+			} else {
 				SCR_DrawSmallChar( con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
 			}
 		}
@@ -425,7 +415,7 @@ static void Con_DrawDownloadBar( int lines ) {
 	char* text = String::RChr( clc.downloadName, '/' );
 	if ( text ) {
 		text++;
-	} else   {
+	} else {
 		text = clc.downloadName;
 	}
 
@@ -437,7 +427,7 @@ static void Con_DrawDownloadBar( int lines ) {
 		String::NCpy( dlbar, text, i );
 		dlbar[ i ] = 0;
 		String::Cat( dlbar, sizeof ( dlbar ), "..." );
-	} else   {
+	} else {
 		String::Cpy( dlbar, text );
 	}
 	String::Cat( dlbar, sizeof ( dlbar ), ": " );
@@ -449,7 +439,7 @@ static void Con_DrawDownloadBar( int lines ) {
 	for ( int j = 0; j < y; j++ ) {
 		if ( j == n ) {
 			dlbar[ i++ ] = '\x83';
-		} else   {
+		} else {
 			dlbar[ i++ ] = '\x81';
 		}
 	}
@@ -460,6 +450,7 @@ static void Con_DrawDownloadBar( int lines ) {
 
 	// draw it
 	y = lines - 12;
+	R_SetColor( con.color );
 	UI_DrawString( 8, y, dlbar );
 }
 
@@ -474,7 +465,7 @@ static void Con_DrawInput( int lines ) {
 			if ( cls.state == CA_ACTIVE ) {
 				return;
 			}
-		} else   {
+		} else {
 			if ( cls.state == CA_ACTIVE && clc.qh_signon == SIGNONS ) {
 				return;
 			}
@@ -498,7 +489,7 @@ static void Con_DrawInput( int lines ) {
 					y + 2,
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 2, 0, 0, 0, 0, cls.whiteShader );
-			} else   {
+			} else {
 				UI_Fill( con.xadjust + ( 2 + con.acLength ) * SMALLCHAR_WIDTH, y + 1,
 					( String::Length( Cmd_Argv( 0 ) ) - con.acLength ) * SMALLCHAR_WIDTH,
 					charHeight - 1, console_highlightcolor[ 0 ],
@@ -507,10 +498,10 @@ static void Con_DrawInput( int lines ) {
 		}
 	}
 
+	R_SetColor( con.color );
 	if ( GGameType & GAME_Tech3 ) {
-		R_SetColor( con.color );
 		SCR_DrawSmallChar( con.xadjust + 1 * SMALLCHAR_WIDTH, y, ']' );
-	} else   {
+	} else {
 		UI_DrawString( 8, y, "]" );
 	}
 
@@ -524,7 +515,7 @@ static void Con_DrawSolidConsole( float frac ) {
 		if ( lines > cls.glconfig.vidHeight ) {
 			lines = cls.glconfig.vidHeight;
 		}
-	} else   {
+	} else {
 		lines = viddef.height * frac;
 		if ( lines > viddef.height ) {
 			lines = viddef.height;
@@ -546,9 +537,7 @@ static void Con_DrawSolidConsole( float frac ) {
 
 	Con_DrawInput( lines );
 
-	if ( GGameType & GAME_Tech3 ) {
-		R_SetColor( NULL );
-	}
+	R_SetColor( NULL );
 }
 
 //	Draws the last few lines of output transparently over the game top
@@ -556,9 +545,7 @@ static int Con_DrawNotify() {
 	int charHeight = GGameType & GAME_Tech3 ? SMALLCHAR_HEIGHT : 8;
 
 	int currentColor = 7;
-	if ( GGameType & GAME_Tech3 ) {
-		R_SetColor( g_color_table[ currentColor ] );
-	}
+	R_SetColor( g_color_table[ currentColor ] );
 
 	int y = 0;
 	for ( int i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++ ) {
@@ -581,24 +568,19 @@ static int Con_DrawNotify() {
 			}
 			if ( ( ( text[ x ] >> 8 ) & COLOR_BITS ) != currentColor ) {
 				currentColor = ( text[ x ] >> 8 ) & COLOR_BITS;
-				if ( GGameType & GAME_Tech3 ) {
-					R_SetColor( g_color_table[ currentColor ] );
-				}
+				R_SetColor( g_color_table[ currentColor ] );
 			}
 			if ( GGameType & GAME_Tech3 ) {
 				SCR_DrawSmallChar( cl_conXOffset->integer + con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
-			} else   {
-				float* c = g_color_table[ currentColor ];
-				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff, c[ 0 ], c[ 1 ], c[ 2 ], c[ 3 ] );
+			} else {
+				UI_DrawChar( ( x + 1 ) * SMALLCHAR_WIDTH, y, text[ x ] & 0xff );
 			}
 		}
 
 		y += charHeight;
 	}
 
-	if ( GGameType & GAME_Tech3 ) {
-		R_SetColor( NULL );
-	}
+	R_SetColor( NULL );
 
 	return y;
 }
@@ -615,9 +597,9 @@ static void Con_DrawChat( int y ) {
 	char buf[ 128 ];
 	if ( chat_team ) {
 		CL_TranslateString( "say_team:", buf );
-	} else if ( chat_buddy )     {
+	} else if ( chat_buddy ) {
 		CL_TranslateString( "say_fireteam:", buf );
-	} else   {
+	} else {
 		CL_TranslateString( "say:", buf );
 	}
 
@@ -625,7 +607,7 @@ static void Con_DrawChat( int y ) {
 	if ( GGameType & GAME_Tech3 ) {
 		SCR_DrawBigString( 8, y, buf, 1.0f );
 		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, y, true );
-	} else   {
+	} else {
 		UI_DrawString( 8, y, buf );
 		Field_Draw( &chatField, skip << 3, y, true );
 	}
@@ -672,7 +654,7 @@ void Con_DrawConsole() {
 				return;
 			}
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		if ( cls.state == CA_DISCONNECTED || cls.state == CA_CONNECTING ) {
 			// forced full screen console
 			Con_DrawSolidConsole( 1.0 );
@@ -683,7 +665,7 @@ void Con_DrawConsole() {
 			Con_DrawSolidConsole( 1.0 );
 			return;
 		}
-	} else   {
+	} else {
 		if ( cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS ) {
 			Con_DrawSolidConsole( 1.0 );
 			return;
@@ -699,7 +681,7 @@ void Con_DrawConsole() {
 
 	if ( con.displayFrac ) {
 		Con_DrawSolidConsole( con.displayFrac );
-	} else   {
+	} else {
 		// draw notify lines
 		if ( cls.state == CA_ACTIVE && ( !( GGameType & GAME_ET ) || con_drawnotify->integer ) ) {
 			Con_DrawNotifyAndChat();
@@ -742,7 +724,7 @@ static bool CheckForCommand() {
 	for ( i = 0; i < 127; i++ )
 		if ( s[ i ] <= ' ' ) {
 			break;
-		} else   {
+		} else {
 			command[ i ] = s[ i ];
 		}
 	command[ i ] = 0;
@@ -788,7 +770,7 @@ void Con_KeyEvent( int key ) {
 			}
 			Cbuf_AddText( g_consoleField.buffer + 1 );		// valid command
 			Cbuf_AddText( "\n" );
-		} else   {
+		} else {
 			if ( !g_consoleField.buffer[ 0 ] ) {
 				// empty lines just scroll the console without adding to history
 				return;
@@ -917,13 +899,13 @@ void Con_MessageKeyEvent( int key ) {
 			char buffer[ MAX_STRING_CHARS ];
 			if ( chat_playerNum != -1 ) {
 				String::Sprintf( buffer, sizeof ( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
-			} else if ( chat_team )     {
+			} else if ( chat_team ) {
 				String::Sprintf( buffer, sizeof ( buffer ), "say_team \"%s\"\n", chatField.buffer );
-			} else if ( chat_limbo )     {
+			} else if ( chat_limbo ) {
 				String::Sprintf( buffer, sizeof ( buffer ), "say_limbo \"%s\"\n", chatField.buffer );
-			} else if ( chat_buddy )     {
+			} else if ( chat_buddy ) {
 				String::Sprintf( buffer, sizeof ( buffer ), "say_buddy \"%s\"\n", chatField.buffer );
-			} else   {
+			} else {
 				String::Sprintf( buffer, sizeof ( buffer ), "say \"%s\"\n", chatField.buffer );
 			}
 			CL_AddReliableCommand( buffer );
@@ -951,9 +933,9 @@ void Con_RunConsole() {
 	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) && cls.state != CA_ACTIVE )       {
 		con.finalFrac = 1;		// full screen
 		con.displayFrac = 1;
-	} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
+	} else if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		con.finalFrac = con.desiredFrac;
-	} else   {
+	} else {
 		con.finalFrac = 0;	// none visible
 	}
 
@@ -963,7 +945,7 @@ void Con_RunConsole() {
 		if ( con.finalFrac > con.displayFrac ) {
 			con.displayFrac = con.finalFrac;
 		}
-	} else if ( con.finalFrac > con.displayFrac )     {
+	} else if ( con.finalFrac > con.displayFrac ) {
 		con.displayFrac += con_conspeed->value * cls.realFrametime * 0.001;
 		if ( con.finalFrac < con.displayFrac ) {
 			con.displayFrac = con.finalFrac;
@@ -1011,7 +993,7 @@ void Con_ToggleConsole_f() {
 			UI_ForceMenuOff();
 			Cvar_SetLatched( "paused", "0" );
 		}
-	} else   {
+	} else {
 		in_keyCatchers |= KEYCATCH_CONSOLE;
 
 		if ( keys[ K_CTRL ].down ) {
@@ -1020,7 +1002,7 @@ void Con_ToggleConsole_f() {
 		} else if ( keys[ K_ALT ].down )       {
 			// full console
 			con.desiredFrac = 1.0;
-		} else   {
+		} else {
 			// normal half-screen console
 			con.desiredFrac = 0.5;
 		}
@@ -1081,7 +1063,7 @@ static void Con_Dump_f() {
 		for ( int x = con.linewidth - 1; x >= 0; x-- ) {
 			if ( buffer[ x ] == ' ' ) {
 				buffer[ x ] = 0;
-			} else   {
+			} else {
 				break;
 			}
 		}
@@ -1176,7 +1158,7 @@ void Con_Init() {
 		Cmd_AddCommand( "clMessageMode", Con_MessageMode_f );
 		Cmd_AddCommand( "clMessageMode2", Con_MessageMode2_f );
 		Cmd_AddCommand( "clMessageMode3", Con_MessageModeBuddy_f );
-	} else   {
+	} else {
 		Cmd_AddCommand( "messagemode", Con_MessageMode_f );
 		Cmd_AddCommand( "messagemode2", Con_MessageMode2_f );
 	}
@@ -1204,7 +1186,7 @@ void Con_Close() {
 void Con_InitBackgroundImage() {
 	if ( GGameType & GAME_Quake ) {
 		conback = R_CachePic( "gfx/conback.lmp" );
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		conback = R_CachePic( "gfx/menu/conback.lmp" );
 	}
 }

@@ -56,5 +56,7 @@ void R_PolyBlend( refdef_t* fd, float* blendColour ) {
 		return;
 	}
 
-	R_Draw2DQuad( fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, blendColour[ 0 ], blendColour[ 1 ], blendColour[ 2 ], blendColour[ 3 ] );
+	R_SetColor( blendColour );
+	R_Draw2DQuad( fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0 );
+	R_SetColor( NULL );
 }

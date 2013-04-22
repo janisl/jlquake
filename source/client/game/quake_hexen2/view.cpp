@@ -1078,7 +1078,10 @@ static void VQH_DrawCrosshair() {
 		int x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value;
 		int y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
 		unsigned char* pColor = r_palette[ crosshaircolor->integer ];
-		UI_DrawStretchPicWithColour( x - 4, y - 4, 16, 16, cs_texture, pColor );
+		float colour[ 4 ] = { pColor[ 0 ] / 255.0, pColor[ 1 ] / 255.0, pColor[ 2 ] / 255.0, pColor[ 3 ] / 255.0 };
+		R_SetColor( colour );
+		UI_DrawStretchPic( x - 4, y - 4, 16, 16, cs_texture );
+		R_SetColor( NULL );
 	} else if ( crosshair->value )     {
 		UI_DrawChar( scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+' );
