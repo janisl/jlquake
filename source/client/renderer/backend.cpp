@@ -553,35 +553,6 @@ static void RB_Set2DIndexes( int numVerts, int numIndexes ) {
 	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
 }
 
-static const void* RB_Draw2DQuad( const void* data ) {
-	const stretchPicCommand_t* cmd = ( const stretchPicCommand_t* )data;
-
-	if ( !backEnd.projection2D ) {
-		RB_SetGL2D();
-	}
-
-	if ( tess.numIndexes ) {
-		RB_EndSurface();
-	}
-	backEnd.currentEntity = &backEnd.entity2D;
-	RB_BeginSurface( R_Build2DShaderFromImage( cmd->image ), 0 );
-
-	int numVerts = tess.numVertexes;
-	int numIndexes = tess.numIndexes;
-
-	tess.numVertexes += 4;
-	tess.numIndexes += 6;
-
-	RB_Set2DVertexCoords( cmd, numVerts );
-	RB_Set2DTextureCoords( cmd, numVerts );
-	RB_Set2DColours( numVerts );
-	RB_Set2DIndexes( numVerts, numIndexes );
-
-	RB_EndSurface();
-
-	return ( const void* )( cmd + 1 );
-}
-
 static const void* RB_StretchPic( const void* data ) {
 	const stretchPicCommand_t* cmd = ( const stretchPicCommand_t* )data;
 
@@ -895,10 +866,6 @@ void RB_ExecuteRenderCommands( const void* data ) {
 		switch ( *( const int* )data ) {
 		case RC_SET_COLOR:
 			data = RB_SetColor( data );
-			break;
-
-		case RC_DRAW_2D_QUAD:
-			data = RB_Draw2DQuad( data );
 			break;
 
 		case RC_STRETCH_PIC:

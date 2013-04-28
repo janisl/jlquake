@@ -482,7 +482,6 @@ enum renderCommand_t
 {
 	RC_END_OF_LIST,
 	RC_SET_COLOR,
-	RC_DRAW_2D_QUAD,
 	RC_STRETCH_PIC,
 	RC_STRETCH_PIC_GRADIENT,
 	RC_ROTATED_PIC,
@@ -507,7 +506,6 @@ struct setColorCommand_t {
 
 struct stretchPicCommand_t {
 	int commandId;
-	image_t* image;
 	shader_t* shader;
 	float x, y;
 	float w, h;

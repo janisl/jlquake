@@ -234,12 +234,12 @@ void R_Draw2DQuad( float x, float y, float width, float height,
 	if ( !cmd ) {
 		return;
 	}
-	cmd->commandId = RC_DRAW_2D_QUAD;
+	cmd->commandId = RC_STRETCH_PIC;
 	cmd->x = x;
 	cmd->y = y;
 	cmd->w = width;
 	cmd->h = height;
-	cmd->image = image;
+	cmd->shader = R_Build2DShaderFromImage( image );
 	cmd->s1 = s1;
 	cmd->t1 = t1;
 	cmd->s2 = s2;
