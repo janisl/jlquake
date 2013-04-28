@@ -323,7 +323,7 @@ void GL_BeginBuildingLightmaps( model_t* m ) {
 	byte dummy[ 128 * 128 * 4 ];
 	if ( !tr.lightmaps[ 0 ] ) {
 		for ( int i = 0; i < MAX_LIGHTMAPS; i++ ) {
-			tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false );
+			tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP );
 		}
 	}
 

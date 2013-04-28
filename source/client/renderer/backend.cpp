@@ -560,9 +560,6 @@ static const void* RB_Draw2DQuad( const void* data ) {
 		RB_SetGL2D();
 	}
 
-	if ( scrap_dirty ) {
-		R_ScrapUpload();
-	}
 	backEnd.currentEntity = &backEnd.entity2D;
 	shaderStage_t stage = {};
 	stage.bundle[ 0 ].image[ 0 ] = cmd->image;

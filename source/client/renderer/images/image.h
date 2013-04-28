@@ -48,9 +48,6 @@ struct image_t {
 
 	int hash;								// for fast building of the backupHash
 	image_t* next;
-
-	float sl, tl, sh, th;					// 0,0 - 1,1 unless part of the scrap
-	bool scrap;
 };
 
 void R_InitQ1Palette();
@@ -58,11 +55,11 @@ void R_InitQ2Palette();
 byte* R_ConvertImage8To32( byte* DataIn, int Width, int Height, int Mode );
 byte* R_GetFullBrightImage( byte* data8, byte* data32, int width, int height );
 void R_LoadImage( const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL );
-image_t* R_CreateImage( const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap, bool characterMip = false );
+image_t* R_CreateImage( const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool characterMip = false );
 void R_ReUploadImage( image_t* image, byte* data );
 bool R_TouchImage( image_t* inImage );
 image_t* R_FindImage( const char* name );
-image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL, bool characterMIP = false, bool lightmap = false );
+image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL, bool characterMIP = false, bool lightmap = false );
 void R_SetColorMappings();
 void R_GammaCorrect( byte* Buffer, int BufferSize );
 void R_InitFogTable();
@@ -71,7 +68,6 @@ void R_InitImages();
 void R_DeleteTextures();
 void GL_TextureMode( const char* string );
 void GL_TextureAnisotropy( float anisotropy );
-void R_ScrapUpload();
 void R_ImageList_f();
 int R_SumOfUsedImages();
 void R_BackupImages();
@@ -96,5 +92,3 @@ void R_LoadWAL( const char* FileName, byte** Pic, int* Width, int* Height );
 
 extern byte host_basepal[ 768 ];
 extern unsigned* d_8to24table;
-
-extern bool scrap_dirty;

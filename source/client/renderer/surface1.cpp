@@ -335,7 +335,7 @@ void GL_BuildLightmaps() {
 
 	if ( !tr.lightmaps[ 0 ] ) {
 		for ( int i = 0; i < MAX_LIGHTMAPS; i++ ) {
-			tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), lightmaps + i * BLOCK_WIDTH * BLOCK_HEIGHT * 4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false );
+			tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), lightmaps + i * BLOCK_WIDTH * BLOCK_HEIGHT * 4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP );
 		}
 	}
 

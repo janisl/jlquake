@@ -50,7 +50,7 @@ void R_InitParticleTexture() {
 			data[ y ][ x ][ 3 ] = dottexture[ y ][ x ] * 255;
 		}
 	}
-	tr.particleImage = R_CreateImage( "*particle", ( byte* )data, 16, 16, true, false, GL_CLAMP, false );
+	tr.particleImage = R_CreateImage( "*particle", ( byte* )data, 16, 16, true, false, GL_CLAMP );
 }
 
 static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t right, vec3_t normal,

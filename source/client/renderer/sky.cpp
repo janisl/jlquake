@@ -119,7 +119,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 	transpix[ 3 ] = 0;
 
 	if ( !tr.solidskytexture ) {
-		tr.solidskytexture = R_CreateImage( "*solidsky", trans, 128, 128, false, false, GL_REPEAT, false );
+		tr.solidskytexture = R_CreateImage( "*solidsky", trans, 128, 128, false, false, GL_REPEAT );
 	} else {
 		R_ReUploadImage( tr.solidskytexture, trans );
 	}
@@ -141,7 +141,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 	}
 
 	if ( !tr.alphaskytexture ) {
-		tr.alphaskytexture = R_CreateImage( "*alphasky", trans, 128, 128, false, false, GL_REPEAT, false );
+		tr.alphaskytexture = R_CreateImage( "*alphasky", trans, 128, 128, false, false, GL_REPEAT );
 	} else {
 		R_ReUploadImage( tr.alphaskytexture, trans );
 	}

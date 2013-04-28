@@ -180,7 +180,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	// register all skins
 	for ( int i = 0; i < pheader->num_skins; i++ ) {
 		mod->q2_skins[ i ] = R_FindImageFile( ( const char* )buffer + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
-			true, true, GL_CLAMP, false, IMG8MODE_Skin );
+			true, true, GL_CLAMP, IMG8MODE_Skin );
 	}
 
 	mod->q2_mins[ 0 ] = -32;

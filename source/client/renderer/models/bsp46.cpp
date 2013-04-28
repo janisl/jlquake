@@ -219,7 +219,7 @@ static void R_LoadLightmaps( bsp46_lump_t* l ) {
 			maxIntensity = intensity;
 		}
 		tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d",i ), image,
-			LIGHTMAP_SIZE, LIGHTMAP_SIZE, false, false, GL_CLAMP, false );
+			LIGHTMAP_SIZE, LIGHTMAP_SIZE, false, false, GL_CLAMP );
 	}
 
 	if ( r_lightmap->integer > 1 ) {

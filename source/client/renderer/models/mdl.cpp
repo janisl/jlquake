@@ -248,7 +248,7 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 				pheader->gl_texture[ i ][ 1 ] =
 					pheader->gl_texture[ i ][ 2 ] =
 						pheader->gl_texture[ i ][ 3 ] =
-							R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
+							R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 			delete[] pic32;
 			if ( picFullBright ) {
 				char fbname[ 32 ];
@@ -257,7 +257,7 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 					pheader->fullBrightTexture[ i ][ 1 ] =
 						pheader->fullBrightTexture[ i ][ 2 ] =
 							pheader->fullBrightTexture[ i ][ 3 ] =
-								R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
+								R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 				delete[] picFullBright;
 			} else {
 				pheader->fullBrightTexture[ i ][ 0 ] =
@@ -283,12 +283,12 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 
 				byte* pic32 = R_ConvertImage8To32( ( byte* )pskintype, pheader->skinwidth, pheader->skinheight, texture_mode );
 				byte* picFullBright = R_GetFullBrightImage( ( byte* )pskintype, pic32, pheader->skinwidth, pheader->skinheight );
-				pheader->gl_texture[ i ][ j & 3 ] = R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
+				pheader->gl_texture[ i ][ j & 3 ] = R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 				delete[] pic32;
 				if ( picFullBright ) {
 					char fbname[ 32 ];
 					sprintf( fbname, "%s_%i_%i_fb", loadmodel->name, i, j );
-					pheader->fullBrightTexture[ i ][ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false );
+					pheader->fullBrightTexture[ i ][ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 					delete[] picFullBright;
 					haveFullBrightFrame = true;
 				} else {

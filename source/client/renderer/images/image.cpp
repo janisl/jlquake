@@ -23,9 +23,6 @@
 //#define IMAGE_HASH_SIZE		1024
 #define IMAGE_HASH_SIZE     4096
 
-#define SCRAP_BLOCK_WIDTH   256
-#define SCRAP_BLOCK_HEIGHT  256
-
 #define DEFAULT_SIZE        16
 
 struct textureMode_t {
@@ -48,8 +45,6 @@ unsigned ColorPercent[ 16 ] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-bool scrap_dirty;
-
 static byte s_gammatable[ 256 ];
 static byte s_intensitytable[ 256 ];
 
@@ -62,10 +57,6 @@ static int gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 static int gl_filter_max = GL_LINEAR;
 
 static float gl_anisotropy = 1.0;
-
-static int scrap_allocated[ SCRAP_BLOCK_WIDTH ];
-static byte scrap_texels[ SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4 ];
-static int scrap_uploads;
 
 static byte mipBlendColors[ 16 ][ 4 ] =
 {
@@ -802,49 +793,6 @@ done:
 	GL_CheckErrors();
 }
 
-//	scrap allocation
-//
-//	Allocate all the little status bar obejcts into a single texture
-// to crutch up stupid hardware / drivers
-static bool R_ScrapAllocBlock( int w, int h, int* x, int* y ) {
-	int best = SCRAP_BLOCK_HEIGHT;
-
-	for ( int i = 0; i < SCRAP_BLOCK_WIDTH - w; i++ ) {
-		int best2 = 0;
-
-		int j;
-		for ( j = 0; j < w; j++ ) {
-			if ( scrap_allocated[ i + j ] >= best ) {
-				break;
-			}
-			if ( scrap_allocated[ i + j ] > best2 ) {
-				best2 = scrap_allocated[ i + j ];
-			}
-		}
-		if ( j == w ) {
-			// this is a valid spot
-			*x = i;
-			*y = best = best2;
-		}
-	}
-
-	if ( best + h > SCRAP_BLOCK_HEIGHT ) {
-		return false;
-	}
-
-	for ( int i = 0; i < w; i++ ) {
-		scrap_allocated[ *x + i ] = best + h;
-	}
-
-	return true;
-}
-
-void R_ScrapUpload() {
-	scrap_uploads++;
-	R_ReUploadImage( tr.scrapImage, scrap_texels );
-	scrap_dirty = false;
-}
-
 //	return a hash value for the filename
 static long generateHashValue( const char* fname ) {
 	int i;
@@ -870,7 +818,7 @@ static long generateHashValue( const char* fname ) {
 
 //	This is the only way any image_t is created
 image_t* R_CreateImage( const char* name, byte* data, int width, int height, bool mipmap,
-	bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap, bool characterMip ) {
+	bool allowPicmip, GLenum glWrapClampMode, bool characterMip ) {
 	if ( String::Length( name ) >= MAX_QPATH ) {
 		common->Error( "R_CreateImage: \"%s\" is too long\n", name );
 	}
@@ -917,53 +865,22 @@ image_t* R_CreateImage( const char* name, byte* data, int width, int height, boo
 	image->height = height;
 	image->wrapClampMode = glWrapClampMode;
 
-	// load little ones into the scrap
-	if ( AllowScrap && width < 64 && height < 64 ) {
-		int x, y;
-		if ( !R_ScrapAllocBlock( width, height, &x, &y ) ) {
-			goto nonscrap;
-		}
+	qglGenTextures( 1, &image->texnum );
 
-		// copy the texels into the scrap block
-		int k = 0;
-		for ( int i = 0; i < height; i++ ) {
-			for ( int j = 0; j < width * 4; j++, k++ ) {
-				scrap_texels[ ( y + i ) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j ] = data[ k ];
-			}
-		}
-		scrap_dirty = true;
+	GL_Bind( image );
 
-		image->texnum = tr.scrapImage->texnum;
-		image->scrap = true;
-		image->sl = ( x + 0.01 ) / ( float )SCRAP_BLOCK_WIDTH;
-		image->sh = ( x + width - 0.01 ) / ( float )SCRAP_BLOCK_WIDTH;
-		image->tl = ( y + 0.01 ) / ( float )SCRAP_BLOCK_WIDTH;
-		image->th = ( y + height - 0.01 ) / ( float )SCRAP_BLOCK_WIDTH;
-	} else   {
-nonscrap:
-		qglGenTextures( 1, &image->texnum );
+	R_UploadImage( data, width, height, mipmap, allowPicmip, characterMip,
+		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, noCompress );
 
-		GL_Bind( image );
-
-		R_UploadImage( data, width, height, mipmap, allowPicmip, characterMip,
-			isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight, noCompress );
-
-		image->scrap = false;
-		image->sl = 0;
-		image->sh = 1;
-		image->tl = 0;
-		image->th = 1;
-
-		if ( r_clampToEdge->integer && glWrapClampMode == GL_CLAMP ) {
-			glWrapClampMode = GL_CLAMP_TO_EDGE;
-		}
-
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode );
-
-		qglBindTexture( GL_TEXTURE_2D, 0 );
-		glState.currenttextures[ glState.currenttmu ] = 0;
+	if ( r_clampToEdge->integer && glWrapClampMode == GL_CLAMP ) {
+		glWrapClampMode = GL_CLAMP_TO_EDGE;
 	}
+
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode );
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode );
+
+	qglBindTexture( GL_TEXTURE_2D, 0 );
+	glState.currenttextures[ glState.currenttmu ] = 0;
 
 	long hash = generateHashValue( name );
 	image->next = ImageHashTable[ hash ];
@@ -1061,7 +978,7 @@ static image_t* R_FindCachedImage( const char* name ) {
 
 //	Finds or loads the given image. Returns NULL if it fails, not a default image.
 image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
-	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels,
+	GLenum glWrapClampMode, int Mode, byte* TransPixels,
 	bool characterMIP, bool lightmap ) {
 	if ( !name ) {
 		return NULL;
@@ -1139,7 +1056,7 @@ image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
 		tr.allowCompress = -1;
 	}
 
-	image = R_CreateImage( name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap, characterMIP );
+	image = R_CreateImage( name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, characterMIP );
 	delete[] pic;
 
 	// ydnar: no texture compression
@@ -1254,7 +1171,7 @@ static void R_CreateDefaultImage() {
 				data[ x ][ DEFAULT_SIZE - 1 ][ 2 ] =
 					data[ x ][ DEFAULT_SIZE - 1 ][ 3 ] = 255;
 	}
-	tr.defaultImage = R_CreateImage( "*default", ( byte* )data, DEFAULT_SIZE, DEFAULT_SIZE, true, false, GL_REPEAT, false );
+	tr.defaultImage = R_CreateImage( "*default", ( byte* )data, DEFAULT_SIZE, DEFAULT_SIZE, true, false, GL_REPEAT );
 }
 
 static void R_CreateDlightImage() {
@@ -1278,7 +1195,7 @@ static void R_CreateDlightImage() {
 			data[ y ][ x ][ 3 ] = 255;
 		}
 	}
-	tr.dlightImage = R_CreateImage( "*dlight", ( byte* )data, DLIGHT_SIZE, DLIGHT_SIZE, false, false, GL_CLAMP, false );
+	tr.dlightImage = R_CreateImage( "*dlight", ( byte* )data, DLIGHT_SIZE, DLIGHT_SIZE, false, false, GL_CLAMP );
 }
 
 void R_InitFogTable() {
@@ -1336,7 +1253,7 @@ static void R_CreateFogImage() {
 	// standard openGL clamping doesn't really do what we want -- it includes
 	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
 	// what we want.
-	tr.fogImage = R_CreateImage( "*fog", data, FOG_S, FOG_T, false, false, GL_CLAMP, false );
+	tr.fogImage = R_CreateImage( "*fog", data, FOG_S, FOG_T, false, false, GL_CLAMP );
 	delete[] data;
 
 	float borderColor[ 4 ];
@@ -1385,7 +1302,7 @@ static void R_CreateFogImageET() {
 	// standard openGL clamping doesn't really do what we want -- it includes
 	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
 	// what we want.
-	tr.fogImage = R_CreateImage( "*fog", ( byte* )data, FOG_S, FOG_T, false, false, GL_CLAMP, false, false );
+	tr.fogImage = R_CreateImage( "*fog", ( byte* )data, FOG_S, FOG_T, false, false, GL_CLAMP, false );
 	delete[] data;
 
 	// ydnar: the following lines are unecessary for new GL_CLAMP_TO_EDGE fog
@@ -1404,15 +1321,15 @@ static void R_CreateBuiltinImages() {
 
 	// we use a solid white image instead of disabling texturing
 	Com_Memset( data, 255, sizeof ( data ) );
-	tr.whiteImage = R_CreateImage( "*white", ( byte* )data, 8, 8, false, false, GL_REPEAT, false );
+	tr.whiteImage = R_CreateImage( "*white", ( byte* )data, 8, 8, false, false, GL_REPEAT );
 
 	for ( int x = 0; x < 32; x++ ) {
 		// scratchimage is usually used for cinematic drawing
-		tr.scratchImage[ x ] = R_CreateImage( "*scratch", ( byte* )data, DEFAULT_SIZE, DEFAULT_SIZE, false, true, GL_CLAMP, false );
+		tr.scratchImage[ x ] = R_CreateImage( "*scratch", ( byte* )data, DEFAULT_SIZE, DEFAULT_SIZE, false, true, GL_CLAMP );
 	}
 
 	Com_Memset( data, 0, sizeof ( data ) );
-	tr.transparentImage = R_CreateImage( "*transparent", ( byte* )data, 8, 8, false, false, GL_REPEAT, false );
+	tr.transparentImage = R_CreateImage( "*transparent", ( byte* )data, 8, 8, false, false, GL_REPEAT );
 
 	R_CreateDlightImage();
 
@@ -1421,8 +1338,6 @@ static void R_CreateBuiltinImages() {
 	} else   {
 		R_CreateFogImage();
 	}
-
-	tr.scrapImage = R_CreateImage( "*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false );
 
 	R_InitParticleTexture();
 }
@@ -1451,9 +1366,9 @@ static void R_LoadCacheImages() {
 			parms[ i ] = String::Atoi( token );
 		}
 		if ( GGameType & GAME_WolfSP ) {
-			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 3 ], false, IMG8MODE_Normal, NULL, parms[ 2 ] );
+			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 3 ], IMG8MODE_Normal, NULL, parms[ 2 ] );
 		} else if ( GGameType & GAME_ET )     {
-			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], false, IMG8MODE_Normal, NULL, false, parms[ 3 ] );
+			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], IMG8MODE_Normal, NULL, false, parms[ 3 ] );
 		} else   {
 			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ] );
 		}
@@ -1691,7 +1606,7 @@ static void R_CreateOrUpdateTranslatedImageEx( image_t*& image, const char* name
 	delete[] translated;
 
 	if ( !image ) {
-		image = R_CreateImage( name, translated32, width, height, false, allowPicMip, GL_CLAMP, false );
+		image = R_CreateImage( name, translated32, width, height, false, allowPicMip, GL_CLAMP );
 	} else   {
 		R_ReUploadImage( image, translated32 );
 	}
@@ -1708,7 +1623,7 @@ void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pi
 
 static image_t* R_LoadRawFontImage( const char* name, byte* data8, int width, int height ) {
 	byte* data32 = R_ConvertImage8To32( data8, width, height, IMG8MODE_Holey );
-	image_t* image = R_CreateImage( name, data32, width, height, false, false, GL_CLAMP, false );
+	image_t* image = R_CreateImage( name, data32, width, height, false, false, GL_CLAMP );
 	delete[] data32;
 
 	//	Set nearest filtering mode to make text easier to read.
@@ -1730,7 +1645,7 @@ image_t* R_LoadRawFontImageFromWad( const char* name, int width, int height ) {
 }
 
 image_t* R_LoadBigFontImage( const char* name ) {
-	return R_FindImageFile( name, false, false, GL_CLAMP, false, IMG8MODE_Holey );
+	return R_FindImageFile( name, false, false, GL_CLAMP, IMG8MODE_Holey );
 }
 
 image_t* R_LoadQuake2FontImage( const char* name ) {
@@ -1747,7 +1662,7 @@ image_t* R_CreateCrosshairImage() {
 	for ( int i = 0; i < 64; i++ ) {
 		data[ i * 4 + 3 ] = cs_data[ i ];
 	}
-	return R_CreateImage( "crosshair", data, 8, 8, false, false, GL_CLAMP, false );
+	return R_CreateImage( "crosshair", data, 8, 8, false, false, GL_CLAMP );
 }
 
 image_t* R_CachePic( const char* path ) {
@@ -1767,7 +1682,7 @@ image_t* R_CachePicRepeat( const char* path ) {
 }
 
 image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels ) {
-	image_t* pic = R_FindImageFile( path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels );
+	image_t* pic = R_FindImageFile( path, false, false, GL_CLAMP, IMG8MODE_Normal, TransPixels );
 	if ( !pic ) {
 		common->FatalError( "R_CachePic: failed to load %s", path );
 	}
@@ -1778,9 +1693,9 @@ static image_t* R_RegisterPic( const char* name, GLenum wrapClampMode ) {
 	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
 		char fullname[ MAX_QPATH ];
 		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
-		return R_FindImageFile( fullname, false, false, wrapClampMode, true );
+		return R_FindImageFile( fullname, false, false, wrapClampMode );
 	} else   {
-		return R_FindImageFile( name + 1, false, false, wrapClampMode, true );
+		return R_FindImageFile( name + 1, false, false, wrapClampMode );
 	}
 }
 

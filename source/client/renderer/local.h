@@ -360,7 +360,6 @@ struct trGlobals_t {
 	char* worldDir;		// ydnar: for referencing external lightmaps
 
 	image_t* defaultImage;
-	image_t* scrapImage;						// for small graphics
 	image_t* dlightImage;						// inverse-quare highlight for projective adding
 	image_t* whiteImage;						// full of 0xff
 	image_t* transparentImage;					// compltely transparent

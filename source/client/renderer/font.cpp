@@ -395,7 +395,7 @@ void R_RegisterFont( const char* fontName, int pointSize, fontInfo_t* font ) {
 				R_SaveTGA( name, imageBuff, 256, 256, true );
 			}
 
-			image_t* image = R_CreateImage( name, imageBuff, 256, 256, false, false, GL_CLAMP, false );
+			image_t* image = R_CreateImage( name, imageBuff, 256, 256, false, false, GL_CLAMP );
 			qhandle_t h = R_RegisterShaderFromImage( name, LIGHTMAP_2D, image, false );
 			for ( int j = lastStart; j < i; j++ ) {
 				font->glyphs[ j ].glyph = h;

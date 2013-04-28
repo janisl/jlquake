@@ -229,17 +229,6 @@ void R_Draw2DQuad( float x, float y, float width, float height,
 	if ( !image ) {
 		image = tr.whiteImage;
 	}
-	if ( image->sl != 0 || image->sh != 1 ) {
-		float glwidth = image->sh - image->sl;
-		s1 = image->sl + s1 * glwidth;
-		s2 = image->sl + s2 * glwidth;
-	}
-
-	if ( image->tl != 0 || image->th != 1 ) {
-		float glheight = image->th - image->tl;
-		t1 = image->tl + t1 * glheight;
-		t2 = image->tl + t2 * glheight;
-	}
 
 	stretchPicCommand_t* cmd = ( stretchPicCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
 	if ( !cmd ) {

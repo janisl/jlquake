@@ -293,7 +293,7 @@ void R_SkinList_f() {
 }
 
 image_t* R_RegisterSkinQ2( const char* name ) {
-	return R_FindImageFile( name, true, true, GL_CLAMP, false, IMG8MODE_Skin );
+	return R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin );
 }
 
 static void R_CreateOrUpdateTranslatedModelSkin( image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte* translation ) {
