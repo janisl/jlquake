@@ -387,7 +387,8 @@ struct shaderCommands_t {
 void R_InitShaders();
 void R_FreeShaders();
 shader_t* R_FindShader( const char* Name, int LightmapIndex, bool MipRawImage );
-qhandle_t R_RegisterShaderFromImage( const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage );
+shader_t* R_Build2DShaderFromImage( image_t* image );
+qhandle_t R_RegisterShaderFromImage( const char* name, int lightmapIndex, image_t* image, bool mipRawImage );
 shader_t* R_GetShaderByHandle( qhandle_t hShader );
 void R_ShaderList_f();
 void R_PurgeShaders();

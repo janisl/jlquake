@@ -526,7 +526,7 @@ static void ParseTexMod( const char* _text, shaderStage_t* stage ) {
 	else if ( !String::ICmp( token, "swap" ) ) {
 		// swap S/T coords (rotate 90d)
 		tmi->type = TMOD_SWAP;
-	} else   {
+	} else {
 		common->Printf( S_COLOR_YELLOW "WARNING: unknown tcMod '%s' in shader '%s'\n", token, shader.name );
 	}
 }
@@ -553,7 +553,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if 16 bit color depth
 			if ( glConfig.colorBits <= 16 ) {
 				token = "map";	// use this map
-			} else   {
+			} else {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
@@ -561,7 +561,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if 16 bit color depth
 			if ( glConfig.colorBits > 16 ) {
 				token = "map";	// use this map
-			} else   {
+			} else {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
@@ -569,7 +569,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if compression is enabled
 			if ( glConfig.textureCompression && r_ext_compressed_textures->integer ) {
 				token = "map";	// use this map
-			} else   {
+			} else {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
@@ -577,7 +577,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if compression is not available or disabled
 			if ( !glConfig.textureCompression ) {
 				token = "map";	// use this map
-			} else   {
+			} else {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
@@ -585,7 +585,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if compression is enabled
 			if ( glConfig.textureCompression && r_ext_compressed_textures->integer ) {
 				token = "animmap";	// use this map
-			} else   {
+			} else {
 				while ( token[ 0 ] ) {
 					String::ParseExt( text, false );	// ignore the map
 				}
@@ -595,7 +595,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			// only use this texture if compression is not available or disabled
 			if ( !glConfig.textureCompression ) {
 				token = "animmap";	// use this map
-			} else   {
+			} else {
 				while ( token[ 0 ] ) {
 					String::ParseExt( text, false );	// ignore the map
 				}
@@ -623,11 +623,11 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				stage->bundle[ 0 ].isLightmap = true;
 				if ( shader.lightmapIndex < 0 ) {
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-				} else   {
+				} else {
 					stage->bundle[ 0 ].image[ 0 ] = tr.lightmaps[ shader.lightmapIndex ];
 				}
 				continue;
-			} else   {
+			} else {
 				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, IMG8MODE_Normal, NULL, shader.characterMip );
 				if ( !stage->bundle[ 0 ].image[ 0 ] ) {
 					common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
@@ -672,11 +672,11 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				stage->bundle[ 0 ].isLightmap = true;
 				if ( shader.lightmapIndex < 0 ) {
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-				} else   {
+				} else {
 					stage->bundle[ 0 ].image[ 0 ] = tr.lightmaps[ shader.lightmapIndex ];
 				}
 				continue;
-			} else   {
+			} else {
 				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, false, false, GL_CLAMP, IMG8MODE_Normal, NULL, false, true );
 				if ( !stage->bundle[ 0 ].image[ 0 ] ) {
 					common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
@@ -751,7 +751,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				depthFuncBits = 0;
 			} else if ( !String::ICmp( token, "equal" ) )       {
 				depthFuncBits = GLS_DEPTHFUNC_EQUAL;
-			} else   {
+			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown depthfunc '%s' in shader '%s'\n", token, shader.name );
 				continue;
 			}
@@ -773,7 +773,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			}
 			if ( !String::ICmp( token, "on" ) ) {
 				stage->isFogged = true;
-			} else   {
+			} else {
 				stage->isFogged = false;
 			}
 		}
@@ -797,7 +797,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			} else if ( !String::ICmp( token, "blend" ) )       {
 				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
 				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			} else   {
+			} else {
 				// complex double blends
 				blendSrcBits = NameToSrcBlendMode( token );
 
@@ -855,7 +855,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				stage->rgbGen = CGEN_LIGHTING_DIFFUSE;
 			} else if ( !String::ICmp( token, "oneMinusVertex" ) )       {
 				stage->rgbGen = CGEN_ONE_MINUS_VERTEX;
-			} else   {
+			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown rgbGen parameter '%s' in shader '%s'\n", token, shader.name );
 				continue;
 			}
@@ -888,7 +888,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				token = String::ParseExt( text, false );
 				if ( token[ 0 ] ) {
 					stage->constantColor[ 3 ] = 255 * String::Atof( token );
-				} else   {
+				} else {
 					stage->constantColor[ 3 ] = 255;
 				}
 
@@ -897,7 +897,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 					stage->zFadeBounds[ 0 ] = String::Atof( token );	// lower range
 					token = String::ParseExt( text, false );
 					stage->zFadeBounds[ 1 ] = String::Atof( token );	// upper range
-				} else   {
+				} else {
 					stage->zFadeBounds[ 0 ] = -1.0;		// lower range
 					stage->zFadeBounds[ 1 ] =  1.0;		// upper range
 				}
@@ -913,10 +913,10 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				if ( token[ 0 ] == 0 ) {
 					shader.portalRange = 256;
 					common->Printf( S_COLOR_YELLOW "WARNING: missing range parameter for alphaGen portal in shader '%s', defaulting to 256\n", shader.name );
-				} else   {
+				} else {
 					shader.portalRange = String::Atof( token );
 				}
-			} else   {
+			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown alphaGen parameter '%s' in shader '%s'\n", token, shader.name );
 				continue;
 			}
@@ -944,7 +944,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				ParseVector( text, 3, stage->bundle[ 0 ].tcGenVectors[ 1 ] );
 
 				stage->bundle[ 0 ].tcGen = TCGEN_VECTOR;
-			} else   {
+			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown texgen parm in shader '%s'\n", shader.name );
 			}
 		}
@@ -975,7 +975,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			depthMaskExplicit = true;
 
 			continue;
-		} else   {
+		} else {
 			common->Printf( S_COLOR_YELLOW "WARNING: unknown parameter '%s' in shader '%s'\n", token, shader.name );
 			return false;
 		}
@@ -989,7 +989,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			 blendSrcBits == GLS_SRCBLEND_ONE ||
 			 blendSrcBits == GLS_SRCBLEND_SRC_ALPHA ) {
 			stage->rgbGen = CGEN_IDENTITY_LIGHTING;
-		} else   {
+		} else {
 			stage->rgbGen = CGEN_IDENTITY;
 		}
 	}
@@ -1110,7 +1110,7 @@ static void ParseDeform( const char** text ) {
 
 		if ( String::Atof( token ) != 0 ) {
 			ds->deformationSpread = 1.0f / String::Atof( token );
-		} else   {
+		} else {
 			ds->deformationSpread = 100.0f;
 			common->Printf( S_COLOR_YELLOW "WARNING: illegal div value of 0 in deformVertexes command for shader '%s'\n", shader.name );
 		}
@@ -1235,7 +1235,7 @@ static void ParseSort( const char** text ) {
 		shader.sort = SS_NEAREST;
 	} else if ( !String::ICmp( token, "underwater" ) )       {
 		shader.sort = SS_UNDERWATER;
-	} else   {
+	} else {
 		shader.sort = String::Atof( token );
 	}
 }
@@ -1491,7 +1491,7 @@ static bool ParseShader( const char** text ) {
 				} else if ( fogvar > 1 )     {
 					// distance "linear" fog
 					String::Sprintf( fogString, sizeof ( fogString ), "0 %d 1.1 %f %f %f 200", ( int )fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ] );
-				} else   {					// density "exp" fog
+				} else {					// density "exp" fog
 					String::Sprintf( fogString, sizeof ( fogString ), "0 5 %f %f %f %f 200", fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ] );
 				}
 				Cvar_Set( "r_waterFogColor", fogString );
@@ -1502,7 +1502,7 @@ static bool ParseShader( const char** text ) {
 				} else if ( fogvar > 1 )     {
 					// distance "linear" fog
 					R_SetFog( FOG_WATER, 0, fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ], 1.1 );
-				} else   {
+				} else {
 					// density "exp" fog
 					R_SetFog( FOG_WATER, 0, 5, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ], fogvar );
 				}
@@ -1567,7 +1567,7 @@ static bool ParseShader( const char** text ) {
 				shader.cullType = CT_TWO_SIDED;
 			} else if ( !String::ICmp( token, "back" ) || !String::ICmp( token, "backside" ) || !String::ICmp( token, "backsided" ) )           {
 				shader.cullType = CT_BACK_SIDED;
-			} else   {
+			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: invalid cull parm '%s' in shader '%s'\n", token, shader.name );
 			}
 			continue;
@@ -1578,7 +1578,7 @@ static bool ParseShader( const char** text ) {
 				token = String::ParseExt( text, false );
 				if ( token[ 0 ] == 0 ) {
 					common->Printf( S_COLOR_YELLOW "WARNING: missing distancecull parms in shader '%s'\n", shader.name );
-				} else   {
+				} else {
 					shader.distanceCull[ i ] = String::Atof( token );
 				}
 			}
@@ -1586,7 +1586,7 @@ static bool ParseShader( const char** text ) {
 			if ( shader.distanceCull[ 1 ] - shader.distanceCull[ 0 ] > 0 ) {
 				// distanceCull[ 3 ] is an optimization
 				shader.distanceCull[ 3 ] = 1.0 / ( shader.distanceCull[ 1 ] - shader.distanceCull[ 0 ] );
-			} else   {
+			} else {
 				shader.distanceCull[ 0 ] = 0;
 				shader.distanceCull[ 1 ] = 0;
 				shader.distanceCull[ 2 ] = 0;
@@ -1608,7 +1608,7 @@ static bool ParseShader( const char** text ) {
 			} else if ( !String::ICmp( token, "implicitMask" ) )       {
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_ATEST_GE_80;
 				implicitCullType = CT_TWO_SIDED;
-			} else   {	// "implicitMap"
+			} else {	// "implicitMap"
 				implicitStateBits = GLS_DEPTHMASK_TRUE;
 				implicitCullType = CT_FRONT_SIDED;
 			}
@@ -1617,13 +1617,13 @@ static bool ParseShader( const char** text ) {
 			token = String::ParseExt( text, false );
 			if ( token[ 0 ] != '\0' ) {
 				String::NCpyZ( implicitMap, token, sizeof ( implicitMap ) );
-			} else   {
+			} else {
 				implicitMap[ 0 ] = '-';
 				implicitMap[ 1 ] = '\0';
 			}
 
 			continue;
-		} else   {
+		} else {
 			common->Printf( S_COLOR_YELLOW "WARNING: unknown general shader parameter '%s' in '%s'\n", token, shader.name );
 			return false;
 		}
@@ -1691,11 +1691,11 @@ static void VertexLightingCollapse() {
 		stages[ 0 ].stateBits |= GLS_DEPTHMASK_TRUE;
 		if ( shader.lightmapIndex == LIGHTMAP_NONE ) {
 			stages[ 0 ].rgbGen = CGEN_LIGHTING_DIFFUSE;
-		} else   {
+		} else {
 			stages[ 0 ].rgbGen = CGEN_EXACT_VERTEX;
 		}
 		stages[ 0 ].alphaGen = AGEN_SKIP;
-	} else   {
+	} else {
 		// don't use a lightmap (tesla coils)
 		if ( stages[ 0 ].bundle[ 0 ].isLightmap ) {
 			stages[ 0 ] = stages[ 1 ];
@@ -1794,7 +1794,7 @@ static bool CollapseMultitexture() {
 	if ( stages[ 0 ].bundle[ 0 ].isLightmap ) {
 		stages[ 0 ].bundle[ 1 ] = stages[ 0 ].bundle[ 0 ];
 		stages[ 0 ].bundle[ 0 ] = stages[ 1 ].bundle[ 0 ];
-	} else   {
+	} else {
 		stages[ 0 ].bundle[ 1 ] = stages[ 1 ].bundle[ 0 ];
 	}
 
@@ -1897,6 +1897,7 @@ static void FixRenderCommandList( int newShader ) {
 		case RC_STRETCH_PIC:
 		case RC_STRETCH_PIC_GRADIENT:
 		case RC_ROTATED_PIC:
+		case RC_DRAW_2D_QUAD:
 		{
 			const stretchPicCommand_t* sp_cmd = ( const stretchPicCommand_t* )curCmd;
 			curCmd = ( const void* )( sp_cmd + 1 );
@@ -2123,10 +2124,10 @@ static shader_t* FinishShader() {
 						}
 					}
 					stage--;	// the next stage is now the current stage, so check it again
-				} else   {
+				} else {
 					Com_Memset( pStage, 0, sizeof ( *pStage ) );
 				}
-			} else   {
+			} else {
 				pStage->active = false;
 				if ( stage < ( MAX_SHADER_STAGES - 1 ) ) {
 					memmove( pStage, pStage + 1, sizeof ( *pStage ) * ( MAX_SHADER_STAGES - stage - 1 ) );
@@ -2144,7 +2145,7 @@ static shader_t* FinishShader() {
 				pStage->bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
 			}
 			hasLightmapStage = true;
-		} else   {
+		} else {
 			if ( pStage->bundle[ 0 ].tcGen == TCGEN_BAD ) {
 				pStage->bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 			}
@@ -2181,7 +2182,7 @@ static shader_t* FinishShader() {
 			//JL this makes no sense to me
 			else if ( GGameType & GAME_ET && ( blendSrcBits == GLS_SRCBLEND_SRC_ALPHA || blendDstBits == GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA ) ) {
 				pStage->adjustColorsForFog = ACFF_MODULATE_ALPHA;
-			} else   {
+			} else {
 				// we can't adjust this one correctly, so it won't be exactly correct in fog
 			}
 
@@ -2190,7 +2191,7 @@ static shader_t* FinishShader() {
 				// see through item, like a grill or grate
 				if ( pStage->stateBits & GLS_DEPTHMASK_TRUE ) {
 					shader.sort = SS_SEE_THROUGH;
-				} else   {
+				} else {
 					shader.sort = SS_BLEND0;
 				}
 			}
@@ -2222,7 +2223,7 @@ static shader_t* FinishShader() {
 	if ( shader.lightmapIndex >= 0 && !hasLightmapStage ) {
 		if ( vertexLightmap ) {
 			common->DPrintf( S_COLOR_RED "WARNING: shader '%s' has VERTEX forced lightmap!\n", shader.name );
-		} else   {
+		} else {
 			common->DPrintf( S_COLOR_RED "WARNING: shader '%s' has lightmap but no lightmap stage!\n", shader.name );
 			shader.lightmapIndex = LIGHTMAP_NONE;
 		}
@@ -2267,7 +2268,7 @@ static const char* FindShaderInShaderText( const char* shadername ) {
 		while ( dptr ) {
 			if ( !dptr->shadertext || !String::Length( dptr->shadertext ) ) {
 				common->Printf( S_COLOR_YELLOW "WARNING: dynamic shader %s(%d) has no shadertext\n", shadername, i );
-			} else   {
+			} else {
 				const char* q = dptr->shadertext;
 
 				const char* token = String::ParseExt( &q, true );
@@ -2303,7 +2304,7 @@ static const char* FindShaderInShaderText( const char* shadername ) {
 			// it's not even in our list, so it mustn't exist
 			return NULL;
 		}
-	} else   {
+	} else {
 		int hash = GenerateShaderHashValue( shadername, MAX_SHADERTEXT_HASH );
 
 		for ( int i = 0; shaderTextHashTable[ hash ][ i ]; i++ ) {
@@ -2332,7 +2333,7 @@ static const char* FindShaderInShaderText( const char* shadername ) {
 				String::SkipBracedSection( &p );
 			} else if ( !String::ICmp( token, shadername ) )       {
 				return p;
-			} else   {
+			} else {
 				// skip to end of line
 				String::SkipRestOfLine( &p );
 			}
@@ -2349,7 +2350,7 @@ static const char* FindShaderInShaderText( const char* shadername ) {
 
 			if ( !String::ICmp( token, shadername ) ) {
 				return p;
-			} else   {
+			} else {
 				// skip the definition
 				String::SkipBracedSection( &p );
 			}
@@ -2458,7 +2459,7 @@ static shader_t* R_FindCachedShader( const char* name, int lightmapIndex, int ha
 
 			if ( !shPrev ) {
 				backupHashTable[ hash ] = sh->next;
-			} else   {
+			} else {
 				shPrev->next = sh->next;
 			}
 
@@ -2560,10 +2561,64 @@ static void SetImplicitShaderStages( image_t* image ) {
 		stages[ 1 ].rgbGen = CGEN_IDENTITY;
 		if ( GGameType & GAME_ET ) {
 			stages[ 1 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO;
-		} else   {
+		} else {
 			stages[ 1 ].stateBits |= GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO;
 		}
 	}
+}
+
+static shader_t* R_FindLoadedShader( const char* name, int lightmapIndex ) {
+	int hash = GenerateShaderHashValue( name, SHADER_HASH_SIZE );
+
+	//
+	// see if the shader is already loaded
+	//
+	for ( shader_t* sh = ShaderHashTable[ hash ]; sh; sh = sh->next ) {
+		// NOTE: if there was no shader or image available with the name strippedName
+		// then a default shader is created with lightmapIndex == LIGHTMAP_NONE, so we
+		// have to check all default shaders otherwise for every call to R_FindShader
+		// with that same strippedName a new default shader is created.
+		if ( ( sh->lightmapIndex == lightmapIndex || sh->defaultShader ) &&
+				!String::ICmp( sh->name, name ) ) {
+			// match found
+			return sh;
+		}
+	}
+
+	// make sure the render thread is stopped, because we are probably
+	// going to have to upload an image
+	if ( r_smp->integer ) {
+		R_SyncRenderThread();
+	}
+
+	// Ridah, check the cache
+	// ydnar: don't cache shaders using lightmaps
+	if ( lightmapIndex < 0 ) {
+		shader_t* sh = R_FindCachedShader( name, lightmapIndex, hash );
+		if ( sh != NULL ) {
+			return sh;
+		}
+	}
+	return NULL;
+}
+
+static void R_ClearGlobalShader() {
+	Com_Memset( &shader, 0, sizeof ( shader ) );
+	Com_Memset( &stages, 0, sizeof ( stages ) );
+	for ( int i = 0; i < MAX_SHADER_STAGES; i++ ) {
+		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
+	}
+
+	// FIXME: set these "need" values apropriately
+	shader.needsNormal = true;
+	shader.needsST1 = true;
+	shader.needsST2 = true;
+	shader.needsColor = true;
+
+	// ydnar: default to no implicit mappings
+	implicitMap[ 0 ] = '\0';
+	implicitStateBits = GLS_DEFAULT;
+	implicitCullType = CT_FRONT_SIDED;
 }
 
 //	Will always return a valid shader, but it might be the default shader if
@@ -2597,75 +2652,15 @@ shader_t* R_FindShader( const char* name, int lightmapIndex, bool mipRawImage ) 
 	String::StripExtension2( name, strippedName, sizeof ( strippedName ) );
 	String::FixPath( strippedName );
 
-	int hash = GenerateShaderHashValue( strippedName, SHADER_HASH_SIZE );
-
-	//
-	// see if the shader is already loaded
-	//
-	for ( shader_t* sh = ShaderHashTable[ hash ]; sh; sh = sh->next ) {
-		if ( GGameType & ( GAME_WolfSP | GAME_WolfMP ) ) {
-			// index by name
-			// Ridah, modified this so we don't keep trying to load an invalid lightmap shader
-			if ( ( sh->lightmapIndex == lightmapIndex || ( sh->lightmapIndex < 0 && lightmapIndex >= 0 ) ) &&
-				 !String::ICmp( sh->name, strippedName ) ) {
-				// match found
-				return sh;
-			}
-		} else if ( GGameType & GAME_ET )     {
-			// index by name
-			// ydnar: the original way was correct
-			if ( sh->lightmapIndex == lightmapIndex &&
-				 !String::ICmp( sh->name, strippedName ) ) {
-				// match found
-				return sh;
-			}
-		} else   {
-			// NOTE: if there was no shader or image available with the name strippedName
-			// then a default shader is created with lightmapIndex == LIGHTMAP_NONE, so we
-			// have to check all default shaders otherwise for every call to R_FindShader
-			// with that same strippedName a new default shader is created.
-			if ( ( sh->lightmapIndex == lightmapIndex || sh->defaultShader ) &&
-				 !String::ICmp( sh->name, strippedName ) ) {
-				// match found
-				return sh;
-			}
-		}
+	shader_t* loadedShader = R_FindLoadedShader( strippedName, lightmapIndex );
+	if ( loadedShader ) {
+		return loadedShader;
 	}
 
-	// make sure the render thread is stopped, because we are probably
-	// going to have to upload an image
-	if ( r_smp->integer ) {
-		R_SyncRenderThread();
-	}
+	R_ClearGlobalShader();
 
-	// Ridah, check the cache
-	// ydnar: don't cache shaders using lightmaps
-	if ( lightmapIndex < 0 ) {
-		shader_t* sh = R_FindCachedShader( strippedName, lightmapIndex, hash );
-		if ( sh != NULL ) {
-			return sh;
-		}
-	}
-
-	// clear the global shader
-	Com_Memset( &shader, 0, sizeof ( shader ) );
-	Com_Memset( &stages, 0, sizeof ( stages ) );
 	String::NCpyZ( shader.name, strippedName, sizeof ( shader.name ) );
 	shader.lightmapIndex = lightmapIndex;
-	for ( int i = 0; i < MAX_SHADER_STAGES; i++ ) {
-		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
-	}
-
-	// FIXME: set these "need" values apropriately
-	shader.needsNormal = true;
-	shader.needsST1 = true;
-	shader.needsST2 = true;
-	shader.needsColor = true;
-
-	// ydnar: default to no implicit mappings
-	implicitMap[ 0 ] = '\0';
-	implicitStateBits = GLS_DEFAULT;
-	implicitCullType = CT_FRONT_SIDED;
 
 	//
 	// attempt to define shader from an explicit parameter file
@@ -2700,7 +2695,7 @@ shader_t* R_FindShader( const char* name, int lightmapIndex, bool mipRawImage ) 
 	// ydnar: allow implicit mapping ('-' = use shader name)
 	if ( implicitMap[ 0 ] == '\0' || implicitMap[ 0 ] == '-' ) {
 		String::NCpyZ( fileName, name, sizeof ( fileName ) );
-	} else   {
+	} else {
 		String::NCpyZ( fileName, implicitMap, sizeof ( fileName ) );
 	}
 	String::DefaultExtension( fileName, sizeof ( fileName ), ".tga" );
@@ -2727,45 +2722,36 @@ shader_t* R_FindShader( const char* name, int lightmapIndex, bool mipRawImage ) 
 	return FinishShader();
 }
 
+shader_t* R_Build2DShaderFromImage( image_t* image ) {
+	char strippedName[ MAX_QPATH ];
+	String::StripExtension2( image->imgName, strippedName, sizeof ( strippedName ) );
+	String::FixPath( strippedName );
+
+	shader_t* loadedShader = R_FindLoadedShader( strippedName, LIGHTMAP_2D );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, strippedName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_2D;
+
+	SetImplicitShaderStages( image );
+
+	return FinishShader();
+}
+
 qhandle_t R_RegisterShaderFromImage( const char* name, int lightmapIndex, image_t* image, bool mipRawImage ) {
-	int hash = GenerateShaderHashValue( name, SHADER_HASH_SIZE );
-
-	//
-	// see if the shader is already loaded
-	//
-	for ( shader_t* sh = ShaderHashTable[ hash ]; sh; sh = sh->next ) {
-		// NOTE: if there was no shader or image available with the name strippedName
-		// then a default shader is created with lightmapIndex == LIGHTMAP_NONE, so we
-		// have to check all default shaders otherwise for every call to R_FindShader
-		// with that same strippedName a new default shader is created.
-		if ( ( sh->lightmapIndex == lightmapIndex || sh->defaultShader ) &&
-			// index by name
-			 !String::ICmp( sh->name, name ) ) {
-			// match found
-			return sh->index;
-		}
+	shader_t* loadedShader = R_FindLoadedShader( name, lightmapIndex );
+	if ( loadedShader ) {
+		return loadedShader->index;
 	}
 
-	// make sure the render thread is stopped, because we are probably
-	// going to have to upload an image
-	if ( r_smp->integer ) {
-		R_SyncRenderThread();
-	}
+	R_ClearGlobalShader();
 
-	// clear the global shader
-	Com_Memset( &shader, 0, sizeof ( shader ) );
-	Com_Memset( &stages, 0, sizeof ( stages ) );
 	String::NCpyZ( shader.name, name, sizeof ( shader.name ) );
 	shader.lightmapIndex = lightmapIndex;
-	for ( int i = 0; i < MAX_SHADER_STAGES; i++ ) {
-		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
-	}
-
-	// FIXME: set these "need" values apropriately
-	shader.needsNormal = true;
-	shader.needsST1 = true;
-	shader.needsST2 = true;
-	shader.needsColor = true;
 
 	//
 	// create the default shading commands
@@ -2901,7 +2887,7 @@ void R_RemapShader( const char* shaderName, const char* newShaderName, const cha
 		if ( String::ICmp( sh->name, strippedName ) == 0 ) {
 			if ( sh != sh2 ) {
 				sh->remappedShader = sh2;
-			} else   {
+			} else {
 				sh->remappedShader = NULL;
 			}
 		}
@@ -2915,8 +2901,7 @@ static void CreateInternalShaders() {
 	tr.numShaders = 0;
 
 	// init the default shader
-	Com_Memset( &shader, 0, sizeof ( shader ) );
-	Com_Memset( &stages, 0, sizeof ( stages ) );
+	R_ClearGlobalShader();
 
 	String::NCpyZ( shader.name, "<default>", sizeof ( shader.name ) );
 
@@ -2967,7 +2952,7 @@ static void BuildShaderChecksumLookup() {
 		// if it's not currently used
 		if ( !shaderChecksumLookup[ checksum ].pStr ) {
 			shaderChecksumLookup[ checksum ].pStr = pOld;
-		} else   {
+		} else {
 			// create a new list item
 			shaderStringPointer_t* newStrPtr;
 
@@ -3033,7 +3018,7 @@ static void ScanAndLoadShaderFiles() {
 		if ( GGameType & GAME_ET ) {
 			String::Cpy( p++, "\n" );
 			String::Cpy( p, buffers[ i ] );
-		} else   {
+		} else {
 			String::Cat( s_shaderText, sum + numShaders * 2, "\n" );
 			p = &s_shaderText[ String::Length( s_shaderText ) ];
 			String::Cat( s_shaderText, sum + numShaders * 2, buffers[ i ] );
@@ -3125,8 +3110,7 @@ static void ScanAndLoadShaderFiles() {
 }
 
 static shader_t* CreateProjectionShader() {
-	Com_Memset( &shader, 0, sizeof ( shader ) );
-	Com_Memset( &stages, 0, sizeof ( stages ) );
+	R_ClearGlobalShader();
 
 	String::NCpyZ( shader.name, "projectionShadow", sizeof ( shader.name ) );
 
@@ -3155,13 +3139,13 @@ static void CreateExternalShaders() {
 		tr.flareShader = R_FindShader( "flareShader", LIGHTMAP_NONE, true );
 		if ( GGameType & GAME_Quake3 ) {
 			tr.sunShader = R_FindShader( "sun", LIGHTMAP_NONE, true );
-		} else   {
+		} else {
 			tr.sunflareShader = R_FindShader( "sunflare1", LIGHTMAP_NONE, true );
 		}
 		if ( GGameType & GAME_WolfSP ) {
 			tr.spotFlareShader = R_FindShader( "spotLight", LIGHTMAP_NONE, true );
 		}
-	} else   {
+	} else {
 		tr.projectionShadowShader = CreateProjectionShader();
 		tr.flareShader = tr.defaultShader;
 		tr.sunShader = tr.defaultShader;
@@ -3264,7 +3248,7 @@ void R_ShaderList_f() {
 	for ( int i = 0; i < tr.numShaders; i++ ) {
 		if ( Cmd_Argc() > 1 ) {
 			shader = tr.sortedShaders[ i ];
-		} else   {
+		} else {
 			shader = tr.shaders[ i ];
 		}
 
@@ -3272,7 +3256,7 @@ void R_ShaderList_f() {
 
 		if ( shader->lightmapIndex >= 0 ) {
 			common->Printf( "L " );
-		} else   {
+		} else {
 			common->Printf( "  " );
 		}
 		if ( shader->multitextureEnv == GL_ADD ) {
@@ -3281,12 +3265,12 @@ void R_ShaderList_f() {
 			common->Printf( "MT(m) " );
 		} else if ( shader->multitextureEnv == GL_DECAL )     {
 			common->Printf( "MT(d) " );
-		} else   {
+		} else {
 			common->Printf( "      " );
 		}
 		if ( shader->explicitlyDefined ) {
 			common->Printf( "E " );
-		} else   {
+		} else {
 			common->Printf( "  " );
 		}
 
@@ -3298,13 +3282,13 @@ void R_ShaderList_f() {
 			common->Printf( "lmmt" );
 		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorVertexLitTexture )     {
 			common->Printf( "vlt " );
-		} else   {
+		} else {
 			common->Printf( "    " );
 		}
 
 		if ( shader->defaultShader ) {
 			common->Printf( ": %s (DEFAULTED)\n", shader->name );
-		} else   {
+		} else {
 			common->Printf( ": %s\n", shader->name );
 		}
 		count++;
@@ -3349,7 +3333,7 @@ static void R_PurgeLightmapShaders() {
 
 				if ( !shPrev ) {
 					backupHashTable[ i ] = sh->next;
-				} else   {
+				} else {
 					shPrev->next = sh->next;
 				}
 
@@ -3458,7 +3442,7 @@ bool R_LoadDynamicShader( const char* shadername, const char* shadertext ) {
 			if ( !shadertext ) {
 				if ( !lastdptr ) {
 					dshader = NULL;
-				} else   {
+				} else {
 					lastdptr->next = dptr->next;
 				}
 				delete[] dptr->shadertext;

@@ -110,7 +110,7 @@ static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
 	byte* pic;
 	R_LoadPICMem( qpic, &pic, &width, &height );
 
-	image_t* image = R_CreateImage( va( "gfx.wad:%s", name ), pic, width, height, false, false, WrapClampMode );
+	image_t* image = R_CreateImage( va( "gfx/wad/%s", name ), pic, width, height, false, false, WrapClampMode );
 
 	delete[] pic;
 

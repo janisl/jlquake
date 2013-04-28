@@ -560,19 +560,11 @@ static const void* RB_Draw2DQuad( const void* data ) {
 		RB_SetGL2D();
 	}
 
+	if ( tess.numIndexes ) {
+		RB_EndSurface();
+	}
 	backEnd.currentEntity = &backEnd.entity2D;
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = cmd->image;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage.rgbGen = CGEN_VERTEX;
-	stage.alphaGen = AGEN_VERTEX;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	RB_BeginSurface( &shader, 0 );
+	RB_BeginSurface( R_Build2DShaderFromImage( cmd->image ), 0 );
 
 	int numVerts = tess.numVertexes;
 	int numIndexes = tess.numIndexes;
