@@ -360,7 +360,6 @@ vm_t* VM_Create( const char* module, qintptr ( * systemCalls )( qintptr* ),
 	vmInterpret_t interpret ) {
 	vm_t* vm;
 	vmHeader_t* header;
-	int length;
 	int dataLength;
 	int i;
 	char filename[ MAX_QPATH ];
@@ -412,7 +411,7 @@ vm_t* VM_Create( const char* module, qintptr ( * systemCalls )( qintptr* ),
 	// load the image
 	String::Sprintf( filename, sizeof ( filename ), "vm/%s.qvm", vm->name );
 	common->Printf( "Loading vm file %s.\n", filename );
-	length = FS_ReadFile( filename, ( void** )&header );
+	FS_ReadFile( filename, ( void** )&header );
 	if ( !header ) {
 		common->Printf( "Failed.\n" );
 		VM_Free( vm );
@@ -513,7 +512,6 @@ void VM_Free( vm_t* vm ) {
 // This allows a server to do a map_restart without changing memory allocation
 vm_t* VM_Restart( vm_t* vm ) {
 	vmHeader_t* header;
-	int length;
 	int dataLength;
 	int i;
 	char filename[ MAX_QPATH ];
@@ -536,7 +534,7 @@ vm_t* VM_Restart( vm_t* vm ) {
 	common->Printf( "VM_Restart()\n" );
 	String::Sprintf( filename, sizeof ( filename ), "vm/%s.qvm", vm->name );
 	common->Printf( "Loading vm file %s.\n", filename );
-	length = FS_ReadFile( filename, ( void** )&header );
+	FS_ReadFile( filename, ( void** )&header );
 	if ( !header ) {
 		common->Error( "VM_Restart failed.\n" );
 	}

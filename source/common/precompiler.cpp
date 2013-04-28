@@ -940,7 +940,6 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 	int questmarkintvalue = 0;
 	double questmarkfloatvalue = 0;
 	int gotquestmarkvalue = false;
-	int lastoperatortype = 0;
 	//
 	operator_t operator_heap[ MAX_OPERATORS ];
 	int numoperators = 0;
@@ -1292,7 +1291,6 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 		if ( error ) {
 			break;
 		}
-		lastoperatortype = o->oper;
 		//if not an operator with arity 1
 		if ( o->oper != P_LOGIC_NOT &&
 			 o->oper != P_BIN_NOT ) {

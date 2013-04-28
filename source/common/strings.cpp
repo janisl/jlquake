@@ -971,11 +971,10 @@ int String::Compress( char* data_p ) {
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
 		//	Version used in Wolf games, I don't have time now to deal with it.
 		char* datai, * datao;
-		int c, pc, size;
+		int c, size;
 		qboolean ws = false;//Hmmmm, always false.
 
 		size = 0;
-		pc = 0;
 		datai = datao = data_p;
 		if ( datai ) {
 			while ( ( c = *datai ) != 0 ) {
@@ -983,7 +982,6 @@ int String::Compress( char* data_p ) {
 					*datao = c;
 					datao++;
 					ws = false;
-					pc = c;
 					datai++;
 					size++;
 					// skip double slash comments
@@ -1013,7 +1011,6 @@ int String::Compress( char* data_p ) {
 					datao++;
 					datai++;
 					ws = false;
-					pc = c;
 					size++;
 				}
 			}

@@ -2763,7 +2763,7 @@ bool FS_idPak( const char* pak, const char* base ) {
 //	(this is used for diagnostics while connecting to a pure server)
 bool FS_ComparePaks( char* neededpaks, int len, bool dlstring ) {
 	searchpath_t* sp;
-	qboolean havepak, badchecksum;
+	qboolean havepak;
 	int i;
 
 	if ( !fs_numServerReferencedPaks ) {
@@ -2774,7 +2774,6 @@ bool FS_ComparePaks( char* neededpaks, int len, bool dlstring ) {
 
 	for ( i = 0; i < fs_numServerReferencedPaks; i++ ) {
 		// Ok, see if we have this pak file
-		badchecksum = false;
 		havepak = false;
 
 		// never autodownload any of the id paks

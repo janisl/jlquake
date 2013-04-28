@@ -175,8 +175,6 @@ char** Sys_ListFiles( const char* directory, const char* extension, const char* 
 	int i;
 	struct stat st;
 
-	int extLen;
-
 	if ( filter ) {
 		nfiles = 0;
 		Sys_ListFilteredFiles( directory, "", filter, list, &nfiles );
@@ -205,8 +203,6 @@ char** Sys_ListFiles( const char* directory, const char* extension, const char* 
 		extension = "";
 		dironly = true;
 	}
-
-	extLen = String::Length( extension );
 
 	// search
 	nfiles = 0;
