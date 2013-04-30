@@ -57,8 +57,10 @@ extern Cvar* clq2_stereo_separation;
 
 void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h );
 void UI_DrawPic( int x, int y, image_t* pic );
+void UI_DrawPicShader( int x, int y, qhandle_t shader );
 void UI_DrawNamedPic( int x, int y, const char* name );
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* gl );
+void UI_DrawStretchPicShader( int x, int y, int w, int h, qhandle_t shader );
 void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* name );
 void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height );
 void UI_TileClear( int x, int y, int w, int h, image_t* pic );

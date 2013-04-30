@@ -2735,6 +2735,8 @@ shader_t* R_Build2DShaderFromImage( image_t* image ) {
 
 	String::NCpyZ( shader.name, strippedName, sizeof ( shader.name ) );
 	shader.lightmapIndex = LIGHTMAP_2D;
+	shader.originalWidth = image->width;
+	shader.originalHeight = image->height;
 
 	SetImplicitShaderStages( image );
 
@@ -3474,4 +3476,12 @@ bool R_LoadDynamicShader( const char* shadername, const char* shadertext ) {
 	}
 
 	return true;
+}
+
+int R_GetShaderWidth( qhandle_t shader ) {
+	return R_GetShaderByHandle( shader )->originalWidth;
+}
+
+int R_GetShaderHeight( qhandle_t shader ) {
+	return R_GetShaderByHandle( shader )->originalHeight;
 }

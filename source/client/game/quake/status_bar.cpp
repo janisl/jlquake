@@ -39,7 +39,7 @@ int sbqh_lines;					// scan lines to draw
 
 Cvar* clqw_hudswap;
 
-static image_t* sbq1_nums[ 2 ][ 11 ];
+static qhandle_t sbq1_nums[ 2 ][ 11 ];
 static image_t* sbq1_colon;
 static image_t* sbq1_slash;
 static image_t* sbq1_sbar;
@@ -118,12 +118,12 @@ void SbarQ1_Init() {
 
 void SbarQ1_InitImages() {
 	for ( int i = 0; i < 10; i++ ) {
-		sbq1_nums[ 0 ][ i ] = R_PicFromWad( va( "num_%i",i ) );
-		sbq1_nums[ 1 ][ i ] = R_PicFromWad( va( "anum_%i",i ) );
+		sbq1_nums[ 0 ][ i ] = R_ShaderFromWad( va( "num_%i",i ) );
+		sbq1_nums[ 1 ][ i ] = R_ShaderFromWad( va( "anum_%i",i ) );
 	}
 
-	sbq1_nums[ 0 ][ 10 ] = R_PicFromWad( "num_minus" );
-	sbq1_nums[ 1 ][ 10 ] = R_PicFromWad( "anum_minus" );
+	sbq1_nums[ 0 ][ 10 ] = R_ShaderFromWad( "num_minus" );
+	sbq1_nums[ 1 ][ 10 ] = R_ShaderFromWad( "anum_minus" );
 
 	sbq1_colon = R_PicFromWad( "num_colon" );
 	sbq1_slash = R_PicFromWad( "num_slash" );
@@ -254,6 +254,14 @@ static void SbarQ1_DrawPic( int x, int y, image_t* pic ) {
 	}
 }
 
+static void SbarQ1_DrawPicShader( int x, int y, qhandle_t shader ) {
+	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
+		UI_DrawPicShader( x, y + ( viddef.height - Q1SBAR_HEIGHT ), shader );
+	} else   {
+		UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ), y + ( viddef.height - Q1SBAR_HEIGHT ), shader );
+	}
+}
+
 static void SbarQ1_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
 	UI_DrawSubPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), pic, srcx, srcy, width, height );
 }
@@ -318,7 +326,7 @@ static void SbarQ1_DrawNum( int x, int y, int num, int digits, int color ) {
 			frame = *ptr - '0';
 		}
 
-		SbarQ1_DrawPic( x,y,sbq1_nums[ color ][ frame ] );
+		SbarQ1_DrawPicShader( x,y,sbq1_nums[ color ][ frame ] );
 		x += 24;
 		ptr++;
 	}
@@ -1303,7 +1311,7 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 			frame = *ptr - '0';
 		}
 
-		UI_DrawPic( x,y,sbq1_nums[ color ][ frame ] );
+		UI_DrawPicShader( x,y,sbq1_nums[ color ][ frame ] );
 		x += 24;
 		ptr++;
 	}
@@ -1335,8 +1343,8 @@ void SbarQ1_IntermissionOverlay() {
 	SbarQ1_IntermissionNumber( 160, 64, dig, 3, 0 );
 	int num = cl.qh_completed_time - dig * 60;
 	UI_DrawPic( 234,64,sbq1_colon );
-	UI_DrawPic( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
-	UI_DrawPic( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
+	UI_DrawPicShader( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
+	UI_DrawPicShader( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
 
 	SbarQ1_IntermissionNumber( 160, 104, cl.qh_stats[ Q1STAT_SECRETS ], 3, 0 );
 	UI_DrawPic( 232,104,sbq1_slash );

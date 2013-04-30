@@ -84,6 +84,10 @@ void UI_DrawPic( int x, int y, image_t* pic ) {
 	UI_DrawStretchPic( x, y, R_GetImageWidth( pic ), R_GetImageHeight( pic ), pic );
 }
 
+void UI_DrawPicShader( int x, int y, qhandle_t shader ) {
+	UI_DrawStretchPicShader( x, y, R_GetShaderWidth( shader ), R_GetShaderHeight( shader ), shader );
+}
+
 void UI_DrawNamedPic( int x, int y, const char* pic ) {
 	image_t* gl = R_RegisterPic( pic );
 	if ( !gl ) {
@@ -100,8 +104,19 @@ static void DoQuad( float x, float y, float width, float height,
 	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2 );
 }
 
+static void DoQuadShader( float x, float y, float width, float height,
+	qhandle_t shader, float s1, float t1, float s2, float t2 ) {
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
+
+	R_StretchPic( x, y, width, height, s1, t1, s2, t2, shader );
+}
+
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* pic ) {
 	DoQuad( x, y, w, h, pic, 0, 0, 1, 1 );
+}
+
+void UI_DrawStretchPicShader( int x, int y, int w, int h, qhandle_t shader ) {
+	DoQuadShader( x, y, w, h, shader, 0, 0, 1, 1 );
 }
 
 void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {

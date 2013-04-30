@@ -124,3 +124,7 @@ image_t* R_PicFromWad( const char* name ) {
 image_t* R_PicFromWadRepeat( const char* name ) {
 	return R_PicFromWad( name, GL_REPEAT );
 }
+
+qhandle_t R_ShaderFromWad( const char* name ) {
+	return R_Build2DShaderFromImage( R_PicFromWad( name, GL_CLAMP ) )->index;
+}

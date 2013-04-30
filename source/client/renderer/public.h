@@ -398,6 +398,7 @@ void R_BeginFrame( stereoFrame_t stereoFrame );
 void R_EndFrame( int* frontEndMsec, int* backEndMsec );
 
 image_t* R_PicFromWad( const char* Name );
+qhandle_t R_ShaderFromWad( const char* name );
 image_t* R_PicFromWadRepeat( const char* name );
 qhandle_t R_GetImageHandle( image_t* Image );
 void R_CreateOrUpdateTranslatedImage( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
@@ -421,6 +422,8 @@ const char* R_GetImageName( qhandle_t Handle );
 int R_GetImageWidth( image_t* pic );
 int R_GetImageHeight( image_t* pic );
 void R_GetPicSize( int* w, int* h, const char* name );
+int R_GetShaderWidth( qhandle_t shader );
+int R_GetShaderHeight( qhandle_t shader );
 
 void R_UploadCinematic( int Width, int Height, const byte* Data, int Client, bool Dirty );
 

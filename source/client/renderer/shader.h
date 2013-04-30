@@ -345,6 +345,9 @@ struct shader_t {
 
 	int shaderStates[ MAX_STATES_PER_SHADER ];				// index to valid shader states
 
+	int originalWidth;					// Size of original image for 2D drawing
+	int originalHeight;
+
 	shader_t* next;
 };
 
