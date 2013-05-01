@@ -78,6 +78,10 @@ void MQH_DrawPic( int x, int y, image_t* pic ) {
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y, pic );
 }
 
+void MQH_DrawPicShader( int x, int y, qhandle_t shader ) {
+	UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ), y, shader );
+}
+
 //	Draws one solid graphics character
 static void MQH_DrawCharacter( int cx, int line, int num ) {
 	UI_DrawChar( cx + ( ( viddef.width - 320 ) >> 1 ), line, num );

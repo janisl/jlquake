@@ -51,6 +51,42 @@ static Cvar* DMMode;
 static Cvar* sbtrans;
 
 static qhandle_t sbh2_nums[ 11 ];
+static qhandle_t sbh2_topbar1;
+static qhandle_t sbh2_topbar2;
+static qhandle_t sbh2_topbumpl;
+static qhandle_t sbh2_topbumpm;
+static qhandle_t sbh2_topbumpr;
+static qhandle_t sbh2_btmbar1;
+static qhandle_t sbh2_btmbar2;
+static qhandle_t sbh2_hpchain;
+static qhandle_t sbh2_hpgem;
+static qhandle_t sbh2_chnlcov;
+static qhandle_t sbh2_chnrcov;
+static qhandle_t sbh2_bmana;
+static qhandle_t sbh2_bmanacov;
+static qhandle_t sbh2_bmmana;
+static qhandle_t sbh2_gmana;
+static qhandle_t sbh2_gmanacov;
+static qhandle_t sbh2_gmmana;
+static qhandle_t sbh2_artinum[ 10 ];
+static qhandle_t sbh2_arti[ 15 ];
+static qhandle_t sbh2_artisel;
+static qhandle_t sbh2_pwrbook[ 16 ];
+static qhandle_t sbh2_durhst[ 16 ];
+static qhandle_t sbh2_durshd[ 16 ];
+static qhandle_t sbh2_cport[ MAX_PLAYER_CLASS ];
+static qhandle_t sbh2_armor[ 4 ];
+static qhandle_t sbh2_ring_f;
+static qhandle_t sbh2_ring_w;
+static qhandle_t sbh2_ring_t;
+static qhandle_t sbh2_ring_r;
+static qhandle_t sbh2_ringhlth;
+static qhandle_t sbh2_rhlthcvr;
+static qhandle_t sbh2_rhlthcv2;
+static qhandle_t sbh2_rngtrn[ 16 ];
+static qhandle_t sbh2_rngwtr[ 16 ];
+static qhandle_t sbh2_rngfly[ 16 ];
+static qhandle_t sbh2_title8;
 
 static int sbh2_fragsort[ BIGGEST_MAX_CLIENTS_QH ];
 static int sbh2_scoreboardlines;
@@ -266,21 +302,83 @@ void SbarH2_InitImages() {
 		sbh2_nums[ i ] = R_ShaderFromWad( va( "num_%i",i ) );
 	}
 	sbh2_nums[ 10 ] = R_ShaderFromWad( "num_minus" );
+
+	sbh2_topbar1 = R_CacheShader( "gfx/topbar1.lmp" );
+	sbh2_topbar2 = R_CacheShader( "gfx/topbar2.lmp" );
+	sbh2_topbumpl = R_CacheShader( "gfx/topbumpl.lmp" );
+	sbh2_topbumpm = R_CacheShader( "gfx/topbumpm.lmp" );
+	sbh2_topbumpr = R_CacheShader( "gfx/topbumpr.lmp" );
+	sbh2_btmbar1 = R_CacheShader( "gfx/btmbar1.lmp" );
+	sbh2_btmbar2 = R_CacheShader( "gfx/btmbar2.lmp" );
+
+	sbh2_hpchain = R_CacheShader( "gfx/hpchain.lmp" );
+	sbh2_hpgem = R_CacheShader( "gfx/hpgem.lmp" );
+	sbh2_chnlcov = R_CacheShader( "gfx/chnlcov.lmp" );
+	sbh2_chnrcov = R_CacheShader( "gfx/chnrcov.lmp" );
+
+	sbh2_bmana = R_CacheShader( "gfx/bmana.lmp" );
+	sbh2_bmanacov = R_CacheShader( "gfx/bmanacov.lmp" );
+	sbh2_bmmana = R_CacheShader( "gfx/bmmana.lmp" );
+	sbh2_gmana = R_CacheShader( "gfx/gmana.lmp" );
+	sbh2_gmanacov = R_CacheShader( "gfx/gmanacov.lmp" );
+	sbh2_gmmana = R_CacheShader( "gfx/gmmana.lmp" );
+
+	for ( int i = 0; i < 10; i++ ) {
+		sbh2_artinum[ i ] = R_CacheShader( va( "gfx/artinum%d.lmp", i ) );
+	}
+	for ( int i = 0; i < 15; i++ ) {
+		sbh2_arti[ i ] = R_CacheShader( va( "gfx/arti%02d.lmp", i ) );
+	}
+	sbh2_artisel = R_CacheShader( "gfx/artisel.lmp" );
+	for ( int i = 0; i < 16; i++ ) {
+		sbh2_pwrbook[ i ] = R_CacheShader( va( "gfx/pwrbook%d.lmp", i + 1 ) );
+		sbh2_durhst[ i ] = R_CacheShader( va( "gfx/durhst%d.lmp", i + 1 ) );
+		sbh2_durshd[ i ] = R_CacheShader( va( "gfx/durshd%d.lmp", i + 1 ) );
+	}
+
+	sbh2_cport[ 0 ] = R_CacheShader( "gfx/cport1.lmp" );
+	if ( qh_registered ) {
+		sbh2_cport[ 1 ] = R_CacheShader( "gfx/cport2.lmp" );
+		sbh2_cport[ 2 ] = R_CacheShader( "gfx/cport3.lmp" );
+	}
+	sbh2_cport[ 3 ] = R_CacheShader( "gfx/cport4.lmp" );
+	if (GGameType & GAME_H2Portals ) {
+		sbh2_cport[ 4 ] = R_CacheShader( "gfx/cport5.lmp" );
+	}
+
+	for ( int i = 0; i < 4; i++ ) {
+		sbh2_armor[ i ] = R_CacheShader( va ( "gfx/armor%d.lmp", i + 1 ) );
+	}
+
+	sbh2_ring_f = R_CacheShader( "gfx/ring_f.lmp" );
+	sbh2_ring_w = R_CacheShader( "gfx/ring_w.lmp" );
+	sbh2_ring_t = R_CacheShader( "gfx/ring_t.lmp" );
+	sbh2_ring_r = R_CacheShader( "gfx/ring_r.lmp" );
+	sbh2_ringhlth = R_CacheShader( "gfx/ringhlth.lmp" );
+	sbh2_rhlthcvr = R_CacheShader( "gfx/rhlthcvr.lmp" );
+	if ( qh_registered ) {
+		sbh2_rhlthcv2 = R_CacheShader( "gfx/rhlthcv2.lmp" );
+	}
+	for ( int i = 0; i < 16; i++) {
+		if ( qh_registered ) {
+			sbh2_rngtrn[ i ] = R_CacheShader( va( "gfx/rngtrn%d.lmp", i + 1 ) );
+		}
+		sbh2_rngwtr[ i ] = R_CacheShader( va( "gfx/rngwtr%d.lmp", i + 1 ) );
+		sbh2_rngfly[ i ] = R_CacheShader( va( "gfx/rngfly%d.lmp", i + 1 ) );
+	}
+
+	sbh2_title8 = R_CacheShader( "gfx/menu/title8.lmp" );
 }
 
 // Relative to the current status bar location.
-static void SbarH2_DrawPic( int x, int y, image_t* pic ) {
-	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ),
-		y + ( viddef.height - ( int )BarHeight ), pic );
-}
-static void SbarH2_DrawPicShader( int x, int y, qhandle_t shader ) {
+static void SbarH2_DrawPic( int x, int y, qhandle_t shader ) {
 	UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), shader );
 }
 
-static void SbarH2_DrawSubPic( int x, int y, int h, image_t* pic ) {
-	UI_DrawStretchPic( x + ( ( viddef.width - 320 ) >> 1 ),
-		y + ( viddef.height - ( int )BarHeight ), R_GetImageWidth( pic ), h, pic );
+static void SbarH2_DrawSubPic( int x, int y, int h, qhandle_t shader ) {
+	UI_DrawStretchPicShader( x + ( ( viddef.width - 320 ) >> 1 ),
+		y + ( viddef.height - ( int )BarHeight ), R_GetShaderWidth( shader ), h, shader );
 }
 
 static void SbarH2_DrawSmallString( int x, int y, const char* str ) {
@@ -288,21 +386,17 @@ static void SbarH2_DrawSmallString( int x, int y, const char* str ) {
 }
 
 static void DrawBarArtifactNumber( int x, int y, int number ) {
-	static char artiNumName[ 18 ] = "gfx/artinum0.lmp";
-
 	if ( number >= 10 ) {
-		artiNumName[ 11 ] = '0' + ( number % 100 ) / 10;
-		SbarH2_DrawPic( x, y, R_CachePic( artiNumName ) );
+		SbarH2_DrawPic( x, y, sbh2_artinum[ ( number % 100 ) / 10 ] );
 	}
-	artiNumName[ 11 ] = '0' + number % 10;
-	SbarH2_DrawPic( x + 4, y, R_CachePic( artiNumName ) );
+	SbarH2_DrawPic( x + 4, y, sbh2_artinum[ number % 10 ] );
 }
 
 static void DrawBarArtifactIcon( int x, int y, int artifact ) {
 	if ( ( artifact < 0 ) || ( artifact > 14 ) ) {
 		return;
 	}
-	SbarH2_DrawPic( x, y, R_CachePic( va( "gfx/arti%02d.lmp", artifact ) ) );
+	SbarH2_DrawPic( x, y, sbh2_arti[ artifact ] );
 	int count = ( int )( &cl.h2_v.cnt_torch )[ artifact ];
 	if ( count > 0 ) {
 		DrawBarArtifactNumber( x + 20, y + 21, count );
@@ -327,7 +421,7 @@ static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
 		} else   {
 			frame = *ptr - '0';
 		}
-		SbarH2_DrawPicShader( x, y, sbh2_nums[ frame ] );
+		SbarH2_DrawPic( x, y, sbh2_nums[ frame ] );
 		x += 13;
 		ptr++;
 	}
@@ -368,8 +462,8 @@ static void UpdateHeight() {
 
 static void DrawFullScreenInfo() {
 	int y = BarHeight - 37;
-	SbarH2_DrawPic( 3, y, R_CachePic( "gfx/bmmana.lmp" ) );
-	SbarH2_DrawPic( 3, y + 18, R_CachePic( "gfx/gmmana.lmp" ) );
+	SbarH2_DrawPic( 3, y, sbh2_bmmana );
+	SbarH2_DrawPic( 3, y + 18, sbh2_gmmana );
 
 	int maxMana = ( int )cl.h2_v.max_mana;
 	// Blue mana
@@ -463,11 +557,11 @@ static int CalcAC() {
 }
 
 static void DrawTopBar() {
-	SbarH2_DrawPic( 0, 0, R_CachePic( "gfx/topbar1.lmp" ) );
-	SbarH2_DrawPic( 160, 0, R_CachePic( "gfx/topbar2.lmp" ) );
-	SbarH2_DrawPic( 0, -23, R_CachePic( "gfx/topbumpl.lmp" ) );
-	SbarH2_DrawPic( 138, -8, R_CachePic( "gfx/topbumpm.lmp" ) );
-	SbarH2_DrawPic( 269, -23, R_CachePic( "gfx/topbumpr.lmp" ) );
+	SbarH2_DrawPic( 0, 0, sbh2_topbar1 );
+	SbarH2_DrawPic( 160, 0, sbh2_topbar2 );
+	SbarH2_DrawPic( 0, -23, sbh2_topbumpl );
+	SbarH2_DrawPic( 138, -8, sbh2_topbumpm );
+	SbarH2_DrawPic( 269, -23, sbh2_topbumpr );
 
 	int maxMana = ( int )cl.h2_v.max_mana;
 	// Blue mana
@@ -483,8 +577,8 @@ static void DrawTopBar() {
 	SbarH2_DrawSmallString( 201, 22, tempStr );
 	if ( mana ) {
 		int y = ( int )( ( mana * 18.0 ) / ( float )maxMana + 0.5 );
-		SbarH2_DrawSubPic( 190, 26 - y, y + 1, R_CachePic( "gfx/bmana.lmp" ) );
-		SbarH2_DrawPic( 190, 27, R_CachePic( "gfx/bmanacov.lmp" ) );
+		SbarH2_DrawSubPic( 190, 26 - y, y + 1, sbh2_bmana );
+		SbarH2_DrawPic( 190, 27, sbh2_bmanacov );
 	}
 
 	// Green mana
@@ -499,8 +593,8 @@ static void DrawTopBar() {
 	SbarH2_DrawSmallString( 243, 22, tempStr );
 	if ( mana ) {
 		int y = ( int )( ( mana * 18.0 ) / ( float )maxMana + 0.5 );
-		SbarH2_DrawSubPic( 232, 26 - y, y + 1, R_CachePic( "gfx/gmana.lmp" ) );
-		SbarH2_DrawPic( 232, 27, R_CachePic( "gfx/gmanacov.lmp" ) );
+		SbarH2_DrawSubPic( 232, 26 - y, y + 1, sbh2_gmana );
+		SbarH2_DrawPic( 232, 27, sbh2_gmanacov );
 	}
 
 	// HP
@@ -510,12 +604,10 @@ static void DrawTopBar() {
 		SbarH2_DrawNum( 58, 14, cl.h2_v.health, 3 );
 	}
 	SetChainPosition( cl.h2_v.health, cl.h2_v.max_health );
-	SbarH2_DrawPic( 45 + ( ( int )sbh2_ChainPosition & 7 ), 38,
-		R_CachePic( "gfx/hpchain.lmp" ) );
-	SbarH2_DrawPic( 45 + ( int )sbh2_ChainPosition, 36,
-		R_CachePic( "gfx/hpgem.lmp" ) );
-	SbarH2_DrawPic( 43, 36, R_CachePic( "gfx/chnlcov.lmp" ) );
-	SbarH2_DrawPic( 267, 36, R_CachePic( "gfx/chnrcov.lmp" ) );
+	SbarH2_DrawPic( 45 + ( ( int )sbh2_ChainPosition & 7 ), 38, sbh2_hpchain );
+	SbarH2_DrawPic( 45 + ( int )sbh2_ChainPosition, 36, sbh2_hpgem );
+	SbarH2_DrawPic( 43, 36, sbh2_chnlcov );
+	SbarH2_DrawPic( 267, 36, sbh2_chnrcov );
 
 	// AC
 	SbarH2_DrawNum( 105, 14, CalcAC(), 2 );
@@ -534,8 +626,8 @@ static void DrawLowerBar() {
 	}
 
 	// Backdrop
-	SbarH2_DrawPic( 0, 46, R_CachePic( "gfx/btmbar1.lmp" ) );
-	SbarH2_DrawPic( 160, 46, R_CachePic( "gfx/btmbar2.lmp" ) );
+	SbarH2_DrawPic( 0, 46, sbh2_btmbar1 );
+	SbarH2_DrawPic( 160, 46, sbh2_btmbar2 );
 
 	// Stats
 	SbarH2_DrawSmallString( 11, 48, GGameType & GAME_HexenWorld ? hw_ClassNames[ playerClass - 1 ] : h2_ClassNames[ playerClass - 1 ] );
@@ -580,71 +672,73 @@ static void DrawLowerBar() {
 	}
 
 	// Portrait
-	sprintf( tempStr, "gfx/cport%d.lmp", playerClass );
-	SbarH2_DrawPic( 134, 50, R_CachePic( tempStr ) );
+	// There's not graphic for dwarf.
+	if ( playerClass != 6 ) {
+		SbarH2_DrawPic( 134, 50, sbh2_cport[ playerClass - 1 ] );
+	}
 
 	// Armor
 	if ( cl.h2_v.armor_helmet > 0 ) {
-		SbarH2_DrawPic( 164, 115, R_CachePic( "gfx/armor1.lmp" ) );
+		SbarH2_DrawPic( 164, 115, sbh2_armor[ 0 ] );
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_helmet );
 		SbarH2_DrawSmallString( 168, 136, tempStr );
 	}
 	if ( cl.h2_v.armor_amulet > 0 ) {
-		SbarH2_DrawPic( 205, 115, R_CachePic( "gfx/armor2.lmp" ) );
+		SbarH2_DrawPic( 205, 115, sbh2_armor[ 1 ] );
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_amulet );
 		SbarH2_DrawSmallString( 208, 136, tempStr );
 	}
 	if ( cl.h2_v.armor_breastplate > 0 ) {
-		SbarH2_DrawPic( 246, 115, R_CachePic( "gfx/armor3.lmp" ) );
+		SbarH2_DrawPic( 246, 115, sbh2_armor[ 2 ] );
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_breastplate );
 		SbarH2_DrawSmallString( 249, 136, tempStr );
 	}
 	if ( cl.h2_v.armor_bracer > 0 ) {
-		SbarH2_DrawPic( 285, 115, R_CachePic( "gfx/armor4.lmp" ) );
+		SbarH2_DrawPic( 285, 115, sbh2_armor[ 3 ] );
 		sprintf( tempStr, "+%d", ( int )cl.h2_v.armor_bracer );
 		SbarH2_DrawSmallString( 288, 136, tempStr );
 	}
 
 	// Rings
 	if ( cl.h2_v.ring_flight > 0 ) {
-		SbarH2_DrawPic( 6, 119, R_CachePic( "gfx/ring_f.lmp" ) );
+		SbarH2_DrawPic( 6, 119, sbh2_ring_f );
 
 		int ringhealth = ( int )cl.h2_v.ring_flight;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
-		SbarH2_DrawPic( 35 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
-		SbarH2_DrawPic( 35, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		SbarH2_DrawPic( 35 - ( int )( 26 * ( ringhealth / ( float )100 ) ), 142, sbh2_ringhlth );
+		SbarH2_DrawPic( 35, 142, sbh2_rhlthcvr );
 	}
 
 	if ( cl.h2_v.ring_water > 0 ) {
-		SbarH2_DrawPic( 44, 119, R_CachePic( "gfx/ring_w.lmp" ) );
+		SbarH2_DrawPic( 44, 119, sbh2_ring_w );
 		int ringhealth = ( int )cl.h2_v.ring_water;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
-		SbarH2_DrawPic( 73 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
-		SbarH2_DrawPic( 73, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		SbarH2_DrawPic( 73 - ( int )( 26 * ( ringhealth / ( float )100 ) ), 142, sbh2_ringhlth );
+		SbarH2_DrawPic( 73, 142, sbh2_rhlthcvr );
 	}
 
 	if ( cl.h2_v.ring_turning > 0 ) {
-		SbarH2_DrawPic( 81, 119, R_CachePic( "gfx/ring_t.lmp" ) );
+		SbarH2_DrawPic( 81, 119, sbh2_ring_t );
 		int ringhealth = ( int )cl.h2_v.ring_turning;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
-		SbarH2_DrawPic( 110 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
-		SbarH2_DrawPic( 110, 142, R_CachePic( "gfx/rhlthcvr.lmp" ) );
+		SbarH2_DrawPic( 110 - ( int )( 26 * ( ringhealth / ( float )100 ) ), 142, sbh2_ringhlth );
+		SbarH2_DrawPic( 110, 142, sbh2_rhlthcvr );
 	}
 
 	if ( cl.h2_v.ring_regeneration > 0 ) {
-		SbarH2_DrawPic( 119, 119, R_CachePic( "gfx/ring_r.lmp" ) );
+		SbarH2_DrawPic( 119, 119, sbh2_ring_r );
 		int ringhealth = ( int )cl.h2_v.ring_regeneration;
 		if ( ringhealth > 100 ) {
 			ringhealth = 100;
 		}
-		SbarH2_DrawPic( 148 - ( int )( 26 * ( ringhealth / ( float )100 ) ),142,R_CachePic( "gfx/ringhlth.lmp" ) );
-		SbarH2_DrawPic( 148, 142, R_CachePic( "gfx/rhlthcv2.lmp" ) );
+		SbarH2_DrawPic( 148 - ( int )( 26 * ( ringhealth / ( float )100 ) ), 142, sbh2_ringhlth );
+		SbarH2_DrawPic( 148, 142, sbh2_rhlthcv2 );
 	}
 
 	// Puzzle pieces
@@ -654,7 +748,7 @@ static void DrawLowerBar() {
 			continue;
 		}
 		SbarH2_DrawPic( 194 + ( piece % 4 ) * 31, piece < 4 ? 51 : 82,
-			R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 		piece++;
 	}
 }
@@ -687,7 +781,7 @@ static void DrawArtifactInventory() {
 			break;
 		}
 		if ( cl.h2_inv_startpos + i == cl.h2_inv_selected ) {	// Highlight icon
-			SbarH2_DrawPic( x + 9, y - 12, R_CachePic( "gfx/artisel.lmp" ) );
+			SbarH2_DrawPic( x + 9, y - 12, sbh2_artisel );
 		}
 		DrawBarArtifactIcon( x, y, cl.h2_inv_order[ cl.h2_inv_startpos + i ] );
 	}
@@ -699,65 +793,49 @@ static void DrawActiveRings() {
 	int flag = ( int )cl.h2_v.rings_active;
 
 	if ( flag & RING_TURNING ) {
-		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		char tempStr[ 24 ];
-		sprintf( tempStr, "gfx/rngtrn%d.lmp", frame );
-		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - 50, ring_row, sbh2_rngtrn[ frame ] );
 		ring_row += 33;
 	}
 
 	if ( flag & RING_WATER ) {
-		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		char tempStr[ 24 ];
-		sprintf( tempStr, "gfx/rngwtr%d.lmp", frame );
-		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - 50, ring_row, sbh2_rngwtr[ frame ] );
 		ring_row += 33;
 	}
 
 	if ( flag & RING_FLIGHT ) {
-		int frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		char tempStr[ 24 ];
-		sprintf( tempStr, "gfx/rngfly%d.lmp", frame );
-		UI_DrawPic( viddef.width - 50, ring_row, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - 50, ring_row, sbh2_rngfly[ frame ] );
 		ring_row += 33;
 	}
 }
 
 static void DrawActiveArtifacts() {
-	int flag;
-	static int oldflags = 0;
-	int frame;
-	char tempStr[ 24 ];
-
 	int art_col = 50;
 
 	if ( ring_row != 1 ) {
 		art_col += 50;
 	}
 
-	flag = ( int )cl.h2_v.artifact_active;
+	int flag = ( int )cl.h2_v.artifact_active;
 	if ( flag & H2ARTFLAG_TOMEOFPOWER ) {
-		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		sprintf( tempStr, "gfx/pwrbook%d.lmp", frame );
-		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - art_col, 1, sbh2_pwrbook[ frame ] );
 		art_col += 50;
 	}
 
 	if ( flag & H2ARTFLAG_HASTE ) {
-		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		sprintf( tempStr, "gfx/durhst%d.lmp", frame );
-		UI_DrawPic( viddef.width - art_col,1, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - art_col,1, sbh2_durhst[ frame ] );
 		art_col += 50;
 	}
 
 	if ( flag & H2ARTFLAG_INVINCIBILITY ) {
-		frame = 1 + ( ( int )( cl.qh_serverTimeFloat * 16 ) & 15 );
-		sprintf( tempStr, "gfx/durshd%d.lmp", frame );
-		UI_DrawPic( viddef.width - art_col, 1, R_CachePic( tempStr ) );
+		int frame = ( int )( cl.qh_serverTimeFloat * 16 ) & 15;
+		UI_DrawPicShader( viddef.width - art_col, 1, sbh2_durshd[ frame ] );
 		art_col += 50;
 	}
-
-	oldflags = flag;
 }
 
 static void DrawNormalBar() {
@@ -843,10 +921,10 @@ static void SbarH2_NormalOverlay() {
 		FindName( cl.h2_puzzle_pieces[ i ], name );
 
 		if ( piece < 4 ) {
-			MQH_DrawPic( 10, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			MQH_DrawPicShader( 10, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 45, y, name );
 		} else   {
-			MQH_DrawPic( 310 - 32, y, R_CachePic( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			MQH_DrawPicShader( 310 - 32, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
 		}
 
@@ -931,8 +1009,7 @@ void SbarH2_DeathmatchOverlay() {
 		CL_AddReliableCommand( "pings" );
 	}
 
-	image_t* pic = R_CachePic( "gfx/menu/title8.lmp" );
-	MQH_DrawPic( ( 320 - R_GetImageWidth( pic ) ) / 2, 0, pic );
+	MQH_DrawPicShader( ( 320 - R_GetShaderWidth( sbh2_title8 ) ) / 2, 0, sbh2_title8 );
 
 	// scores
 	SbarH2_SortFrags( true );

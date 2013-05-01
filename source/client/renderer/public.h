@@ -408,6 +408,7 @@ qhandle_t R_LoadBigFontImage( const char* name );
 qhandle_t R_LoadQuake2FontImage( const char* name );
 image_t* R_CreateCrosshairImage();
 image_t* R_CachePic( const char* path );
+qhandle_t R_CacheShader( const char* path );
 qhandle_t R_CacheShaderRepeat( const char* path );
 image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels );
 image_t* R_RegisterPic( const char* name );
