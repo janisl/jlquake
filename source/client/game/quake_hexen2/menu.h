@@ -63,7 +63,7 @@ void MQH_Menu_Quit_f();
 void MQH_ToggleMenu_f();
 
 void MQH_Init();
-void MQH_InitImages();
+void MQH_InitShaders();
 void MQH_FadeScreen();
 void MQH_Draw();
 void MQH_Keydown( int key );

@@ -60,6 +60,6 @@ void Con_RunConsole();
 void Con_ToggleConsole_f();
 void Con_Init();
 void Con_Close();
-void Con_InitBackgroundImage();
+void Con_InitBackgroundShaders();
 
 #endif

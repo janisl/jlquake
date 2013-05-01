@@ -87,7 +87,7 @@ void SCR_CheckDrawCenterString();
 void SCR_ClearCenterString();
 void SCR_CalcVrect();
 void SCR_DrawNet();
-void SCRQH_InitImages();
+void SCRQH_InitShaders();
 void SCR_DrawFPS();
 void SCR_TileClear();
 void SCR_UpdateScreen();

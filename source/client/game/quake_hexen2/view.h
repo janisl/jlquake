@@ -23,6 +23,6 @@ void VQH_ParseDamage( QMsg& message );
 void VQH_RenderView();
 void SCRQH_DrawTurtle();
 void VQH_Init();
-void VQH_InitCrosshairTexture();
+void VQH_InitCrosshairShader();
 
 #endif

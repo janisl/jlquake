@@ -297,7 +297,7 @@ void SbarH2_Init() {
 	BarHeight = BAR_TOP_HEIGHT;
 }
 
-void SbarH2_InitImages() {
+void SbarH2_InitShaders() {
 	for ( int i = 0; i < 10; i++ ) {
 		sbh2_nums[ i ] = R_ShaderFromWad( va( "num_%i",i ) );
 	}

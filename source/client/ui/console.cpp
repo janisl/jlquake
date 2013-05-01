@@ -1183,7 +1183,7 @@ void Con_Close() {
 	con.displayFrac = 0;
 }
 
-void Con_InitBackgroundImage() {
+void Con_InitBackgroundShaders() {
 	if ( GGameType & GAME_Quake ) {
 		conback = R_CachePic( "gfx/conback.lmp" );
 	} else if ( GGameType & GAME_Hexen2 ) {

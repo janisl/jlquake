@@ -561,7 +561,7 @@ void SCR_UpdateScreen() {
 	}
 }
 
-void SCRQH_InitImages() {
+void SCRQH_InitShaders() {
 	scr_net = R_ShaderFromWad( "net" );
 	if ( GGameType & GAME_Quake ) {
 		draw_backtile = R_ShaderFromWadRepeat( "backtile" );
@@ -571,9 +571,9 @@ void SCRQH_InitImages() {
 		char_texture = R_LoadRawFontImageFromFile( "gfx/menu/conchars.lmp", 256, 128 );
 		char_smalltexture = R_LoadRawFontImageFromWad( "tinyfont", 128, 32 );
 	}
-	Con_InitBackgroundImage();
-	MQH_InitImages();
-	VQH_InitCrosshairTexture();
+	Con_InitBackgroundShaders();
+	MQH_InitShaders();
+	VQH_InitCrosshairShader();
 }
 
 void SCR_Init() {

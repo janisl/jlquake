@@ -116,7 +116,7 @@ void SbarQ1_Init() {
 	}
 }
 
-void SbarQ1_InitImages() {
+void SbarQ1_InitShaders() {
 	for ( int i = 0; i < 10; i++ ) {
 		sbq1_nums[ 0 ][ i ] = R_ShaderFromWad( va( "num_%i",i ) );
 		sbq1_nums[ 1 ][ i ] = R_ShaderFromWad( va( "anum_%i",i ) );

@@ -1231,7 +1231,7 @@ void VQH_Init() {
 	scr_showturtle = Cvar_Get( "showturtle", "0", 0 );
 }
 
-void VQH_InitCrosshairTexture() {
+void VQH_InitCrosshairShader() {
 	cs_texture = R_CreateCrosshairImage();
 	scr_turtle = R_ShaderFromWad( "turtle" );
 }

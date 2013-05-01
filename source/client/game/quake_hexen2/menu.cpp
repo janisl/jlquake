@@ -4548,7 +4548,7 @@ void MQH_Init() {
 	}
 }
 
-void MQH_InitImages() {
+void MQH_InitShaders() {
 	mq1_translate_texture = NULL;
 	Com_Memset( mh2_translate_texture, 0, sizeof ( mh2_translate_texture ) );
 	if ( GGameType & GAME_Hexen2 ) {

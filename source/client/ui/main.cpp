@@ -147,14 +147,14 @@ void CL_InitRenderer() {
 			viddef.width = cls.glconfig.vidWidth;
 		}
 
-		SCRQH_InitImages();
+		SCRQH_InitShaders();
 		if ( GGameType & GAME_Hexen2 ) {
 			CLH2_InitPlayerTranslation();
 			CLH2_ClearEntityTextureArrays();
-			SbarH2_InitImages();
+			SbarH2_InitShaders();
 		} else {
 			Com_Memset( clq1_playertextures, 0, sizeof ( clq1_playertextures ) );
-			SbarQ1_InitImages();
+			SbarQ1_InitShaders();
 		}
 	} else if ( GGameType & GAME_Quake2 ) {
 		viddef.width = cls.glconfig.vidWidth;

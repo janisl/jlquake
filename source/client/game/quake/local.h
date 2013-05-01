@@ -103,7 +103,7 @@ extern int sbqh_lines;					// scan lines to draw
 extern Cvar* clqw_hudswap;
 
 void SbarQ1_Init();
-void SbarQ1_InitImages();
+void SbarQ1_InitShaders();
 int SbarQH_itoa( int num, char* buf );
 // called every frame by screen
 void SbarQ1_Draw();
