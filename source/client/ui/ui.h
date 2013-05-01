@@ -39,8 +39,8 @@ struct viddef_t {
 };
 
 extern viddef_t viddef;					// global video state
-extern image_t* char_texture;
-extern image_t* char_smalltexture;
+extern qhandle_t char_texture;
+extern qhandle_t char_smalltexture;
 extern vec4_t g_color_table[ 32 ];
 
 extern Cvar* scr_viewsize;
@@ -67,7 +67,7 @@ void UI_TileClear( int x, int y, int w, int h, qhandle_t pic );
 void UI_NamedTileClear( int x, int y, int w, int h, const char* name );
 void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a );
 void UI_FillPal( int x, int y, int w, int h, int c );
-void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+void UI_DrawCharBase( int x, int y, int num, int w, int h, qhandle_t shader, int numberOfColumns,
 	int numberOfRows );
 void UI_DrawChar( int x, int y, int num );
 void UI_DrawString( int x, int y, const char* str, int mask = 0 );

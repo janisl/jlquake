@@ -35,7 +35,7 @@ menu_state_t m_return_state;
 bool m_return_onerror;
 char m_return_reason[ 32 ];
 
-static image_t* char_menufonttexture;
+static qhandle_t char_menufonttexture;
 static char BigCharWidth[ 27 ][ 27 ];
 
 static float TitlePercent = 0;

@@ -1621,7 +1621,7 @@ void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pi
 	R_CreateOrUpdateTranslatedImageEx( image, name, pixels, translation, width, height, true, IMG8MODE_Skin );
 }
 
-static image_t* R_LoadRawFontImage( const char* name, byte* data8, int width, int height ) {
+static qhandle_t R_LoadRawFontImage( const char* name, byte* data8, int width, int height ) {
 	byte* data32 = R_ConvertImage8To32( data8, width, height, IMG8MODE_Holey );
 	image_t* image = R_CreateImage( name, data32, width, height, false, false, GL_CLAMP );
 	delete[] data32;
@@ -1630,30 +1630,30 @@ static image_t* R_LoadRawFontImage( const char* name, byte* data8, int width, in
 	GL_Bind( image );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	return image;
+	return R_Build2DShaderFromImage( image )->index;
 }
 
-image_t* R_LoadRawFontImageFromFile( const char* name, int width, int height ) {
+qhandle_t R_LoadRawFontImageFromFile( const char* name, int width, int height ) {
 	idList<byte> data;
 	FS_ReadFile( name, data );
 	return R_LoadRawFontImage( name, data.Ptr(), width, height );
 }
 
-image_t* R_LoadRawFontImageFromWad( const char* name, int width, int height ) {
+qhandle_t R_LoadRawFontImageFromWad( const char* name, int width, int height ) {
 	byte* data = ( byte* )R_GetWadLumpByName( name );
 	return R_LoadRawFontImage( name, data, width, height );
 }
 
-image_t* R_LoadBigFontImage( const char* name ) {
-	return R_FindImageFile( name, false, false, GL_CLAMP, IMG8MODE_Holey );
+qhandle_t R_LoadBigFontImage( const char* name ) {
+	return R_Build2DShaderFromImage( R_FindImageFile( name, false, false, GL_CLAMP, IMG8MODE_Holey ) )->index;
 }
 
-image_t* R_LoadQuake2FontImage( const char* name ) {
+qhandle_t R_LoadQuake2FontImage( const char* name ) {
 	image_t* image = R_FindImageFile( name, false, false, GL_CLAMP );
 	GL_Bind( image );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	return image;
+	return R_Build2DShaderFromImage( image )->index;
 }
 
 image_t* R_CreateCrosshairImage() {

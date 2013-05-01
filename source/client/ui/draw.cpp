@@ -22,8 +22,8 @@
 
 viddef_t viddef;
 
-image_t* char_texture;
-image_t* char_smalltexture;
+qhandle_t char_texture;
+qhandle_t char_smalltexture;
 
 vec4_t g_color_table[ 32 ] =
 {
@@ -173,7 +173,7 @@ void UI_FillPal( int x, int y, int w, int h, int c ) {
 	UI_Fill( x, y, w, h, r_palette[ c ][ 0 ] / 255.0, r_palette[ c ][ 1 ] / 255.0, r_palette[ c ][ 2 ] / 255.0, 1 );
 }
 
-void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int numberOfColumns,
+void UI_DrawCharBase( int x, int y, int num, int w, int h, qhandle_t shader, int numberOfColumns,
 	int numberOfRows ) {
 	if ( y <= -h || y >= viddef.height ) {
 		// Totally off screen
@@ -188,7 +188,7 @@ void UI_DrawCharBase( int x, int y, int num, int w, int h, image_t* image, int n
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	DoQuad( x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize );
+	DoQuadShader( x, y, w, h, shader, fcol, frow, fcol + xsize, frow + ysize );
 }
 
 void UI_DrawChar( int x, int y, int num ) {
