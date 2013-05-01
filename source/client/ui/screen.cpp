@@ -402,11 +402,7 @@ void SCR_DrawNet() {
 		return;
 	}
 
-	if ( GGameType & GAME_Quake2 ) {
-		UI_DrawNamedPic( scr_vrect.x + 64, scr_vrect.y, "net" );
-	} else {
-		UI_DrawPicShader( scr_vrect.x + 64, scr_vrect.y, scr_net );
-	}
+	UI_DrawPicShader( scr_vrect.x + 64, scr_vrect.y, scr_net );
 }
 
 void SCR_DrawFPS() {
@@ -568,6 +564,10 @@ void SCRQH_InitShaders() {
 
 void SCRQ2_InitShaders() {
 	draw_backtile = R_CacheShaderRepeat( "pics/backtile.pcx" );
+	cls.consoleShader = R_CacheShader( "pics/conback.pcx" );
+	scr_net = R_CacheShader( "pics/net.pcx" );
+	scrGfxPause = R_CacheShader( "pics/pause.pcx" );
+	scrGfxLoading = R_CacheShader( "pics/loading.pcx" );
 }
 
 void SCR_Init() {

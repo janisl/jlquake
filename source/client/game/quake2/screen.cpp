@@ -34,9 +34,7 @@ static void SCRQ2_DrawPause() {
 		return;
 	}
 
-	int w, h;
-	R_GetPicSize( &w, &h, "pause" );
-	UI_DrawNamedPic( ( viddef.width - w ) / 2, viddef.height / 2 + 8, "pause" );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( scrGfxPause ) ) / 2, viddef.height / 2 + 8, scrGfxPause );
 }
 
 static void SCRQ2_DrawLoading() {
@@ -45,9 +43,8 @@ static void SCRQ2_DrawLoading() {
 	}
 
 	scr_draw_loading = false;
-	int w, h;
-	R_GetPicSize( &w, &h, "loading" );
-	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( scrGfxLoading ) ) / 2,
+		( viddef.height - R_GetShaderHeight( scrGfxLoading ) ) / 2, scrGfxLoading );
 }
 
 //	A new packet was just parsed
@@ -80,12 +77,8 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	R_BeginFrame( stereoFrame );
 
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
-		int w, h;
-
 		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
-		scr_draw_loading = false;
-		R_GetPicSize( &w, &h, "loading" );
-		UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "loading" );
+		SCRQ2_DrawLoading();
 	}
 	// if a cinematic is supposed to be running, handle menus
 	// and console specially

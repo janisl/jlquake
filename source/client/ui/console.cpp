@@ -273,7 +273,7 @@ static void Con_DrawBackground( float frac, int lines ) {
 			UI_DrawString( x, y, version );
 		}
 	} else if ( GGameType & GAME_Quake2 ) {
-		UI_DrawStretchPic( 0, -viddef.height + lines, viddef.width, viddef.height, R_RegisterPic( "conback" ) );
+		UI_DrawStretchPicShader( 0, -viddef.height + lines, viddef.width, viddef.height, cls.consoleShader );
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );
