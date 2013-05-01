@@ -101,7 +101,7 @@ void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 
 		// Gordon: for the origin only bmodel checks
 		svent->originCluster = CM_LeafCluster( CM_PointLeafnum( ent->GetCurrentOrigin() ) );
-	} else if ( ent->GetContents() & ( BSP46CONTENTS_SOLID | BSP46CONTENTS_BODY ) )       {
+	} else if ( ent->GetContents() & ( BSP46CONTENTS_SOLID | BSP46CONTENTS_BODY ) ) {
 		// assume that x/y are equal and symetric
 		int i = ent->GetMaxs()[ 0 ];
 		if ( i < 1 ) {
@@ -130,7 +130,7 @@ void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 		}
 
 		ent->SetSolid( ( k << 16 ) | ( j << 8 ) | i );
-	} else   {
+	} else {
 		ent->SetSolid( 0 );
 	}
 
@@ -149,7 +149,7 @@ void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 			ent->GetAbsMin()[ i ] = origin[ i ] - max;
 			ent->GetAbsMax()[ i ] = origin[ i ] + max;
 		}
-	} else   {
+	} else {
 		// normal
 		VectorAdd( origin, ent->GetMins(), ent->GetAbsMin() );
 		VectorAdd( origin, ent->GetMaxs(), ent->GetAbsMax() );
@@ -196,7 +196,7 @@ void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 						ent->GetAbsMin()[ 0 ], ent->GetAbsMin()[ 1 ], ent->GetAbsMin()[ 2 ] );
 				}
 				svent->areanum2 = area;
-			} else   {
+			} else {
 				svent->areanum = area;
 			}
 		}
@@ -230,9 +230,9 @@ void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 		}
 		if ( ent->GetAbsMin()[ node->axis ] > node->dist ) {
 			node = node->children[ 0 ];
-		} else if ( ent->GetAbsMax()[ node->axis ] < node->dist )       {
+		} else if ( ent->GetAbsMax()[ node->axis ] < node->dist ) {
 			node = node->children[ 1 ];
-		} else   {
+		} else {
 			break;		// crosses the node
 		}
 	}
@@ -373,7 +373,7 @@ static void SVT3_ClipMoveToEntities( q3moveclip_t* clip ) {
 		if ( passOwnerNum == Q3ENTITYNUM_NONE ) {
 			passOwnerNum = -1;
 		}
-	} else   {
+	} else {
 		passOwnerNum = -1;
 	}
 
@@ -433,7 +433,7 @@ static void SVT3_ClipMoveToEntities( q3moveclip_t* clip ) {
 		if ( trace.allsolid ) {
 			clip->trace.allsolid = true;
 			trace.entityNum = touch->GetNumber();
-		} else if ( trace.startsolid )     {
+		} else if ( trace.startsolid ) {
 			clip->trace.startsolid = true;
 			trace.entityNum = touch->GetNumber();
 		}
@@ -494,7 +494,7 @@ void SVT3_Trace( q3trace_t* results, const vec3_t start, const vec3_t mins, cons
 		if ( end[ i ] > start[ i ] ) {
 			clip.boxmins[ i ] = clip.start[ i ] + clip.mins[ i ] - 1;
 			clip.boxmaxs[ i ] = clip.end[ i ] + clip.maxs[ i ] + 1;
-		} else   {
+		} else {
 			clip.boxmins[ i ] = clip.end[ i ] + clip.mins[ i ] - 1;
 			clip.boxmaxs[ i ] = clip.start[ i ] + clip.maxs[ i ] + 1;
 		}

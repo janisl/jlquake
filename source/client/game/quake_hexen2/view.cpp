@@ -117,11 +117,11 @@ void VQH_ParseDamage( QMsg& message ) {
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 0 ] = 200;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 1 ] = 100;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 2 ] = 100;
-	} else if ( armor )     {
+	} else if ( armor ) {
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 0 ] = 220;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 1 ] = 50;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 2 ] = 50;
-	} else   {
+	} else {
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 0 ] = 255;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 1 ] = 0;
 		cl.qh_cshifts[ CSHIFT_DAMAGE ].destcolor[ 2 ] = 0;
@@ -136,14 +136,14 @@ void VQH_ParseDamage( QMsg& message ) {
 		VectorNormalize( from );
 
 		AngleVectors( cl.qh_simangles, forward, right, up );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		q1entity_t* ent = &clq1_entities[ cl.viewentity ];
 
 		VectorSubtract( from, ent->state.origin, from );
 		VectorNormalize( from );
 
 		AngleVectors( ent->state.angles, forward, right, up );
-	} else   {
+	} else {
 		h2entity_t* ent = &h2cl_entities[ cl.viewentity ];
 
 		VectorSubtract( from, ent->state.origin, from );
@@ -221,22 +221,22 @@ static void VQ1_CalcPowerupCshift() {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 0;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 30;
-	} else if ( items & Q1IT_SUIT )     {
+	} else if ( items & Q1IT_SUIT ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 0;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 0;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 20;
-	} else if ( items & Q1IT_INVISIBILITY )     {
+	} else if ( items & Q1IT_INVISIBILITY ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 100;
-	} else if ( items & Q1IT_INVULNERABILITY )     {
+	} else if ( items & Q1IT_INVULNERABILITY ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 0;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 30;
-	} else   {
+	} else {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 0;
 	}
 }
@@ -254,24 +254,24 @@ static void VH2_CalcPowerupCshift() {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 70;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 65;
-	} else if ( ( int )cl.h2_v.artifact_active & ( GGameType & GAME_HexenWorld ? HWARTFLAG_STONED : H2ARTFLAG_STONED ) )         {
+	} else if ( ( int )cl.h2_v.artifact_active & ( GGameType & GAME_HexenWorld ? HWARTFLAG_STONED : H2ARTFLAG_STONED ) ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 205;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 205;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 205;
 		//JL FIXME grayscale
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 80;
 		//cl.qh_cshifts[CSHIFT_POWERUP].percent = 11000;
-	} else if ( ( int )cl.h2_v.artifact_active & H2ARTFLAG_INVISIBILITY )       {
+	} else if ( ( int )cl.h2_v.artifact_active & H2ARTFLAG_INVISIBILITY ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 100;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 100;
-	} else if ( ( int )cl.h2_v.artifact_active & H2ARTFLAG_INVINCIBILITY )       {
+	} else if ( ( int )cl.h2_v.artifact_active & H2ARTFLAG_INVINCIBILITY ) {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 0 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 1 ] = 255;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].destcolor[ 2 ] = 0;
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 30;
-	} else   {
+	} else {
 		cl.qh_cshifts[ CSHIFT_POWERUP ].percent = 0;
 	}
 }
@@ -328,7 +328,7 @@ static void VQH_DrawColourBlend() {
 	VQH_SetContentsColor( CM_PointContentsQ1( cl.refdef.vieworg, 0 ) );
 	if ( GGameType & GAME_Hexen2 ) {
 		VH2_CalcPowerupCshift();
-	} else   {
+	} else {
 		VQ1_CalcPowerupCshift();
 	}
 	VQH_UpdateCShifts();
@@ -378,13 +378,13 @@ static void VQH_DriftPitch( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 			cl.qh_pitchvel = 0;
 			return;
 		}
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		if ( hwViewMessage->onground == -1 || clc.demoplaying ) {
 			cl.qh_driftmove = 0;
 			cl.qh_pitchvel = 0;
 			return;
 		}
-	} else   {
+	} else {
 		if ( !cl.qh_onground || clc.demoplaying ) {
 			cl.qh_driftmove = 0;
 			cl.qh_pitchvel = 0;
@@ -397,29 +397,29 @@ static void VQH_DriftPitch( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		if ( GGameType & GAME_QuakeWorld ) {
 			if ( abs( cl.qw_frames[ ( clc.netchan.outgoingSequence - 1 ) & UPDATE_MASK_QW ].cmd.forwardmove ) < 200 ) {
 				cl.qh_driftmove = 0;
-			} else   {
+			} else {
 				cl.qh_driftmove += cls.frametime * 0.001;
 			}
-		} else if ( GGameType & GAME_HexenWorld )     {
+		} else if ( GGameType & GAME_HexenWorld ) {
 			if ( abs( cl.hw_frames[ ( clc.netchan.outgoingSequence - 1 ) & UPDATE_MASK_HW ].cmd.forwardmove ) < ( cl.h2_v.hasted * cl_forwardspeed->value ) - 10 || lookspring->value == 0.0 ) {
 				cl.qh_driftmove = 0;
-			} else   {
+			} else {
 				cl.qh_driftmove += cls.frametime * 0.001;
 			}
 
 			if ( cl.qh_spectator ) {
 				cl.qh_driftmove = 0;
 			}
-		} else if ( GGameType & GAME_Hexen2 )     {
+		} else if ( GGameType & GAME_Hexen2 ) {
 			if ( abs( cl.qh_cmd.forwardmove ) < ( cl.h2_v.hasted * cl_forwardspeed->value ) - 10 ) {
 				cl.qh_driftmove = 0;
-			} else   {
+			} else {
 				cl.qh_driftmove += cls.frametime * 0.001;
 			}
-		} else   {
+		} else {
 			if ( abs( cl.qh_cmd.forwardmove ) < cl_forwardspeed->value ) {
 				cl.qh_driftmove = 0;
-			} else   {
+			} else {
 				cl.qh_driftmove += cls.frametime * 0.001;
 			}
 		}
@@ -446,7 +446,7 @@ static void VQH_DriftPitch( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 			move = delta;
 		}
 		cl.viewangles[ PITCH ] += move;
-	} else if ( delta < 0 )     {
+	} else if ( delta < 0 ) {
 		if ( move > -delta ) {
 			cl.qh_pitchvel = 0;
 			move = -delta;
@@ -463,7 +463,7 @@ static void VH2_DriftRoll( hwplayer_state_t* hwViewMessage ) {
 				return;
 			}
 		}
-	} else   {
+	} else {
 		if ( clc.demoplaying ) {
 			return;
 		}
@@ -472,7 +472,7 @@ static void VH2_DriftRoll( hwplayer_state_t* hwViewMessage ) {
 	float rollspeed;
 	if ( GGameType & GAME_HexenWorld && cl.h2_v.movetype == QHMOVETYPE_FLY ) {
 		rollspeed = vh2_centerrollspeed->value * .5;	//slower roll when flying
-	} else   {
+	} else {
 		rollspeed = vh2_centerrollspeed->value;
 	}
 
@@ -492,7 +492,7 @@ static void VH2_DriftRoll( hwplayer_state_t* hwViewMessage ) {
 			move = delta;
 		}
 		cl.viewangles[ ROLL ] += move;
-	} else if ( delta < 0 )     {
+	} else if ( delta < 0 ) {
 		if ( move > -delta ) {
 			cl.h2_rollvel = 0;
 			move = -delta;
@@ -524,7 +524,7 @@ static float VQH_CalcBob() {
 	cycle /= clqh_bobcycle->value;
 	if ( cycle < clqh_bobup->value ) {
 		cycle = idMath::PI * cycle / clqh_bobup->value;
-	} else   {
+	} else {
 		cycle = idMath::PI + idMath::PI * ( cycle - clqh_bobup->value ) / ( 1.0 - clqh_bobup->value );
 	}
 
@@ -536,7 +536,7 @@ static float VQH_CalcBob() {
 	bob = bob * 0.3 + bob * 0.7 * sin( cycle );
 	if ( bob > 4 ) {
 		bob = 4;
-	} else if ( bob < -7 )     {
+	} else if ( bob < -7 ) {
 		bob = -7;
 	}
 	return bob;
@@ -581,37 +581,37 @@ static void VQH_BoundOffsets() {
 		// so the view can never be inside a solid wall
 		if ( cl.refdef.vieworg[ 0 ] < ent->state.origin[ 0 ] - 14 ) {
 			cl.refdef.vieworg[ 0 ] = ent->state.origin[ 0 ] - 14;
-		} else if ( cl.refdef.vieworg[ 0 ] > ent->state.origin[ 0 ] + 14 )         {
+		} else if ( cl.refdef.vieworg[ 0 ] > ent->state.origin[ 0 ] + 14 ) {
 			cl.refdef.vieworg[ 0 ] = ent->state.origin[ 0 ] + 14;
 		}
 		if ( cl.refdef.vieworg[ 1 ] < ent->state.origin[ 1 ] - 14 ) {
 			cl.refdef.vieworg[ 1 ] = ent->state.origin[ 1 ] - 14;
-		} else if ( cl.refdef.vieworg[ 1 ] > ent->state.origin[ 1 ] + 14 )         {
+		} else if ( cl.refdef.vieworg[ 1 ] > ent->state.origin[ 1 ] + 14 ) {
 			cl.refdef.vieworg[ 1 ] = ent->state.origin[ 1 ] + 14;
 		}
 		if ( cl.refdef.vieworg[ 2 ] < ent->state.origin[ 2 ] - 0 ) {
 			cl.refdef.vieworg[ 2 ] = ent->state.origin[ 2 ] - 0;
-		} else if ( cl.refdef.vieworg[ 2 ] > ent->state.origin[ 2 ] + 86 )         {
+		} else if ( cl.refdef.vieworg[ 2 ] > ent->state.origin[ 2 ] + 86 ) {
 			cl.refdef.vieworg[ 2 ] = ent->state.origin[ 2 ] + 86;
 		}
-	} else   {
+	} else {
 		q1entity_t* ent = &clq1_entities[ cl.viewentity ];
 
 		// absolutely bound refresh reletive to entity clipping hull
 		// so the view can never be inside a solid wall
 		if ( cl.refdef.vieworg[ 0 ] < ent->state.origin[ 0 ] - 14 ) {
 			cl.refdef.vieworg[ 0 ] = ent->state.origin[ 0 ] - 14;
-		} else if ( cl.refdef.vieworg[ 0 ] > ent->state.origin[ 0 ] + 14 )         {
+		} else if ( cl.refdef.vieworg[ 0 ] > ent->state.origin[ 0 ] + 14 ) {
 			cl.refdef.vieworg[ 0 ] = ent->state.origin[ 0 ] + 14;
 		}
 		if ( cl.refdef.vieworg[ 1 ] < ent->state.origin[ 1 ] - 14 ) {
 			cl.refdef.vieworg[ 1 ] = ent->state.origin[ 1 ] - 14;
-		} else if ( cl.refdef.vieworg[ 1 ] > ent->state.origin[ 1 ] + 14 )         {
+		} else if ( cl.refdef.vieworg[ 1 ] > ent->state.origin[ 1 ] + 14 ) {
 			cl.refdef.vieworg[ 1 ] = ent->state.origin[ 1 ] + 14;
 		}
 		if ( cl.refdef.vieworg[ 2 ] < ent->state.origin[ 2 ] - 22 ) {
 			cl.refdef.vieworg[ 2 ] = ent->state.origin[ 2 ] - 22;
-		} else if ( cl.refdef.vieworg[ 2 ] > ent->state.origin[ 2 ] + 30 )         {
+		} else if ( cl.refdef.vieworg[ 2 ] > ent->state.origin[ 2 ] + 30 ) {
 			cl.refdef.vieworg[ 2 ] = ent->state.origin[ 2 ] + 30;
 		}
 	}
@@ -625,7 +625,7 @@ static void VQH_CalcGunAngle( vec3_t viewangles ) {
 		cl.h2_viewent.state.angles[ ROLL ] -= vqh_idlescale->value * sin( cl.qh_serverTimeFloat * vqh_iroll_cycle->value ) * vqh_iroll_level->value;
 		cl.h2_viewent.state.angles[ PITCH ] -= vqh_idlescale->value * sin( cl.qh_serverTimeFloat * vqh_ipitch_cycle->value ) * vqh_ipitch_level->value;
 		cl.h2_viewent.state.angles[ YAW ] -= vqh_idlescale->value * sin( cl.qh_serverTimeFloat * vqh_iyaw_cycle->value ) * vqh_iyaw_level->value;
-	} else   {
+	} else {
 		cl.q1_viewent.state.angles[ YAW ] = viewangles[ YAW ];
 		cl.q1_viewent.state.angles[ PITCH ] = -viewangles[ PITCH ];
 
@@ -655,7 +655,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 	if ( GGameType & GAME_QuakeWorld ) {
 		// refresh position from simulated origin
 		VectorCopy( cl.qh_simorg, cl.refdef.vieworg );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		q1ent = &clq1_entities[ cl.viewentity ];
 
 		// transform the view offset by the model's matrix to get the offset from
@@ -669,10 +669,10 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		VectorCopy( q1ent->state.origin, cl.refdef.vieworg );
 
 		cl.refdef.vieworg[ 2 ] += cl.qh_viewheight;
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		// refresh position from simulated origin
 		VectorCopy( cl.qh_simorg, cl.refdef.vieworg );
-	} else   {
+	} else {
 		h2ent = &h2cl_entities[ cl.viewentity ];
 
 		// transform the view offset by the model's matrix to get the offset from
@@ -700,7 +700,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 	vec3_t viewangles;
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		VectorCopy( cl.qh_simangles, viewangles );
-	} else   {
+	} else {
 		VectorCopy( cl.viewangles, viewangles );
 	}
 	VQH_CalcViewRoll( viewangles );
@@ -710,9 +710,9 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 	if ( GGameType & GAME_QuakeWorld ) {
 		if ( qwViewMessage->flags & QWPF_GIB ) {
 			cl.refdef.vieworg[ 2 ] += 8;	// gib view height
-		} else if ( qwViewMessage->flags & QWPF_DEAD )     {
+		} else if ( qwViewMessage->flags & QWPF_DEAD ) {
 			cl.refdef.vieworg[ 2 ] -= 16;	// corpse view height
-		} else   {
+		} else {
 			cl.refdef.vieworg[ 2 ] += 22;	// view height
 		}
 		if ( qwViewMessage->flags & QWPF_DEAD ) {		// QWPF_GIB will also set QWPF_DEAD
@@ -721,15 +721,15 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 
 		// offsets
 		AngleVectors( cl.qh_simangles, forward, right, up );
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		if ( cl.qh_spectator ) {
 			cl.refdef.vieworg[ 2 ] += 50;	// view height
-		} else   {
+		} else {
 			if ( hwViewMessage->flags & HWPF_CROUCH ) {
 				cl.refdef.vieworg[ 2 ] += 24;	// gib view height
-			} else if ( hwViewMessage->flags & HWPF_DEAD )     {
+			} else if ( hwViewMessage->flags & HWPF_DEAD ) {
 				cl.refdef.vieworg[ 2 ] += 8;	// corpse view height
-			} else   {
+			} else {
 				cl.refdef.vieworg[ 2 ] += 50;	// view height
 
 			}
@@ -740,7 +740,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 
 		// offsets
 		AngleVectors( cl.qh_simangles, forward, right, up );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		// offsets
 		vec3_t angles;
 		angles[ PITCH ] = -q1ent->state.angles[ PITCH ];	// because entity pitches are actually backward
@@ -750,7 +750,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		AngleVectors( angles, forward, right, up );
 
 		VQH_BoundOffsets();
-	} else   {
+	} else {
 		// offsets
 		vec3_t angles;
 		angles[ PITCH ] = -h2ent->state.angles[ PITCH ];	// because entity pitches are actually backward
@@ -771,7 +771,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		// set up gun position
 		if ( GGameType & GAME_QuakeWorld ) {
 			VectorCopy( cl.qh_simangles, q1view->state.angles );
-		} else   {
+		} else {
 			VectorCopy( cl.viewangles, q1view->state.angles );
 		}
 
@@ -780,7 +780,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		if ( GGameType & GAME_QuakeWorld ) {
 			VectorCopy( cl.qh_simorg, q1view->state.origin );
 			q1view->state.origin[ 2 ] += 22;
-		} else   {
+		} else {
 			VectorCopy( q1ent->state.origin, q1view->state.origin );
 			q1view->state.origin[ 2 ] += cl.qh_viewheight;
 		}
@@ -794,33 +794,33 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		// roughly equal with different FOV
 		if ( scr_viewsize->value == 110 ) {
 			q1view->state.origin[ 2 ] += 1;
-		} else if ( scr_viewsize->value == 100 )     {
+		} else if ( scr_viewsize->value == 100 ) {
 			q1view->state.origin[ 2 ] += 2;
-		} else if ( scr_viewsize->value == 90 )     {
+		} else if ( scr_viewsize->value == 90 ) {
 			q1view->state.origin[ 2 ] += 1;
-		} else if ( scr_viewsize->value == 80 )     {
+		} else if ( scr_viewsize->value == 80 ) {
 			q1view->state.origin[ 2 ] += 0.5;
 		}
 
 		if ( GGameType & GAME_QuakeWorld ) {
 			if ( qwViewMessage->flags & ( QWPF_GIB | QWPF_DEAD ) ) {
 				q1view->state.modelindex = 0;
-			} else   {
+			} else {
 				q1view->state.modelindex = cl.qh_stats[ Q1STAT_WEAPON ];
 			}
 			q1view->state.frame = qwViewMessage->weaponframe;
-		} else   {
+		} else {
 			q1view->state.modelindex = cl.qh_stats[ Q1STAT_WEAPON ];
 			q1view->state.frame = cl.qh_stats[ Q1STAT_WEAPONFRAME ];
 			q1view->state.colormap = 0;
 		}
-	} else   {
+	} else {
 		h2view = &cl.h2_viewent;
 
 		// set up gun position
 		if ( GGameType & GAME_HexenWorld ) {
 			VectorCopy( cl.qh_simangles, h2view->state.angles );
-		} else   {
+		} else {
 			VectorCopy( cl.viewangles, h2view->state.angles );
 		}
 
@@ -828,7 +828,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 
 		if ( GGameType & GAME_HexenWorld ) {
 			VectorCopy( cl.refdef.vieworg, h2view->state.origin );
-		} else   {
+		} else {
 			VectorCopy( h2ent->state.origin, h2view->state.origin );
 			h2view->state.origin[ 2 ] += cl.qh_viewheight;
 		}
@@ -844,18 +844,18 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		// roughly equal with different FOV
 		if ( scr_viewsize->value == 110 ) {
 			h2view->state.origin[ 2 ] += 1;
-		} else if ( scr_viewsize->value == 100 )     {
+		} else if ( scr_viewsize->value == 100 ) {
 			h2view->state.origin[ 2 ] += 2;
-		} else if ( scr_viewsize->value == 90 )     {
+		} else if ( scr_viewsize->value == 90 ) {
 			h2view->state.origin[ 2 ] += 1;
-		} else if ( scr_viewsize->value == 80 )     {
+		} else if ( scr_viewsize->value == 80 ) {
 			h2view->state.origin[ 2 ] += 0.5;
 		}
 
 		if ( GGameType & GAME_HexenWorld ) {
 			if ( hwViewMessage->flags & ( HWPF_DEAD ) ) {
 				h2view->state.modelindex = 0;
-			} else   {
+			} else {
 				h2view->state.modelindex = cl.qh_stats[ Q1STAT_WEAPON ];
 			}
 			h2view->state.frame = hwViewMessage->weaponframe;
@@ -863,17 +863,17 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 			// Place weapon in powered up mode
 			if ( ( cl.hw_frames[ clc.netchan.incomingSequence & UPDATE_MASK_HW ].playerstate[ cl.playernum ].drawflags & H2MLS_MASKIN ) == H2MLS_POWERMODE ) {
 				h2view->state.drawflags = ( h2view->state.drawflags & H2MLS_MASKOUT ) | H2MLS_POWERMODE;
-			} else   {
+			} else {
 				h2view->state.drawflags = ( h2view->state.drawflags & H2MLS_MASKOUT ) | 0;
 			}
-		} else   {
+		} else {
 			h2view->state.modelindex = cl.qh_stats[ Q1STAT_WEAPON ];
 			h2view->state.frame = cl.qh_stats[ Q1STAT_WEAPONFRAME ];
 
 			// Place weapon in powered up mode
 			if ( ( h2ent->state.drawflags & H2MLS_MASKIN ) == H2MLS_POWERMODE ) {
 				h2view->state.drawflags = ( h2view->state.drawflags & H2MLS_MASKOUT ) | H2MLS_POWERMODE;
-			} else   {
+			} else {
 				h2view->state.drawflags = ( h2view->state.drawflags & H2MLS_MASKOUT ) | 0;
 			}
 		}
@@ -882,7 +882,7 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 	// set up the refresh position
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		viewangles[ PITCH ] += cl.qh_punchangle;
-	} else   {
+	} else {
 		VectorAdd( viewangles, cl.qh_punchangles, viewangles );
 	}
 	AnglesToAxis( viewangles, cl.refdef.viewaxis );
@@ -892,13 +892,13 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 	if ( GGameType & GAME_QuakeWorld ) {
 		onGround = qwViewMessage->onground != -1;
 		currentZ = cl.qh_simorg[ 2 ];
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		onGround = cl.qh_onground;
 		currentZ = q1ent->state.origin[ 2 ];
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		onGround = hwViewMessage->onground != -1;
 		currentZ = cl.qh_simorg[ 2 ];
-	} else   {
+	} else {
 		onGround = cl.qh_onground;
 		currentZ = h2ent->state.origin[ 2 ];
 	}
@@ -917,10 +917,10 @@ static void VQH_CalcRefdef( qwplayer_state_t* qwViewMessage, hwplayer_state_t* h
 		cl.refdef.vieworg[ 2 ] += oldz - currentZ;
 		if ( GGameType & GAME_Hexen2 ) {
 			h2view->state.origin[ 2 ] += oldz - currentZ;
-		} else   {
+		} else {
 			q1view->state.origin[ 2 ] += oldz - currentZ;
 		}
-	} else   {
+	} else {
 		oldz = currentZ;
 	}
 
@@ -934,12 +934,12 @@ static void VQH_CalcIntermissionRefdef() {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		VectorCopy( cl.qh_simorg, cl.refdef.vieworg );
 		VectorCopy( cl.qh_simangles, viewangles );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		// ent is the player model (visible when out of body)
 		q1entity_t* ent = &clq1_entities[ cl.viewentity ];
 		VectorCopy( ent->state.origin, cl.refdef.vieworg );
 		VectorCopy( ent->state.angles, viewangles );
-	} else   {
+	} else {
 		// ent is the player model (visible when out of body)
 		h2entity_t* ent = &h2cl_entities[ cl.viewentity ];
 		VectorCopy( ent->state.origin, cl.refdef.vieworg );
@@ -951,7 +951,7 @@ static void VQH_CalcIntermissionRefdef() {
 	if ( GGameType & GAME_Hexen2 ) {
 		h2entity_t* view = &cl.h2_viewent;
 		view->state.modelindex = 0;
-	} else   {
+	} else {
 		q1entity_t* view = &cl.q1_viewent;
 		view->state.modelindex = 0;
 	}
@@ -1018,7 +1018,7 @@ static void VQH_AddViewModel() {
 		gun.syncBase = cl.h2_viewent.syncbase;
 		CLH2_SetRefEntAxis( &gun, cl.h2_viewent.state.angles, vec3_origin, cl.h2_viewent.state.scale, cl.h2_viewent.state.colormap, cl.h2_viewent.state.abslight, cl.h2_viewent.state.drawflags );
 		CLH2_HandleCustomSkin( &gun, -1 );
-	} else   {
+	} else {
 		VectorCopy( cl.q1_viewent.state.origin, gun.origin );
 		gun.hModel = cl.model_draw[ cl.q1_viewent.state.modelindex ];
 		gun.frame = cl.q1_viewent.state.frame;
@@ -1036,11 +1036,11 @@ static void VQH_RenderScene() {
 
 	if ( GGameType & GAME_QuakeWorld ) {
 		CLQW_EmitEntities();
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		CLQ1_EmitEntities();
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		CLHW_EmitEntities();
-	} else   {
+	} else {
 		CLH2_EmitEntities();
 	}
 
@@ -1082,7 +1082,7 @@ static void VQH_DrawCrosshair() {
 		R_SetColor( colour );
 		UI_DrawStretchPic( x - 4, y - 4, 16, 16, cs_texture );
 		R_SetColor( NULL );
-	} else if ( crosshair->value )     {
+	} else if ( crosshair->value ) {
 		UI_DrawChar( scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,
 			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+' );
 	}
@@ -1118,15 +1118,15 @@ void VQH_RenderView() {
 	}
 	if ( cl.qh_intermission ) {	// intermission / finale rendering
 		VQH_CalcIntermissionRefdef();
-	} else if ( GGameType & GAME_QuakeWorld )     {
+	} else if ( GGameType & GAME_QuakeWorld ) {
 		qwframe_t* view_frame = &cl.qw_frames[ clc.netchan.incomingSequence & UPDATE_MASK_QW ];
 		qwplayer_state_t* view_message = &view_frame->playerstate[ cl.playernum ];
 		VQH_CalcRefdef( view_message, NULL );
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		hwframe_t* view_frame = &cl.hw_frames[ clc.netchan.incomingSequence & UPDATE_MASK_HW ];
 		hwplayer_state_t* view_message = &view_frame->playerstate[ cl.playernum ];
 		VQH_CalcRefdef( NULL, view_message );
-	} else   {
+	} else {
 		if ( !cl.qh_paused /* && (sv.maxclients > 1 || in_keyCatchers == 0) */ ) {
 			VQH_CalcRefdef( NULL, NULL );
 		}

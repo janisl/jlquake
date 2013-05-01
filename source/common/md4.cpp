@@ -140,7 +140,7 @@ static void MD4Update( MD4_CTX* context, const unsigned char* input, unsigned in
 			MD4Transform( context->state, &input[ i ] );
 
 		index = 0;
-	} else   {
+	} else {
 		i = 0;
 	}
 

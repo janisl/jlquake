@@ -235,7 +235,7 @@ void CLH2_UpdateStreams() {
 			// Inactive
 			if ( stream->type != H2TE_STREAM_LIGHTNING && stream->type != H2TE_STREAM_LIGHTNING_SMALL ) {
 				continue;
-			} else if ( stream->endTime + 250 < cl.serverTime )     {
+			} else if ( stream->endTime + 250 < cl.serverTime ) {
 				continue;
 			}
 		}
@@ -293,7 +293,7 @@ void CLH2_UpdateStreams() {
 				angles[ 2 ] = ( cl.serverTime / 100 ) % 360;
 				if ( GGameType & GAME_HexenWorld ) {
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 50 + ( stream->endTime - cl.serverTime ) / 3, 0, 128, H2MLS_ABSLIGHT );
-				} else   {
+				} else {
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT );
 				}
 				R_AddRefEntityToScene( &ent );
@@ -305,7 +305,7 @@ void CLH2_UpdateStreams() {
 				angles[ 2 ] = ( cl.serverTime / 20 ) % 360;
 				if ( GGameType & GAME_HexenWorld ) {
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 50 + ( stream->endTime - cl.serverTime ) * 0.2f, 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT );
-				} else   {
+				} else {
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT );
 				}
 				R_AddRefEntityToScene( &ent );
@@ -316,7 +316,7 @@ void CLH2_UpdateStreams() {
 					ent.frame = ( cl.serverTime / 100 ) % 8;
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT );
 					R_AddRefEntityToScene( &ent );
-				} else   {
+				} else {
 					angles[ 2 ] = ( int )( cl.serverTime * 0.001 * 100 ) % 360;
 					VectorMA( ent.origin, cosTime * ( 40 * lifeTime ), right,  ent.origin );
 					VectorMA( ent.origin, sinTime * ( 40 * lifeTime ), up,  ent.origin );
@@ -340,7 +340,7 @@ void CLH2_UpdateStreams() {
 						if ( ix ) {
 							VectorMA( ent.origin, cos2Time * ( 40 * lifeTime ), right,  ent.origin );
 							VectorMA( ent.origin, sin2Time * ( 40 * lifeTime ), up,  ent.origin );
-						} else   {
+						} else {
 							VectorMA( ent.origin, cosTime * ( 40 * lifeTime ), right,  ent.origin );
 							VectorMA( ent.origin, sinTime * ( 40 * lifeTime ), up,  ent.origin );
 						}
@@ -355,7 +355,7 @@ void CLH2_UpdateStreams() {
 				if ( stream->endTime < cl.serverTime ) {//fixme: keep last non-translucent frame and angle
 					angles[ 2 ] = 0;
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128 + ( stream->endTime - cl.serverTime ) * 192 / 1000.0, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT );
-				} else   {
+				} else {
 					angles[ 2 ] = rand() % 360;
 					ent.frame = rand() % 6;
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT );
@@ -367,7 +367,7 @@ void CLH2_UpdateStreams() {
 				if ( stream->endTime < cl.serverTime ) {
 					angles[ 2 ] = 0;
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128 + ( stream->endTime - cl.serverTime ) * 192 / 1000.0, H2MLS_ABSLIGHT | H2DRF_TRANSLUCENT );
-				} else   {
+				} else {
 					angles[ 2 ] = rand() % 360;
 					ent.frame = rand() % 6;
 					CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT );

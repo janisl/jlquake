@@ -77,7 +77,7 @@ void SVQH_ClientReliableWrite_Angle( client_t* cl, float f ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteAngle( f );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteAngle( f );
 	}
 }
@@ -86,7 +86,7 @@ void SVQH_ClientReliableWrite_Angle16( client_t* cl, float f ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteAngle16( f );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteAngle16( f );
 	}
 }
@@ -95,7 +95,7 @@ void SVQH_ClientReliableWrite_Byte( client_t* cl, int c ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteByte( c );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteByte( c );
 	}
 }
@@ -104,7 +104,7 @@ void SVQH_ClientReliableWrite_Char( client_t* cl, int c ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteChar( c );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteChar( c );
 	}
 }
@@ -113,7 +113,7 @@ void SVQH_ClientReliableWrite_Float( client_t* cl, float f ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteFloat( f );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteFloat( f );
 	}
 }
@@ -122,7 +122,7 @@ void SVQH_ClientReliableWrite_Coord( client_t* cl, float f ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteCoord( f );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteCoord( f );
 	}
 }
@@ -131,7 +131,7 @@ void SVQH_ClientReliableWrite_Long( client_t* cl, int c ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteLong( c );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteLong( c );
 	}
 }
@@ -140,7 +140,7 @@ void SVQH_ClientReliableWrite_Short( client_t* cl, int c ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteShort( c );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteShort( c );
 	}
 }
@@ -149,7 +149,7 @@ void SVQH_ClientReliableWrite_String( client_t* cl, const char* s ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteString2( s );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteString2( s );
 	}
 }
@@ -158,7 +158,7 @@ void SVQH_ClientReliableWrite_SZ( client_t* cl, const void* data, int len ) {
 	if ( cl->qw_num_backbuf ) {
 		cl->qw_backbuf.WriteData( data, len );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		cl->netchan.message.WriteData( data, len );
 	}
 }
@@ -171,7 +171,7 @@ void Loop_SearchForHosts( bool xmit ) {
 	hostCacheCount = 1;
 	if ( String::Cmp( sv_hostname->string, "UNNAMED" ) == 0 ) {
 		String::Cpy( hostcache[ 0 ].name, "local" );
-	} else   {
+	} else {
 		String::Cpy( hostcache[ 0 ].name, sv_hostname->string );
 	}
 	String::Cpy( hostcache[ 0 ].map, sv.name );
@@ -195,7 +195,7 @@ void NET_Ban_f() {
 			String::Cpy( addrStr, SOCK_BaseAdrToString( banAddr ) );
 			String::Cpy( maskStr, SOCK_BaseAdrToString( banMask ) );
 			common->Printf( "Banning %s [%s]\n", addrStr, maskStr );
-		} else   {
+		} else {
 			common->Printf( "Banning not active\n" );
 		}
 		break;
@@ -203,7 +203,7 @@ void NET_Ban_f() {
 	case 2:
 		if ( String::ICmp( Cmd_Argv( 1 ), "off" ) == 0 ) {
 			Com_Memset( &banAddr, 0, sizeof ( banAddr ) );
-		} else   {
+		} else {
 			UDP_GetAddrFromName( Cmd_Argv( 1 ), &banAddr );
 		}
 		*( int* )banMask.ip = 0xffffffff;
@@ -329,7 +329,7 @@ static bool Datagram_CheckNewConnections( netadr_t* outaddr, int& outSocket ) {
 				return false;
 			}
 			var = var->next;
-		} else   {
+		} else {
 			var = cvar_vars;
 		}
 
@@ -506,7 +506,7 @@ int NET_SendToAll( QMsg* data, int blocktime ) {
 			count++;
 			state1[ i ] = false;
 			state2[ i ] = false;
-		} else   {
+		} else {
 			state1[ i ] = true;
 			state2[ i ] = true;
 		}
@@ -524,7 +524,7 @@ int NET_SendToAll( QMsg* data, int blocktime ) {
 				if ( NET_CanSendMessage( &client->netchan ) ) {
 					state1[ i ] = true;
 					NET_SendMessage( &client->netchan, data );
-				} else   {
+				} else {
 					NET_GetMessage( &client->netchan, &net_message );
 				}
 				count++;
@@ -534,7 +534,7 @@ int NET_SendToAll( QMsg* data, int blocktime ) {
 			if ( !state2[ i ] ) {
 				if ( NET_CanSendMessage( &client->netchan ) ) {
 					state2[ i ] = true;
-				} else   {
+				} else {
 					NET_GetMessage( &client->netchan, &net_message );
 				}
 				count++;
@@ -579,7 +579,7 @@ void MaxPlayers_f() {
 	svs.qh_maxclients = n;
 	if ( n == 1 ) {
 		Cvar_Set( "deathmatch", "0" );
-	} else   {
+	} else {
 		Cvar_Set( "deathmatch", "1" );
 	}
 }

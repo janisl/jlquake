@@ -218,9 +218,9 @@ static bool ParseVector( const char** text, int count, float* v ) {
 static unsigned NameToAFunc( const char* funcname ) {
 	if ( !String::ICmp( funcname, "GT0" ) ) {
 		return GLS_ATEST_GT_0;
-	} else if ( !String::ICmp( funcname, "LT128" ) )       {
+	} else if ( !String::ICmp( funcname, "LT128" ) ) {
 		return GLS_ATEST_LT_80;
-	} else if ( !String::ICmp( funcname, "GE128" ) )       {
+	} else if ( !String::ICmp( funcname, "GE128" ) ) {
 		return GLS_ATEST_GE_80;
 	}
 
@@ -231,21 +231,21 @@ static unsigned NameToAFunc( const char* funcname ) {
 static int NameToSrcBlendMode( const char* name ) {
 	if ( !String::ICmp( name, "GL_ONE" ) ) {
 		return GLS_SRCBLEND_ONE;
-	} else if ( !String::ICmp( name, "GL_ZERO" ) )       {
+	} else if ( !String::ICmp( name, "GL_ZERO" ) ) {
 		return GLS_SRCBLEND_ZERO;
-	} else if ( !String::ICmp( name, "GL_DST_COLOR" ) )       {
+	} else if ( !String::ICmp( name, "GL_DST_COLOR" ) ) {
 		return GLS_SRCBLEND_DST_COLOR;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_COLOR" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_COLOR" ) ) {
 		return GLS_SRCBLEND_ONE_MINUS_DST_COLOR;
-	} else if ( !String::ICmp( name, "GL_SRC_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_SRC_ALPHA" ) ) {
 		return GLS_SRCBLEND_SRC_ALPHA;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_ALPHA" ) ) {
 		return GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA;
-	} else if ( !String::ICmp( name, "GL_DST_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_DST_ALPHA" ) ) {
 		return GLS_SRCBLEND_DST_ALPHA;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_ALPHA" ) ) {
 		return GLS_SRCBLEND_ONE_MINUS_DST_ALPHA;
-	} else if ( !String::ICmp( name, "GL_SRC_ALPHA_SATURATE" ) )       {
+	} else if ( !String::ICmp( name, "GL_SRC_ALPHA_SATURATE" ) ) {
 		return GLS_SRCBLEND_ALPHA_SATURATE;
 	}
 
@@ -256,19 +256,19 @@ static int NameToSrcBlendMode( const char* name ) {
 static int NameToDstBlendMode( const char* name ) {
 	if ( !String::ICmp( name, "GL_ONE" ) ) {
 		return GLS_DSTBLEND_ONE;
-	} else if ( !String::ICmp( name, "GL_ZERO" ) )       {
+	} else if ( !String::ICmp( name, "GL_ZERO" ) ) {
 		return GLS_DSTBLEND_ZERO;
-	} else if ( !String::ICmp( name, "GL_SRC_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_SRC_ALPHA" ) ) {
 		return GLS_DSTBLEND_SRC_ALPHA;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_ALPHA" ) ) {
 		return GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else if ( !String::ICmp( name, "GL_DST_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_DST_ALPHA" ) ) {
 		return GLS_DSTBLEND_DST_ALPHA;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_ALPHA" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_DST_ALPHA" ) ) {
 		return GLS_DSTBLEND_ONE_MINUS_DST_ALPHA;
-	} else if ( !String::ICmp( name, "GL_SRC_COLOR" ) )       {
+	} else if ( !String::ICmp( name, "GL_SRC_COLOR" ) ) {
 		return GLS_DSTBLEND_SRC_COLOR;
-	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_COLOR" ) )       {
+	} else if ( !String::ICmp( name, "GL_ONE_MINUS_SRC_COLOR" ) ) {
 		return GLS_DSTBLEND_ONE_MINUS_SRC_COLOR;
 	}
 
@@ -279,15 +279,15 @@ static int NameToDstBlendMode( const char* name ) {
 static genFunc_t NameToGenFunc( const char* funcname ) {
 	if ( !String::ICmp( funcname, "sin" ) ) {
 		return GF_SIN;
-	} else if ( !String::ICmp( funcname, "square" ) )       {
+	} else if ( !String::ICmp( funcname, "square" ) ) {
 		return GF_SQUARE;
-	} else if ( !String::ICmp( funcname, "triangle" ) )       {
+	} else if ( !String::ICmp( funcname, "triangle" ) ) {
 		return GF_TRIANGLE;
-	} else if ( !String::ICmp( funcname, "sawtooth" ) )       {
+	} else if ( !String::ICmp( funcname, "sawtooth" ) ) {
 		return GF_SAWTOOTH;
-	} else if ( !String::ICmp( funcname, "inversesawtooth" ) )       {
+	} else if ( !String::ICmp( funcname, "inversesawtooth" ) ) {
 		return GF_INVERSE_SAWTOOTH;
-	} else if ( !String::ICmp( funcname, "noise" ) )       {
+	} else if ( !String::ICmp( funcname, "noise" ) ) {
 		return GF_NOISE;
 	}
 
@@ -557,7 +557,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
-		} else if ( !String::ICmp( token, "map32" ) )       {
+		} else if ( !String::ICmp( token, "map32" ) ) {
 			// only use this texture if 16 bit color depth
 			if ( glConfig.colorBits > 16 ) {
 				token = "map";	// use this map
@@ -565,7 +565,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
-		} else if ( !String::ICmp( token, "mapcomp" ) )       {
+		} else if ( !String::ICmp( token, "mapcomp" ) ) {
 			// only use this texture if compression is enabled
 			if ( glConfig.textureCompression && r_ext_compressed_textures->integer ) {
 				token = "map";	// use this map
@@ -573,7 +573,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
-		} else if ( !String::ICmp( token, "mapnocomp" ) )       {
+		} else if ( !String::ICmp( token, "mapnocomp" ) ) {
 			// only use this texture if compression is not available or disabled
 			if ( !glConfig.textureCompression ) {
 				token = "map";	// use this map
@@ -581,7 +581,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				String::ParseExt( text, false );	// ignore the map
 				continue;
 			}
-		} else if ( !String::ICmp( token, "animmapcomp" ) )       {
+		} else if ( !String::ICmp( token, "animmapcomp" ) ) {
 			// only use this texture if compression is enabled
 			if ( glConfig.textureCompression && r_ext_compressed_textures->integer ) {
 				token = "animmap";	// use this map
@@ -591,7 +591,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				}
 				continue;
 			}
-		} else if ( !String::ICmp( token, "animmapnocomp" ) )       {
+		} else if ( !String::ICmp( token, "animmapnocomp" ) ) {
 			// only use this texture if compression is not available or disabled
 			if ( !glConfig.textureCompression ) {
 				token = "animmap";	// use this map
@@ -616,10 +616,10 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			if ( !String::ICmp( token, "$whiteimage" ) || !String::ICmp( token, "*white" ) ) {
 				stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				continue;
-			} else if ( !String::ICmp( token, "$dlight" ) )       {
+			} else if ( !String::ICmp( token, "$dlight" ) ) {
 				stage->bundle[ 0 ].image[ 0 ] = tr.dlightImage;
 				continue;
-			} else if ( !String::ICmp( token, "$lightmap" ) )       {
+			} else if ( !String::ICmp( token, "$lightmap" ) ) {
 				stage->bundle[ 0 ].isLightmap = true;
 				if ( shader.lightmapIndex < 0 ) {
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
@@ -665,10 +665,10 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			if ( !String::ICmp( token, "$whiteimage" ) || !String::ICmp( token, "*white" ) ) {
 				stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				continue;
-			} else if ( !String::ICmp( token, "$dlight" ) )       {
+			} else if ( !String::ICmp( token, "$dlight" ) ) {
 				stage->bundle[ 0 ].image[ 0 ] = tr.dlightImage;
 				continue;
-			} else if ( !String::ICmp( token, "$lightmap" ) )       {
+			} else if ( !String::ICmp( token, "$lightmap" ) ) {
 				stage->bundle[ 0 ].isLightmap = true;
 				if ( shader.lightmapIndex < 0 ) {
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
@@ -712,7 +712,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 					stage->bundle[ 0 ].numImageAnimations++;
 				}
 			}
-		} else if ( !String::ICmp( token, "videoMap" ) )       {
+		} else if ( !String::ICmp( token, "videoMap" ) ) {
 			token = String::ParseExt( text, false );
 			if ( !token[ 0 ] ) {
 				common->Printf( S_COLOR_YELLOW "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name );
@@ -749,7 +749,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 
 			if ( !String::ICmp( token, "lequal" ) ) {
 				depthFuncBits = 0;
-			} else if ( !String::ICmp( token, "equal" ) )       {
+			} else if ( !String::ICmp( token, "equal" ) ) {
 				depthFuncBits = GLS_DEPTHFUNC_EQUAL;
 			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown depthfunc '%s' in shader '%s'\n", token, shader.name );
@@ -791,10 +791,10 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			if ( !String::ICmp( token, "add" ) ) {
 				blendSrcBits = GLS_SRCBLEND_ONE;
 				blendDstBits = GLS_DSTBLEND_ONE;
-			} else if ( !String::ICmp( token, "filter" ) )       {
+			} else if ( !String::ICmp( token, "filter" ) ) {
 				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
 				blendDstBits = GLS_DSTBLEND_ZERO;
-			} else if ( !String::ICmp( token, "blend" ) )       {
+			} else if ( !String::ICmp( token, "blend" ) ) {
 				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
 				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			} else {
@@ -827,7 +827,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			if ( !String::ICmp( token, "wave" ) ) {
 				ParseWaveForm( text, &stage->rgbWave );
 				stage->rgbGen = CGEN_WAVEFORM;
-			} else if ( !String::ICmp( token, "const" ) )       {
+			} else if ( !String::ICmp( token, "const" ) ) {
 				vec3_t color;
 
 				ParseVector( text, 3, color );
@@ -836,24 +836,24 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				stage->constantColor[ 2 ] = 255 * color[ 2 ];
 
 				stage->rgbGen = CGEN_CONST;
-			} else if ( !String::ICmp( token, "identity" ) )       {
+			} else if ( !String::ICmp( token, "identity" ) ) {
 				stage->rgbGen = CGEN_IDENTITY;
-			} else if ( !String::ICmp( token, "identityLighting" ) )       {
+			} else if ( !String::ICmp( token, "identityLighting" ) ) {
 				stage->rgbGen = CGEN_IDENTITY_LIGHTING;
-			} else if ( !String::ICmp( token, "entity" ) )       {
+			} else if ( !String::ICmp( token, "entity" ) ) {
 				stage->rgbGen = CGEN_ENTITY;
-			} else if ( !String::ICmp( token, "oneMinusEntity" ) )       {
+			} else if ( !String::ICmp( token, "oneMinusEntity" ) ) {
 				stage->rgbGen = CGEN_ONE_MINUS_ENTITY;
-			} else if ( !String::ICmp( token, "vertex" ) )       {
+			} else if ( !String::ICmp( token, "vertex" ) ) {
 				stage->rgbGen = CGEN_VERTEX;
 				if ( stage->alphaGen == 0 ) {
 					stage->alphaGen = AGEN_VERTEX;
 				}
-			} else if ( !String::ICmp( token, "exactVertex" ) )       {
+			} else if ( !String::ICmp( token, "exactVertex" ) ) {
 				stage->rgbGen = CGEN_EXACT_VERTEX;
-			} else if ( !String::ICmp( token, "lightingDiffuse" ) )       {
+			} else if ( !String::ICmp( token, "lightingDiffuse" ) ) {
 				stage->rgbGen = CGEN_LIGHTING_DIFFUSE;
-			} else if ( !String::ICmp( token, "oneMinusVertex" ) )       {
+			} else if ( !String::ICmp( token, "oneMinusVertex" ) ) {
 				stage->rgbGen = CGEN_ONE_MINUS_VERTEX;
 			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: unknown rgbGen parameter '%s' in shader '%s'\n", token, shader.name );
@@ -873,17 +873,17 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 			if ( !String::ICmp( token, "wave" ) ) {
 				ParseWaveForm( text, &stage->alphaWave );
 				stage->alphaGen = AGEN_WAVEFORM;
-			} else if ( !String::ICmp( token, "const" ) )       {
+			} else if ( !String::ICmp( token, "const" ) ) {
 				token = String::ParseExt( text, false );
 				stage->constantColor[ 3 ] = 255 * String::Atof( token );
 				stage->alphaGen = AGEN_CONST;
-			} else if ( !String::ICmp( token, "identity" ) )       {
+			} else if ( !String::ICmp( token, "identity" ) ) {
 				stage->alphaGen = AGEN_IDENTITY;
-			} else if ( !String::ICmp( token, "entity" ) )       {
+			} else if ( !String::ICmp( token, "entity" ) ) {
 				stage->alphaGen = AGEN_ENTITY;
-			} else if ( !String::ICmp( token, "oneMinusEntity" ) )       {
+			} else if ( !String::ICmp( token, "oneMinusEntity" ) ) {
 				stage->alphaGen = AGEN_ONE_MINUS_ENTITY;
-			} else if ( !String::ICmp( token, "normalzfade" ) )       {
+			} else if ( !String::ICmp( token, "normalzfade" ) ) {
 				stage->alphaGen = AGEN_NORMALZFADE;
 				token = String::ParseExt( text, false );
 				if ( token[ 0 ] ) {
@@ -901,13 +901,13 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 					stage->zFadeBounds[ 0 ] = -1.0;		// lower range
 					stage->zFadeBounds[ 1 ] =  1.0;		// upper range
 				}
-			} else if ( !String::ICmp( token, "vertex" ) )       {
+			} else if ( !String::ICmp( token, "vertex" ) ) {
 				stage->alphaGen = AGEN_VERTEX;
-			} else if ( !String::ICmp( token, "lightingSpecular" ) )       {
+			} else if ( !String::ICmp( token, "lightingSpecular" ) ) {
 				stage->alphaGen = AGEN_LIGHTING_SPECULAR;
-			} else if ( !String::ICmp( token, "oneMinusVertex" ) )       {
+			} else if ( !String::ICmp( token, "oneMinusVertex" ) ) {
 				stage->alphaGen = AGEN_ONE_MINUS_VERTEX;
-			} else if ( !String::ICmp( token, "portal" ) )       {
+			} else if ( !String::ICmp( token, "portal" ) ) {
 				stage->alphaGen = AGEN_PORTAL;
 				token = String::ParseExt( text, false );
 				if ( token[ 0 ] == 0 ) {
@@ -933,13 +933,13 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 
 			if ( !String::ICmp( token, "environment" ) ) {
 				stage->bundle[ 0 ].tcGen = TCGEN_ENVIRONMENT_MAPPED;
-			} else if ( !String::ICmp( token, "firerisenv" ) )       {
+			} else if ( !String::ICmp( token, "firerisenv" ) ) {
 				stage->bundle[ 0 ].tcGen = TCGEN_FIRERISEENV_MAPPED;
-			} else if ( !String::ICmp( token, "lightmap" ) )       {
+			} else if ( !String::ICmp( token, "lightmap" ) ) {
 				stage->bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-			} else if ( !String::ICmp( token, "texture" ) || !String::ICmp( token, "base" ) )         {
+			} else if ( !String::ICmp( token, "texture" ) || !String::ICmp( token, "base" ) ) {
 				stage->bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			} else if ( !String::ICmp( token, "vector" ) )       {
+			} else if ( !String::ICmp( token, "vector" ) ) {
 				ParseVector( text, 3, stage->bundle[ 0 ].tcGenVectors[ 0 ] );
 				ParseVector( text, 3, stage->bundle[ 0 ].tcGenVectors[ 1 ] );
 
@@ -1219,21 +1219,21 @@ static void ParseSort( const char** text ) {
 
 	if ( !String::ICmp( token, "portal" ) ) {
 		shader.sort = SS_PORTAL;
-	} else if ( !String::ICmp( token, "sky" ) )       {
+	} else if ( !String::ICmp( token, "sky" ) ) {
 		shader.sort = SS_ENVIRONMENT;
-	} else if ( !String::ICmp( token, "opaque" ) )       {
+	} else if ( !String::ICmp( token, "opaque" ) ) {
 		shader.sort = SS_OPAQUE;
-	} else if ( !String::ICmp( token, "decal" ) )       {
+	} else if ( !String::ICmp( token, "decal" ) ) {
 		shader.sort = SS_DECAL;
-	} else if ( !String::ICmp( token, "seeThrough" ) )       {
+	} else if ( !String::ICmp( token, "seeThrough" ) ) {
 		shader.sort = SS_SEE_THROUGH;
-	} else if ( !String::ICmp( token, "banner" ) )       {
+	} else if ( !String::ICmp( token, "banner" ) ) {
 		shader.sort = SS_BANNER;
-	} else if ( !String::ICmp( token, "additive" ) )       {
+	} else if ( !String::ICmp( token, "additive" ) ) {
 		shader.sort = SS_BLEND1;
-	} else if ( !String::ICmp( token, "nearest" ) )       {
+	} else if ( !String::ICmp( token, "nearest" ) ) {
 		shader.sort = SS_NEAREST;
-	} else if ( !String::ICmp( token, "underwater" ) )       {
+	} else if ( !String::ICmp( token, "underwater" ) ) {
 		shader.sort = SS_UNDERWATER;
 	} else {
 		shader.sort = String::Atof( token );
@@ -1328,13 +1328,13 @@ static bool ParseShader( const char** text ) {
 			tr.sunDirection[ 0 ] = cos( a ) * cos( b );
 			tr.sunDirection[ 1 ] = sin( a ) * cos( b );
 			tr.sunDirection[ 2 ] = sin( b );
-		} else if ( !String::ICmp( token, "deformVertexes" ) )       {
+		} else if ( !String::ICmp( token, "deformVertexes" ) ) {
 			ParseDeform( text );
 			continue;
-		} else if ( !String::ICmp( token, "tesssize" ) )       {
+		} else if ( !String::ICmp( token, "tesssize" ) ) {
 			String::SkipRestOfLine( text );
 			continue;
-		} else if ( !String::ICmp( token, "clampTime" ) )       {
+		} else if ( !String::ICmp( token, "clampTime" ) ) {
 			token = String::ParseExt( text, false );
 			if ( token[ 0 ] ) {
 				shader.clampTime = String::Atof( token );
@@ -1437,7 +1437,7 @@ static bool ParseShader( const char** text ) {
 				R_SetFog( FOG_SKY, 0, 5, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ], String::Atof( token ) );
 			}
 			continue;
-		} else if ( !String::ICmp( token, "sunshader" ) )       {
+		} else if ( !String::ICmp( token, "sunshader" ) ) {
 			token = String::ParseExt( text, false );
 			if ( !token[ 0 ] ) {
 				common->Printf( S_COLOR_YELLOW "WARNING: missing shader name for 'sunshader'\n" );
@@ -1445,7 +1445,7 @@ static bool ParseShader( const char** text ) {
 			}
 			tr.sunShaderName = new char[ String::Length( token ) + 1 ];
 			String::Cpy( tr.sunShaderName, token );
-		} else if ( !String::ICmp( token, "lightgridmulamb" ) )       {
+		} else if ( !String::ICmp( token, "lightgridmulamb" ) ) {
 			// ambient multiplier for lightgrid
 			token = String::ParseExt( text, false );
 			if ( !token[ 0 ] ) {
@@ -1455,7 +1455,7 @@ static bool ParseShader( const char** text ) {
 			if ( String::Atof( token ) > 0 ) {
 				tr.lightGridMulAmbient = String::Atof( token );
 			}
-		} else if ( !String::ICmp( token, "lightgridmuldir" ) )       {
+		} else if ( !String::ICmp( token, "lightgridmuldir" ) ) {
 			// directional multiplier for lightgrid
 			token = String::ParseExt( text, false );
 			if ( !token[ 0 ] ) {
@@ -1465,7 +1465,7 @@ static bool ParseShader( const char** text ) {
 			if ( String::Atof( token ) > 0 ) {
 				tr.lightGridMulDirected = String::Atof( token );
 			}
-		} else if ( !String::ICmp( token, "waterfogvars" ) )       {
+		} else if ( !String::ICmp( token, "waterfogvars" ) ) {
 			vec3_t watercolor;
 			if ( !ParseVector( text, 3, watercolor ) ) {
 				return false;
@@ -1488,18 +1488,18 @@ static bool ParseShader( const char** text ) {
 					// '0' specifies "use the map values for everything except the fog color
 					// TODO
 					fogString[ 0 ] = 0;
-				} else if ( fogvar > 1 )     {
+				} else if ( fogvar > 1 ) {
 					// distance "linear" fog
 					String::Sprintf( fogString, sizeof ( fogString ), "0 %d 1.1 %f %f %f 200", ( int )fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ] );
 				} else {					// density "exp" fog
 					String::Sprintf( fogString, sizeof ( fogString ), "0 5 %f %f %f %f 200", fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ] );
 				}
 				Cvar_Set( "r_waterFogColor", fogString );
-			} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) )       {
+			} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 				if ( fogvar == 0 ) {
 					// '0' specifies "use the map values for everything except the fog color
 					// TODO
-				} else if ( fogvar > 1 )     {
+				} else if ( fogvar > 1 ) {
 					// distance "linear" fog
 					R_SetFog( FOG_WATER, 0, fogvar, watercolor[ 0 ], watercolor[ 1 ], watercolor[ 2 ], 1.1 );
 				} else {
@@ -1531,7 +1531,7 @@ static bool ParseShader( const char** text ) {
 
 			if ( GGameType & GAME_WolfSP ) {
 				Cvar_Set( "r_mapFogColor", va( "0 %d %f %f %f %f 0", fogFar, fogDensity, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] ) );
-			} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) )       {
+			} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 				R_SetFog( FOG_MAP, 0, fogFar, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ], fogDensity );
 				R_SetFog( FOG_CMD_SWITCHFOG, FOG_MAP, 50, 0, 0, 0, 0 );
 			}
@@ -1546,7 +1546,7 @@ static bool ParseShader( const char** text ) {
 		else if ( !String::ICmp( token, "allowcompress" ) ) {
 			tr.allowCompress = 1;
 			continue;
-		} else if ( !String::ICmp( token, "nocompress" ) )       {
+		} else if ( !String::ICmp( token, "nocompress" ) ) {
 			tr.allowCompress = -1;
 			continue;
 		}
@@ -1565,7 +1565,7 @@ static bool ParseShader( const char** text ) {
 
 			if ( !String::ICmp( token, "none" ) || !String::ICmp( token, "twosided" ) || !String::ICmp( token, "disable" ) ) {
 				shader.cullType = CT_TWO_SIDED;
-			} else if ( !String::ICmp( token, "back" ) || !String::ICmp( token, "backside" ) || !String::ICmp( token, "backsided" ) )           {
+			} else if ( !String::ICmp( token, "back" ) || !String::ICmp( token, "backside" ) || !String::ICmp( token, "backsided" ) ) {
 				shader.cullType = CT_BACK_SIDED;
 			} else {
 				common->Printf( S_COLOR_YELLOW "WARNING: invalid cull parm '%s' in shader '%s'\n", token, shader.name );
@@ -1605,7 +1605,7 @@ static bool ParseShader( const char** text ) {
 			if ( !String::ICmp( token, "implicitBlend" ) ) {
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 				implicitCullType = CT_TWO_SIDED;
-			} else if ( !String::ICmp( token, "implicitMask" ) )       {
+			} else if ( !String::ICmp( token, "implicitMask" ) ) {
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_ATEST_GE_80;
 				implicitCullType = CT_TWO_SIDED;
 			} else {	// "implicitMap"
@@ -2032,7 +2032,7 @@ static shader_t* GeneratePermanentShader() {
 	// this allows grates to be fogged
 	if ( shader.sort <= ( GGameType & GAME_ET ? SS_SEE_THROUGH : SS_OPAQUE ) ) {
 		newShader->fogPass = FP_EQUAL;
-	} else if ( shader.contentFlags & BSP46CONTENTS_FOG )     {
+	} else if ( shader.contentFlags & BSP46CONTENTS_FOG ) {
 		newShader->fogPass = FP_LE;
 	}
 
@@ -2330,14 +2330,14 @@ static const char* FindShaderInShaderText( const char* shadername ) {
 			if ( token[ 0 ] == '{' ) {
 				// skip the definition
 				String::SkipBracedSection( &p );
-			} else if ( !String::ICmp( token, shadername ) )       {
+			} else if ( !String::ICmp( token, shadername ) ) {
 				return p;
 			} else {
 				// skip to end of line
 				String::SkipRestOfLine( &p );
 			}
 		}
-	} else if ( !( GGameType & GAME_WolfSP ) )       {
+	} else if ( !( GGameType & GAME_WolfSP ) ) {
 		const char* p = s_shaderText;
 
 		// look for label
@@ -2512,7 +2512,7 @@ static void SetImplicitShaderStages( image_t* image ) {
 		stages[ 0 ].rgbGen = CGEN_EXACT_VERTEX;
 		stages[ 0 ].alphaGen = AGEN_SKIP;
 		stages[ 0 ].stateBits = implicitStateBits;
-	} else if ( shader.lightmapIndex == LIGHTMAP_2D )     {
+	} else if ( shader.lightmapIndex == LIGHTMAP_2D ) {
 		// GUI elements
 		stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
 		stages[ 0 ].active = true;
@@ -2521,7 +2521,7 @@ static void SetImplicitShaderStages( image_t* image ) {
 		stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE |
 								GLS_SRCBLEND_SRC_ALPHA |
 								GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else if ( shader.lightmapIndex == LIGHTMAP_WHITEIMAGE )     {
+	} else if ( shader.lightmapIndex == LIGHTMAP_WHITEIMAGE ) {
 		// fullbright level
 		stages[ 0 ].bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 		stages[ 0 ].active = true;
@@ -2532,7 +2532,7 @@ static void SetImplicitShaderStages( image_t* image ) {
 		stages[ 1 ].active = true;
 		stages[ 1 ].rgbGen = CGEN_IDENTITY;
 		stages[ 1 ].stateBits |= GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO;
-	} else if ( implicitStateBits & ( GLS_ATEST_BITS | GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )       {
+	} else if ( implicitStateBits & ( GLS_ATEST_BITS | GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) {
 		// masked or blended implicit shaders need texture first
 		stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
 		stages[ 0 ].active = true;
@@ -3028,7 +3028,7 @@ static void ScanAndLoadShaderFiles() {
 		buffers[ i ] = p;
 		if ( GGameType & GAME_ET ) {
 			p += buffersize[ i ];
-		} else if ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP ) ) )         {
+		} else if ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP ) ) ) {
 			String::Compress( p );
 		}
 	}
@@ -3262,9 +3262,9 @@ void R_ShaderList_f() {
 		}
 		if ( shader->multitextureEnv == GL_ADD ) {
 			common->Printf( "MT(a) " );
-		} else if ( shader->multitextureEnv == GL_MODULATE )     {
+		} else if ( shader->multitextureEnv == GL_MODULATE ) {
 			common->Printf( "MT(m) " );
-		} else if ( shader->multitextureEnv == GL_DECAL )     {
+		} else if ( shader->multitextureEnv == GL_DECAL ) {
 			common->Printf( "MT(d) " );
 		} else {
 			common->Printf( "      " );
@@ -3277,11 +3277,11 @@ void R_ShaderList_f() {
 
 		if ( shader->optimalStageIteratorFunc == RB_StageIteratorGeneric ) {
 			common->Printf( "gen " );
-		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorSky )     {
+		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorSky ) {
 			common->Printf( "sky " );
-		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorLightmappedMultitexture )     {
+		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorLightmappedMultitexture ) {
 			common->Printf( "lmmt" );
-		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorVertexLitTexture )     {
+		} else if ( shader->optimalStageIteratorFunc == RB_StageIteratorVertexLitTexture ) {
 			common->Printf( "vlt " );
 		} else {
 			common->Printf( "    " );

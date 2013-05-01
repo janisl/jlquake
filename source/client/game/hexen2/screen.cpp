@@ -75,9 +75,9 @@ static void SCRH2_FindTextBreaks( const char* message, int Width ) {
 
 			if ( message[ pos ] == '@' ) {
 				start = pos + 1;
-			} else if ( oldlast == -1 )     {
+			} else if ( oldlast == -1 ) {
 				start = lastspace;
-			} else   {
+			} else {
 				start = lastspace + 1;
 			}
 
@@ -86,7 +86,7 @@ static void SCRH2_FindTextBreaks( const char* message, int Width ) {
 
 		if ( message[ pos ] == 32 ) {
 			lastspace = pos;
-		} else if ( message[ pos ] == 0 )       {
+		} else if ( message[ pos ] == 0 ) {
 			break;
 		}
 
@@ -193,13 +193,13 @@ static void SCRH2_DrawLoading() {
 
 	if ( clh2_total_loading_size ) {
 		size = clh2_current_loading_size * 106 / clh2_total_loading_size;
-	} else   {
+	} else {
 		size = 0;
 	}
 
 	if ( clh2_loading_stage == 1 ) {
 		count = size;
-	} else   {
+	} else {
 		count = 106;
 	}
 
@@ -209,7 +209,7 @@ static void SCRH2_DrawLoading() {
 
 	if ( clh2_loading_stage == 2 ) {
 		count = size;
-	} else   {
+	} else {
 		count = 0;
 	}
 
@@ -366,32 +366,32 @@ static void SBH2_IntermissionOverlay() {
 		if ( elapsed < 0 ) {
 			elapsed = 0;
 		}
-	} else if ( cl.qh_intermission == 12 )     {
+	} else if ( cl.qh_intermission == 12 ) {
 		elapsed = ( h2_introTime );
 		if ( h2_introTime < 500 ) {
 			h2_introTime += 0.25;
 		}
-	} else   {
+	} else {
 		elapsed = ( cl.qh_serverTimeFloat - cl.qh_completed_time ) * 20;
 	}
 
 	if ( cl.qh_intermission <= 4 && cl.qh_intermission + 394 <= prh2_string_count ) {
 		message = &prh2_global_strings[ prh2_string_index[ cl.qh_intermission + 394 ] ];
-	} else if ( cl.qh_intermission == 5 )     {
+	} else if ( cl.qh_intermission == 5 ) {
 		message = &prh2_global_strings[ prh2_string_index[ ABILITIES_STR_INDEX + NUM_CLASSES_H2 * 2 + 1 ] ];
-	} else if ( cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= prh2_string_count )     {
+	} else if ( cl.qh_intermission >= 6 && cl.qh_intermission <= 8 && cl.qh_intermission + 386 <= prh2_string_count ) {
 		message = &prh2_global_strings[ prh2_string_index[ cl.qh_intermission + 386 ] ];
-	} else if ( cl.qh_intermission == 9 )     {
+	} else if ( cl.qh_intermission == 9 ) {
 		message = &prh2_global_strings[ prh2_string_index[ 391 ] ];
-	} else   {
+	} else {
 		message = "";
 	}
 
 	if ( cl.qh_intermission == 10 ) {
 		message = &prh2_global_strings[ prh2_string_index[ 538 ] ];
-	} else if ( cl.qh_intermission == 11 )     {
+	} else if ( cl.qh_intermission == 11 ) {
 		message = &prh2_global_strings[ prh2_string_index[ 545 ] ];
-	} else if ( cl.qh_intermission == 12 )     {
+	} else if ( cl.qh_intermission == 12 ) {
 		message = &prh2_global_strings[ prh2_string_index[ 561 ] ];
 	}
 
@@ -399,7 +399,7 @@ static void SBH2_IntermissionOverlay() {
 
 	if ( cl.qh_intermission == 8 ) {
 		by = 16;
-	} else   {
+	} else {
 		by = ( ( 25 - scrh2_lines ) * 8 ) / 2;
 	}
 
@@ -415,7 +415,7 @@ static void SBH2_IntermissionOverlay() {
 		bx = ( ( 40 - String::Length( temp ) ) * 8 ) / 2;
 		if ( cl.qh_intermission < 6 || cl.qh_intermission > 9 ) {
 			I_Print( bx, by, temp );
-		} else   {
+		} else {
 			MQH_PrintWhite( bx, by, temp );
 		}
 
@@ -438,13 +438,13 @@ static void CLHW_LineGraph( int h ) {
 	if ( h == 10000 ) {
 		// yellow
 		colour = 0x00ffff;
-	} else if ( h == 9999 )     {
+	} else if ( h == 9999 ) {
 		// red
 		colour = 0x0000ff;
-	} else if ( h == 9998 )     {
+	} else if ( h == 9998 ) {
 		// blue
 		colour = 0xff0000;
-	} else   {
+	} else {
 		// white
 		colour = 0xffffff;
 	}
@@ -463,11 +463,11 @@ static void CLHW_NetGraph() {
 		hwframe_t* frame = &cl.hw_frames[ i & UPDATE_MASK_HW ];
 		if ( frame->receivedtime == -1 ) {
 			clqh_packet_latency[ i & 255 ] = 9999;			// dropped
-		} else if ( frame->receivedtime == -2 )     {
+		} else if ( frame->receivedtime == -2 ) {
 			clqh_packet_latency[ i & 255 ] = 10000;		// choked
-		} else if ( frame->invalid )     {
+		} else if ( frame->invalid ) {
 			clqh_packet_latency[ i & 255 ] = 9998;			// invalid delta
-		} else   {
+		} else {
 			clqh_packet_latency[ i & 255 ] = ( frame->receivedtime - frame->senttime ) * 20;
 		}
 	}
@@ -487,7 +487,7 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 			clh2_total_loading_size = 0;
 			clh2_loading_stage = 0;
 			common->Printf( "load failed.\n" );
-		} else   {
+		} else {
 			return;
 		}
 	}
@@ -521,13 +521,13 @@ void SCRH2_DrawScreen( stereoFrame_t stereoFrame ) {
 		SbarH2_Draw();
 		MQH_FadeScreen();
 		SCRH2_DrawLoading();
-	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 )     {
+	} else if ( cl.qh_intermission >= 1 && cl.qh_intermission <= 12 ) {
 		SBH2_IntermissionOverlay();
 		if ( cl.qh_intermission < 12 ) {
 			Con_DrawConsole();
 			UI_DrawMenu();
 		}
-	} else   {
+	} else {
 		SCR_DrawFPS();
 		SCRQH_DrawTurtle();
 		SCRH2_DrawPause();

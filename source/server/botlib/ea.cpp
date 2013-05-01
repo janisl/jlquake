@@ -60,7 +60,7 @@ void EA_Jump( int client ) {
 	bot_input_t* bi = &botinputs[ client ];
 	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME ) {
 		bi->actionflags &= ~( GGameType & GAME_Quake3 ? Q3ACTION_JUMP : WOLFACTION_JUMP );
-	} else   {
+	} else {
 		bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_JUMP : WOLFACTION_JUMP;
 	}
 }
@@ -69,7 +69,7 @@ void EA_DelayedJump( int client ) {
 	bot_input_t* bi = &botinputs[ client ];
 	if ( bi->actionflags & ACTION_JUMPEDLASTFRAME ) {
 		bi->actionflags &= ~( GGameType & GAME_Quake3 ? Q3ACTION_DELAYEDJUMP : WOLFACTION_DELAYEDJUMP );
-	} else   {
+	} else {
 		bi->actionflags |= GGameType & GAME_Quake3 ? Q3ACTION_DELAYEDJUMP : WOLFACTION_DELAYEDJUMP;
 	}
 }
@@ -136,7 +136,7 @@ void EA_Move( int client, const vec3_t dir, float speed ) {
 	//cap speed
 	if ( speed > MAX_USERMOVE ) {
 		speed = MAX_USERMOVE;
-	} else if ( speed < -MAX_USERMOVE )     {
+	} else if ( speed < -MAX_USERMOVE ) {
 		speed = -MAX_USERMOVE;
 	}
 	bi->speed = speed;

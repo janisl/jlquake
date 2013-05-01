@@ -385,7 +385,7 @@ void Mem_Free( void* ptr, const char* FileName, int LineNumber ) {
 	}
 	if ( m == MemDebug ) {
 		MemDebug = m->Next;
-	} else   {
+	} else {
 		m->Prev->Next = m->Next;
 	}
 

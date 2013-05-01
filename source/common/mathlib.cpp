@@ -252,7 +252,7 @@ vec_t VectorNormalize2( const vec3_t v, vec3_t out ) {
 		out[ 0 ] = v[ 0 ] * ilength;
 		out[ 1 ] = v[ 1 ] * ilength;
 		out[ 2 ] = v[ 2 ] * ilength;
-	} else   {
+	} else {
 //		assert( ((idMath::Fabs(v[0])==0.0f) && (idMath::Fabs(v[1])==0.0f) && (idMath::Fabs(v[2])==0.0f)) );
 		VectorClear( out );
 	}
@@ -859,9 +859,9 @@ static float VecToYawNotAlongZ( const vec3_t vector ) {
 			yaw += 360;
 		}
 		return yaw;
-	} else if ( vector[ 1 ] > 0 )       {
+	} else if ( vector[ 1 ] > 0 ) {
 		return 90;
-	} else   {
+	} else {
 		return 270;
 	}
 }
@@ -869,7 +869,7 @@ static float VecToYawNotAlongZ( const vec3_t vector ) {
 float VecToYaw( const vec3_t vector ) {
 	if ( vector[ 1 ] == 0 && vector[ 0 ] == 0 ) {
 		return 0;
-	} else   {
+	} else {
 		return VecToYawNotAlongZ( vector );
 	}
 }
@@ -889,7 +889,7 @@ void VecToAngles( const vec3_t vector, vec3_t angles ) {
 	if ( vector[ 1 ] == 0 && vector[ 0 ] == 0 ) {
 		yaw = 0;
 		pitch = vector[ 2 ] > 0 ? 90 : 270;
-	} else   {
+	} else {
 		yaw = VecToYawNotAlongZ( vector );
 		pitch = VecToPitchNotAlongZ( vector );
 	}
@@ -1041,7 +1041,7 @@ float AngleDiff( float ang1, float ang2 ) {
 		if ( diff > 180.0 ) {
 			diff -= 360.0;
 		}
-	} else   {
+	} else {
 		if ( diff < -180.0 ) {
 			diff += 360.0;
 		}
@@ -1076,7 +1076,7 @@ void ProjectPointOntoVectorBounded( const vec3_t point, const vec3_t vStart, con
 	if ( j < 3 ) {
 		if ( idMath::Fabs( vProj[ j ] - vStart[ j ] ) < idMath::Fabs( vProj[ j ] - vEnd[ j ] ) ) {
 			VectorCopy( vStart, vProj );
-		} else   {
+		} else {
 			VectorCopy( vEnd, vProj );
 		}
 	}
@@ -1096,7 +1096,7 @@ float DistanceFromLineSquaredDir( const vec3_t p, const vec3_t lp1, const vec3_t
 		vec3_t t;
 		if ( idMath::Fabs( proj[ j ] - lp1[ j ] ) < idMath::Fabs( proj[ j ] - lp2[ j ] ) ) {
 			VectorSubtract( p, lp1, t );
-		} else   {
+		} else {
 			VectorSubtract( p, lp2, t );
 		}
 		return VectorLengthSquared( t );

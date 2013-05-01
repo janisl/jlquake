@@ -117,9 +117,9 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 	if ( to->skinnum != from->skinnum ) {
 		if ( ( unsigned )to->skinnum < 256 ) {
 			bits |= Q2U_SKIN8;
-		} else if ( ( unsigned )to->skinnum < 0x10000 )       {
+		} else if ( ( unsigned )to->skinnum < 0x10000 ) {
 			bits |= Q2U_SKIN16;
-		} else   {
+		} else {
 			bits |= ( Q2U_SKIN8 | Q2U_SKIN16 );
 		}
 	}
@@ -127,7 +127,7 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 	if ( to->frame != from->frame ) {
 		if ( to->frame < 256 ) {
 			bits |= Q2U_FRAME8;
-		} else   {
+		} else {
 			bits |= Q2U_FRAME16;
 		}
 	}
@@ -135,9 +135,9 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 	if ( to->effects != from->effects ) {
 		if ( to->effects < 256 ) {
 			bits |= Q2U_EFFECTS8;
-		} else if ( to->effects < 0x8000 )     {
+		} else if ( to->effects < 0x8000 ) {
 			bits |= Q2U_EFFECTS16;
-		} else   {
+		} else {
 			bits |= Q2U_EFFECTS8 | Q2U_EFFECTS16;
 		}
 	}
@@ -145,9 +145,9 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 	if ( to->renderfx != from->renderfx ) {
 		if ( to->renderfx < 256 ) {
 			bits |= Q2U_RENDERFX8;
-		} else if ( to->renderfx < 0x8000 )     {
+		} else if ( to->renderfx < 0x8000 ) {
 			bits |= Q2U_RENDERFX16;
-		} else   {
+		} else {
 			bits |= Q2U_RENDERFX8 | Q2U_RENDERFX16;
 		}
 	}
@@ -193,9 +193,9 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 
 	if ( bits & 0xff000000 ) {
 		bits |= Q2U_MOREBITS3 | Q2U_MOREBITS2 | Q2U_MOREBITS1;
-	} else if ( bits & 0x00ff0000 )     {
+	} else if ( bits & 0x00ff0000 ) {
 		bits |= Q2U_MOREBITS2 | Q2U_MOREBITS1;
-	} else if ( bits & 0x0000ff00 )     {
+	} else if ( bits & 0x0000ff00 ) {
 		bits |= Q2U_MOREBITS1;
 	}
 
@@ -205,10 +205,10 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 		msg->WriteByte( ( bits >> 8 ) & 255 );
 		msg->WriteByte( ( bits >> 16 ) & 255 );
 		msg->WriteByte( ( bits >> 24 ) & 255 );
-	} else if ( bits & 0x00ff0000 )     {
+	} else if ( bits & 0x00ff0000 ) {
 		msg->WriteByte( ( bits >> 8 ) & 255 );
 		msg->WriteByte( ( bits >> 16 ) & 255 );
-	} else if ( bits & 0x0000ff00 )     {
+	} else if ( bits & 0x0000ff00 ) {
 		msg->WriteByte( ( bits >> 8 ) & 255 );
 	}
 
@@ -216,7 +216,7 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 
 	if ( bits & Q2U_NUMBER16 ) {
 		msg->WriteShort( to->number );
-	} else   {
+	} else {
 		msg->WriteByte( to->number );
 	}
 
@@ -242,26 +242,26 @@ void MSGQ2_WriteDeltaEntity( q2entity_state_t* from, q2entity_state_t* to, QMsg*
 
 	if ( ( bits & Q2U_SKIN8 ) && ( bits & Q2U_SKIN16 ) ) {		//used for laser colors
 		msg->WriteLong( to->skinnum );
-	} else if ( bits & Q2U_SKIN8 )     {
+	} else if ( bits & Q2U_SKIN8 ) {
 		msg->WriteByte( to->skinnum );
-	} else if ( bits & Q2U_SKIN16 )     {
+	} else if ( bits & Q2U_SKIN16 ) {
 		msg->WriteShort( to->skinnum );
 	}
 
 
 	if ( ( bits & ( Q2U_EFFECTS8 | Q2U_EFFECTS16 ) ) == ( Q2U_EFFECTS8 | Q2U_EFFECTS16 ) ) {
 		msg->WriteLong( to->effects );
-	} else if ( bits & Q2U_EFFECTS8 )     {
+	} else if ( bits & Q2U_EFFECTS8 ) {
 		msg->WriteByte( to->effects );
-	} else if ( bits & Q2U_EFFECTS16 )     {
+	} else if ( bits & Q2U_EFFECTS16 ) {
 		msg->WriteShort( to->effects );
 	}
 
 	if ( ( bits & ( Q2U_RENDERFX8 | Q2U_RENDERFX16 ) ) == ( Q2U_RENDERFX8 | Q2U_RENDERFX16 ) ) {
 		msg->WriteLong( to->renderfx );
-	} else if ( bits & Q2U_RENDERFX8 )     {
+	} else if ( bits & Q2U_RENDERFX8 ) {
 		msg->WriteByte( to->renderfx );
-	} else if ( bits & Q2U_RENDERFX16 )     {
+	} else if ( bits & Q2U_RENDERFX16 ) {
 		msg->WriteShort( to->renderfx );
 	}
 

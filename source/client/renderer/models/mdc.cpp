@@ -88,7 +88,7 @@ static bool R_LoadMdcLod( model_t* mod, int lod, void* buffer, const char* mod_n
 				frame->bounds[ 1 ][ j ] = -128;
 				frame->localOrigin[ j ] = LittleFloat( frame->localOrigin[ j ] );
 			}
-		} else   {
+		} else {
 			for ( int j = 0; j < 3; j++ ) {
 				frame->bounds[ 0 ][ j ] = LittleFloat( frame->bounds[ 0 ][ j ] );
 				frame->bounds[ 1 ][ j ] = LittleFloat( frame->bounds[ 1 ][ j ] );
@@ -158,7 +158,7 @@ static bool R_LoadMdcLod( model_t* mod, int lod, void* buffer, const char* mod_n
 			sh = R_FindShader( shader->name, LIGHTMAP_NONE, true );
 			if ( sh->defaultShader ) {
 				shader->shaderIndex = 0;
-			} else   {
+			} else {
 				shader->shaderIndex = sh->index;
 			}
 		}
@@ -235,7 +235,7 @@ bool R_LoadMdc( model_t* mod, void* buffer ) {
 		void* buf;
 		if ( lod == 0 ) {
 			buf = buffer;
-		} else   {
+		} else {
 			char namebuf[ 80 ];
 
 			if ( String::RChr( filename, '.' ) ) {
@@ -265,10 +265,10 @@ bool R_LoadMdc( model_t* mod, void* buffer ) {
 		if ( !loaded ) {
 			if ( lod == 0 ) {
 				return false;
-			} else   {
+			} else {
 				break;
 			}
-		} else   {
+		} else {
 			mod->q3_numLods++;
 			numLoaded++;
 			// if we have a valid model and are biased
@@ -313,7 +313,7 @@ void R_RegisterMdcShaders( model_t* mod, int lod ) {
 			shader_t* sh = R_FindShader( shader->name, LIGHTMAP_NONE, true );
 			if ( sh->defaultShader ) {
 				shader->shaderIndex = 0;
-			} else   {
+			} else {
 				shader->shaderIndex = sh->index;
 			}
 		}
@@ -387,12 +387,12 @@ static int R_CullModel( mdcHeader_t* header, trRefEntity_t* ent ) {
 				tr.pc.c_sphere_cull_md3_clip++;
 				break;
 			}
-		} else   {
+		} else {
 			int sphereCull  = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
 			int sphereCullB;
 			if ( newFrame == oldFrame ) {
 				sphereCullB = sphereCull;
-			} else   {
+			} else {
 				sphereCullB = R_CullLocalPointAndRadius( oldFrame->localOrigin, oldFrame->radius );
 			}
 
@@ -400,10 +400,10 @@ static int R_CullModel( mdcHeader_t* header, trRefEntity_t* ent ) {
 				if ( sphereCull == CULL_OUT ) {
 					tr.pc.c_sphere_cull_md3_out++;
 					return CULL_OUT;
-				} else if ( sphereCull == CULL_IN )     {
+				} else if ( sphereCull == CULL_IN ) {
 					tr.pc.c_sphere_cull_md3_in++;
 					return CULL_IN;
-				} else   {
+				} else {
 					tr.pc.c_sphere_cull_md3_clip++;
 				}
 			}
@@ -436,7 +436,7 @@ static int R_ComputeLOD( trRefEntity_t* ent ) {
 	if ( tr.currentModel->q3_numLods < 2 ) {
 		// model has only 1 LOD level, skip computations and bias
 		lod = 0;
-	} else   {
+	} else {
 		// multiple LODs exist, so compute projected bounding sphere
 		// and use that as a criteria for selecting LOD
 
@@ -468,7 +468,7 @@ static int R_ComputeLOD( trRefEntity_t* ent ) {
 				lodscale = 20;
 			}
 			flod = 1.0f - projectedRadius * lodscale;
-		} else   {
+		} else {
 			// object intersects near view plane, e.g. view weapon
 			flod = 0;
 		}
@@ -478,7 +478,7 @@ static int R_ComputeLOD( trRefEntity_t* ent ) {
 
 		if ( lod < 0 ) {
 			lod = 0;
-		} else if ( lod >= tr.currentModel->q3_numLods )     {
+		} else if ( lod >= tr.currentModel->q3_numLods ) {
 			lod = tr.currentModel->q3_numLods - 1;
 		}
 	}
@@ -595,7 +595,7 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 		shader_t* shader;
 		if ( ent->e.customShader ) {
 			shader = R_GetShaderByHandle( ent->e.customShader );
-		} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )     {
+		} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins ) {
 			skin_t* skin = R_GetSkinByHandle( ent->e.customSkin );
 
 			// match the surface name to something in the skin file
@@ -628,9 +628,9 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 					}
 				}
 			}
-		} else if ( surface->numShaders <= 0 )     {
+		} else if ( surface->numShaders <= 0 ) {
 			shader = tr.defaultShader;
-		} else   {
+		} else {
 			md3Shader_t* md3Shader = ( md3Shader_t* )( ( byte* )surface + surface->ofsShaders );
 			md3Shader += ent->e.skinNum % surface->numShaders;
 			shader = tr.shaders[ md3Shader->shaderIndex ];
@@ -712,7 +712,7 @@ static void LerpCMeshVertexes( mdcSurface_t* surf, float backlerp ) {
 				R_MDC_DecodeXyzCompressed( newXyzComp->ofsVec, newOfsVec, outNormal );
 				newXyzComp++;
 				VectorAdd( outXyz, newOfsVec, outXyz );
-			} else   {
+			} else {
 				unsigned lat = ( newNormals[ 0 ] >> 8 ) & 0xff;
 				unsigned lng = ( newNormals[ 0 ] & 0xff );
 				lat *= ( FUNCTABLE_SIZE / 256 );
@@ -723,7 +723,7 @@ static void LerpCMeshVertexes( mdcSurface_t* surf, float backlerp ) {
 				outNormal[ 2 ] = tr.sinTable[ ( lng + ( FUNCTABLE_SIZE / 4 ) ) & FUNCTABLE_MASK ];
 			}
 		}
-	} else   {
+	} else {
 		//
 		// interpolate and copy the vertex and normal
 		//
@@ -759,7 +759,7 @@ static void LerpCMeshVertexes( mdcSurface_t* surf, float backlerp ) {
 				R_MDC_DecodeXyzCompressed( newXyzComp->ofsVec, newOfsVec, uncompressedNewNormal );
 				newXyzComp++;
 				VectorMA( outXyz, 1.0 - backlerp, newOfsVec, outXyz );
-			} else   {
+			} else {
 				unsigned lat = ( newNormals[ 0 ] >> 8 ) & 0xff;
 				unsigned lng = ( newNormals[ 0 ] & 0xff );
 				lat *= ( FUNCTABLE_SIZE / 256 );
@@ -776,7 +776,7 @@ static void LerpCMeshVertexes( mdcSurface_t* surf, float backlerp ) {
 				R_MDC_DecodeXyzCompressed( oldXyzComp->ofsVec, oldOfsVec, uncompressedOldNormal );
 				oldXyzComp++;
 				VectorMA( outXyz, backlerp, oldOfsVec, outXyz );
-			} else   {
+			} else {
 				unsigned lat = ( oldNormals[ 0 ] >> 8 ) & 0xff;
 				unsigned lng = ( oldNormals[ 0 ] & 0xff );
 				lat *= ( FUNCTABLE_SIZE / 256 );
@@ -807,7 +807,7 @@ void RB_SurfaceCMesh( mdcSurface_t* surface ) {
 	float backlerp;
 	if ( backEnd.currentEntity->e.oldframe == backEnd.currentEntity->e.frame ) {
 		backlerp = 0;
-	} else   {
+	} else {
 		backlerp = backEnd.currentEntity->e.backlerp;
 	}
 

@@ -73,7 +73,7 @@ static void CLQ2_ParsePrint( QMsg& message ) {
 	if ( i == PRINT_CHAT ) {
 		S_StartLocalSound( "misc/talk.wav" );
 		common->Printf( S_COLOR_GREEN "%s" S_COLOR_WHITE, txt );
-	} else   {
+	} else {
 		common->Printf( "%s", txt );
 	}
 }
@@ -95,7 +95,7 @@ static void CLQ2_ParseServerData( QMsg& message ) {
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
 	if ( ComQ2_ServerState() && Q2PROTOCOL_VERSION == 34 ) {
-	} else if ( i != Q2PROTOCOL_VERSION )     {
+	} else if ( i != Q2PROTOCOL_VERSION ) {
 		common->Error( "Server returned version %i, not %i", i, Q2PROTOCOL_VERSION );
 	}
 
@@ -120,7 +120,7 @@ static void CLQ2_ParseServerData( QMsg& message ) {
 
 	if ( cl.playernum == -1 ) {	// playing a cinematic or showing a pic, not a level
 		SCR_PlayCinematic( str );
-	} else   {
+	} else {
 		// seperate the printfs so the server message can have a color
 		common->Printf( "\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n" );
 		common->Printf( S_COLOR_GREEN "%s" S_COLOR_WHITE "\n", str );
@@ -156,7 +156,7 @@ void CLQ2_LoadClientinfo( q2clientinfo_t* ci, const char* s ) {
 		ci->weaponmodel[ 0 ] = R_RegisterModel( weapon_filename );
 		ci->skin = R_RegisterSkinQ2( skin_filename );
 		ci->icon = R_RegisterPic( ci->iconname );
-	} else   {
+	} else {
 		// isolate the model name
 		char model_name[ MAX_QPATH ];
 		String::Cpy( model_name, s );
@@ -260,28 +260,28 @@ static void CLQ2_ParseConfigString( QMsg& message ) {
 
 	if ( i >= Q2CS_LIGHTS && i < Q2CS_LIGHTS + MAX_LIGHTSTYLES_Q2 ) {
 		CL_SetLightStyle( i - Q2CS_LIGHTS, cl.q2_configstrings[ i ] );
-	} else if ( i == Q2CS_CDTRACK )     {
+	} else if ( i == Q2CS_CDTRACK ) {
 		if ( cl.q2_refresh_prepped ) {
 			CDAudio_Play( String::Atoi( cl.q2_configstrings[ Q2CS_CDTRACK ] ), true );
 		}
-	} else if ( i >= Q2CS_MODELS && i < Q2CS_MODELS + MAX_MODELS_Q2 )     {
+	} else if ( i >= Q2CS_MODELS && i < Q2CS_MODELS + MAX_MODELS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
 			cl.model_draw[ i - Q2CS_MODELS ] = R_RegisterModel( cl.q2_configstrings[ i ] );
 			if ( cl.q2_configstrings[ i ][ 0 ] == '*' ) {
 				cl.model_clip[ i - Q2CS_MODELS ] = CM_InlineModel( String::Atoi( cl.q2_configstrings[ i ] + 1 ) );
-			} else   {
+			} else {
 				cl.model_clip[ i - Q2CS_MODELS ] = 0;
 			}
 		}
-	} else if ( i >= Q2CS_SOUNDS && i < Q2CS_SOUNDS + MAX_MODELS_Q2 )     {
+	} else if ( i >= Q2CS_SOUNDS && i < Q2CS_SOUNDS + MAX_MODELS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
 			cl.sound_precache[ i - Q2CS_SOUNDS ] = S_RegisterSound( cl.q2_configstrings[ i ] );
 		}
-	} else if ( i >= Q2CS_IMAGES && i < Q2CS_IMAGES + MAX_MODELS_Q2 )     {
+	} else if ( i >= Q2CS_IMAGES && i < Q2CS_IMAGES + MAX_MODELS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
 			cl.q2_image_precache[ i - Q2CS_IMAGES ] = R_RegisterPic( cl.q2_configstrings[ i ] );
 		}
-	} else if ( i >= Q2CS_PLAYERSKINS && i < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 )     {
+	} else if ( i >= Q2CS_PLAYERSKINS && i < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
 			CLQ2_ParseClientinfo( i - Q2CS_PLAYERSKINS );
 		}
@@ -295,21 +295,21 @@ static void CLQ2_ParseStartSoundPacket( QMsg& message ) {
 	float volume;
 	if ( flags & Q2SND_VOLUME ) {
 		volume = message.ReadByte() / 255.0;
-	} else   {
+	} else {
 		volume = Q2DEFAULT_SOUND_PACKET_VOLUME;
 	}
 
 	float attenuation;
 	if ( flags & Q2SND_ATTENUATION ) {
 		attenuation = message.ReadByte() / 64.0;
-	} else   {
+	} else {
 		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
 	float ofs;
 	if ( flags & Q2SND_OFFSET ) {
 		ofs = message.ReadByte() / 1000.0;
-	} else   {
+	} else {
 		ofs = 0;
 	}
 
@@ -323,7 +323,7 @@ static void CLQ2_ParseStartSoundPacket( QMsg& message ) {
 		}
 
 		channel &= 7;
-	} else   {
+	} else {
 		ent = 0;
 		channel = 0;
 	}
@@ -335,7 +335,7 @@ static void CLQ2_ParseStartSoundPacket( QMsg& message ) {
 		message.ReadPos( pos_v );
 
 		pos = pos_v;
-	} else   {	// use entity number
+	} else {	// use entity number
 		pos = NULL;
 	}
 
@@ -349,7 +349,7 @@ static void CLQ2_ParseStartSoundPacket( QMsg& message ) {
 static void CLQ2_DownloadFileName( char* dest, int destlen, char* fn ) {
 	if ( String::NCmp( fn, "players", 7 ) == 0 ) {
 		String::Sprintf( dest, destlen, "%s/%s", fs_PrimaryBaseGame, fn );
-	} else   {
+	} else {
 		String::Sprintf( dest, destlen, "%s/%s", FS_Gamedir(), fn );
 	}
 }
@@ -391,7 +391,7 @@ static void CLQ2_ParseDownload( QMsg& message ) {
 		clc.downloadPercent = percent;
 
 		CL_AddReliableCommand( "nextdl" );
-	} else   {
+	} else {
 		FS_FCloseFile( clc.download );
 
 		// rename the temp file to it's final name
@@ -421,7 +421,7 @@ static void CLQ2_ParseLayout( QMsg& message ) {
 void CLQ2_ParseServerMessage( QMsg& message ) {
 	if ( cl_shownet->value == 1 ) {
 		common->Printf( "%i ", message.cursize );
-	} else if ( cl_shownet->value >= 2 )     {
+	} else if ( cl_shownet->value >= 2 ) {
 		common->Printf( "------------------\n" );
 	}
 
@@ -444,7 +444,7 @@ void CLQ2_ParseServerMessage( QMsg& message ) {
 		if ( cl_shownet->value >= 2 ) {
 			if ( !svcq2_strings[ cmd ] ) {
 				common->Printf( "%3i:BAD CMD %i\n", message.readcount - 1,cmd );
-			} else   {
+			} else {
 				SHOWNET( message, svcq2_strings[ cmd ] );
 			}
 		}

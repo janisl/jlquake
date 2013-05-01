@@ -90,7 +90,7 @@ static void CLWM_GameRefEntToEngine( const wmrefEntity_t* gameRefent, refEntity_
 	Com_Memset( refent, 0, sizeof ( *refent ) );
 	if ( gameRefent->reType < 0 || gameRefent->reType >= 10 ) {
 		refent->reType = RT_MAX_REF_ENTITY_TYPE;
-	} else   {
+	} else {
 		refent->reType = clwm_gameRefEntTypeToEngine[ gameRefent->reType ];
 	}
 	refent->renderfx = gameRefent->renderfx & ( RF_MINLIGHT | RF_THIRD_PERSON |

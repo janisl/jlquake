@@ -49,9 +49,9 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 		dists[ i ] = dot;
 		if ( dot > epsilon ) {
 			sides[ i ] = SIDE_FRONT;
-		} else if ( dot < -epsilon )     {
+		} else if ( dot < -epsilon ) {
 			sides[ i ] = SIDE_BACK;
-		} else   {
+		} else {
 			sides[ i ] = SIDE_ON;
 		}
 		counts[ sides[ i ] ]++;
@@ -97,7 +97,7 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 		float dot;
 		if ( d == 0 ) {
 			dot = 0;
-		} else   {
+		} else {
 			dot = dists[ i ] / d;
 		}
 
@@ -124,9 +124,9 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 		int s = BoxOnPlaneSide( mins, maxs, node->plane );
 		if ( s == 1 ) {
 			node = node->children[ 0 ];
-		} else if ( s == 2 )     {
+		} else if ( s == 2 ) {
 			node = node->children[ 1 ];
-		} else   {
+		} else {
 			R_BoxSurfaces_r( node->children[ 0 ], mins, maxs, list, listsize, listlength, dir );
 			node = node->children[ 1 ];
 		}
@@ -215,7 +215,7 @@ static void R_AddMarkFragments( int numClipPoints, vec3_t clipPoints[ 2 ][ MAX_V
 		for ( int i = 0; i < numClipPoints; i++ ) {
 			VectorCopy( clipPoints[ pingPong ][ i ], ( float* )pointBuffer + 5 * ( *returnedPoints + i ) );
 		}
-	} else   {
+	} else {
 		Com_Memcpy( pointBuffer + ( *returnedPoints ) * 3, clipPoints[ pingPong ], numClipPoints * sizeof ( vec3_t ) );
 	}
 
@@ -359,7 +359,7 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 					}
 				}
 			}
-		} else if ( *surfaces[ i ] == SF_FACE )       {
+		} else if ( *surfaces[ i ] == SF_FACE ) {
 			srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )surfaces[ i ];
 			// check the normal of this face
 			if ( DotProduct( surf->plane.normal, projectionDir ) > -0.5 ) {
@@ -384,7 +384,7 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 				}
 			}
 			continue;
-		} else   {
+		} else {
 			// ignore all other world surfaces
 			// might be cool to also project polygons on a triangle soup
 			// however this will probably create huge amounts of extra polys
@@ -568,7 +568,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 					}
 				}
 			}
-		} else if ( *surfaces[ i ] == SF_FACE )       {
+		} else if ( *surfaces[ i ] == SF_FACE ) {
 			vec3_t axis[ 3 ];
 			float texCoordScale, dot;
 			vec3_t originalPoints[ 4 ];
@@ -585,7 +585,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 
 			if ( GGameType & GAME_ET && surf->plane.type == PLANE_NON_PLANAR ) {
 				VectorCopy( bestnormal, surfnormal );
-			} else   {
+			} else {
 				VectorCopy( surf->plane.normal, surfnormal );
 			}
 
@@ -598,14 +598,14 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 
 				if ( GGameType & GAME_ET && surf->plane.type == PLANE_NON_PLANAR ) {
 					VectorCopy( center, newCenter );
-				} else   {
+				} else {
 					// find the center of the new decal
 					dot = DotProduct( center, surfnormal );
 					dot -= surf->plane.dist;
 					// check the normal of this face
 					if ( dot < -epsilon && DotProduct( surfnormal, projectionDir ) >= 0.01 ) {
 						continue;
-					} else if ( idMath::Fabs( dot ) > radius )       {
+					} else if ( idMath::Fabs( dot ) > radius ) {
 						continue;
 					}
 					// if the impact point is behind the surface, subtract the projection, otherwise add it
@@ -685,7 +685,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 					}
 				}
 
-			} else   {		// old mapping
+			} else {		// old mapping
 				// check the normal of this face
 				indexes = ( int* )( ( byte* )surf + surf->ofsIndices );
 				for ( k = 0; k < surf->numIndices; k += 3 ) {
@@ -744,7 +744,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 						return returnedFragments;	// not enough space for more fragments
 					}
 				}
-			} else   {
+			} else {
 				indexes = cts->indexes;
 				for ( k = 0; k < cts->numIndexes; k += 3 ) {
 					for ( j = 0; j < 3; j++ ) {
@@ -765,7 +765,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 			}
 
 			continue;
-		} else   {
+		} else {
 			// ignore all other world surfaces
 			// might be cool to also project polygons on a triangle soup
 			// however this will probably create huge amounts of extra polys

@@ -26,7 +26,7 @@ void R_InitCommandBuffers() {
 		if ( GLimp_SpawnRenderThread( RB_RenderThread ) ) {
 			common->Printf( "...succeeded.\n" );
 			glConfig.smpActive = true;
-		} else   {
+		} else {
 			common->Printf( "...failed.\n" );
 		}
 	}
@@ -76,7 +76,7 @@ static void R_PerformanceCounters() {
 			backEnd.pc.c_shaders, backEnd.pc.c_surfaces, tr.pc.c_leafs, backEnd.pc.c_vertexes,
 			backEnd.pc.c_indexes / 3, backEnd.pc.c_totalIndexes / 3,
 			R_SumOfUsedImages() / 1000000.0f, backEnd.pc.c_overDraw / ( float )( glConfig.vidWidth * glConfig.vidHeight ) );
-	} else if ( r_speeds->integer == 2 )     {
+	} else if ( r_speeds->integer == 2 ) {
 		common->Printf( "(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
 			tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip, tr.pc.c_sphere_cull_patch_out,
 			tr.pc.c_box_cull_patch_in, tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out );
@@ -86,20 +86,20 @@ static void R_PerformanceCounters() {
 		common->Printf( "(gen) %i sin %i sout %i pin %i pout\n",
 			tr.pc.c_sphere_cull_in, tr.pc.c_sphere_cull_out,
 			tr.pc.c_plane_cull_in, tr.pc.c_plane_cull_out );
-	} else if ( r_speeds->integer == 3 )     {
+	} else if ( r_speeds->integer == 3 ) {
 		common->Printf( "viewcluster: %i\n", tr.viewCluster );
-	} else if ( r_speeds->integer == 4 )     {
+	} else if ( r_speeds->integer == 4 ) {
 		if ( backEnd.pc.c_dlightVertexes ) {
 			common->Printf( "dlight srf:%i  culled:%i  verts:%i  tris:%i\n",
 				tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
 				backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3 );
 		}
-	} else if ( r_speeds->integer == 5 )     {
+	} else if ( r_speeds->integer == 5 ) {
 		common->Printf( "zFar: %.0f\n", tr.viewParms.zFar );
-	} else if ( r_speeds->integer == 6 )     {
+	} else if ( r_speeds->integer == 6 ) {
 		common->Printf( "flare adds:%i tests:%i renders:%i\n",
 			backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders );
-	} else if ( r_speeds->integer == 7 )     {
+	} else if ( r_speeds->integer == 7 ) {
 		common->Printf( "decal projectors: %d test surfs: %d clip surfs: %d decal surfs: %d created: %d\n",
 			tr.pc.c_decalProjectors, tr.pc.c_decalTestSurfaces, tr.pc.c_decalClipSurfaces, tr.pc.c_decalSurfaces, tr.pc.c_decalSurfacesCreated );
 	}
@@ -124,7 +124,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters ) {
 			if ( r_showSmp->integer ) {
 				common->Printf( "R" );
 			}
-		} else   {
+		} else {
 			if ( r_showSmp->integer ) {
 				common->Printf( "." );
 			}
@@ -145,7 +145,7 @@ void R_IssueRenderCommands( bool runPerformanceCounters ) {
 		// let it start on the new batch
 		if ( !glConfig.smpActive ) {
 			RB_ExecuteRenderCommands( cmdList->cmds );
-		} else   {
+		} else {
 			GLimp_WakeRenderer( cmdList );
 		}
 	}
@@ -373,11 +373,11 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 			common->Printf( "Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits );
 			Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = false;
-		} else if ( r_shadows->integer == 2 )     {
+		} else if ( r_shadows->integer == 2 ) {
 			common->Printf( "Warning: stencil shadows and overdraw measurement are mutually exclusive\n" );
 			Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = false;
-		} else   {
+		} else {
 			R_SyncRenderThread();
 			qglEnable( GL_STENCIL_TEST );
 			qglStencilMask( ~0U );
@@ -386,7 +386,7 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 			qglStencilOp( GL_KEEP, GL_INCR, GL_INCR );
 		}
 		r_measureOverdraw->modified = false;
-	} else   {
+	} else {
 		// this is only reached if it was on and is now off
 		if ( r_measureOverdraw->modified ) {
 			R_SyncRenderThread();
@@ -436,9 +436,9 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 			if ( !String::ICmp( r_ati_truform_pointmode->string, "LINEAR" ) ) {
 				glConfig.ATIPointMode = ( int )GL_PN_TRIANGLES_POINT_MODE_LINEAR_ATI;
 				// GR - fix point mode change
-			} else if ( !String::ICmp( r_ati_truform_pointmode->string, "CUBIC" ) )       {
+			} else if ( !String::ICmp( r_ati_truform_pointmode->string, "CUBIC" ) ) {
 				glConfig.ATIPointMode = ( int )GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI;
-			} else   {
+			} else {
 				// bogus value, set to valid
 				glConfig.ATIPointMode = ( int )GL_PN_TRIANGLES_POINT_MODE_CUBIC_ATI;
 				Cvar_Set( "r_ati_truform_pointmode", "LINEAR" );
@@ -453,9 +453,9 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 			if ( !String::ICmp( r_ati_truform_normalmode->string, "LINEAR" ) ) {
 				glConfig.ATINormalMode = ( int )GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI;
 				// GR - fix normal mode change
-			} else if ( !String::ICmp( r_ati_truform_normalmode->string, "QUADRATIC" ) )       {
+			} else if ( !String::ICmp( r_ati_truform_normalmode->string, "QUADRATIC" ) ) {
 				glConfig.ATINormalMode = ( int )GL_PN_TRIANGLES_NORMAL_MODE_QUADRATIC_ATI;
-			} else   {
+			} else {
 				// bogus value, set to valid
 				glConfig.ATINormalMode = ( int )GL_PN_TRIANGLES_NORMAL_MODE_LINEAR_ATI;
 				Cvar_Set( "r_ati_truform_normalmode", "LINEAR" );
@@ -472,11 +472,11 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 		r_nv_fogdist_mode->modified = false;
 		if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE_ABSOLUTE_NV" ) ) {
 			glConfig.NVFogMode = ( int )GL_EYE_PLANE_ABSOLUTE_NV;
-		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) )       {
+		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_PLANE" ) ) {
 			glConfig.NVFogMode = ( int )GL_EYE_PLANE;
-		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) )       {
+		} else if ( !String::ICmp( r_nv_fogdist_mode->string, "GL_EYE_RADIAL_NV" ) ) {
 			glConfig.NVFogMode = ( int )GL_EYE_RADIAL_NV;
-		} else   {
+		} else {
 			// in case this was really 'else', store a valid value for next time
 			glConfig.NVFogMode = ( int )GL_EYE_RADIAL_NV;
 			Cvar_Set( "r_nv_fogdist_mode", "GL_EYE_RADIAL_NV" );
@@ -514,18 +514,18 @@ void R_BeginFrame( stereoFrame_t stereoFrame ) {
 	if ( glConfig.stereoEnabled ) {
 		if ( stereoFrame == STEREO_LEFT ) {
 			cmd->buffer = ( int )GL_BACK_LEFT;
-		} else if ( stereoFrame == STEREO_RIGHT )     {
+		} else if ( stereoFrame == STEREO_RIGHT ) {
 			cmd->buffer = ( int )GL_BACK_RIGHT;
-		} else   {
+		} else {
 			common->FatalError( "RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame );
 		}
-	} else   {
+	} else {
 		if ( stereoFrame != STEREO_CENTER ) {
 			common->FatalError( "R_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
 		if ( !String::ICmp( r_drawBuffer->string, "GL_FRONT" ) ) {
 			cmd->buffer = ( int )GL_FRONT;
-		} else   {
+		} else {
 			cmd->buffer = ( int )GL_BACK;
 		}
 	}
@@ -543,7 +543,7 @@ void R_EndFrame( int* frontEndMsec, int* backEndMsec ) {
 		// add swap-buffers command
 		*( int* )( cmdList->cmds + cmdList->used ) = RC_SWAP_BUFFERS;
 		cmdList->used += sizeof ( swapBuffersCommand_t );
-	} else   {
+	} else {
 		swapBuffersCommand_t* cmd = ( swapBuffersCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
 		if ( !cmd ) {
 			return;

@@ -110,7 +110,7 @@ void CLHW_SendCmd() {
 		cl.hw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_HW ].delta_sequence = cl.qh_validsequence;
 		buf.WriteByte( hwclc_delta );
 		buf.WriteByte( cl.qh_validsequence & 255 );
-	} else   {
+	} else {
 		cl.hw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_HW ].delta_sequence = -1;
 	}
 

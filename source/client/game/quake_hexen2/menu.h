@@ -52,7 +52,6 @@ extern menu_state_t m_return_state;
 extern bool m_return_onerror;
 extern char m_return_reason[ 32 ];
 
-void MQH_DrawPic( int x, int y, image_t* pic );
 void MQH_DrawPicShader( int x, int y, qhandle_t shader );
 void MQH_Print( int cx, int cy, const char* str );
 void MQH_PrintWhite( int cx, int cy, const char* str );

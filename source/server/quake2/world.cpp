@@ -93,9 +93,9 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 		}
 
 		ent->s.solid = ( k << 10 ) | ( j << 5 ) | i;
-	} else if ( ent->solid == Q2SOLID_BSP )     {
+	} else if ( ent->solid == Q2SOLID_BSP ) {
 		ent->s.solid = 31;		// a solid_bbox will never create this value
-	} else   {
+	} else {
 		ent->s.solid = 0;
 	}
 
@@ -121,7 +121,7 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 			ent->absmin[ i ] = ent->s.origin[ i ] - max;
 			ent->absmax[ i ] = ent->s.origin[ i ] + max;
 		}
-	} else   {
+	} else {
 		// normal
 		VectorAdd( ent->s.origin, ent->mins, ent->absmin );
 		VectorAdd( ent->s.origin, ent->maxs, ent->absmax );
@@ -161,7 +161,7 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 						ent->absmin[ 0 ], ent->absmin[ 1 ], ent->absmin[ 2 ] );
 				}
 				ent->areanum2 = area;
-			} else   {
+			} else {
 				ent->areanum = area;
 			}
 		}
@@ -171,7 +171,7 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 		// assume we missed some leafs, and mark by headnode
 		ent->num_clusters = -1;
 		ent->headnode = topnode;
-	} else   {
+	} else {
 		ent->num_clusters = 0;
 		for ( int i = 0; i < num_leafs; i++ ) {
 			if ( clusters[ i ] == -1 ) {
@@ -213,9 +213,9 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 		}
 		if ( ent->absmin[ node->axis ] > node->dist ) {
 			node = node->children[ 0 ];
-		} else if ( ent->absmax[ node->axis ] < node->dist )       {
+		} else if ( ent->absmax[ node->axis ] < node->dist ) {
 			node = node->children[ 1 ];
-		} else   {
+		} else {
 			break;		// crosses the node
 		}
 	}
@@ -223,7 +223,7 @@ void SVQ2_LinkEdict( q2edict_t* ent ) {
 	// link it in
 	if ( ent->solid == Q2SOLID_TRIGGER ) {
 		InsertLinkBefore( &ent->area, &node->trigger_edicts );
-	} else   {
+	} else {
 		InsertLinkBefore( &ent->area, &node->solid_edicts );
 	}
 
@@ -234,7 +234,7 @@ static void SVQ2_AreaEdicts_r( worldSector_t* node ) {
 	link_t* start;
 	if ( area_type == Q2AREA_SOLID ) {
 		start = &node->solid_edicts;
-	} else   {
+	} else {
 		start = &node->trigger_edicts;
 	}
 
@@ -382,7 +382,7 @@ static void SVQ2_ClipMoveToEntities( q2moveclip_t* clip ) {
 			trace = CM_TransformedBoxTraceQ2( clip->start, clip->end,
 				clip->mins2, clip->maxs2, model, clip->contentmask,
 				touch->s.origin, angles );
-		} else   {
+		} else {
 			trace = CM_TransformedBoxTraceQ2( clip->start, clip->end,
 				clip->mins, clip->maxs, model,  clip->contentmask,
 				touch->s.origin, angles );
@@ -394,10 +394,10 @@ static void SVQ2_ClipMoveToEntities( q2moveclip_t* clip ) {
 			if ( clip->trace.startsolid ) {
 				clip->trace = trace;
 				clip->trace.startsolid = true;
-			} else   {
+			} else {
 				clip->trace = trace;
 			}
-		} else if ( trace.startsolid )     {
+		} else if ( trace.startsolid ) {
 			clip->trace.startsolid = true;
 		}
 	}
@@ -408,7 +408,7 @@ void SVQ2_TraceBounds( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_
 		if ( end[ i ] > start[ i ] ) {
 			boxmins[ i ] = start[ i ] + mins[ i ] - 1;
 			boxmaxs[ i ] = end[ i ] + maxs[ i ] + 1;
-		} else   {
+		} else {
 			boxmins[ i ] = end[ i ] + mins[ i ] - 1;
 			boxmaxs[ i ] = start[ i ] + maxs[ i ] + 1;
 		}

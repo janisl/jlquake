@@ -119,10 +119,10 @@ static void BotDefaultCharacteristics( bot_character_t* ch, bot_character_t* def
 		if ( defaultch->c[ i ].type == CT_FLOAT ) {
 			ch->c[ i ].type = CT_FLOAT;
 			ch->c[ i ].value._float = defaultch->c[ i ].value._float;
-		} else if ( defaultch->c[ i ].type == CT_INTEGER )       {
+		} else if ( defaultch->c[ i ].type == CT_INTEGER ) {
 			ch->c[ i ].type = CT_INTEGER;
 			ch->c[ i ].value.integer = defaultch->c[ i ].value.integer;
-		} else if ( defaultch->c[ i ].type == CT_STRING )       {
+		} else if ( defaultch->c[ i ].type == CT_STRING ) {
 			ch->c[ i ].type = CT_STRING;
 			ch->c[ i ].value.string = ( char* )Mem_Alloc( String::Length( defaultch->c[ i ].value.string ) + 1 );
 			String::Cpy( ch->c[ i ].value.string, defaultch->c[ i ].value.string );
@@ -202,16 +202,16 @@ static bot_character_t* BotLoadCharacterFromFile( const char* charfile, int skil
 						if ( token.subtype & TT_FLOAT ) {
 							ch->c[ index ].value._float = token.floatvalue;
 							ch->c[ index ].type = CT_FLOAT;
-						} else   {
+						} else {
 							ch->c[ index ].value.integer = token.intvalue;
 							ch->c[ index ].type = CT_INTEGER;
 						}
-					} else if ( token.type == TT_STRING )     {
+					} else if ( token.type == TT_STRING ) {
 						StripDoubleQuotes( token.string );
 						ch->c[ index ].value.string = ( char* )Mem_Alloc( String::Length( token.string ) + 1 );
 						String::Cpy( ch->c[ index ].value.string, token.string );
 						ch->c[ index ].type = CT_STRING;
-					} else   {
+					} else {
 						SourceError( source, "expected integer, float or string, found %s\n", token.string );
 						FreeSource( source );
 						BotFreeCharacterStrings( ch );
@@ -220,7 +220,7 @@ static bot_character_t* BotLoadCharacterFromFile( const char* charfile, int skil
 					}
 				}
 				break;
-			} else   {
+			} else {
 				int indent = 1;
 				while ( indent ) {
 					if ( !PC_ExpectAnyToken( source, &token ) ) {
@@ -231,12 +231,12 @@ static bot_character_t* BotLoadCharacterFromFile( const char* charfile, int skil
 					}
 					if ( !String::Cmp( token.string, "{" ) ) {
 						indent++;
-					} else if ( !String::Cmp( token.string, "}" ) )       {
+					} else if ( !String::Cmp( token.string, "}" ) ) {
 						indent--;
 					}
 				}
 			}
-		} else   {
+		} else {
 			SourceError( source, "unknown definition %s\n", token.string );
 			FreeSource( source );
 			BotFreeCharacterStrings( ch );
@@ -400,10 +400,10 @@ static int BotInterpolateCharacters( int handle1, int handle2, float desiredskil
 			out->c[ i ].type = CT_FLOAT;
 			out->c[ i ].value._float = ch1->c[ i ].value._float +
 									   ( ch2->c[ i ].value._float - ch1->c[ i ].value._float ) * scale;
-		} else if ( ch1->c[ i ].type == CT_INTEGER )       {
+		} else if ( ch1->c[ i ].type == CT_INTEGER ) {
 			out->c[ i ].type = CT_INTEGER;
 			out->c[ i ].value.integer = ch1->c[ i ].value.integer;
-		} else if ( ch1->c[ i ].type == CT_STRING )       {
+		} else if ( ch1->c[ i ].type == CT_STRING ) {
 			out->c[ i ].type = CT_STRING;
 			out->c[ i ].value.string = ( char* )Mem_Alloc( String::Length( ch1->c[ i ].value.string ) + 1 );
 			String::Cpy( out->c[ i ].value.string, ch1->c[ i ].value.string );
@@ -416,7 +416,7 @@ int BotLoadCharacter( const char* charfile, float skill ) {
 	//make sure the skill is in the valid range
 	if ( skill < 1.0 ) {
 		skill = 1.0;
-	} else if ( skill > 5.0 )     {
+	} else if ( skill > 5.0 ) {
 		skill = 5.0;
 	}
 	//skill 1, 4 and 5 should be available in the character files
@@ -440,7 +440,7 @@ int BotLoadCharacter( const char* charfile, float skill ) {
 		if ( !secondskill ) {
 			return firstskill;
 		}
-	} else   {
+	} else {
 		//load skill 4 and 5
 		firstskill = BotLoadCharacterSkill( charfile, 4 );
 		if ( !firstskill ) {

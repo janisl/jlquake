@@ -246,7 +246,7 @@ static wavinfo_t GetWavinfo( const char* name, byte* wav, int wavlength ) {
 				info.samples = info.loopstart + i;
 			}
 		}
-	} else   {
+	} else {
 		info.loopstart = -1;
 	}
 
@@ -291,7 +291,7 @@ static void ResampleSfx( sfx_t* sfx, int inrate, int inwidth, byte* data ) {
 		int sample;
 		if ( inwidth == 2 ) {
 			sample = LittleShort( ( ( short* )data )[ srcsample ] );
-		} else   {
+		} else {
 			sample = ( int )( ( unsigned char )( data[ srcsample ] ) - 128 ) << 8;
 		}
 		sfx->Data[ i ] = sample;
@@ -327,10 +327,10 @@ bool S_LoadSound( sfx_t* sfx ) {
 	if ( GGameType & GAME_Tech3 ) {
 		//	Quake 3 uses full names.
 		String::Cpy( namebuffer, name );
-	} else if ( ( GGameType & GAME_Quake2 ) && name[ 0 ] == '#' )         {
+	} else if ( ( GGameType & GAME_Quake2 ) && name[ 0 ] == '#' ) {
 		//	In Quake 2 sounds prefixed with # are followed by full name.
 		String::Cpy( namebuffer, &name[ 1 ] );
-	} else   {
+	} else {
 		//	The rest are prefixed with sound/
 		String::Sprintf( namebuffer, sizeof ( namebuffer ), "sound/%s", name );
 	}
@@ -352,7 +352,7 @@ bool S_LoadSound( sfx_t* sfx ) {
 
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
 		sfx->LastTimeUsed = Sys_Milliseconds() + 1;
-	} else   {
+	} else {
 		sfx->LastTimeUsed = Com_Milliseconds() + 1;
 	}
 	sfx->Length = info.samples;

@@ -139,7 +139,7 @@ void SCR_DrawDebugGraph() {
 	if ( GGameType & GAME_Tech3 ) {
 		w = cls.glconfig.vidWidth;
 		y = cls.glconfig.vidHeight;
-	} else   {
+	} else {
 		w = viddef.width;
 		y = viddef.height;
 	}
@@ -148,7 +148,7 @@ void SCR_DrawDebugGraph() {
 		R_StretchPic( x, y - cl_graphheight->integer,
 			w, cl_graphheight->integer, 0, 0, 0, 0, cls.whiteShader );
 		R_SetColor( NULL );
-	} else   {
+	} else {
 		UI_FillPal( x, y - cl_graphheight->integer,
 			w, cl_graphheight->integer, 8 );
 	}
@@ -165,9 +165,9 @@ void SCR_DrawDebugGraph() {
 		int h = ( int )v % cl_graphheight->integer;
 		if ( GGameType & GAME_Tech3 ) {
 			R_StretchPic( x + w - 1 - a, y - h, 1, h, 0, 0, 0, 0, cls.whiteShader );
-		} else if ( GGameType & GAME_Quake2 )     {
+		} else if ( GGameType & GAME_Quake2 ) {
 			UI_FillPal( x + w - 1 - a, y - h, 1,  h, color );
-		} else   {
+		} else {
 			float r = ( color & 0xff ) / 255.0;
 			float g = ( ( color >> 8 ) & 0xff ) / 255.0;
 			float b = ( ( color >> 16 ) & 0xff ) / 255.0;
@@ -253,7 +253,7 @@ static void SCR_DrawCenterString() {
 	int remaining;
 	if ( GGameType & GAME_Quake && cl.qh_intermission ) {
 		remaining = scr_printspeed->value * ( cl.qh_serverTimeFloat - scr_centertime_start );
-	} else   {
+	} else {
 		remaining = 9999;
 	}
 
@@ -262,7 +262,7 @@ static void SCR_DrawCenterString() {
 	int y;
 	if ( scr_center_lines <= 4 ) {
 		y = viddef.height * 0.35;
-	} else   {
+	} else {
 		y = 48;
 	}
 
@@ -333,20 +333,20 @@ void SCR_CalcVrect() {
 			if ( cl.qh_intermission || scr_viewsize->value >= 110 ) {
 				// No status bar
 				sbqh_lines = 0;
-			} else   {
+			} else {
 				sbqh_lines = 36;
 			}
-		} else   {
+		} else {
 			// intermission is always full screen
 			if ( cl.qh_intermission || scr_viewsize->value >= 120 ) {
 				sbqh_lines = 0;		// no status bar at all
-			} else if ( scr_viewsize->value >= 110 )     {
+			} else if ( scr_viewsize->value >= 110 ) {
 				sbqh_lines = 24;	// no inventory
-			} else   {
+			} else {
 				sbqh_lines = 24 + 16 + 8;
 			}
 		}
-	} else   {
+	} else {
 		if ( scr_viewsize->value < 40 ) {
 			Cvar_Set( "viewsize","40" );
 		}
@@ -387,11 +387,11 @@ void SCR_DrawNet() {
 		if ( clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < CMD_BACKUP_Q2 - 1 ) {
 			return;
 		}
-	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) )       {
+	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		if ( clc.netchan.outgoingSequence - clc.netchan.incomingAcknowledged < UPDATE_BACKUP_QW - 1 ) {
 			return;
 		}
-	} else   {
+	} else {
 		if ( cls.realtime - cl.qh_last_received_message * 1000 < 300 ) {
 			return;
 		}
@@ -402,7 +402,7 @@ void SCR_DrawNet() {
 
 	if ( GGameType & GAME_Quake2 ) {
 		UI_DrawNamedPic( scr_vrect.x + 64, scr_vrect.y, "net" );
-	} else   {
+	} else {
 		UI_DrawPicShader( scr_vrect.x + 64, scr_vrect.y, scr_net );
 	}
 }
@@ -448,7 +448,7 @@ void SCR_TileClear() {
 		// clear above view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, 0, viddef.width, top, "backtile" );
-		} else   {
+		} else {
 			UI_TileClear( 0, 0, viddef.width, top, draw_backtile );
 		}
 	}
@@ -456,7 +456,7 @@ void SCR_TileClear() {
 		// clear below view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, bottom, viddef.width, viddef.height - bottom, "backtile" );
-		} else   {
+		} else {
 			UI_TileClear( 0, bottom, viddef.width, viddef.height - bottom, draw_backtile );
 		}
 	}
@@ -464,7 +464,7 @@ void SCR_TileClear() {
 		// clear left of view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( 0, top, left, scr_vrect.height, "backtile" );
-		} else   {
+		} else {
 			UI_TileClear( 0, top, left, scr_vrect.height, draw_backtile );
 		}
 	}
@@ -472,7 +472,7 @@ void SCR_TileClear() {
 		// clear left of view screen
 		if ( GGameType & GAME_Quake2 ) {
 			UI_NamedTileClear( right, top, viddef.width - right, scr_vrect.height, "backtile" );
-		} else   {
+		} else {
 			UI_TileClear( right, top, viddef.width - right, scr_vrect.height, draw_backtile );
 		}
 	}
@@ -483,9 +483,9 @@ void SCR_TileClear() {
 void SCR_UpdateScreen() {
 	if ( GGameType & GAME_Quake ) {
 		SCRQ1_DrawScreen( STEREO_CENTER );
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		SCRH2_DrawScreen( STEREO_CENTER );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		// if the screen is disabled (loading plaque is up, or vid mode changing)
 		// do nothing at all
 		if ( cls.disable_screen ) {
@@ -506,14 +506,14 @@ void SCR_UpdateScreen() {
 		*/
 		if ( clq2_stereo_separation->value > 1.0 ) {
 			Cvar_SetValueLatched( "cl_stereo_separation", 1.0 );
-		} else if ( clq2_stereo_separation->value < 0 )     {
+		} else if ( clq2_stereo_separation->value < 0 ) {
 			Cvar_SetValueLatched( "cl_stereo_separation", 0.0 );
 		}
 
 		if ( cls.glconfig.stereoEnabled ) {
 			SCRQ2_DrawScreen( STEREO_LEFT, -clq2_stereo_separation->value / 2 );
 			SCRQ2_DrawScreen( STEREO_RIGHT, clq2_stereo_separation->value / 2 );
-		} else   {
+		} else {
 			SCRQ2_DrawScreen( STEREO_CENTER, 0 );
 		}
 
@@ -522,7 +522,7 @@ void SCR_UpdateScreen() {
 		if ( cls.state == CA_ACTIVE && cl.q2_refresh_prepped && cl.q2_frame.valid ) {
 			CL_UpdateParticles( 800 );
 		}
-	} else   {
+	} else {
 		static int recursive;
 
 		if ( !scr_initialized ) {
@@ -536,7 +536,7 @@ void SCR_UpdateScreen() {
 				return;
 				//Com_Error( ERR_FATAL, "SCR_UpdateScreen: recursively called" );
 			}
-		} else   {
+		} else {
 			if ( ++recursive > 2 ) {
 				common->FatalError( "SCR_UpdateScreen: recursively called" );
 			}
@@ -547,13 +547,13 @@ void SCR_UpdateScreen() {
 		if ( cls.glconfig.stereoEnabled ) {
 			SCRT3_DrawScreenField( STEREO_LEFT );
 			SCRT3_DrawScreenField( STEREO_RIGHT );
-		} else   {
+		} else {
 			SCRT3_DrawScreenField( STEREO_CENTER );
 		}
 
 		if ( com_speeds->integer ) {
 			R_EndFrame( &time_frontend, &time_backend );
-		} else   {
+		} else {
 			R_EndFrame( NULL, NULL );
 		}
 
@@ -566,7 +566,7 @@ void SCRQH_InitImages() {
 	if ( GGameType & GAME_Quake ) {
 		draw_backtile = R_ShaderFromWadRepeat( "backtile" );
 		char_texture = R_LoadRawFontImageFromWad( "conchars", 128, 128 );
-	} else   {
+	} else {
 		draw_backtile = R_CacheShaderRepeat( "gfx/menu/backtile.lmp" );
 		char_texture = R_LoadRawFontImageFromFile( "gfx/menu/conchars.lmp", 256, 128 );
 		char_smalltexture = R_LoadRawFontImageFromWad( "tinyfont", 128, 32 );
@@ -592,9 +592,9 @@ void SCR_Init() {
 	}
 	if ( GGameType & GAME_Quake ) {
 		scr_centertime = Cvar_Get( "scr_centertime", "2", 0 );
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		scr_centertime = Cvar_Get( "scr_centertime", "4", 0 );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		scr_centertime = Cvar_Get( "scr_centertime", "2.5", 0 );
 		clq2_stereo_separation = Cvar_Get( "cl_stereo_separation", "0.4", CVAR_ARCHIVE );
 	}

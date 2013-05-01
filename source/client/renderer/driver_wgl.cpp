@@ -106,7 +106,7 @@ static LRESULT WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 		GMainWindow = hWnd;
 		if ( r_fullscreen->integer ) {
 			WIN_DisableAltTab();
-		} else   {
+		} else {
 			WIN_EnableAltTab();
 		}
 		break;
@@ -304,7 +304,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR* pPFD ) {
 					continue;
 				}
 			}
-		} else   {
+		} else {
 			bestMatch = i;
 		}
 	}
@@ -317,12 +317,12 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR* pPFD ) {
 		if ( !r_allowSoftwareGL->integer ) {
 			common->Printf( "...no hardware acceleration found\n" );
 			return 0;
-		} else   {
+		} else {
 			common->Printf( "...using software emulation\n" );
 		}
-	} else if ( pfds[ bestMatch ].dwFlags & PFD_GENERIC_ACCELERATED )       {
+	} else if ( pfds[ bestMatch ].dwFlags & PFD_GENERIC_ACCELERATED ) {
 		common->Printf( "...MCD acceleration found\n" );
-	} else   {
+	} else {
 		common->Printf( "...hardware acceleration found\n" );
 	}
 
@@ -363,7 +363,7 @@ static void GLW_CreatePFD( PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depth
 		common->Printf( "...attempting to use stereo\n" );
 		src.dwFlags |= PFD_STEREO;
 		glConfig.stereoEnabled = true;
-	} else   {
+	} else {
 		glConfig.stereoEnabled = false;
 	}
 
@@ -451,10 +451,10 @@ static bool GLW_InitDriver( int colorbits ) {
 	if ( r_depthbits->integer == 0 ) {
 		if ( colorbits > 16 ) {
 			depthbits = 24;
-		} else   {
+		} else {
 			depthbits = 16;
 		}
-	} else   {
+	} else {
 		depthbits = r_depthbits->integer;
 	}
 
@@ -675,7 +675,7 @@ static bool GLW_CreateWindow( int width, int height, int colorbits, bool fullscr
 		if ( fullscreen ) {
 			exstyle = WS_EX_TOPMOST;
 			stylebits = WS_POPUP | WS_VISIBLE | WS_SYSMENU;
-		} else   {
+		} else {
 			exstyle = 0;
 			stylebits = WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_VISIBLE | WS_SYSMENU;	// | WS_MINIMIZEBOX
 			AdjustWindowRect( &r, stylebits, FALSE );
@@ -688,7 +688,7 @@ static bool GLW_CreateWindow( int width, int height, int colorbits, bool fullscr
 		if ( fullscreen ) {
 			x = 0;
 			y = 0;
-		} else   {
+		} else {
 			x = vid_xpos->integer;
 			y = vid_ypos->integer;
 
@@ -721,7 +721,7 @@ static bool GLW_CreateWindow( int width, int height, int colorbits, bool fullscr
 		ShowWindow( GMainWindow, SW_SHOW );
 		UpdateWindow( GMainWindow );
 		common->Printf( "...created window@%d,%d (%dx%d)\n", x, y, w, h );
-	} else   {
+	} else {
 		common->Printf( "...window already present, CreateWindowEx skipped\n" );
 	}
 
@@ -832,7 +832,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			dm.dmBitsPerPel = colorbits;
 			dm.dmFields |= DM_BITSPERPEL;
 			common->Printf( "...using colorsbits of %d\n", colorbits );
-		} else   {
+		} else {
 			common->Printf( "...using desktop display depth of %d\n", desktopBitsPixel );
 		}
 
@@ -868,7 +868,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 				}
 
 				cdsFullscreen = true;
-			} else   {
+			} else {
 				common->Printf( "failed, " );
 
 				PrintCDSError( cdsRet );
@@ -905,7 +905,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 					}
 
 					cdsFullscreen = true;
-				} else   {
+				} else {
 					common->Printf( " failed, " );
 
 					PrintCDSError( cdsRet );
@@ -922,7 +922,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 				}
 			}
 		}
-	} else   {
+	} else {
 		if ( cdsFullscreen ) {
 			ChangeDisplaySettings( 0, 0 );
 		}

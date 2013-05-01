@@ -61,7 +61,7 @@ bool CLT3_CDKeyValidate( const char* key, const char* checksum ) {
 		case 'W':
 			if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 				sum = ( sum << 1 ) ^ ch;
-			} else   {
+			} else {
 				sum += ch;
 			}
 			continue;
@@ -107,7 +107,7 @@ void CLT3_ReadCDKey( const char* gameName ) {
 
 	if ( CLT3_CDKeyValidate( buffer, NULL ) ) {
 		String::NCpyZ( clt3_cdkey, buffer, 17 );
-	} else   {
+	} else {
 		String::NCpyZ( clt3_cdkey, "                ", 17 );
 	}
 }
@@ -131,7 +131,7 @@ void CLT3_AppendCDKey( const char* gameName ) {
 
 	if ( CLT3_CDKeyValidate( buffer, NULL ) ) {
 		String::Cat( &clt3_cdkey[ 16 ], sizeof ( clt3_cdkey ) - 16, buffer );
-	} else   {
+	} else {
 		String::NCpyZ( &clt3_cdkey[ 16 ], "                ", 17 );
 	}
 }
@@ -165,7 +165,7 @@ void CLT3_WriteCDKey() {
 	Cvar* fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
 	if ( UIT3_UsesUniqueCDKey() && fs && fs->string[ 0 ] != 0 ) {
 		CLT3_WriteCDKeyForGame( fs->string, &clt3_cdkey[ 16 ] );
-	} else   {
+	} else {
 		CLT3_WriteCDKeyForGame( fs_PrimaryBaseGame, clt3_cdkey );
 	}
 }
@@ -194,7 +194,7 @@ void CLT3UI_GetCDKey( char* buf, int buflen ) {
 	if ( UIT3_UsesUniqueCDKey() && fs && fs->string[ 0 ] != 0 ) {
 		Com_Memcpy( buf, &clt3_cdkey[ 16 ], 16 );
 		buf[ 16 ] = 0;
-	} else   {
+	} else {
 		Com_Memcpy( buf, clt3_cdkey, 16 );
 		buf[ 16 ] = 0;
 	}
@@ -207,7 +207,7 @@ void CLT3UI_SetCDKey( char* buf ) {
 		clt3_cdkey[ 32 ] = 0;
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	} else   {
+	} else {
 		Com_Memcpy( clt3_cdkey, buf, 16 );
 		// set the flag so the fle will be written at the next opportunity
 		cvar_modifiedFlags |= CVAR_ARCHIVE;

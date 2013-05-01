@@ -47,7 +47,7 @@ void R_InitBsp29NoTextureMip() {
 			for ( int x = 0; x < ( 16 >> m ); x++ ) {
 				if ( ( y < ( 8 >> m ) ) ^ ( x < ( 8 >> m ) ) ) {
 					*dest++ = 0;
-				} else   {
+				} else {
 					*dest++ = 0xff;
 				}
 			}
@@ -99,7 +99,7 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 
 		if ( !String::NCmp( mt->name,"sky",3 ) ) {
 			R_InitSky( tx );
-		} else   {
+		} else {
 			// see if the texture is allready present
 			char search[ 64 ];
 			sprintf( search, "%s_%d_%d", mt->name, tx->width, tx->height );
@@ -117,7 +117,7 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 				if ( picFullBright ) {
 					tx->fullBrightTexture = R_CreateImage( searchFullBright, picFullBright, tx->width, tx->height, true, true, GL_REPEAT );
 					delete[] picFullBright;
-				} else   {
+				} else {
 					tx->fullBrightTexture = NULL;
 				}
 			}
@@ -152,12 +152,12 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 			altmax = 0;
 			anims[ max ] = tx;
 			max++;
-		} else if ( max >= 'A' && max <= 'J' )     {
+		} else if ( max >= 'A' && max <= 'J' ) {
 			altmax = max - 'A';
 			max = 0;
 			altanims[ altmax ] = tx;
 			altmax++;
-		} else   {
+		} else {
 			common->FatalError( "Bad animating texture %s", tx->name );
 		}
 
@@ -180,13 +180,13 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 				if ( num + 1 > max ) {
 					max = num + 1;
 				}
-			} else if ( num >= 'A' && num <= 'J' )     {
+			} else if ( num >= 'A' && num <= 'J' ) {
 				num = num - 'A';
 				altanims[ num ] = tx2;
 				if ( num + 1 > altmax ) {
 					altmax = num + 1;
 				}
-			} else   {
+			} else {
 				common->FatalError( "Bad animating texture %s", tx->name );
 			}
 		}
@@ -303,11 +303,11 @@ static void Mod_LoadTexinfo( bsp29_lump_t* l ) {
 		len1 = ( len1 + len2 ) / 2;
 		if ( len1 < 0.32 ) {
 			out->mipadjust = 4;
-		} else if ( len1 < 0.49 )     {
+		} else if ( len1 < 0.49 ) {
 			out->mipadjust = 3;
-		} else if ( len1 < 0.99 )     {
+		} else if ( len1 < 0.99 ) {
 			out->mipadjust = 2;
-		} else   {
+		} else {
 			out->mipadjust = 1;
 		}
 
@@ -317,7 +317,7 @@ static void Mod_LoadTexinfo( bsp29_lump_t* l ) {
 		if ( !loadmodel->brush29_textures ) {
 			out->texture = r_notexture_mip;	// checkerboard texture
 			out->flags = 0;
-		} else   {
+		} else {
 			if ( miptex >= loadmodel->brush29_numtextures ) {
 				common->FatalError( "miptex >= loadmodel->numtextures" );
 			}
@@ -343,7 +343,7 @@ static void CalcSurfaceExtents( mbrush29_surface_t* s ) {
 		mbrush29_vertex_t* v;
 		if ( e >= 0 ) {
 			v = &loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ e ].v[ 0 ] ];
-		} else   {
+		} else {
 			v = &loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ -e ].v[ 1 ] ];
 		}
 
@@ -474,7 +474,7 @@ static void GL_SubdivideSurface( mbrush29_surface_t* fa ) {
 		float* vec;
 		if ( lindex > 0 ) {
 			vec = loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ lindex ].v[ 0 ] ].position;
-		} else   {
+		} else {
 			vec = loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ -lindex ].v[ 1 ] ].position;
 		}
 		VectorCopy( vec, verts[ numverts ] );
@@ -522,7 +522,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 		int lightofs = LittleLong( in->lightofs );
 		if ( lightofs == -1 ) {
 			out->samples = NULL;
-		} else   {
+		} else {
 			out->samples = loadmodel->brush29_lightdata + lightofs;
 		}
 
@@ -590,7 +590,7 @@ static void Mod_LoadNodes( bsp29_lump_t* l ) {
 			p = LittleShort( in->children[ j ] );
 			if ( p >= 0 ) {
 				out->children[ j ] = loadmodel->brush29_nodes + p;
-			} else   {
+			} else {
 				out->children[ j ] = ( mbrush29_node_t* )( loadmodel->brush29_leafs + ( -1 - p ) );
 			}
 		}
@@ -627,7 +627,7 @@ static void Mod_LoadLeafs( bsp29_lump_t* l ) {
 		p = LittleLong( in->visofs );
 		if ( p == -1 ) {
 			out->compressed_vis = NULL;
-		} else   {
+		} else {
 			out->compressed_vis = loadmodel->brush29_visdata + p;
 		}
 
@@ -782,7 +782,7 @@ void Mod_LoadBrush29Model( model_t* mod, void* buffer ) {
 	Mod_LoadEntities( &header->lumps[ BSP29LUMP_ENTITIES ] );
 	if ( GGameType & GAME_Hexen2 ) {
 		Mod_LoadSubmodelsH2( &header->lumps[ BSP29LUMP_MODELS ] );
-	} else   {
+	} else {
 		Mod_LoadSubmodelsQ1( &header->lumps[ BSP29LUMP_MODELS ] );
 	}
 
@@ -912,7 +912,7 @@ mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t p, model_t* model ) {
 		float d = DotProduct( p, plane->normal ) - plane->dist;
 		if ( d > 0 ) {
 			node = node->children[ 0 ];
-		} else   {
+		} else {
 			node = node->children[ 1 ];
 		}
 	}

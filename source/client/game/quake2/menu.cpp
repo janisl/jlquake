@@ -605,7 +605,7 @@ static void Create_Savestrings() {
 		if ( !FS_FileExists( name ) ) {
 			String::Cpy( mq2_savestrings[ i ], "<EMPTY>" );
 			mq2_savevalid[ i ] = false;
-		} else   {
+		} else {
 			fileHandle_t f;
 			FS_FOpenFileRead( name, &f, true );
 			FS_Read( mq2_savestrings[ i ], sizeof ( mq2_savestrings[ i ] ), f );
@@ -1106,7 +1106,7 @@ static void MQ2_Credits_MenuDraw() {
 		if ( credits[ i ][ 0 ] == '+' ) {
 			bold = true;
 			stringoffset = 1;
-		} else   {
+		} else {
 			bold = false;
 			stringoffset = 0;
 		}
@@ -1114,7 +1114,7 @@ static void MQ2_Credits_MenuDraw() {
 		int x = ( viddef.width - String::Length( &credits[ i ][ stringoffset ] ) * 8 ) / 2;
 		if ( bold ) {
 			UI_DrawString( x, y, &credits[ i ][ stringoffset ], 128 );
-		} else   {
+		} else {
 			UI_DrawString( x, y, &credits[ i ][ stringoffset ] );
 		}
 	}
@@ -1165,14 +1165,14 @@ static void MQ2_Menu_Credits_f() {
 		}
 		creditsIndex[ ++n ] = 0;
 		credits = ( const char** )creditsIndex;
-	} else   {
+	} else {
 		int isdeveloper = FS_GetQuake2GameType();
 
 		if ( isdeveloper == 1 ) {			// xatrix
 			credits = xatcredits;
-		} else if ( isdeveloper == 2 )     {// ROGUE
+		} else if ( isdeveloper == 2 ) {// ROGUE
 			credits = roguecredits;
-		} else   {
+		} else {
 			credits = idcredits;
 		}
 
@@ -1504,7 +1504,7 @@ static void RulesChangeFunc( void* self ) {
 	if ( s_rules_box.curvalue == 0 ) {
 		s_maxclients_field.generic.statusbar = NULL;
 		s_startserver_dmoptions_action.generic.statusbar = NULL;
-	} else if ( s_rules_box.curvalue == 1 )     {	// coop				// PGM
+	} else if ( s_rules_box.curvalue == 1 ) {	// coop				// PGM
 		s_maxclients_field.generic.statusbar = "4 maximum for cooperative";
 		if ( String::Atoi( s_maxclients_field.field.buffer ) > 4 ) {
 			String::Cpy( s_maxclients_field.field.buffer, "4" );
@@ -1537,7 +1537,7 @@ static void StartServerActionFunc( void* self ) {
 		Cvar_SetValueLatched( "deathmatch", !s_rules_box.curvalue );
 		Cvar_SetValueLatched( "coop", s_rules_box.curvalue );
 		Cvar_SetValueLatched( "gamerules", 0 );
-	} else   {
+	} else {
 		Cvar_SetValueLatched( "deathmatch", 1 );	// deathmatch is always true for rogue games, right?
 		Cvar_SetValueLatched( "coop", 0 );				// FIXME - this might need to depend on which game we're running
 		Cvar_SetValueLatched( "gamerules", s_rules_box.curvalue );
@@ -1547,19 +1547,19 @@ static void StartServerActionFunc( void* self ) {
 	if ( s_rules_box.curvalue == 1 ) {		// PGM
 		if ( String::ICmp( startmap, "bunk1" ) == 0 ) {
 			spot = "start";
-		} else if ( String::ICmp( startmap, "mintro" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "mintro" ) == 0 ) {
 			spot = "start";
-		} else if ( String::ICmp( startmap, "fact1" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "fact1" ) == 0 ) {
 			spot = "start";
-		} else if ( String::ICmp( startmap, "power1" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "power1" ) == 0 ) {
 			spot = "pstart";
-		} else if ( String::ICmp( startmap, "biggun" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "biggun" ) == 0 ) {
 			spot = "bstart";
-		} else if ( String::ICmp( startmap, "hangar1" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "hangar1" ) == 0 ) {
 			spot = "unitstart";
-		} else if ( String::ICmp( startmap, "city1" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "city1" ) == 0 ) {
 			spot = "unitstart";
-		} else if ( String::ICmp( startmap, "boss1" ) == 0 )       {
+		} else if ( String::ICmp( startmap, "boss1" ) == 0 ) {
 			spot = "bosstart";
 		}
 	}
@@ -1569,7 +1569,7 @@ static void StartServerActionFunc( void* self ) {
 			Cbuf_AddText( "disconnect\n" );
 		}
 		Cbuf_AddText( va( "gamemap \"*%s$%s\"\n", startmap, spot ) );
-	} else   {
+	} else {
 		Cbuf_AddText( va( "map %s\n", startmap ) );
 	}
 
@@ -1654,13 +1654,13 @@ static void StartServer_MenuInit() {
 	//PGM - rogue games only available with rogue DLL.
 	if ( FS_GetQuake2GameType() == 2 ) {
 		s_rules_box.itemnames = dm_coop_names_rogue;
-	} else   {
+	} else {
 		s_rules_box.itemnames = dm_coop_names;
 	}
 
 	if ( Cvar_VariableValue( "coop" ) ) {
 		s_rules_box.curvalue = 1;
-	} else   {
+	} else {
 		s_rules_box.curvalue = 0;
 	}
 	s_rules_box.generic.callback = RulesChangeFunc;
@@ -1701,7 +1701,7 @@ static void StartServer_MenuInit() {
 	s_maxclients_field.field.widthInChars = 3;
 	if ( Cvar_VariableValue( "maxclients" ) == 1 ) {
 		String::Cpy( s_maxclients_field.field.buffer, "8" );
-	} else   {
+	} else {
 		String::Cpy( s_maxclients_field.field.buffer, Cvar_VariableString( "maxclients" ) );
 	}
 
@@ -1816,76 +1816,76 @@ static void DMFlagCallback( void* self ) {
 	if ( f == &s_friendlyfire_box ) {
 		if ( f->curvalue ) {
 			flags &= ~Q2DF_NO_FRIENDLY_FIRE;
-		} else   {
+		} else {
 			flags |= Q2DF_NO_FRIENDLY_FIRE;
 		}
 		goto setvalue;
-	} else if ( f == &s_falls_box )     {
+	} else if ( f == &s_falls_box ) {
 		if ( f->curvalue ) {
 			flags &= ~Q2DF_NO_FALLING;
-		} else   {
+		} else {
 			flags |= Q2DF_NO_FALLING;
 		}
 		goto setvalue;
-	} else if ( f == &s_weapons_stay_box )     {
+	} else if ( f == &s_weapons_stay_box ) {
 		bit = Q2DF_WEAPONS_STAY;
-	} else if ( f == &s_instant_powerups_box )     {
+	} else if ( f == &s_instant_powerups_box ) {
 		bit = Q2DF_INSTANT_ITEMS;
-	} else if ( f == &s_allow_exit_box )     {
+	} else if ( f == &s_allow_exit_box ) {
 		bit = Q2DF_ALLOW_EXIT;
-	} else if ( f == &s_powerups_box )     {
+	} else if ( f == &s_powerups_box ) {
 		if ( f->curvalue ) {
 			flags &= ~Q2DF_NO_ITEMS;
-		} else   {
+		} else {
 			flags |= Q2DF_NO_ITEMS;
 		}
 		goto setvalue;
-	} else if ( f == &s_health_box )     {
+	} else if ( f == &s_health_box ) {
 		if ( f->curvalue ) {
 			flags &= ~Q2DF_NO_HEALTH;
-		} else   {
+		} else {
 			flags |= Q2DF_NO_HEALTH;
 		}
 		goto setvalue;
-	} else if ( f == &s_spawn_farthest_box )     {
+	} else if ( f == &s_spawn_farthest_box ) {
 		bit = Q2DF_SPAWN_FARTHEST;
-	} else if ( f == &s_teamplay_box )     {
+	} else if ( f == &s_teamplay_box ) {
 		if ( f->curvalue == 1 ) {
 			flags |=  Q2DF_SKINTEAMS;
 			flags &= ~Q2DF_MODELTEAMS;
-		} else if ( f->curvalue == 2 )     {
+		} else if ( f->curvalue == 2 ) {
 			flags |=  Q2DF_MODELTEAMS;
 			flags &= ~Q2DF_SKINTEAMS;
-		} else   {
+		} else {
 			flags &= ~( Q2DF_MODELTEAMS | Q2DF_SKINTEAMS );
 		}
 
 		goto setvalue;
-	} else if ( f == &s_samelevel_box )     {
+	} else if ( f == &s_samelevel_box ) {
 		bit = Q2DF_SAME_LEVEL;
-	} else if ( f == &s_force_respawn_box )     {
+	} else if ( f == &s_force_respawn_box ) {
 		bit = Q2DF_FORCE_RESPAWN;
-	} else if ( f == &s_armor_box )     {
+	} else if ( f == &s_armor_box ) {
 		if ( f->curvalue ) {
 			flags &= ~Q2DF_NO_ARMOR;
-		} else   {
+		} else {
 			flags |= Q2DF_NO_ARMOR;
 		}
 		goto setvalue;
-	} else if ( f == &s_infinite_ammo_box )     {
+	} else if ( f == &s_infinite_ammo_box ) {
 		bit = Q2DF_INFINITE_AMMO;
-	} else if ( f == &s_fixed_fov_box )     {
+	} else if ( f == &s_fixed_fov_box ) {
 		bit = Q2DF_FIXED_FOV;
-	} else if ( f == &s_quad_drop_box )     {
+	} else if ( f == &s_quad_drop_box ) {
 		bit = Q2DF_QUAD_DROP;
-	} else if ( FS_GetQuake2GameType() == 2 )     {
+	} else if ( FS_GetQuake2GameType() == 2 ) {
 		if ( f == &s_no_mines_box ) {
 			bit = Q2DF_NO_MINES;
-		} else if ( f == &s_no_nukes_box )     {
+		} else if ( f == &s_no_nukes_box ) {
 			bit = Q2DF_NO_NUKES;
-		} else if ( f == &s_stack_double_box )     {
+		} else if ( f == &s_stack_double_box ) {
 			bit = Q2DF_NO_STACK_DOUBLE;
-		} else if ( f == &s_no_spheres_box )     {
+		} else if ( f == &s_no_spheres_box ) {
 			bit = Q2DF_NO_SPHERES;
 		}
 	}
@@ -1893,7 +1893,7 @@ static void DMFlagCallback( void* self ) {
 	if ( f ) {
 		if ( f->curvalue == 0 ) {
 			flags &= ~bit;
-		} else   {
+		} else {
 			flags |= bit;
 		}
 	}
@@ -2291,13 +2291,13 @@ static int pmicmpfnc( const void* _a, const void* _b ) {
 	*/
 	if ( String::Cmp( a->directory, "male" ) == 0 ) {
 		return -1;
-	} else if ( String::Cmp( b->directory, "male" ) == 0 )       {
+	} else if ( String::Cmp( b->directory, "male" ) == 0 ) {
 		return 1;
 	}
 
 	if ( String::Cmp( a->directory, "female" ) == 0 ) {
 		return -1;
-	} else if ( String::Cmp( b->directory, "female" ) == 0 )       {
+	} else if ( String::Cmp( b->directory, "female" ) == 0 ) {
 		return 1;
 	}
 
@@ -2329,10 +2329,10 @@ static bool PlayerConfig_MenuInit() {
 	if ( strchr( currentdirectory, '/' ) ) {
 		String::Cpy( currentskin, strchr( currentdirectory, '/' ) + 1 );
 		*strchr( currentdirectory, '/' ) = 0;
-	} else if ( strchr( currentdirectory, '\\' ) )       {
+	} else if ( strchr( currentdirectory, '\\' ) ) {
 		String::Cpy( currentskin, strchr( currentdirectory, '\\' ) + 1 );
 		*strchr( currentdirectory, '\\' ) = 0;
-	} else   {
+	} else {
 		String::Cpy( currentdirectory, "male" );
 		String::Cpy( currentskin, "grunt" );
 	}
@@ -2571,13 +2571,13 @@ static void DownloadCallback( void* self ) {
 
 	if ( f == &s_allow_download_box ) {
 		Cvar_SetValueLatched( "allow_download", f->curvalue );
-	} else if ( f == &s_allow_download_maps_box )     {
+	} else if ( f == &s_allow_download_maps_box ) {
 		Cvar_SetValueLatched( "allow_download_maps", f->curvalue );
-	} else if ( f == &s_allow_download_models_box )     {
+	} else if ( f == &s_allow_download_models_box ) {
 		Cvar_SetValueLatched( "allow_download_models", f->curvalue );
-	} else if ( f == &s_allow_download_players_box )     {
+	} else if ( f == &s_allow_download_players_box ) {
 		Cvar_SetValueLatched( "allow_download_players", f->curvalue );
-	} else if ( f == &s_allow_download_sounds_box )     {
+	} else if ( f == &s_allow_download_sounds_box ) {
 		Cvar_SetValueLatched( "allow_download_sounds", f->curvalue );
 	}
 }
@@ -2746,7 +2746,7 @@ static void ControlsResetDefaultsFunc( void* unused ) {
 static void InvertMouseFunc( void* unused ) {
 	if ( s_options_invertmouse_box.curvalue == 0 ) {
 		Cvar_SetValueLatched( "m_pitch", fabs( m_pitch->value ) );
-	} else   {
+	} else {
 		Cvar_SetValueLatched( "m_pitch", -fabs( m_pitch->value ) );
 	}
 }
@@ -2989,7 +2989,7 @@ static menuaction_s s_keys_help_computer_action;
 static void KeyCursorDrawFunc( menuframework_s* menu ) {
 	if ( bind_grab ) {
 		UI_DrawChar( menu->x, menu->y + menu->cursor * 9, '=' );
-	} else   {
+	} else {
 		UI_DrawChar( menu->x, menu->y + menu->cursor * 9, 12 + ( ( Sys_Milliseconds() / 250 ) & 1 ) );
 	}
 }
@@ -3003,7 +3003,7 @@ static void DrawKeyBindingFunc( void* self ) {
 
 	if ( key0 == -1 ) {
 		UI_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, "???" );
-	} else   {
+	} else {
 		const char* name = Key_KeynumToString( key0, true );
 
 		UI_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name );

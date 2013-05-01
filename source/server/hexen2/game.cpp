@@ -78,7 +78,7 @@ static void PF_setpuzzlemodel() {
 		vec3_t maxs;
 		CM_ModelBounds( mod, mins, maxs );
 		SetMinMaxSize( e, mins, maxs );
-	} else   {
+	} else {
 		SetMinMaxSize( e, vec3_origin, vec3_origin );
 	}
 }
@@ -231,7 +231,7 @@ static void PFH2_lightstylestatic() {
 	int value = G_FLOAT( OFS_PARM1 );
 	if ( value < 0 ) {
 		value = 0;
-	} else if ( value > 'z' - 'a' )     {
+	} else if ( value > 'z' - 'a' ) {
 		value = 'z' - 'a';
 	}
 	const char* styleString = styleDefs[ value ];
@@ -259,7 +259,7 @@ static void PFHW_lightstylestatic() {
 	int value = G_FLOAT( OFS_PARM1 );
 	if ( value < 0 ) {
 		value = 0;
-	} else if ( value > 'z' - 'a' )     {
+	} else if ( value > 'z' - 'a' ) {
 		value = 'z' - 'a';
 	}
 	const char* styleString = styleDefs[ value ];
@@ -313,16 +313,16 @@ static void PFH2_AdvanceFrame() {
 		// Didn't start in the range
 		ent->SetFrame( start );
 		result = 0;
-	} else if ( ent->GetFrame() == end )     {
+	} else if ( ent->GetFrame() == end ) {
 		// Wrapping
 		ent->SetFrame( start );
 		result = 1;
-	} else   {
+	} else {
 		// Regular Advance
 		ent->SetFrame( ent->GetFrame() + 1 );
 		if ( ent->GetFrame() == end ) {
 			result = 2;
-		} else   {
+		} else {
 			result = 0;
 		}
 	}
@@ -341,27 +341,27 @@ static void PFHW_AdvanceFrame() {
 		// Didn't start in the range
 		ent->SetFrame( start );
 		result = 0;
-	} else if ( ent->GetFrame() == end )     {
+	} else if ( ent->GetFrame() == end ) {
 		// Wrapping
 		ent->SetFrame( start );
 		result = 1;
-	} else if ( end > start )     {
+	} else if ( end > start ) {
 		// Regular Advance
 		ent->SetFrame( ent->GetFrame() + 1 );
 		if ( ent->GetFrame() == end ) {
 			result = 2;
-		} else   {
+		} else {
 			result = 0;
 		}
-	} else if ( end < start )     {
+	} else if ( end < start ) {
 		// Reverse Advance
 		ent->SetFrame( ent->GetFrame() - 1 );
 		if ( ent->GetFrame() == end ) {
 			result = 2;
-		} else   {
+		} else {
 			result = 0;
 		}
-	} else   {
+	} else {
 		ent->SetFrame( end );
 		result = 1;
 	}
@@ -379,16 +379,16 @@ static void PF_RewindFrame() {
 		// Didn't start in the range
 		ent->SetFrame( start );
 		Result = 0;
-	} else if ( ent->GetFrame() == end )     {
+	} else if ( ent->GetFrame() == end ) {
 		// Wrapping
 		ent->SetFrame( start );
 		Result = 1;
-	} else   {
+	} else {
 		// Regular Advance
 		ent->SetFrame( ent->GetFrame() - 1 );
 		if ( ent->GetFrame() == end ) {
 			Result = 2;
-		} else   {
+		} else {
 			Result = 0;
 		}
 	}
@@ -406,19 +406,19 @@ static void PF_advanceweaponframe() {
 		 ( endframe < startframe && ( ent->GetWeaponFrame() < endframe || ent->GetWeaponFrame() > startframe ) ) ) {
 		ent->SetWeaponFrame( startframe );
 		state = WF_CYCLE_STARTED;
-	} else if ( ent->GetWeaponFrame() == endframe )     {
+	} else if ( ent->GetWeaponFrame() == endframe ) {
 		ent->SetWeaponFrame( startframe );
 		state = WF_CYCLE_WRAPPED;
-	} else   {
+	} else {
 		if ( startframe > endframe ) {
 			ent->SetWeaponFrame( ent->GetWeaponFrame() - 1 );
-		} else if ( startframe < endframe )     {
+		} else if ( startframe < endframe ) {
 			ent->SetWeaponFrame( ent->GetWeaponFrame() + 1 );
 		}
 
 		if ( ent->GetWeaponFrame() == endframe ) {
 			state = WF_LAST_FRAME;
-		} else   {
+		} else {
 			state = WF_NORMAL_ADVANCE;
 		}
 	}
@@ -447,7 +447,7 @@ static void PF_matchAngleToSlope() {
 
 	if ( mod < 0 ) {
 		mod = 1;
-	} else   {
+	} else {
 		mod = -1;
 	}
 
@@ -466,7 +466,7 @@ static void PF_updateInfoPlaque() {
 	if ( index > 31 ) {
 		use = &info_mask2;
 		ofs = 32;
-	} else   {
+	} else {
 		use = &info_mask;
 	}
 
@@ -474,7 +474,7 @@ static void PF_updateInfoPlaque() {
 
 	if ( ( ( mode & 1 ) && ( ( *use ) & check ) ) || ( ( mode & 2 ) && !( ( *use ) & check ) ) ) {
 		;
-	} else   {
+	} else {
 		( *use ) ^= check;
 	}
 }
@@ -542,10 +542,10 @@ static void PFH2_changelevel() {
 	if ( ( int )*pr_globalVars.serverflags & ( H2SFL_NEW_UNIT | H2SFL_NEW_EPISODE ) ) {
 		if ( GGameType & GAME_HexenWorld ) {
 			Cbuf_AddText( va( "map %s %s\n",s1, s2 ) );
-		} else   {
+		} else {
 			Cbuf_AddText( va( "changelevel %s %s\n",s1, s2 ) );
 		}
-	} else   {
+	} else {
 		Cbuf_AddText( va( "changelevel2 %s %s\n",s1, s2 ) );
 	}
 }
@@ -561,9 +561,9 @@ static void PFHW_infokey() {
 			 !*value ) {
 			value = Info_ValueForKey( qhw_localinfo, key );
 		}
-	} else if ( e1 <= MAX_CLIENTS_QHW )     {
+	} else if ( e1 <= MAX_CLIENTS_QHW ) {
 		value = Info_ValueForKey( svs.clients[ e1 - 1 ].userinfo, key );
-	} else   {
+	} else {
 		value = "";
 	}
 
@@ -600,7 +600,7 @@ static void PFHW_plaque_draw() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableWrite_Begin( cl, hwsvc_plaque, 3 );
 		SVQH_ClientReliableWrite_Short( cl, Index );
-	} else   {
+	} else {
 		QWWriteDest()->WriteByte( hwsvc_plaque );
 		QWWriteDest()->WriteShort( Index );
 	}
@@ -779,7 +779,7 @@ static void PF_updateeffect() {
 
 		if ( sv.h2_Effects[ index ].Chain.owner ) {
 			sv.h2_Effects[ index ].Chain.state = 1;
-		} else   {
+		} else {
 			sv.h2_Effects[ index ].Chain.state = 2;
 		}
 
@@ -792,7 +792,7 @@ static void PF_updateeffect() {
 		if ( cmd & 1 ) {
 			sv.h2_Effects[ index ].Xbow.activebolts &= ~( 1 << ( ( cmd >> 4 ) & 7 ) );
 			sv.multicast.WriteCoord( G_FLOAT( OFS_PARM3 ) );
-		} else   {
+		} else {
 			sv.h2_Effects[ index ].Xbow.vel[ ( cmd >> 4 ) & 7 ][ 0 ] = G_FLOAT( OFS_PARM3 );
 			sv.h2_Effects[ index ].Xbow.vel[ ( cmd >> 4 ) & 7 ][ 1 ] = G_FLOAT( OFS_PARM4 );
 			sv.h2_Effects[ index ].Xbow.vel[ ( cmd >> 4 ) & 7 ][ 2 ] = 0;
@@ -817,7 +817,7 @@ static void PF_updateeffect() {
 			sv.multicast.WriteCoord( tvec[ 1 ] );
 			sv.multicast.WriteCoord( tvec[ 2 ] );
 			sv.multicast.WriteByte( G_FLOAT( OFS_PARM4 ) );
-		} else   {
+		} else {
 			sv.h2_Effects[ index ].Missile.angle[ 0 ] = G_FLOAT( OFS_PARM3 );
 			sv.multicast.WriteAngle( G_FLOAT( OFS_PARM3 ) );
 			sv.h2_Effects[ index ].Missile.angle[ 1 ] = G_FLOAT( OFS_PARM4 );
@@ -896,7 +896,7 @@ static void PF_name_print() {
 		SVQH_ClientReliableWrite_Begin( cl, hwsvc_name_print, 3 );
 		SVQH_ClientReliableWrite_Byte( cl, style );
 		SVQH_ClientReliableWrite_Byte( cl, index - 1 );		//heh, don't need a short here.
-	} else   {
+	} else {
 		QWWriteDest()->WriteByte( hwsvc_name_print );
 		QWWriteDest()->WriteByte( style );
 		QWWriteDest()->WriteByte( index - 1 );		//heh, don't need a short here.
@@ -943,7 +943,7 @@ static void PF_print_indexed() {
 		SVQH_ClientReliableWrite_Begin( cl, hwsvc_indexed_print, 4 );
 		SVQH_ClientReliableWrite_Byte( cl, style );
 		SVQH_ClientReliableWrite_Short( cl, index );
-	} else   {
+	} else {
 		QWWriteDest()->WriteByte( hwsvc_indexed_print );
 		QWWriteDest()->WriteByte( style );
 		QWWriteDest()->WriteShort( index );

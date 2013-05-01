@@ -609,7 +609,7 @@ int R_CullPointAndRadius( vec3_t pt, float radius ) {
 		float dist = DotProduct( pt, frust->normal ) - frust->dist;
 		if ( dist < -radius ) {
 			return CULL_OUT;
-		} else if ( dist <= radius )     {
+		} else if ( dist <= radius ) {
 			mightBeClipped = true;
 		}
 	}
@@ -913,9 +913,9 @@ static void R_GenerateDrawSurfs() {
 
 	if ( GGameType & GAME_QuakeHexen ) {
 		R_DrawWorldQ1();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		R_DrawWorldQ2();
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		R_AddWorldSurfaces();
 	}
 
@@ -939,13 +939,13 @@ static void R_GenerateDrawSurfs() {
 	int forcedSortIndex = 3;
 	if ( GGameType & GAME_Quake ) {
 		R_DrawWaterSurfaces(forcedSortIndex);
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY, forcedSortIndex );	// This restores the depth mask
 
 		R_DrawWaterSurfaces(forcedSortIndex);
 
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY, forcedSortIndex );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		R_DrawAlphaSurfaces(forcedSortIndex);
 	}
 }
@@ -1073,7 +1073,7 @@ static bool SurfIsOffscreen( const drawSurf_t* drawSurf, vec4_t clipDest[ 128 ] 
 		for ( int j = 0; j < 3; j++ ) {
 			if ( clip[ j ] >= clip[ 3 ] ) {
 				pointFlags |= ( 1 << ( j * 2 ) );
-			} else if ( clip[ j ] <= -clip[ 3 ] )         {
+			} else if ( clip[ j ] <= -clip[ 3 ] ) {
 				pointFlags |= ( 1 << ( j * 2 + 1 ) );
 			}
 		}
@@ -1220,7 +1220,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 				RotatePointAroundVector( camera->axis[ 1 ], camera->axis[ 0 ], transformed, d );
 				CrossProduct( camera->axis[ 0 ], camera->axis[ 1 ], camera->axis[ 2 ] );
 			}
-		} else if ( e->e.skinNum )     {
+		} else if ( e->e.skinNum ) {
 			d = e->e.skinNum;
 			vec3_t transformed;
 			VectorCopy( camera->axis[ 1 ], transformed );
@@ -1589,7 +1589,7 @@ static void R_DebugGraphics() {
 
 	if ( r_debugSurface->integer == 1 ) {
 		CM_DrawDebugSurface( R_DebugPolygon );
-	} else if ( BotDrawDebugPolygonsFunc )     {
+	} else if ( BotDrawDebugPolygonsFunc ) {
 		BotDrawDebugPolygonsFunc( R_DebugPolygon, r_debugSurface->integer );
 	}
 
@@ -1679,7 +1679,7 @@ void R_FogOn() {
 		if ( !( glfogsettings[ FOG_PORTALVIEW ].registered ) ) {
 			return;
 		}
-	} else if ( !glfogNum )     {
+	} else if ( !glfogNum ) {
 		return;
 	}
 

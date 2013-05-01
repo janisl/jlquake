@@ -143,7 +143,7 @@ static void CLT3_ServerStatus_f() {
 			return;
 		}
 		server = cls.servername;
-	} else   {
+	} else {
 		server = Cmd_Argv( 1 );
 	}
 
@@ -202,7 +202,7 @@ void CLT3_ServerStatusResponse( netadr_t from, QMsg* msg ) {
 				info[ l ] = '\0';
 				if ( i ) {
 					common->Printf( "%s\n", info );
-				} else   {
+				} else {
 					common->Printf( "%-24s", info );
 				}
 			}
@@ -232,7 +232,7 @@ void CLT3_ServerStatusResponse( netadr_t from, QMsg* msg ) {
 			}
 			if ( s ) {
 				s++;
-			} else   {
+			} else {
 				s = "unknown";
 			}
 			common->Printf( "%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
@@ -482,7 +482,7 @@ static ping_t* CLT3_GetFreePing() {
 					// still waiting for response
 					continue;
 				}
-			} else if ( pingptr->time < 500 )     {
+			} else if ( pingptr->time < 500 ) {
 				// results have not been queried
 				continue;
 			}
@@ -588,7 +588,7 @@ static void CLT3_GlobalServers_f() {
 		SOCK_StringToAdr( GGameType & GAME_Quake3 ? Q3MASTER_SERVER_NAME : "master.quake3world.com", &to, Q3PORT_MASTER );
 		cls.q3_nummplayerservers = -1;
 		cls.q3_pingUpdateSource = GGameType & GAME_WolfMP ? WMAS_MPLAYER : Q3AS_MPLAYER;
-	} else   {
+	} else {
 		SOCK_StringToAdr( GGameType & GAME_WolfSP ? WSMASTER_SERVER_NAME :
 			GGameType & GAME_WolfMP ? WMMASTER_SERVER_NAME :
 			GGameType & GAME_ET ? ETMASTER_SERVER_NAME : Q3MASTER_SERVER_NAME, &to, Q3PORT_MASTER );
@@ -794,7 +794,7 @@ void CLT3_ServersResponsePacket( netadr_t from, QMsg* msg ) {
 		max = GGameType & GAME_WolfSP ? MAX_GLOBAL_SERVERS_WS :
 			  GGameType & GAME_WolfMP ? MAX_GLOBAL_SERVERS_WM :
 			  GGameType & GAME_ET ? MAX_GLOBAL_SERVERS_ET : MAX_GLOBAL_SERVERS_Q3;
-	} else   {
+	} else {
 		count = cls.q3_nummplayerservers;
 		max = MAX_OTHER_SERVERS_Q3;
 	}
@@ -821,7 +821,7 @@ void CLT3_ServersResponsePacket( netadr_t from, QMsg* msg ) {
 	if ( cls.q3_masterNum == 0 ) {
 		cls.q3_numglobalservers = count;
 		total = count + cls.q3_numGlobalServerAddresses;
-	} else   {
+	} else {
 		cls.q3_nummplayerservers = count;
 		total = count;
 	}

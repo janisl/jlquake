@@ -300,9 +300,9 @@ byte* R_ConvertImage8To32( byte* DataIn, int Width, int Height, int Mode ) {
 			int p = DataIn[ i ];
 			if ( p == 0 ) {
 				DataOut[ i * 4 + 3 ] = 0;
-			} else if ( p & 1 )     {
+			} else if ( p & 1 ) {
 				DataOut[ i * 4 + 3 ] = ( int )( 255 * r_wateralpha->value );
-			} else   {
+			} else {
 				DataOut[ i * 4 + 3 ] = 255;
 			}
 		}
@@ -386,15 +386,15 @@ void R_LoadImage( const char* name, byte** pic, int* width, int* height, int Mod
 			altname[ len - 1 ] = 'g';
 			R_LoadJPG( altname, pic, width, height );
 		}
-	} else if ( !String::ICmp( name + len - 4, ".pcx" ) )       {
+	} else if ( !String::ICmp( name + len - 4, ".pcx" ) ) {
 		R_LoadPCX32( name, pic, width, height, Mode );
-	} else if ( !String::ICmp( name + len - 4, ".bmp" ) )       {
+	} else if ( !String::ICmp( name + len - 4, ".bmp" ) ) {
 		R_LoadBMP( name, pic, width, height );
-	} else if ( !String::ICmp( name + len - 4, ".jpg" ) )       {
+	} else if ( !String::ICmp( name + len - 4, ".jpg" ) ) {
 		R_LoadJPG( name, pic, width, height );
-	} else if ( !String::ICmp( name + len - 4, ".wal" ) )       {
+	} else if ( !String::ICmp( name + len - 4, ".wal" ) ) {
 		R_LoadWAL( name, pic, width, height );
-	} else if ( !String::ICmp( name + len - 4, ".lmp" ) )       {
+	} else if ( !String::ICmp( name + len - 4, ".lmp" ) ) {
 		R_LoadPIC( name, pic, width, height, TransPixels, Mode );
 	}
 }
@@ -536,7 +536,7 @@ static void R_LightScaleTexture( byte* in, int inwidth, int inheight, qboolean o
 				p[ 2 ] = s_gammatable[ p[ 2 ] ];
 			}
 		}
-	} else   {
+	} else {
 		byte* p = in;
 
 		int c = inwidth * inheight;
@@ -547,7 +547,7 @@ static void R_LightScaleTexture( byte* in, int inwidth, int inheight, qboolean o
 				p[ 1 ] = s_intensitytable[ p[ 1 ] ];
 				p[ 2 ] = s_intensitytable[ p[ 2 ] ];
 			}
-		} else   {
+		} else {
 			for ( int i = 0; i < c; i++, p += 4 ) {
 				p[ 0 ] = s_gammatable[ s_intensitytable[ p[ 0 ] ] ];
 				p[ 1 ] = s_gammatable[ s_intensitytable[ p[ 1 ] ] ];
@@ -645,7 +645,7 @@ static void R_UploadImage( byte* data, int width, int height, bool mipmap,
 		if ( characterMip ) {
 			scaled_width >>= r_picmip2->integer;
 			scaled_height >>= r_picmip2->integer;
-		} else   {
+		} else {
 			scaled_width >>= r_picmip->integer;
 			scaled_height >>= r_picmip->integer;
 		}
@@ -686,27 +686,27 @@ static void R_UploadImage( byte* data, int width, int height, bool mipmap,
 		if ( samples == 3 ) {
 			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC ) {
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			} else if ( !noCompress && glConfig.textureCompression == TC_S3TC )     {
+			} else if ( !noCompress && glConfig.textureCompression == TC_S3TC ) {
 				internalFormat = GL_RGB4_S3TC;
-			} else if ( r_texturebits->integer == 16 )     {
+			} else if ( r_texturebits->integer == 16 ) {
 				internalFormat = GL_RGB5;
-			} else if ( r_texturebits->integer == 32 )     {
+			} else if ( r_texturebits->integer == 32 ) {
 				internalFormat = GL_RGB8;
-			} else   {
+			} else {
 				internalFormat = GL_RGB;
 			}
-		} else   {
+		} else {
 			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC ) {
 				internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-			} else if ( r_texturebits->integer == 16 )     {
+			} else if ( r_texturebits->integer == 16 ) {
 				internalFormat = GL_RGBA4;
-			} else if ( r_texturebits->integer == 32 )     {
+			} else if ( r_texturebits->integer == 32 ) {
 				internalFormat = GL_RGBA8;
-			} else   {
+			} else {
 				internalFormat = GL_RGBA;
 			}
 		}
-	} else   {
+	} else {
 		internalFormat = GL_RGB;
 	}
 
@@ -722,7 +722,7 @@ static void R_UploadImage( byte* data, int width, int height, bool mipmap,
 
 			goto done;
 		}
-	} else   {
+	} else {
 		// use the normal mip-mapping function to go down from here
 		while ( width > scaled_width || height > scaled_height ) {
 			R_MipMap( data, width, height );
@@ -781,7 +781,7 @@ done:
 	if ( mipmap ) {
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max );
-	} else   {
+	} else {
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	}
@@ -842,7 +842,7 @@ image_t* R_CreateImage( const char* name, byte* data, int width, int height, boo
 	// RF, if the shader hasn't specifically asked for it, don't allow compression
 	if ( r_ext_compressed_textures->integer == 2 && ( tr.allowCompress != true ) ) {
 		noCompress = true;
-	} else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) )       {
+	} else if ( r_ext_compressed_textures->integer == 1 && ( tr.allowCompress < 0 ) ) {
 		noCompress = true;
 	}
 	// ydnar: don't compress textures smaller or equal to 128x128 pixels
@@ -926,7 +926,7 @@ bool R_TouchImage( image_t* inImage ) {
 			// remove it from the backupHashTable
 			if ( bImagePrev ) {
 				bImagePrev->next = bImage->next;
-			} else   {
+			} else {
 				backupHashTable[ hash ] = bImage->next;
 			}
 
@@ -988,7 +988,7 @@ image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
 	if ( r_cacheGathering->integer ) {
 		if ( GGameType & GAME_WolfSP ) {
 			Cbuf_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i %i\n", name, mipmap, allowPicmip, characterMIP, glWrapClampMode ) );
-		} else   {
+		} else {
 			Cbuf_ExecuteText( EXEC_NOW, va( "cache_usedfile image %s %i %i %i\n", name, mipmap, allowPicmip, glWrapClampMode ) );
 		}
 	}
@@ -1084,7 +1084,7 @@ void R_SetColorMappings() {
 		if ( tr.overbrightBits > 2 ) {
 			tr.overbrightBits = 2;
 		}
-	} else   {
+	} else {
 		if ( tr.overbrightBits > 1 ) {
 			tr.overbrightBits = 1;
 		}
@@ -1102,7 +1102,7 @@ void R_SetColorMappings() {
 
 	if ( r_gamma->value < 0.5f ) {
 		Cvar_Set( "r_gamma", "0.5" );
-	} else if ( r_gamma->value > 3.0f )     {
+	} else if ( r_gamma->value > 3.0f ) {
 		Cvar_Set( "r_gamma", "3.0" );
 	}
 
@@ -1114,7 +1114,7 @@ void R_SetColorMappings() {
 		int inf;
 		if ( g == 1 ) {
 			inf = i;
-		} else   {
+		} else {
 			inf = ( int )( 255 * pow( i / 255.0f, 1.0f / g ) + 0.5f );
 		}
 		inf <<= shift;
@@ -1186,7 +1186,7 @@ static void R_CreateDlightImage() {
 			int b = ( int )( 4000 / d );
 			if ( b > 255 ) {
 				b = 255;
-			} else if ( b < 75 )     {
+			} else if ( b < 75 ) {
 				b = 0;
 			}
 			data[ y ][ x ][ 0 ] =
@@ -1281,14 +1281,14 @@ static void R_CreateFogImageET() {
 			int alpha = 270 * ( ( float )x / FOG_S ) * ( ( float )y / FOG_T );		// need slop room for fp round to 0
 			if ( alpha < 0 ) {
 				alpha = 0;
-			} else if ( alpha > 255 )     {
+			} else if ( alpha > 255 ) {
 				alpha = 255;
 			}
 
 			// ensure edge/corner cases are fully transparent (at 0,0) or fully opaque (at 1,N where N is 0-1.0)
 			if ( x == 0 ) {
 				alpha = 0;
-			} else if ( x == ( FOG_S - 1 ) )       {
+			} else if ( x == ( FOG_S - 1 ) ) {
 				alpha = 255;
 			}
 
@@ -1335,7 +1335,7 @@ static void R_CreateBuiltinImages() {
 
 	if ( GGameType & GAME_ET ) {
 		R_CreateFogImageET();
-	} else   {
+	} else {
 		R_CreateFogImage();
 	}
 
@@ -1367,9 +1367,9 @@ static void R_LoadCacheImages() {
 		}
 		if ( GGameType & GAME_WolfSP ) {
 			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 3 ], IMG8MODE_Normal, NULL, parms[ 2 ] );
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], IMG8MODE_Normal, NULL, false, parms[ 3 ] );
-		} else   {
+		} else {
 			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ] );
 		}
 	}
@@ -1409,7 +1409,7 @@ void R_DeleteTextures() {
 		qglBindTexture( GL_TEXTURE_2D, 0 );
 		GL_SelectTexture( 0 );
 		qglBindTexture( GL_TEXTURE_2D, 0 );
-	} else   {
+	} else {
 		qglBindTexture( GL_TEXTURE_2D, 0 );
 	}
 }
@@ -1582,7 +1582,7 @@ void R_UploadCinematic( int cols, int rows, const byte* data, int client, bool d
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-	} else   {
+	} else {
 		if ( dirty ) {
 			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
 			// it and don't try and do a texture compression
@@ -1607,7 +1607,7 @@ static void R_CreateOrUpdateTranslatedImageEx( image_t*& image, const char* name
 
 	if ( !image ) {
 		image = R_CreateImage( name, translated32, width, height, false, allowPicMip, GL_CLAMP );
-	} else   {
+	} else {
 		R_ReUploadImage( image, translated32 );
 	}
 	delete[] translated32;
@@ -1702,7 +1702,7 @@ static image_t* R_RegisterPic( const char* name, GLenum wrapClampMode ) {
 		char fullname[ MAX_QPATH ];
 		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
 		return R_FindImageFile( fullname, false, false, wrapClampMode );
-	} else   {
+	} else {
 		return R_FindImageFile( name + 1, false, false, wrapClampMode );
 	}
 }
@@ -1755,7 +1755,7 @@ void R_BackupImages() {
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 			GL_SelectTexture( 0 );
 			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else   {
+		} else {
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
@@ -1772,7 +1772,7 @@ static void R_PurgeImage( image_t* image ) {
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 			GL_SelectTexture( 0 );
 			qglBindTexture( GL_TEXTURE_2D, 0 );
-		} else   {
+		} else {
 			qglBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
@@ -1803,7 +1803,7 @@ void R_PurgeBackupImages( int purgeCount ) {
 			if ( cnt >= purgeCount ) {
 				return;
 			}
-		} else   {
+		} else {
 			i++;	// no images in this slot, so move to the next one
 		}
 	}

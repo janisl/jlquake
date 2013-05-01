@@ -116,11 +116,11 @@ bool SNDDMA_Init() {
 
 	if ( s_khz->integer == 44 ) {
 		dma.speed = 44100;
-	} else if ( s_khz->integer == 22 )     {
+	} else if ( s_khz->integer == 22 ) {
 		dma.speed = 22050;
-	} else if ( s_khz->integer == 11 )     {
+	} else if ( s_khz->integer == 11 ) {
 		dma.speed = 11025;
-	} else   {
+	} else {
 		dma.speed = 0;
 	}
 
@@ -132,7 +132,7 @@ bool SNDDMA_Init() {
 		if ( err < 0 ) {
 			common->Printf( "ALSA: cannot set rate %d(%s)\n", r, snd_strerror( err ) );
 			dma.speed = 0;
-		} else   {
+		} else {
 			//rate succeeded, but is perhaps slightly different
 			if ( dir != 0 && dma.speed != ( int )r ) {
 				common->Printf( "ALSA: rate %d not supported, using %d\n", dma.speed, r );
@@ -148,7 +148,7 @@ bool SNDDMA_Init() {
 			err = snd_pcm_hw_params_set_rate_near( pcm_handle, hw_params, &r, &dir );
 			if ( err < 0 ) {
 				common->Printf( "ALSA: cannot set rate %d(%s)\n", r, snd_strerror( err ) );
-			} else   {
+			} else {
 				//rate succeeded, but is perhaps slightly different
 				dma.speed = r;
 				if ( dir != 0 ) {
@@ -191,7 +191,7 @@ bool SNDDMA_Init() {
 		common->Printf( "ALSA: cannot set period size (%s)\n", snd_strerror( err ) );
 		snd_pcm_hw_params_free( hw_params );
 		return false;
-	} else   {
+	} else {
 		//rate succeeded, but is perhaps slightly different
 		if ( dir != 0 ) {
 			common->Printf( "ALSA: period %d not supported, using %lu\n", ( BUFFER_SAMPLES / dma.channels ), p );

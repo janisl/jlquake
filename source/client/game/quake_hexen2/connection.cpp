@@ -119,7 +119,7 @@ static void CLQH_SendMove( in_usercmd_t* cmd ) {
 		buf.WriteByte( cl.h2_current_sequence );
 
 		buf.WriteByte( h2clc_move );
-	} else   {
+	} else {
 		buf.WriteByte( q1clc_move );
 	}
 	buf.WriteFloat( cmd->mtime );
@@ -186,7 +186,7 @@ void CLQH_Disconnect() {
 	// if running a local server, shut it down
 	if ( clc.demoplaying ) {
 		CLQH_StopPlayback();
-	} else if ( cls.state != CA_DISCONNECTED )     {
+	} else if ( cls.state != CA_DISCONNECTED ) {
 		if ( clc.demorecording ) {
 			CLQH_Stop_f();
 		}
@@ -223,7 +223,7 @@ void CLQHW_Disconnect() {
 	// if running a local server, shut it down
 	if ( clc.demoplaying ) {
 		CLQH_StopPlayback();
-	} else if ( cls.state != CA_DISCONNECTED )     {
+	} else if ( cls.state != CA_DISCONNECTED ) {
 		if ( clc.demorecording ) {
 			CLQH_Stop_f();
 		}
@@ -331,7 +331,7 @@ void CLQHW_SendConnectPacket() {
 
 		sprintf( data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
 			255, 255, 255, 255, QWPROTOCOL_VERSION, cls.quakePort, cls.challenge, cls.qh_userinfo );
-	} else   {
+	} else {
 		common->Printf( "Connecting to %s...\n", cls.servername );
 		sprintf( data, "%c%c%c%cconnect %d \"%s\"\n",
 			255, 255, 255, 255, com_portals, cls.qh_userinfo );
@@ -562,7 +562,7 @@ void CLQH_ReadFromServer() {
 		cl.qh_last_received_message = cls.realtime * 0.001;
 		if ( GGameType & GAME_Hexen2 ) {
 			CLH2_ParseServerMessage( net_message );
-		} else   {
+		} else {
 			CLQ1_ParseServerMessage( net_message );
 		}
 	} while ( ret && cls.state == CA_ACTIVE );
@@ -607,7 +607,7 @@ void CLQHW_ReadPackets() {
 		clc.netchan.lastReceived = cls.realtime;
 		if ( GGameType & GAME_HexenWorld ) {
 			CLHW_ParseServerMessage( net_message );
-		} else   {
+		} else {
 			CLQW_ParseServerMessage( net_message );
 		}
 	}

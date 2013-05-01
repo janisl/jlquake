@@ -189,11 +189,11 @@ static char* Com_ParseExt( const char** data_p, bool allowLineBreaks ) {
 			if ( ( c == '\\' ) && ( *data == '\"' ) ) {
 				// allow quoted strings to use \" to indicate the " character
 				data++;
-			} else if ( c == '\"' || !c )     {
+			} else if ( c == '\"' || !c ) {
 				pi->token[ len ] = 0;
 				*data_p = ( char* )data;
 				return pi->token;
-			} else if ( *data == '\n' )     {
+			} else if ( *data == '\n' ) {
 				pi->lines++;
 			}
 			if ( len < MAX_TOKEN_CHARS_Q3 - 1 ) {
@@ -331,7 +331,7 @@ void Com_MatchToken( const char** buf_p, const char* match, bool warning ) {
 	if ( String::Cmp( token, match ) ) {
 		if ( warning ) {
 			Com_ScriptWarning( "MatchToken: %s != %s", token, match );
-		} else   {
+		} else {
 			Com_ScriptError( "MatchToken: %s != %s", token, match );
 		}
 	}

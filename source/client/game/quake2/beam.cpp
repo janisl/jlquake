@@ -151,7 +151,7 @@ void CLQ2_AddBeams() {
 		if ( b->model == clq2_mod_lightning ) {
 			model_length = 35.0;
 			d -= 20.0;	// correction so it doesn't end in middle of tesla
-		} else   {
+		} else {
 			model_length = 30.0;
 		}
 		float steps = ceil( d / model_length );
@@ -183,7 +183,7 @@ void CLQ2_AddBeams() {
 				angles[ 0 ] = -pitch;
 				angles[ 1 ] = yaw + 180.0;
 				angles[ 2 ] = rand() % 360;
-			} else   {
+			} else {
 				angles[ 0 ] = pitch;
 				angles[ 1 ] = yaw;
 				angles[ 2 ] = rand() % 360;
@@ -205,12 +205,12 @@ void CLQ2_AddPlayerBeams() {
 	if ( q2_hand ) {
 		if ( q2_hand->value == 2 ) {
 			hand_multiplier = 0;
-		} else if ( q2_hand->value == 1 )     {
+		} else if ( q2_hand->value == 1 ) {
 			hand_multiplier = -1;
-		} else   {
+		} else {
 			hand_multiplier = 1;
 		}
-	} else   {
+	} else {
 		hand_multiplier = 1;
 	}
 
@@ -243,10 +243,10 @@ void CLQ2_AddPlayerBeams() {
 				if ( q2_hand && ( q2_hand->value == 2 ) ) {
 					VectorMA( org, -1, cl.refdef.viewaxis[ 2 ], org );
 				}
-			} else   {
+			} else {
 				VectorCopy( b->start, org );
 			}
-		} else   {
+		} else {
 			// if coming from the player, update the start position
 			if ( b->entity == cl.viewentity ) {
 				VectorCopy( cl.refdef.vieworg, b->start );
@@ -291,11 +291,11 @@ void CLQ2_AddPlayerBeams() {
 					VectorMA( org, -b->offset[ 0 ] + 1, r, org );
 					VectorMA( org, -b->offset[ 1 ], f, org );
 					VectorMA( org, -b->offset[ 2 ] - 10, u, org );
-				} else   {
+				} else {
 					// if it's a monster, do the particle effect
 					CLQ2_MonsterPlasma_Shell( b->start );
 				}
-			} else   {
+			} else {
 				framenum = 1;
 			}
 		}
@@ -314,10 +314,10 @@ void CLQ2_AddPlayerBeams() {
 		float model_length;
 		if ( b->model == clq2_mod_heatbeam ) {
 			model_length = 32.0;
-		} else if ( b->model == clq2_mod_lightning )     {
+		} else if ( b->model == clq2_mod_lightning ) {
 			model_length = 35.0;
 			d -= 20.0;	// correction so it doesn't end in middle of tesla
-		} else   {
+		} else {
 			model_length = 30.0;
 		}
 		float steps = ceil( d / model_length );
@@ -350,13 +350,13 @@ void CLQ2_AddPlayerBeams() {
 				angles[ 1 ] = yaw + 180.0;
 				angles[ 2 ] = ( cl.serverTime ) % 360;
 				ent.frame = framenum;
-			} else if ( b->model == clq2_mod_lightning )     {
+			} else if ( b->model == clq2_mod_lightning ) {
 				ent.renderfx = RF_ABSOLUTE_LIGHT;
 				ent.absoluteLight = 1;
 				angles[ 0 ] = -pitch;
 				angles[ 1 ] = yaw + 180.0;
 				angles[ 2 ] = rand() % 360;
-			} else   {
+			} else {
 				angles[ 0 ] = pitch;
 				angles[ 1 ] = yaw;
 				angles[ 2 ] = rand() % 360;

@@ -168,7 +168,7 @@ void BotInitMoveStateQ3( int handle, bot_initmove_q3_t* initmove ) {
 		if ( initmove->or_moveflags & Q3MFL_GRAPPLEPULL ) {
 			ms->moveflags |= Q3MFL_GRAPPLEPULL;
 		}
-	} else   {
+	} else {
 		ms->moveflags &= ~WOLFMFL_WALK;
 		if ( initmove->or_moveflags & WOLFMFL_WALK ) {
 			ms->moveflags |= WOLFMFL_WALK;
@@ -224,7 +224,7 @@ void BotSetBrushModelTypes() {
 		int modelnum;
 		if ( model[ 0 ] ) {
 			modelnum = String::Atoi( model + 1 );
-		} else   {
+		} else {
 			modelnum = 0;
 		}
 
@@ -235,11 +235,11 @@ void BotSetBrushModelTypes() {
 
 		if ( !String::ICmp( classname, "func_bobbing" ) ) {
 			modeltypes[ modelnum ] = MODELTYPE_FUNC_BOB;
-		} else if ( !String::ICmp( classname, "func_plat" ) )       {
+		} else if ( !String::ICmp( classname, "func_plat" ) ) {
 			modeltypes[ modelnum ] = MODELTYPE_FUNC_PLAT;
-		} else if ( GGameType & GAME_Quake3 && !String::ICmp( classname, "func_door" ) )       {
+		} else if ( GGameType & GAME_Quake3 && !String::ICmp( classname, "func_door" ) ) {
 			modeltypes[ modelnum ] = MODELTYPE_FUNC_DOOR;
-		} else if ( GGameType & GAME_Quake3 && !String::ICmp( classname, "func_static" ) )       {
+		} else if ( GGameType & GAME_Quake3 && !String::ICmp( classname, "func_static" ) ) {
 			modeltypes[ modelnum ] = MODELTYPE_FUNC_STATIC;
 		}
 	}
@@ -262,7 +262,7 @@ static void BotAddToAvoidReach( bot_movestate_t* ms, int number, float avoidtime
 		if ( ms->avoidreach[ i ] == number ) {
 			if ( ms->avoidreachtimes[ i ] > AAS_Time() ) {
 				ms->avoidreachtries[ i ]++;
-			} else   {
+			} else {
 				ms->avoidreachtries[ i ] = 1;
 			}
 			ms->avoidreachtimes[ i ] = AAS_Time() + avoidtime;
@@ -309,14 +309,14 @@ static int BotAvoidSpots( const vec3_t origin, const aas_reachability_t* reach, 
 		if ( squareddist < squaredradius &&
 			 VectorDistanceSquared( avoidspots[ i ].origin, origin ) > squareddist ) {
 			type = avoidspots[ i ].type;
-		} else if ( checkbetween )     {
+		} else if ( checkbetween ) {
 			squareddist = DistanceFromLineSquared( avoidspots[ i ].origin, reach->start, reach->end );
 			// if moving towards the avoid spot
 			if ( squareddist < squaredradius &&
 				 VectorDistanceSquared( avoidspots[ i ].origin, reach->start ) > squareddist ) {
 				type = avoidspots[ i ].type;
 			}
-		} else   {
+		} else {
 			VectorDistanceSquared( avoidspots[ i ].origin, reach->end );
 			// if the reachability leads closer to the avoid spot
 			if ( squareddist < squaredradius &&
@@ -358,7 +358,7 @@ int BotAddToTarget( const vec3_t start, const vec3_t end, float maxdist, float* 
 		VectorCopy( end, target );
 		*dist += curdist;
 		return false;
-	} else   {
+	} else {
 		VectorMA( start, maxdist - *dist, dir, target );
 		*dist = maxdist;
 		return true;
@@ -411,7 +411,7 @@ static bool BotAirControl( const vec3_t origin, const vec3_t velocity, const vec
 			}
 			*speed = 400 - ( 400 - 13 * dist );
 			return true;
-		} else   {
+		} else {
 			VectorAdd( org, vel, org );
 		}
 	}
@@ -452,14 +452,14 @@ static void BotFuncBobStartEnd( const aas_reachability_t* reach, vec3_t start, v
 		origin[ 0 ] += mid[ 0 ];
 		origin[ 1 ] = mid[ 1 ];
 		origin[ 2 ] = mid[ 2 ];
-	} else if ( spawnflags & 2 )     {
+	} else if ( spawnflags & 2 ) {
 		start[ 1 ] = num0;
 		end[ 1 ] = num1;
 
 		origin[ 0 ] = mid[ 0 ];
 		origin[ 1 ] += mid[ 1 ];
 		origin[ 2 ] = mid[ 2 ];
-	} else   {
+	} else {
 		start[ 2 ] = num0;
 		end[ 2 ] = num1;
 
@@ -512,7 +512,7 @@ static int GrappleStateWolf( const bot_movestate_t* ms, const aas_reachability_t
 				if ( VectorLength( dir ) < 32 ) {
 					return 2;
 				}
-			} else   {
+			} else {
 				//still shooting hook
 				return 1;
 			}
@@ -528,7 +528,7 @@ static int GrappleStateWolf( const bot_movestate_t* ms, const aas_reachability_t
 static int GrappleState( const bot_movestate_t* ms, const aas_reachability_t* reach ) {
 	if ( GGameType & GAME_Quake3 ) {
 		return GrappleStateQ3( ms, reach );
-	} else   {
+	} else {
 		return GrappleStateWolf( ms, reach );
 	}
 }
@@ -723,7 +723,7 @@ again:
 		if ( GGameType & GAME_WolfSP ) {
 			//get the travel time (ignore routes that leads us back our current area)
 			t = AAS_AreaTravelTimeToGoalAreaCheckLoop( reach.areanum, reach.end, goal->areanum, travelflags, areanum );
-		} else   {
+		} else {
 			//get the travel time
 			t = AAS_AreaTravelTimeToGoalArea( reach.areanum, reach.end, goal->areanum, travelflags );
 		}
@@ -744,7 +744,7 @@ again:
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 			// Ridah, not sure why this was disabled, but it causes looped links in the route-cache
 			t += reach.traveltime + AAS_AreaTravelTime( areanum, origin, reach.start );
-		} else   {
+		} else {
 			t += reach.traveltime;
 		}
 		//if the travel time is better than the ones already found
@@ -849,7 +849,7 @@ static int BotFirstReachabilityArea( const vec3_t origin, const int* areas, int 
 						bestDist = dist;
 					}
 				}
-			} else   {
+			} else {
 				bsp_trace_t tr = AAS_Trace( origin, NULL, NULL, center, -1, BSP46CONTENTS_SOLID | BSP46CONTENTS_PLAYERCLIP );
 				if ( tr.fraction == 1.0 && !tr.startsolid && !tr.allsolid ) {
 					best = areas[ i ];
@@ -952,12 +952,12 @@ int BotFuzzyPointReachabilityArea( const vec3_t origin ) {
 					end[ 0 ] += x * 256;
 					end[ 1 ] += y * 256;
 					end[ 2 ] += z * 200;
-				} else if ( GGameType & GAME_WolfMP )     {
+				} else if ( GGameType & GAME_WolfMP ) {
 					// Ridah, increased this for Wolf larger bounding boxes
 					end[ 0 ] += x * 16;
 					end[ 1 ] += y * 16;
 					end[ 2 ] += z * 24;
-				} else   {
+				} else {
 					end[ 0 ] += x * 8;
 					end[ 1 ] += y * 8;
 					end[ 2 ] += z * 12;
@@ -1290,7 +1290,7 @@ static bool BotWalkInDirection( bot_movestate_t* ms, const vec3_t dir, float spe
 		int presencetype;
 		if ( ( type & MOVE_CROUCH ) && !( type & MOVE_JUMP ) ) {
 			presencetype = PRESENCE_CROUCH;
-		} else   {
+		} else {
 			presencetype = PRESENCE_NORMAL;
 		}
 		//horizontal direction
@@ -1320,7 +1320,7 @@ static bool BotWalkInDirection( bot_movestate_t* ms, const vec3_t dir, float spe
 			cmdframes = 1;
 			stopevent = SE_HITGROUND | SE_HITGROUNDDAMAGE |
 						SE_ENTERWATER | SE_ENTERSLIME | SE_ENTERLAVA;
-		} else   {
+		} else {
 			maxframes = 2;
 			cmdframes = 2;
 			stopevent = SE_HITGROUNDDAMAGE |
@@ -1378,7 +1378,7 @@ static bool BotWalkInDirection( bot_movestate_t* ms, const vec3_t dir, float spe
 		EA_Move( ms->client, hordir, speed );
 		//movement was succesfull
 		return true;
-	} else   {
+	} else {
 		if ( ms->moveflags & MFL_BARRIERJUMP ) {
 			//if near the top or going down
 			if ( ms->velocity[ 2 ] < 50 ) {
@@ -1398,7 +1398,7 @@ bool BotMoveInDirection( int movestate, const vec3_t dir, float speed, int type 
 	//if swimming
 	if ( AAS_Swimming( ms->origin ) ) {
 		return BotSwimInDirection( ms, dir, speed, type );
-	} else   {
+	} else {
 		return BotWalkInDirection( ms, dir, speed, type );
 	}
 }
@@ -1476,14 +1476,14 @@ static bot_moveresult_t BotTravel_Walk( const bot_movestate_t* ms, const aas_rea
 	if ( ms->moveflags & ( GGameType & GAME_Quake3 ? Q3MFL_WALK : WOLFMFL_WALK ) ) {
 		if ( dist > 0 ) {
 			speed = 200 - ( 180 - 1 * dist );
-		} else   {
+		} else {
 			speed = 200;
 		}
 		EA_Walk( ms->client );
-	} else   {
+	} else {
 		if ( dist > 0 ) {
 			speed = 400 - ( 360 - 2 * dist );
-		} else   {
+		} else {
 			speed = 400;
 		}
 	}
@@ -1541,20 +1541,20 @@ static bot_moveresult_t BotTravel_BarrierJump( const bot_movestate_t* ms, const 
 			if ( GGameType & GAME_ET ) {
 				dist = 90;
 				speed = 400 - ( 360 - 4 * dist );
-			} else   {
+			} else {
 				dist = 60;
 				speed = 360 - ( 360 - 6 * dist );
 			}
 			EA_Move( ms->client, hordir, speed );
 		}
-	} else   {
+	} else {
 		float speed;
 		if ( GGameType & GAME_ET ) {
 			if ( dist > 90 ) {
 				dist = 90;
 			}
 			speed = 400 - ( 360 - 4 * dist );
-		} else   {
+		} else {
 			if ( dist > 60 ) {
 				dist = 60;
 			}
@@ -1576,7 +1576,7 @@ static bot_moveresult_t BotFinishTravel_BarrierJump( const bot_movestate_t* ms, 
 		if ( GGameType & GAME_Quake3 ) {
 			hordir[ 0 ] = reach->end[ 0 ] - ms->origin[ 0 ];
 			hordir[ 1 ] = reach->end[ 1 ] - ms->origin[ 1 ];
-		} else   {
+		} else {
 			// Ridah, extend the end point a bit, so we strive to get over the ledge more
 			vec3_t end;
 			VectorSubtract( reach->end, reach->start, end );
@@ -1593,7 +1593,7 @@ static bot_moveresult_t BotFinishTravel_BarrierJump( const bot_movestate_t* ms, 
 
 		if ( GGameType & GAME_Quake3 ) {
 			EA_Move( ms->client, hordir, 400 );
-		} else   {
+		} else {
 			if ( dist > 60 ) {
 				dist = 60;
 			}
@@ -1601,7 +1601,7 @@ static bot_moveresult_t BotFinishTravel_BarrierJump( const bot_movestate_t* ms, 
 			EA_Move( ms->client, hordir, speed );
 		}
 		VectorCopy( hordir, result.movedir );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		// hold crouch in case we are going for a crouch area
 		if ( AAS_AreaPresenceType( reach->areanum ) & PRESENCE_CROUCH ) {
 			EA_Crouch( ms->client );
@@ -1718,7 +1718,7 @@ static bot_moveresult_t BotTravel_WalkOffLedge( const bot_movestate_t* ms, const
 			hordir[ 0 ] = reach->end[ 0 ] - ms->origin[ 0 ];
 			hordir[ 1 ] = reach->end[ 1 ] - ms->origin[ 1 ];
 			hordir[ 2 ] = 0;
-		} else   {
+		} else {
 			VectorCopy( dir, hordir );
 		}
 		VectorNormalize( hordir );
@@ -1774,7 +1774,7 @@ static bot_moveresult_t BotFinishTravel_WalkOffLedge( const bot_movestate_t* ms,
 	vec3_t end;
 	if ( dist > 16 ) {
 		VectorMA( reach->end, 16, v, end );
-	} else   {
+	} else {
 		VectorCopy( reach->end, end );
 	}
 
@@ -1848,13 +1848,13 @@ static bot_moveresult_t BotTravel_Jump( bot_movestate_t* ms, const aas_reachabil
 		//elemantary action jump
 		if ( dist1 < 24 ) {
 			EA_Jump( ms->client );
-		} else if ( dist1 < 32 )     {
+		} else if ( dist1 < 32 ) {
 			EA_DelayedJump( ms->client );
 		}
 		EA_Move( ms->client, hordir, 600 );
 
 		ms->jumpreach = ms->lastreachnum;
-	} else   {
+	} else {
 		hordir[ 0 ] = runstart[ 0 ] - ms->origin[ 0 ];
 		hordir[ 1 ] = runstart[ 1 ] - ms->origin[ 1 ];
 		hordir[ 2 ] = 0;
@@ -1978,13 +1978,13 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 				AngleVectors( result.ideal_viewangles, NULL, right, NULL );
 				if ( DotProduct( vec, right ) > 0 ) {
 					EA_MoveRight( ms->client );
-				} else   {
+				} else {
 					EA_MoveLeft( ms->client );
 				}
 			}
 			//set movement view flag so the AI can see the view is focussed
 			result.flags |= MOVERESULT_MOVEMENTVIEW;
-		} else   {
+		} else {
 			// find a postion back away from the edge of the ladder
 			vec3_t hordir;
 			VectorSubtract( reach->end, reach->start, hordir );
@@ -2039,7 +2039,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 			float speed = 400 - ( 300 - 2 * dist );
 			EA_Move( ms->client, dir, speed );
 		}
-	} else   {
+	} else {
 		if ( ( ms->moveflags & MFL_AGAINSTLADDER )
 			//NOTE: not a good idea for ladders starting in water
 			 || !( ms->moveflags & MFL_ONGROUND ) ) {
@@ -2052,7 +2052,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 			viewdir[ 2 ] = dir[ 2 ];
 			if ( dir[ 2 ] < 0 ) {		// going down, so face the other way (towards ladder)
 				VectorInverse( viewdir );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				viewdir[ 2 ] = 0;	// straight forward goes up
 			}
 			if ( !( GGameType & GAME_WolfMP ) ) {
@@ -2064,7 +2064,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 			EA_Move( ms->client, origin, 0 );
 			if ( !( GGameType & GAME_WolfMP ) && dir[ 2 ] < 0 ) {			// going down, so face the other way
 				EA_MoveBack( ms->client );
-			} else   {
+			} else {
 				EA_MoveForward( ms->client );
 			}
 			if ( !( GGameType & GAME_WolfMP ) ) {
@@ -2085,7 +2085,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 				vec3_t pos;
 				if ( GGameType & GAME_ET ) {
 					ProjectPointOntoVectorBounded( p, v1, v2, pos );
-				} else   {
+				} else {
 					ProjectPointOntoVectorFromPoints( p, v1, v2, pos );
 				}
 				VectorSubtract( pos, p, vec );
@@ -2094,14 +2094,14 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 					AngleVectors( result.ideal_viewangles, NULL, right, NULL );
 					if ( DotProduct( vec, right ) > 0 ) {
 						EA_MoveRight( ms->client );
-					} else   {
+					} else {
 						EA_MoveLeft( ms->client );
 					}
 				}
 			}
 			//set movement view flag so the AI can see the view is focussed
 			result.flags |= MOVERESULT_MOVEMENTVIEW;
-		} else   {
+		} else {
 			// find a postion back away from the base of the ladder
 			vec3_t hordir;
 			VectorSubtract( reach->end, reach->start, hordir );
@@ -2114,9 +2114,9 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 				vec3_t p;
 				ProjectPointOntoVectorFromPoints( ms->origin, pos, reach->start, p );
 				VectorSubtract( p, ms->origin, dir );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				VectorSubtract( pos, ms->origin, dir );
-			} else   {
+			} else {
 				vec3_t v1;
 				VectorCopy( reach->end, v1 );
 				v1[ 2 ] = pos[ 2 ];
@@ -2159,7 +2159,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 			float speed;
 			if ( GGameType & GAME_WolfMP ) {
 				speed = 400 - ( 200 - 4 * dist );
-			} else   {
+			} else {
 				speed = 400 - ( 300 - 6 * dist );
 			}
 			EA_Move( ms->client, dir, speed );
@@ -2174,7 +2174,7 @@ static bot_moveresult_t BotTravel_LadderWolf( const bot_movestate_t* ms, const a
 static bot_moveresult_t BotTravel_Ladder( const bot_movestate_t* ms, const aas_reachability_t* reach ) {
 	if ( GGameType & GAME_Quake3 ) {
 		return BotTravel_LadderQ3( ms, reach );
-	} else   {
+	} else {
 		return BotTravel_LadderWolf( ms, reach );
 	}
 }
@@ -2199,7 +2199,7 @@ static bot_moveresult_t BotTravel_Teleport( const bot_movestate_t* ms, const aas
 
 	if ( dist < 30 ) {
 		EA_Move( ms->client, hordir, 200 );
-	} else   {
+	} else {
 		EA_Move( ms->client, hordir, 400 );
 	}
 
@@ -2250,7 +2250,7 @@ static bot_moveresult_t BotTravel_Elevator( bot_movestate_t* ms, const aas_reach
 				VectorCopy( hordir, result.movedir );
 			}
 		}
-	} else   {
+	} else {
 		//if very near the reachability end
 		vec3_t dir;
 		VectorSubtract( reach->end, ms->origin, dir );
@@ -2324,7 +2324,7 @@ static bot_moveresult_t BotTravel_Elevator( bot_movestate_t* ms, const aas_reach
 		if ( dist1 < 20 || dist2 < dist1 || DotProduct( dir1, dir2 ) < 0 ) {
 			dist = dist2;
 			VectorCopy( dir2, dir );
-		} else   {	//closer to the reachability start
+		} else {	//closer to the reachability start
 			dist = dist1;
 			VectorCopy( dir1, dir );
 		}
@@ -2363,7 +2363,7 @@ static bot_moveresult_t BotFinishTravel_Elevator( const bot_movestate_t* ms, con
 	if ( idMath::Fabs( bottomdir[ 2 ] ) < idMath::Fabs( topdir[ 2 ] ) ) {
 		VectorNormalize( bottomdir );
 		EA_Move( ms->client, bottomdir, 300 );
-	} else   {
+	} else {
 		VectorNormalize( topdir );
 		EA_Move( ms->client, topdir, 300 );
 	}
@@ -2412,7 +2412,7 @@ static bot_moveresult_t BotTravel_FuncBobbing( bot_movestate_t* ms, const aas_re
 				VectorCopy( hordir, result.movedir );
 			}
 		}
-	} else   {
+	} else {
 		//if very near the reachability end
 		vec3_t dir;
 		VectorSubtract( reach->end, ms->origin, dir );
@@ -2487,7 +2487,7 @@ static bot_moveresult_t BotTravel_FuncBobbing( bot_movestate_t* ms, const aas_re
 		if ( dist1 < 20 || dist2 < dist1 || DotProduct( dir1, dir2 ) < 0 ) {
 			dist = dist2;
 			VectorCopy( dir2, dir );
-		} else   {	//closer to the reachability start
+		} else {	//closer to the reachability start
 			dist = dist1;
 			VectorCopy( dir1, dir );
 		}
@@ -2543,7 +2543,7 @@ static bot_moveresult_t BotFinishTravel_FuncBobbing( const bot_movestate_t* ms, 
 		if ( ms->moveflags & MFL_SWIMMING ) {
 			result.flags |= MOVERESULT_SWIMVIEW;
 		}
-	} else   {
+	} else {
 		vec3_t bottomcenter;
 		MoverBottomCenter( reach, bottomcenter );
 		vec3_t hordir;
@@ -2597,7 +2597,7 @@ static bot_moveresult_t BotTravel_RocketJump( bot_movestate_t* ms, const aas_rea
 		EA_Move( ms->client, hordir, 800 );
 
 		ms->jumpreach = ms->lastreachnum;
-	} else   {
+	} else {
 		if ( dist > 80 ) {
 			dist = 80;
 		}
@@ -2648,7 +2648,7 @@ static bot_moveresult_t BotTravel_BFGJump( bot_movestate_t* ms, const aas_reacha
 		EA_Move( ms->client, hordir, 800 );
 
 		ms->jumpreach = ms->lastreachnum;
-	} else   {
+	} else {
 		if ( dist > 80 ) {
 			dist = 80;
 		}
@@ -2693,7 +2693,7 @@ static bot_moveresult_t BotFinishTravel_WeaponJump( const bot_movestate_t* ms, c
 			speed = 400;
 		}
 		EA_Move( ms->client, hordir, speed );
-	} else   {
+	} else {
 		//go straight to the reachability end
 		hordir[ 0 ] = reach->end[ 0 ] - ms->origin[ 0 ];
 		hordir[ 1 ] = reach->end[ 1 ] - ms->origin[ 1 ];
@@ -2756,7 +2756,7 @@ static bot_moveresult_t BotMoveInGoalArea( bot_movestate_t* ms, const bot_goal_t
 	if ( ms->moveflags & MFL_SWIMMING ) {
 		dir[ 2 ] = goal->origin[ 2 ] - ms->origin[ 2 ];
 		result.traveltype = TRAVEL_SWIM;
-	} else   {
+	} else {
 		dir[ 2 ] = 0;
 		result.traveltype = TRAVEL_WALK;
 	}
@@ -2803,7 +2803,7 @@ static void BotResetGrapple( bot_movestate_t* ms ) {
 					EA_Command( ms->client, cmd_grappleoff->string );
 				}
 				ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
-			} else   {
+			} else {
 				EA_Command( ms->client, CMD_HOOKOFF );
 				ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
 			}
@@ -2834,7 +2834,7 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 			result.weapon = weapindex_grapple->value;
 			result.flags |= MOVERESULT_MOVEMENTWEAPON;
 		}
-	} else   {
+	} else {
 		if ( ms->moveflags & WOLFMFL_GRAPPLERESET ) {
 			EA_Command( ms->client, CMD_HOOKOFF );
 			ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
@@ -2858,7 +2858,7 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 					}
 					ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
 					ms->moveflags |= Q3MFL_GRAPPLERESET;
-				} else   {
+				} else {
 					EA_Command( ms->client, CMD_HOOKOFF );
 					ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
 					ms->moveflags |= WOLFMFL_GRAPPLERESET;
@@ -2879,7 +2879,7 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 					}
 					ms->moveflags &= ~Q3MFL_ACTIVEGRAPPLE;
 					ms->moveflags |= Q3MFL_GRAPPLERESET;
-				} else   {
+				} else {
 					EA_Command( ms->client, CMD_HOOKOFF );
 					ms->moveflags &= ~WOLFMFL_ACTIVEGRAPPLE;
 					ms->moveflags |= WOLFMFL_GRAPPLERESET;
@@ -2887,7 +2887,7 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 				ms->reachability_time = 0;	//end the reachability
 				return result;
 			}
-		} else   {
+		} else {
 			ms->grapplevisible_time = AAS_Time();
 		}
 
@@ -2896,7 +2896,7 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 		}
 		//remember the current grapple distance
 		ms->lastgrappledist = dist;
-	} else   {
+	} else {
 		ms->grapplevisible_time = AAS_Time();
 
 		VectorSubtract( reach->start, ms->origin, dir );
@@ -2925,19 +2925,19 @@ static bot_moveresult_t BotTravel_Grapple( bot_movestate_t* ms, const aas_reacha
 				//activate the grapple
 				if ( offhandgrapple->value ) {
 					EA_Command( ms->client, cmd_grappleon->string );
-				} else   {
+				} else {
 					EA_Attack( ms->client );
 				}
 				ms->moveflags |= Q3MFL_ACTIVEGRAPPLE;
-			} else   {
+			} else {
 				EA_Command( ms->client, CMD_HOOKON );
 				ms->moveflags |= WOLFMFL_ACTIVEGRAPPLE;
 			}
 			ms->lastgrappledist = 999999;
-		} else   {
+		} else {
 			if ( dist < 70 ) {
 				speed = 300 - ( 300 - 4 * dist );
-			} else   {
+			} else {
 				speed = 400;
 			}
 
@@ -3005,7 +3005,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 							AAS_ReachabilityFromNum( reachnum, &reach );
 							ms->lastreachnum = reachnum;
 							ms->reachability_time = AAS_Time() + BotReachabilityTime( &reach );
-						} else   {
+						} else {
 							if ( bot_developer ) {
 								BotImport_Print( PRT_MESSAGE, "client %d: on func_plat without reachability\n", ms->client );
 							}
@@ -3016,7 +3016,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 						}
 					}
 					result->flags |= MOVERESULT_ONTOPOF_ELEVATOR;
-				} else if ( modeltype == MODELTYPE_FUNC_BOB )     {
+				} else if ( modeltype == MODELTYPE_FUNC_BOB ) {
 					aas_reachability_t reach;
 					AAS_ReachabilityFromNum( ms->lastreachnum, &reach );
 					//if the bot is Not using the func bobbing
@@ -3029,7 +3029,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 							AAS_ReachabilityFromNum( reachnum, &reach );
 							ms->lastreachnum = reachnum;
 							ms->reachability_time = AAS_Time() + BotReachabilityTime( &reach );
-						} else   {
+						} else {
 							if ( bot_developer ) {
 								BotImport_Print( PRT_MESSAGE, "client %d: on func_bobbing without reachability\n", ms->client );
 							}
@@ -3040,7 +3040,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 						}
 					}
 					result->flags |= MOVERESULT_ONTOPOF_FUNCBOB;
-				} else if ( GGameType & GAME_Quake3 )     {
+				} else if ( GGameType & GAME_Quake3 ) {
 					if ( modeltype == MODELTYPE_FUNC_STATIC || modeltype == MODELTYPE_FUNC_DOOR ) {
 						// check if ontop of a door bridge ?
 						ms->areanum = BotFuzzyPointReachabilityArea( ms->origin );
@@ -3051,7 +3051,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 							result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
 							return;
 						}
-					} else   {
+					} else {
 						result->blocked = true;
 						result->blockentity = ent;
 						result->flags |= MOVERESULT_ONTOPOFOBSTACLE;
@@ -3079,7 +3079,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 				result->failure = true;
 				return;
 			}
-		} else   {
+		} else {
 			ms->areanum = BotFuzzyPointReachabilityArea( ms->origin );
 
 			if ( GGameType & GAME_Quake3 && !ms->areanum ) {
@@ -3124,7 +3124,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 					 ms->reachability_time < AAS_Time() ) {
 					reachnum = 0;
 				}
-			} else   {
+			} else {
 				if ( GGameType & GAME_ET && ms->reachability_time < AAS_Time() ) {
 					// the reachability timed out, add it to the ignore list
 					BotAddToAvoidReach( ms, reachnum, AVOIDREACH_TIME_ET + 4 );
@@ -3260,7 +3260,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 				result->traveltype = reach.traveltype;
 				result->flags |= resultflags;
 			}
-		} else   {
+		} else {
 			result->failure = true;
 			if ( GGameType & GAME_Quake3 ) {
 				result->flags |= resultflags;
@@ -3276,7 +3276,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 			}
 		}
 #endif
-	} else   {
+	} else {
 		//special handling of jump pads when the bot uses a jump pad without knowing it
 		bool foundjumppad = false;
 		vec3_t end;
@@ -3294,7 +3294,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 					ms->lastreachnum = lastreachnum;
 					ms->lastareanum = areas[ i ];
 					break;
-				} else   {
+				} else {
 					for ( lastreachnum = AAS_NextAreaReachability( areas[ i ], 0 ); lastreachnum;
 						  lastreachnum = AAS_NextAreaReachability( areas[ i ], lastreachnum ) ) {
 						//get the reachability from the number
@@ -3405,7 +3405,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 							}
 						}
 					}
-				} else   {
+				} else {
 					int ftraveltime, freachnum;
 					if ( AAS_AreaRouteToGoalArea( reach.areanum, reach.end, goal->areanum, travelflags, &ftraveltime, &freachnum ) ) {
 						AAS_ReachabilityFromNum( freachnum, &reach );
@@ -3416,7 +3416,7 @@ void BotMoveToGoal( bot_moveresult_t* result, int movestate, const bot_goal_t* g
 						result->flags |= WOLFMOVERESULT_FUTUREVIEW;
 					}
 				}
-			} else   {
+			} else {
 				vec3_t dir;
 				VectorSubtract( goal->origin, ms->origin, dir );
 				VectorNormalize( dir );

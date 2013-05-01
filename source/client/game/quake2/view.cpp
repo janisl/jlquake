@@ -72,13 +72,13 @@ static void CLQ2_CalcLerpFrac() {
 		}
 		cl.serverTime = cl.q2_frame.servertime;
 		cl.q2_lerpfrac = 1.0;
-	} else if ( cl.serverTime < cl.q2_frame.servertime - 100 )     {
+	} else if ( cl.serverTime < cl.q2_frame.servertime - 100 ) {
 		if ( clq2_showclamp->value ) {
 			common->Printf( "low clamp %i\n", cl.q2_frame.servertime - 100 - cl.serverTime );
 		}
 		cl.serverTime = cl.q2_frame.servertime - 100;
 		cl.q2_lerpfrac = 0;
-	} else   {
+	} else {
 		cl.q2_lerpfrac = 1.0 - ( cl.q2_frame.servertime - cl.serverTime ) * 0.01;
 	}
 
@@ -102,7 +102,7 @@ static void CLQ2_AddViewWeapon( q2player_state_t* ps, q2player_state_t* ops, vec
 
 	if ( gun_model ) {
 		gun.hModel = gun_model;	// development tool
-	} else   {
+	} else {
 		gun.hModel = cl.model_draw[ ps->gunindex ];
 	}
 	if ( !gun.hModel ) {
@@ -122,11 +122,11 @@ static void CLQ2_AddViewWeapon( q2player_state_t* ps, q2player_state_t* ops, vec
 	if ( gun_frame ) {
 		gun.frame = gun_frame;	// development tool
 		gun.oldframe = gun_frame;	// development tool
-	} else   {
+	} else {
 		gun.frame = ps->gunframe;
 		if ( gun.frame == 0 ) {
 			gun.oldframe = 0;	// just changed weapons, don't lerp from old
-		} else   {
+		} else {
 			gun.oldframe = ops->gunframe;
 		}
 	}
@@ -178,7 +178,7 @@ static void CLQ2_CalcViewValues( float* blendColour ) {
 		if ( delta < 100 ) {
 			cl.refdef.vieworg[ 2 ] -= cl.q2_predicted_step * ( 100 - delta ) * 0.01;
 		}
-	} else   {
+	} else {
 		// just use interpolated values
 		for ( i = 0; i < 3; i++ ) {
 			cl.refdef.vieworg[ i ] = ops->pmove.origin[ i ] * 0.125 + ops->viewoffset[ i ]
@@ -194,7 +194,7 @@ static void CLQ2_CalcViewValues( float* blendColour ) {
 		for ( i = 0; i < 3; i++ ) {
 			viewangles[ i ] = cl.q2_predicted_angles[ i ];
 		}
-	} else   {
+	} else {
 		// just use interpolated values
 		for ( i = 0; i < 3; i++ ) {
 			viewangles[ i ] = LerpAngle( ops->viewangles[ i ], ps->viewangles[ i ], lerp );
@@ -322,7 +322,7 @@ void VQ2_RenderView( float stereo_separation ) {
 	if ( clq2_add_entities->integer ) {
 		if ( clq2_testentities->integer ) {
 			VQ2_TestEntities();
-		} else   {
+		} else {
 			CLQ2_AddPacketEntities( &cl.q2_frame );
 			CLQ2_AddTEnts();
 		}
@@ -331,14 +331,14 @@ void VQ2_RenderView( float stereo_separation ) {
 	if ( clq2_add_particles->integer ) {
 		if ( clq2_testparticles->integer ) {
 			VQ2_TestParticles();
-		} else   {
+		} else {
 			CL_AddParticles();
 		}
 	}
 
 	if ( clq2_testlights->integer ) {
 		VQ2_TestLights();
-	} else   {
+	} else {
 		CL_AddDLights();
 	}
 
@@ -460,7 +460,7 @@ static void SCRQ2_TimeRefresh_f() {
 			VQ2_TimeRefreshScene();
 		}
 		R_EndFrame( NULL, NULL );
-	} else   {
+	} else {
 		for ( int i = 0; i < 128; i++ ) {
 			viewangles[ 1 ] = i / 128.0 * 360.0;
 			AnglesToAxis( viewangles, cl.refdef.viewaxis );

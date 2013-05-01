@@ -90,18 +90,18 @@ static void S_WriteLinearBlastStereo16() {
 		int val = snd_p[ i ] >> 8;
 		if ( val > 0x7fff ) {
 			snd_out[ i ] = 0x7fff;
-		} else if ( val < -32768 )     {
+		} else if ( val < -32768 ) {
 			snd_out[ i ] = -32768;
-		} else   {
+		} else {
 			snd_out[ i ] = val;
 		}
 
 		val = snd_p[ i + 1 ] >> 8;
 		if ( val > 0x7fff ) {
 			snd_out[ i + 1 ] = 0x7fff;
-		} else if ( val < -32768 )     {
+		} else if ( val < -32768 ) {
 			snd_out[ i + 1 ] = -32768;
-		} else   {
+		} else {
 			snd_out[ i + 1 ] = val;
 		}
 	}
@@ -150,7 +150,7 @@ static void S_TransferPaintBuffer( int endtime ) {
 	if ( dma.samplebits == 16 && dma.channels == 2 ) {
 		// optimized case
 		S_TransferStereo16( endtime );
-	} else   {
+	} else {
 		// general case
 		int* p = ( int* )paintbuffer;
 		int count = ( endtime - s_paintedtime ) * dma.channels;
@@ -165,20 +165,20 @@ static void S_TransferPaintBuffer( int endtime ) {
 				p += step;
 				if ( val > 0x7fff ) {
 					val = 0x7fff;
-				} else if ( val < -32768 )     {
+				} else if ( val < -32768 ) {
 					val = -32768;
 				}
 				out[ out_idx ] = val;
 				out_idx = ( out_idx + 1 ) & out_mask;
 			}
-		} else if ( dma.samplebits == 8 )     {
+		} else if ( dma.samplebits == 8 ) {
 			byte* out = dma.buffer;
 			while ( count-- ) {
 				int val = *p >> 8;
 				p += step;
 				if ( val > 0x7fff ) {
 					val = 0x7fff;
-				} else if ( val < -32768 )     {
+				} else if ( val < -32768 ) {
 					val = -32768;
 				}
 				out[ out_idx ] = ( val >> 8 ) + 128;
@@ -317,7 +317,7 @@ void CL_WriteWaveOpen() {
 		const char* s = Cmd_Argv( 1 );
 		String::NCpyZ( wavName, s, sizeof ( wavName ) );
 		String::Sprintf( name, sizeof ( name ), "wav/%s.wav", wavName );
-	} else   {
+	} else {
 		for ( int number = 0; number <= 9999; number++ ) {
 			char wavName[ MAX_QPATH ];
 			CL_WavFilename( number, wavName );
@@ -441,7 +441,7 @@ static void S_PaintChannelFrom16( channel_t* ch, const sfx_t* sc, int count,
 			samp[ i ].left += ( data * leftvol ) >> 8;
 			samp[ i ].right += ( data * rightvol ) >> 8;
 		}
-	} else   {
+	} else {
 		sampleOffset = sampleOffset * ch->oldDopplerScale;
 
 		float fleftvol = ch->leftvol * snd_vol;
@@ -477,7 +477,7 @@ void S_PaintChannels( int endtime ) {
 
 	if ( s_mute->value ) {
 		snd_vol = 0;
-	} else   {
+	} else {
 		snd_vol = s_volume->value * 255;
 	}
 
@@ -605,7 +605,7 @@ void S_PaintChannels( int endtime ) {
 				if ( ltime >= ch->startSample + ch->sfx->Length ) {
 					if ( ch->sfx->LoopStart >= 0 ) {
 						ch->startSample = ltime - ch->sfx->LoopStart;
-					} else   {
+					} else {
 						// channel just stopped
 						if ( !( GGameType & GAME_Tech3 ) ) {
 							ch->sfx = NULL;

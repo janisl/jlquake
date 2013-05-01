@@ -172,7 +172,7 @@ void R_LoadTGA( const char* name, byte** pic, int* width, int* height ) {
 				}
 			}
 		}
-	} else if ( targa_header.image_type == 10 )     {
+	} else if ( targa_header.image_type == 10 ) {
 		// Runlength encoded RGB images
 		byte red = 0;
 		byte green = 0;
@@ -216,13 +216,13 @@ void R_LoadTGA( const char* name, byte** pic, int* width, int* height ) {
 							column = 0;
 							if ( row > 0 ) {
 								row--;
-							} else   {
+							} else {
 								goto breakOut;
 							}
 							pixbuf = targa_rgba + row * columns * 4;
 						}
 					}
-				} else   {
+				} else {
 					// non run-length packet
 					for ( int j = 0; j < packetSize; j++ ) {
 						switch ( targa_header.pixel_size ) {
@@ -256,7 +256,7 @@ void R_LoadTGA( const char* name, byte** pic, int* width, int* height ) {
 							column = 0;
 							if ( row > 0 ) {
 								row--;
-							} else   {
+							} else {
 								goto breakOut;
 							}
 							pixbuf = targa_rgba + row * columns * 4;

@@ -87,7 +87,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	if ( alpha != 255 ) {
 		stage.alphaGen = AGEN_ENTITY;
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else   {
+	} else {
 		stage.alphaGen = AGEN_IDENTITY;
 		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
 	}

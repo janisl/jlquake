@@ -136,7 +136,7 @@ void BotImport_DebugLineShow( int line, const vec3_t start, const vec3_t end, in
 	dot = DotProduct( dir, up );
 	if ( dot > 0.99 || dot < -0.99 ) {
 		VectorSet( cross, 1, 0, 0 );
-	} else   {
+	} else {
 		CrossProduct( dir, up, cross );
 	}
 

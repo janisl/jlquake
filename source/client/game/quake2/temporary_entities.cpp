@@ -109,9 +109,9 @@ static void CLQ2_ImpactSound( vec3_t pos ) {
 	int cnt = rand() & 15;
 	if ( cnt == 1 ) {
 		S_StartSound( pos, 0, 0, clq2_sfx_ric1, 1, ATTN_NORM, 0 );
-	} else if ( cnt == 2 )     {
+	} else if ( cnt == 2 ) {
 		S_StartSound( pos, 0, 0, clq2_sfx_ric2, 1, ATTN_NORM, 0 );
-	} else if ( cnt == 3 )     {
+	} else if ( cnt == 3 ) {
 		S_StartSound( pos, 0, 0, clq2_sfx_ric3, 1, ATTN_NORM, 0 );
 	}
 }
@@ -191,9 +191,9 @@ static void CLQ2_ParseSplash( QMsg& message ) {
 		r = rand() & 3;
 		if ( r == 0 ) {
 			S_StartSound( pos, 0, 0, clq2_sfx_spark5, 1, ATTN_STATIC, 0 );
-		} else if ( r == 1 )     {
+		} else if ( r == 1 ) {
 			S_StartSound( pos, 0, 0, clq2_sfx_spark6, 1, ATTN_STATIC, 0 );
-		} else   {
+		} else {
 			S_StartSound( pos, 0, 0, clq2_sfx_spark7, 1, ATTN_STATIC, 0 );
 		}
 	}
@@ -509,7 +509,7 @@ static void CLQ2_ParseSteam( QMsg& message ) {
 	if ( id != -1 ) {	// sustains
 		int interval = message.ReadLong();
 		CLQ2_SustainParticleStream( id, cnt, pos, dir, r, magnitude, interval );
-	} else   {	// instant
+	} else {	// instant
 		int color = r & 0xff;
 		CLQ2_ParticleSteamEffect( pos, dir, color, cnt, magnitude );
 	}

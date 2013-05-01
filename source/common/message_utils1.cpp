@@ -189,20 +189,20 @@ void MSGHW_ReadUsercmd( QMsg* sb, hwusercmd_t* move, bool long_msg ) {
 	bits = sb->ReadByte();
 	if ( long_msg ) {
 		move->light_level = sb->ReadByte();
-	} else   {
+	} else {
 		move->light_level = 0;
 	}
 
 	// read current angles
 	if ( bits & HWCM_ANGLE1 ) {
 		move->angles[ 0 ] = sb->ReadAngle16();
-	} else   {
+	} else {
 		move->angles[ 0 ] = 0;
 	}
 	move->angles[ 1 ] = sb->ReadAngle16();
 	if ( bits & HWCM_ANGLE3 ) {
 		move->angles[ 2 ] = sb->ReadAngle16();
-	} else   {
+	} else {
 		move->angles[ 2 ] = 0;
 	}
 
@@ -220,20 +220,20 @@ void MSGHW_ReadUsercmd( QMsg* sb, hwusercmd_t* move, bool long_msg ) {
 	// read buttons
 	if ( bits & HWCM_BUTTONS ) {
 		move->buttons = sb->ReadByte();
-	} else   {
+	} else {
 		move->buttons = 0;
 	}
 
 	if ( bits & HWCM_IMPULSE ) {
 		move->impulse = sb->ReadByte();
-	} else   {
+	} else {
 		move->impulse = 0;
 	}
 
 	// read time to run command
 	if ( bits & HWCM_MSEC ) {
 		move->msec = sb->ReadByte();
-	} else   {
+	} else {
 		move->msec = 0;
 	}
 }

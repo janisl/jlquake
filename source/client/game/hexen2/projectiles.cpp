@@ -167,7 +167,7 @@ void CLH2_LinkMissiles() {
 			//ball
 			ent.hModel = cl.model_draw[ clh2_ballindex ];
 			CLH2_SetRefEntAxis( &ent, vec3_origin, vec3_origin, 10, 0, 0, H2SCALE_ORIGIN_CENTER );
-		} else   {
+		} else {
 			//missilestar
 			ent.hModel = cl.model_draw[ clh2_missilestarindex ];
 			CLH2_SetRefEntAxis( &ent, missilestar_angle, vec3_origin, 50, 0, 0, H2SCALE_ORIGIN_CENTER );

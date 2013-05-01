@@ -47,15 +47,15 @@ void CLT3_InitUI() {
 		if ( cl_connectedToPureServer != 0 ) {
 			// if sv_pure is set we only allow qvms to be loaded
 			interpret = VMI_COMPILED;
-		} else   {
+		} else {
 			interpret = ( vmInterpret_t )( int )Cvar_VariableValue( "vm_ui" );
 		}
 		uivm = VM_Create( "ui", CLQ3_UISystemCalls, interpret );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		uivm = VM_Create( "ui", CLWS_UISystemCalls, VMI_NATIVE );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		uivm = VM_Create( "ui", CLWM_UISystemCalls, VMI_NATIVE );
-	} else   {
+	} else {
 		uivm = VM_Create( "ui", CLET_UISystemCalls, VMI_NATIVE );
 	}
 
@@ -69,7 +69,7 @@ void CLT3_InitUI() {
 		common->Error( "User Interface is version %d, expected %d", v, Q3UI_API_VERSION );
 		cls.q3_uiStarted = false;
 		return;
-	} else if ( !( GGameType & GAME_Quake3 ) && v != WOLFUI_API_VERSION )       {
+	} else if ( !( GGameType & GAME_Quake3 ) && v != WOLFUI_API_VERSION ) {
 		common->FatalError( "User Interface is version %d, expected %d", v, WOLFUI_API_VERSION );
 		cls.q3_uiStarted = false;
 	}
@@ -99,9 +99,9 @@ void UIT3_KeyEvent( int key, bool down ) {
 void UIT3_KeyDownEvent( int key ) {
 	if ( GGameType & GAME_WolfSP ) {
 		UIWS_KeyDownEvent( key );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		UIWM_KeyDownEvent( key );
-	} else   {
+	} else {
 		UIT3_KeyEvent( key, true );
 	}
 }
@@ -159,11 +159,11 @@ bool UIT3_GameCommand() {
 void UIT3_DrawConnectScreen( bool overlay ) {
 	if ( GGameType & GAME_WolfSP ) {
 		UIWS_DrawConnectScreen( overlay );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		UIWM_DrawConnectScreen( overlay );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		UIET_DrawConnectScreen( overlay );
-	} else   {
+	} else {
 		UIQ3_DrawConnectScreen( overlay );
 	}
 }
@@ -212,7 +212,7 @@ void LAN_LoadCachedServers() {
 	char filename[ MAX_QPATH ];
 	if ( GGameType & GAME_ET && comet_gameInfo.usesProfiles && clet_profile->string[ 0 ] ) {
 		String::Sprintf( filename, sizeof ( filename ), "profiles/%s/servercache.dat", clet_profile->string );
-	} else   {
+	} else {
 		String::NCpyZ( filename, "servercache.dat", sizeof ( filename ) );
 	}
 
@@ -232,7 +232,7 @@ void LAN_LoadCachedServers() {
 				FS_Read( &cls.q3_mplayerServers, sizeof ( cls.q3_mplayerServers ), fileIn );
 			}
 			FS_Read( &cls.q3_favoriteServers, sizeof ( cls.q3_favoriteServers ), fileIn );
-		} else   {
+		} else {
 			cls.q3_numglobalservers = cls.q3_nummplayerservers = cls.q3_numfavoriteservers = 0;
 			cls.q3_numGlobalServerAddresses = 0;
 		}
@@ -246,7 +246,7 @@ void LAN_SaveServersToCache() {
 
 	if ( GGameType & GAME_ET && comet_gameInfo.usesProfiles && clet_profile->string[ 0 ] ) {
 		String::Sprintf( filename, sizeof ( filename ), "profiles/%s/servercache.dat", clet_profile->string );
-	} else   {
+	} else {
 		String::NCpyZ( filename, "servercache.dat", sizeof ( filename ) );
 	}
 
@@ -292,7 +292,7 @@ void CLT3_GetServersForSource( int source, q3serverInfo_t*& servers, int& max, i
 			servers = &cls.q3_favoriteServers[ 0 ];
 			break;
 		}
-	} else   {
+	} else {
 		switch ( source ) {
 		case Q3AS_LOCAL:
 			count = &cls.q3_numlocalservers;
@@ -426,7 +426,7 @@ void LAN_GetServerInfo( int source, int n, char* buf, int buflen ) {
 			Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ), MAX_INFO_STRING_Q3 );
 		}
 		String::NCpyZ( buf, info, buflen );
-	} else   {
+	} else {
 		if ( buf ) {
 			buf[ 0 ] = '\0';
 		}
@@ -452,7 +452,7 @@ void LAN_MarkServerVisible( int source, int n, qboolean visible ) {
 				servers[ n ].visible = visible;
 			}
 		}
-	} else   {
+	} else {
 		q3serverInfo_t* server = LAN_GetServerPtr( source, n );
 		if ( server ) {
 			server->visible = visible;
@@ -507,36 +507,36 @@ int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 ) {
 	case SORT_CLIENTS:
 		if ( server1->clients < server2->clients ) {
 			res = -1;
-		} else if ( server1->clients > server2->clients )     {
+		} else if ( server1->clients > server2->clients ) {
 			res = 1;
-		} else   {
+		} else {
 			res = 0;
 		}
 		break;
 	case SORT_GAME:
 		if ( server1->gameType < server2->gameType ) {
 			res = -1;
-		} else if ( server1->gameType > server2->gameType )     {
+		} else if ( server1->gameType > server2->gameType ) {
 			res = 1;
-		} else   {
+		} else {
 			res = 0;
 		}
 		break;
 	case SORT_PING:
 		if ( server1->ping < server2->ping ) {
 			res = -1;
-		} else if ( server1->ping > server2->ping )     {
+		} else if ( server1->ping > server2->ping ) {
 			res = 1;
-		} else   {
+		} else {
 			res = 0;
 		}
 		break;
 	case SORT_PUNKBUSTER:
 		if ( server1->punkbuster < server2->punkbuster ) {
 			res = -1;
-		} else if ( server1->punkbuster > server2->punkbuster )     {
+		} else if ( server1->punkbuster > server2->punkbuster ) {
 			res = 1;
-		} else   {
+		} else {
 			res = 0;
 		}
 		break;
@@ -575,7 +575,7 @@ void Key_GetBindingBuf( int keynum, char* buf, int buflen ) {
 	const char* value = Key_GetBinding( keynum );
 	if ( value ) {
 		String::NCpyZ( buf, value, buflen );
-	} else   {
+	} else {
 		*buf = 0;
 	}
 }
@@ -592,7 +592,7 @@ void KeyWM_SetCatcher( int catcher ) {
 	// NERVE - SMF - console overrides everything
 	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		in_keyCatchers = catcher | KEYCATCH_CONSOLE;
-	} else   {
+	} else {
 		in_keyCatchers = catcher;
 	}
 

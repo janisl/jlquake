@@ -203,10 +203,10 @@ int AAS_UpdateEntity( int entnum, const bot_entitystate_t* state ) {
 			// RF, this is broken, just use the state bounds
 			VectorCopy( state->mins, ent->i.mins );
 			VectorCopy( state->maxs, ent->i.maxs );
-		} else   {
+		} else {
 			AAS_BSPModelMinsMaxs( ent->i.modelindex, ent->i.angles, ent->i.mins, ent->i.maxs );
 		}
-	} else if ( ent->i.solid == Q3SOLID_BBOX )     {
+	} else if ( ent->i.solid == Q3SOLID_BBOX ) {
 		//if the bounding box size changed
 		if ( !VectorCompare( state->mins, ent->i.mins ) ||
 			 !VectorCompare( state->maxs, ent->i.maxs ) ) {
@@ -284,7 +284,7 @@ void AAS_SetAASBlockingEntity( const vec3_t absmin, const vec3_t absmax, int blo
 	if ( GGameType & GAME_ET && blocking & BLOCKINGFLAG_MOVER ) {
 		mover = true;
 		blocking &= ~BLOCKINGFLAG_MOVER;
-	} else   {
+	} else {
 		mover = false;
 	}
 

@@ -125,7 +125,7 @@ bool SOCK_StringToAdr( const char* s, netadr_t* a, int DefaultPort ) {
 
 	if ( port ) {
 		a->port = BigShort( ( short )String::Atoi( port ) );
-	} else   {
+	} else {
 		a->port = BigShort( DefaultPort );
 	}
 
@@ -143,9 +143,9 @@ const char* SOCK_AdrToString( const netadr_t& a ) {
 
 	if ( a.type == NA_LOOPBACK ) {
 		String::Sprintf( s, sizeof ( s ), "loopback" );
-	} else if ( a.type == NA_BOT )     {
+	} else if ( a.type == NA_BOT ) {
 		String::Sprintf( s, sizeof ( s ), "bot" );
-	} else   {
+	} else {
 		String::Sprintf( s, sizeof ( s ), "%i.%i.%i.%i:%hu",
 			a.ip[ 0 ], a.ip[ 1 ], a.ip[ 2 ], a.ip[ 3 ], BigShort( a.port ) );
 	}
@@ -164,9 +164,9 @@ const char* SOCK_BaseAdrToString( const netadr_t& a ) {
 
 	if ( a.type == NA_LOOPBACK ) {
 		String::Sprintf( s, sizeof ( s ), "loopback" );
-	} else if ( a.type == NA_BOT )     {
+	} else if ( a.type == NA_BOT ) {
 		String::Sprintf( s, sizeof ( s ), "bot" );
-	} else   {
+	} else {
 		String::Sprintf( s, sizeof ( s ), "%i.%i.%i.%i", a.ip[ 0 ], a.ip[ 1 ], a.ip[ 2 ], a.ip[ 3 ] );
 	}
 

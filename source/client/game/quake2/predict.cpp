@@ -43,7 +43,7 @@ void CLQ2_CheckPredictionError() {
 	if ( len > 640 ) {	// 80 world units
 		// a teleport or something
 		VectorClear( cl.q2_prediction_error );
-	} else   {
+	} else {
 		if ( clq2_showmiss->value && ( delta[ 0 ] || delta[ 1 ] || delta[ 2 ] ) ) {
 			common->Printf( "prediction miss on %i: %i\n", cl.q2_frame.serverframe,
 				delta[ 0 ] + delta[ 1 ] + delta[ 2 ] );
@@ -80,7 +80,7 @@ static void CLQ2_ClipMoveToEntities( const vec3_t start, const vec3_t mins, cons
 				continue;
 			}
 			angles = ent->angles;
-		} else   {
+		} else {
 			// encoded bbox
 			int x = 8 * ( ent->solid & 31 );
 			int zd = 8 * ( ( ent->solid >> 5 ) & 31 );
@@ -110,10 +110,10 @@ static void CLQ2_ClipMoveToEntities( const vec3_t start, const vec3_t mins, cons
 			if ( tr->startsolid ) {
 				*tr = trace;
 				tr->startsolid = true;
-			} else   {
+			} else {
 				*tr = trace;
 			}
-		} else if ( trace.startsolid )     {
+		} else if ( trace.startsolid ) {
 			tr->startsolid = true;
 		}
 	}

@@ -41,7 +41,7 @@ void PMQH_Init() {
 	if ( GGameType & GAME_Quake ) {
 		VectorSet( pmqh_player_mins, -16, -16, -24 );
 		VectorSet( pmqh_player_maxs, 16, 16, 32 );
-	} else   {
+	} else {
 		VectorSet( pmqh_player_mins, -16, -16, 0 );
 		VectorSet( pmqh_player_maxs, 16, 16, 56 );
 		VectorSet( pmqh_player_maxs_crouch, 16, 16, 28 );
@@ -65,14 +65,14 @@ q1trace_t PMQH_TestPlayerMove( const vec3_t start, const vec3_t end ) {
 		if ( pe->model >= 0 ) {
 			if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.crouched ) {
 				hull = CM_ModelHull( qh_pmove.physents[ i ].model, 3, clip_mins, clip_maxs );
-			} else   {
+			} else {
 				hull = CM_ModelHull( qh_pmove.physents[ i ].model, 1, clip_mins, clip_maxs );
 			}
-		} else   {
+		} else {
 			vec3_t mins, maxs;
 			if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.crouched ) {
 				VectorSubtract( pe->mins, pmqh_player_maxs_crouch, mins );
-			} else   {
+			} else {
 				VectorSubtract( pe->mins, pmqh_player_maxs, mins );
 			}
 			VectorSubtract( pe->maxs, pmqh_player_mins, maxs );
@@ -180,7 +180,7 @@ bool PMQH_TestPlayerPosition( const vec3_t pos ) {
 		clipHandle_t hull;
 		if ( pe->model >= 0 ) {
 			hull = CM_ModelHull( qh_pmove.physents[ i ].model, 1 );
-		} else   {
+		} else {
 			vec3_t mins, maxs;
 			VectorSubtract( pe->mins, pmqh_player_maxs, mins );
 			VectorSubtract( pe->maxs, pmqh_player_mins, maxs );
@@ -279,7 +279,7 @@ static int PMQH_FlyMove() {
 		}
 
 		if ( i != numplanes ) {	// go along this plane
-		} else   {	// go along the crease
+		} else {	// go along the crease
 			if ( numplanes != 2 ) {
 				VectorCopy( vec3_origin, qh_pmove.velocity );
 				break;
@@ -362,7 +362,7 @@ static void PMQH_GroundMove() {
 	bool usedown;
 	if ( trace.plane.normal[ 2 ] < 0.7 ) {
 		usedown = true;
-	} else   {
+	} else {
 		if ( !trace.startsolid && !trace.allsolid ) {
 			VectorCopy( trace.endpos, qh_pmove.origin );
 		}
@@ -380,7 +380,7 @@ static void PMQH_GroundMove() {
 	if ( usedown ) {
 		VectorCopy( down, qh_pmove.origin );
 		VectorCopy( downvel, qh_pmove.velocity );
-	} else   {	// copy z value from slide move
+	} else {	// copy z value from slide move
 		qh_pmove.velocity[ 2 ] = downvel[ 2 ];
 	}
 
@@ -424,11 +424,11 @@ static void PMQH_Friction() {
 	if ( GGameType & GAME_Quake ) {
 		if ( qh_pmove.waterlevel >= 2 ) {	// apply water friction
 			drop += speed * movevars.waterfriction * qh_pmove.waterlevel * qh_pml.frametime;
-		} else if ( qh_pmove.onground != -1 )     {	// apply ground friction
+		} else if ( qh_pmove.onground != -1 ) {	// apply ground friction
 			float control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
 			drop += control * friction * qh_pml.frametime;
 		}
-	} else   {
+	} else {
 		// apply ground friction
 		if ( ( qh_pmove.onground != -1 ) || ( qh_pmove.movetype == QHMOVETYPE_FLY ) ) {
 			float control = speed < movevars.stopspeed ? movevars.stopspeed : speed;
@@ -517,7 +517,7 @@ static void PMQH_WaterMove() {
 		if ( idMath::Fabs( fmove ) > maxspeed ) {
 			if ( fmove < 0 ) {
 				fmove = -maxspeed;
-			} else   {
+			} else {
 				fmove = maxspeed;
 			}
 		}
@@ -525,7 +525,7 @@ static void PMQH_WaterMove() {
 		if ( idMath::Fabs( smove ) > maxspeed ) {
 			if ( smove < 0 ) {
 				smove = -maxspeed;
-			} else   {
+			} else {
 				smove = maxspeed;
 			}
 		}
@@ -533,7 +533,7 @@ static void PMQH_WaterMove() {
 		if ( qh_pmove.crouched ) {
 			fmove = fmove / 600 * movevars.maxspeed;
 			smove = smove / 600 * movevars.maxspeed;
-		} else   {
+		} else {
 			fmove = fmove / 400 * movevars.maxspeed;
 			smove = smove / 400 * movevars.maxspeed;
 		}
@@ -547,13 +547,13 @@ static void PMQH_WaterMove() {
 	if ( !qh_pmove.cmd.forwardmove && !qh_pmove.cmd.sidemove && !qh_pmove.cmd.upmove ) {
 		if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.crouched ) {
 			wishvel[ 2 ] -= 120;		// drift towards bottom
-		} else   {
+		} else {
 			wishvel[ 2 ] -= 60;			// drift towards bottom
 		}
-	} else   {
+	} else {
 		if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.crouched ) {
 			wishvel[ 2 ] -= 60;			// drift towards bottom
-		} else   {
+		} else {
 			wishvel[ 2 ] += qh_pmove.cmd.upmove;
 		}
 	}
@@ -595,7 +595,7 @@ static void PMQH_AirMove() {
 		//no Mario Bros. stop in mid air!
 		fmove = qh_pmove.cmd.forwardmove;
 		smove = qh_pmove.cmd.sidemove;
-	} else   {
+	} else {
 		fmove = smove = 0;
 	}
 
@@ -608,7 +608,7 @@ static void PMQH_AirMove() {
 		if ( idMath::Fabs( fmove ) > maxspeed ) {
 			if ( fmove < 0 ) {
 				fmove = -maxspeed;
-			} else   {
+			} else {
 				fmove = maxspeed;
 			}
 		}
@@ -616,7 +616,7 @@ static void PMQH_AirMove() {
 		if ( idMath::Fabs( smove ) > maxspeed ) {
 			if ( smove < 0 ) {
 				smove = -maxspeed;
-			} else   {
+			} else {
 				smove = maxspeed;
 			}
 		}
@@ -655,7 +655,7 @@ static void PMQH_AirMove() {
 			qh_pmove.velocity[ 2 ] -= movevars.entgravity * movevars.gravity * qh_pml.frametime;
 		}
 		PMQH_GroundMove();
-	} else   {
+	} else {
 		// not on ground, so little effect on velocity
 		PMQH_AirAccelerate( wishdir, wishspeed, movevars.accelerate );
 		if ( GGameType & GAME_Hexen2 ) {
@@ -683,7 +683,7 @@ static void PMHW_FlyingMove() {
 	if ( idMath::Fabs( fmove ) > clamp ) {
 		if ( fmove < 0 ) {
 			fmove = -clamp;
-		} else   {
+		} else {
 			fmove = clamp;
 		}
 	}
@@ -691,14 +691,14 @@ static void PMHW_FlyingMove() {
 	if ( idMath::Fabs( smove ) > clamp ) {
 		if ( smove < 0 ) {
 			smove = -clamp;
-		} else   {
+		} else {
 			smove = clamp;
 		}
 	}
 	if ( idMath::Fabs( umove ) > clamp ) {
 		if ( umove < 0 ) {
 			umove = -clamp;
-		} else   {
+		} else {
 			umove = clamp;
 		}
 	}
@@ -735,11 +735,11 @@ static void PMQH_CatagorizePosition() {
 	point[ 2 ] = qh_pmove.origin[ 2 ] - 1;
 	if ( qh_pmove.velocity[ 2 ] > 180 ) {
 		qh_pmove.onground = -1;
-	} else   {
+	} else {
 		q1trace_t tr = PMQH_TestPlayerMove( qh_pmove.origin, point );
 		if ( tr.plane.normal[ 2 ] < 0.7 ) {
 			qh_pmove.onground = -1;	// too steep
-		} else   {
+		} else {
 			qh_pmove.onground = tr.entityNum;
 		}
 		if ( qh_pmove.onground != -1 ) {
@@ -770,7 +770,7 @@ static void PMQH_CatagorizePosition() {
 		qh_pmove.waterlevel = 1;
 		if ( GGameType & GAME_Quake ) {
 			point[ 2 ] += 26;
-		} else   {
+		} else {
 			point[ 2 ] = qh_pmove.origin[ 2 ] + ( pmqh_player_mins[ 2 ] + pmqh_player_maxs[ 2 ] ) * 0.5;
 		}
 		cont = CM_PointContentsQ1( point, 0 );
@@ -778,7 +778,7 @@ static void PMQH_CatagorizePosition() {
 			qh_pmove.waterlevel = 2;
 			if ( GGameType & GAME_Quake ) {
 				point[ 2 ] += 22;
-			} else   {
+			} else {
 				point[ 2 ] = qh_pmove.origin[ 2 ] + 22;
 			}
 			cont = CM_PointContentsQ1( point, 0 );
@@ -809,9 +809,9 @@ static void PMQH_JumpButton() {
 
 		if ( qh_pmove.watertype == BSP29CONTENTS_WATER ) {
 			qh_pmove.velocity[ 2 ] = 100;
-		} else if ( qh_pmove.watertype == BSP29CONTENTS_SLIME )     {
+		} else if ( qh_pmove.watertype == BSP29CONTENTS_SLIME ) {
 			qh_pmove.velocity[ 2 ] = 80;
-		} else   {
+		} else {
 			qh_pmove.velocity[ 2 ] = 50;
 		}
 		return;
@@ -854,7 +854,7 @@ static void PMQH_CheckWaterJump() {
 	VectorMA( qh_pmove.origin, 24, flatforward, spot );
 	if ( GGameType & GAME_Quake ) {
 		spot[ 2 ] += 8;
-	} else   {
+	} else {
 		spot[ 2 ] += 32;
 	}
 	cont = CM_PointContentsQ1( spot, 0 );
@@ -870,7 +870,7 @@ static void PMQH_CheckWaterJump() {
 	if ( GGameType & GAME_Quake ) {
 		VectorScale( flatforward, 50, qh_pmove.velocity );
 		qh_pmove.velocity[ 2 ] = 310;
-	} else   {
+	} else {
 		VectorScale( qh_pml.forward, 200, qh_pmove.velocity );
 		qh_pmove.velocity[ 2 ] = 275;
 	}
@@ -908,7 +908,7 @@ static void PMQH_SpectatorMove() {
 	float speed = VectorLength( qh_pmove.velocity );
 	if ( speed < 1 ) {
 		VectorCopy( vec3_origin, qh_pmove.velocity );
-	} else   {
+	} else {
 		float drop = 0;
 
 		float friction = movevars.friction * 1.5;	// extra friction
@@ -1006,7 +1006,7 @@ void PMQH_PlayerMove() {
 
 	if ( qh_pmove.cmd.buttons & QHBUTTON_JUMP ) {
 		PMQH_JumpButton();
-	} else   {
+	} else {
 		qh_pmove.oldbuttons &= ~QHBUTTON_JUMP;
 	}
 
@@ -1014,9 +1014,9 @@ void PMQH_PlayerMove() {
 
 	if ( qh_pmove.waterlevel >= 2 ) {
 		PMQH_WaterMove();
-	} else if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.movetype == QHMOVETYPE_FLY )       {
+	} else if ( ( GGameType & GAME_Hexen2 ) && qh_pmove.movetype == QHMOVETYPE_FLY ) {
 		PMHW_FlyingMove();
-	} else   {
+	} else {
 		PMQH_AirMove();
 	}
 

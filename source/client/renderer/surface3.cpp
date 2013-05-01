@@ -242,7 +242,7 @@ static void RB_SurfaceGrid( srfGridMesh_t* cv ) {
 				RB_EndSurface();
 				RB_BeginSurface( tess.shader, tess.fogNum );
 				tess.dlightBits |= dlightBits;	// ydnar: for proper dlighting
-			} else   {
+			} else {
 				break;
 			}
 		} while ( 1 );
@@ -571,7 +571,7 @@ static void RB_SurfaceSprite() {
 	if ( backEnd.currentEntity->e.rotation == 0 ) {
 		VectorScale( backEnd.viewParms.orient.axis[ 1 ], radius, left );
 		VectorScale( backEnd.viewParms.orient.axis[ 2 ], radius, up );
-	} else   {
+	} else {
 		float ang = DEG2RAD( backEnd.currentEntity->e.rotation );
 		float s = sin( ang );
 		float c = cos( ang );
@@ -713,7 +713,7 @@ static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, f
 		tess.vertexColors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ];
 		tess.vertexColors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ];
 		tess.vertexColors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ];
-	} else   {
+	} else {
 		tess.vertexColors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * 0.25;
 		tess.vertexColors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * 0.25;
 		tess.vertexColors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * 0.25;
@@ -782,7 +782,7 @@ static void RB_SurfaceRailCore() {
 
 	if ( GGameType & GAME_ET ) {
 		DoRailCore( start, end, right, len, e->frame > 0 ? e->frame : 1 );
-	} else   {
+	} else {
 		DoRailCore( start, end, right, len, r_railCoreWidth->integer );
 	}
 }

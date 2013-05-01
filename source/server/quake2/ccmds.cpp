@@ -191,7 +191,7 @@ static void SVQ2_WriteServerFile( bool autosave ) {
 			newtime->tm_min / 10, newtime->tm_min % 10,
 			newtime->tm_mon + 1, newtime->tm_mday );
 		String::Cat( comment, sizeof ( comment ), sv.q2_configstrings[ Q2CS_NAME ] );
-	} else   {	// autosaved
+	} else {	// autosaved
 		String::Sprintf( comment, sizeof ( comment ), "ENTERING %s", sv.q2_configstrings[ Q2CS_NAME ] );
 	}
 
@@ -271,9 +271,9 @@ static void SVQ2_Status_f() {
 
 		if ( cl->state == CS_CONNECTED ) {
 			common->Printf( "CNCT " );
-		} else if ( cl->state == CS_ZOMBIE )     {
+		} else if ( cl->state == CS_ZOMBIE ) {
 			common->Printf( "ZMBI " );
-		} else   {
+		} else {
 			int ping = cl->ping < 9999 ? cl->ping : 9999;
 			common->Printf( "%4i ", ping );
 		}
@@ -551,7 +551,7 @@ static void SVQ2_GameMap_f() {
 	if ( map[ 0 ] == '*' ) {
 		// wipe all the *.sav files
 		SVQ2_WipeSavegame( "current" );
-	} else   {	// save the map just exited
+	} else {	// save the map just exited
 		if ( sv.state == SS_GAME ) {
 			// clear all the client inuse flags before saving so that
 			// when the level is re-entered, the clients will spawn

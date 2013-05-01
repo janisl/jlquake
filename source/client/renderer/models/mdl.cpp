@@ -189,9 +189,9 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( mdl_flags & H2MDLEF_HOLEY ) {
 			texture_mode = IMG8MODE_SkinHoley;
-		} else if ( mdl_flags & H2MDLEF_TRANSPARENT )     {
+		} else if ( mdl_flags & H2MDLEF_TRANSPARENT ) {
 			texture_mode = IMG8MODE_SkinTransparent;
-		} else if ( mdl_flags & H2MDLEF_SPECIAL_TRANS )     {
+		} else if ( mdl_flags & H2MDLEF_SPECIAL_TRANS ) {
 			texture_mode = IMG8MODE_SkinSpecialTrans;
 		}
 	}
@@ -207,33 +207,33 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 					common->FatalError( "Player skin too large" );
 				}
 				Com_Memcpy( q1_player_8bit_texels, ( byte* )( pskintype + 1 ), s );
-			} else if ( GGameType & GAME_Hexen2 )     {
+			} else if ( GGameType & GAME_Hexen2 ) {
 				if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 0 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
 					Com_Memcpy( h2_player_8bit_texels[ 0 ], ( byte* )( pskintype + 1 ), s );
-				} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) )       {
+				} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 1 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
 					Com_Memcpy( h2_player_8bit_texels[ 1 ], ( byte* )( pskintype + 1 ), s );
-				} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) )       {
+				} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 2 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
 					Com_Memcpy( h2_player_8bit_texels[ 2 ], ( byte* )( pskintype + 1 ), s );
-				} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) )       {
+				} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 3 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
 					Com_Memcpy( h2_player_8bit_texels[ 3 ], ( byte* )( pskintype + 1 ), s );
-				} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) )       {
+				} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 4 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
 					Com_Memcpy( h2_player_8bit_texels[ 4 ], ( byte* )( pskintype + 1 ), s );
-				} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) )       {
+				} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 5 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}

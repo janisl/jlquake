@@ -83,7 +83,7 @@ int SetFilePointer2( LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwM
 	SaveMidi = MidiOffset;
 	if ( dwMoveMethod == FILE_BEGIN ) {
 		MidiOffset = lDistanceToMove;
-	} else   {
+	} else {
 		MidiOffset += lDistanceToMove;
 	}
 
@@ -225,7 +225,7 @@ BOOL ConverterInit( LPSTR szInFile ) {
 
 		if ( ptsTrack->dwTrackLength > TRACK_BUFFER_SIZE ) {
 			dwToRead = TRACK_BUFFER_SIZE;
-		} else   {
+		} else {
 			dwToRead = ptsTrack->dwTrackLength;
 		}
 /*    if( !ReadFile( hInFile, ptsTrack->pTrackStart, dwToRead, &cbRead, NULL )
@@ -368,7 +368,7 @@ static BOOL RewindConverter( void ) {
 
 		if ( ptsTrack->dwTrackLength > TRACK_BUFFER_SIZE ) {
 			dwToRead = TRACK_BUFFER_SIZE;
-		} else   {
+		} else {
 			dwToRead = ptsTrack->dwTrackLength;
 		}
 /*    if( !ReadFile( hInFile, ptsTrack->pTrackStart, dwToRead, &cbRead, NULL )
@@ -468,7 +468,7 @@ int ConvertToBuffer( DWORD dwFlags, LPCONVERTINFO lpciInfo ) {
 			RewindConverter();
 			dwProgressBytes = 0;
 			dwStatus = 0;
-		} else   {
+		} else {
 			return( CONVERTERR_DONE );
 		}
 	}
@@ -476,7 +476,7 @@ int ConvertToBuffer( DWORD dwFlags, LPCONVERTINFO lpciInfo ) {
 	// previously identified something as corrupt, so complain louder this time.
 	else if ( dwStatus & CONVERTF_STATUS_STUCK ) {
 		return( CONVERTERR_STUCK );
-	} else if ( dwStatus & CONVERTF_STATUS_GOTEVENT )     {
+	} else if ( dwStatus & CONVERTF_STATUS_GOTEVENT ) {
 		// Turn off this bit flag
 		dwStatus ^= CONVERTF_STATUS_GOTEVENT;
 
@@ -500,9 +500,9 @@ int ConvertToBuffer( DWORD dwFlags, LPCONVERTINFO lpciInfo ) {
 				// Do some processing and tell caller that this buffer's full
 				dwStatus |= CONVERTF_STATUS_GOTEVENT;
 				return( CONVERTERR_NOERROR );
-			} else if ( nChkErr == CONVERTERR_METASKIP )     {
+			} else if ( nChkErr == CONVERTERR_METASKIP ) {
 				// We skip by all meta events that aren't tempo changes...
-			} else   {
+			} else {
 				DebugPrint( "Unable to add event to stream buffer." );
 				if ( dwMallocBlocks ) {
 					free( teTemp.pLongData );
@@ -561,9 +561,9 @@ int ConvertToBuffer( DWORD dwFlags, LPCONVERTINFO lpciInfo ) {
 				// Do some processing and tell somebody this buffer is full...
 				dwStatus |= CONVERTF_STATUS_GOTEVENT;
 				return( CONVERTERR_NOERROR );
-			} else if ( nChkErr == CONVERTERR_METASKIP )     {
+			} else if ( nChkErr == CONVERTERR_METASKIP ) {
 				// We skip by all meta events that aren't tempo changes...
-			} else   {
+			} else {
 				DebugPrint( "Unable to add event to stream buffer." );
 				if ( dwMallocBlocks ) {
 					free( teTemp.pLongData );
@@ -701,7 +701,7 @@ static BOOL GetTrackEvent( INTRACKSTATE* ptsTrack, PTEMPEVENT pteTemp ) {
 			}
 			++pteTemp->dwEventLength;
 		}
-	} else if ( ( byByte & 0xF0 ) != MIDI_SYSEX )       {
+	} else if ( ( byByte & 0xF0 ) != MIDI_SYSEX ) {
 		// Not running status, not in SysEx range - must be
 		// normal channel message (0x80-0xEF)
 		//
@@ -729,7 +729,7 @@ static BOOL GetTrackEvent( INTRACKSTATE* ptsTrack, PTEMPEVENT pteTemp ) {
 				return( TRUE );
 			}
 		}
-	} else if ( ( byByte == MIDI_SYSEX ) || ( byByte == MIDI_SYSEXEND ) )         {
+	} else if ( ( byByte == MIDI_SYSEX ) || ( byByte == MIDI_SYSEXEND ) ) {
 		// One of the SysEx types. (They are the same as far as we're concerned;
 		// there is only a semantic difference in how the data would actually
 		// get sent when the file is played. We must take care to put the proper
@@ -768,7 +768,7 @@ static BOOL GetTrackEvent( INTRACKSTATE* ptsTrack, PTEMPEVENT pteTemp ) {
 		// a malloc block to free, should it need to exit or reset before the
 		// block would normally be freed
 		dwMallocBlocks++;
-	} else if ( byByte == MIDI_META )     {
+	} else if ( byByte == MIDI_META ) {
 		// It's a meta event. Parse the general form:
 		//  BYTE    bEvent  (MIDI_META)
 		//  BYTE    bClass
@@ -824,7 +824,7 @@ static BOOL GetTrackEvent( INTRACKSTATE* ptsTrack, PTEMPEVENT pteTemp ) {
 		if ( pteTemp->byShortData[ 1 ] == MIDI_META_EOT ) {
 			ptsTrack->fdwTrack |= ITS_F_ENDOFTRK;
 		}
-	} else   {
+	} else {
 		// Messages in this range are system messages and aren't supposed to
 		// be in a normal MIDI file. If they are, we've either misparsed or the
 		// authoring software is stupid.
@@ -908,7 +908,7 @@ BOOL RefillTrackBuffer( PINTRACKSTATE ptsTrack ) {
 
 		if ( ptsTrack->dwLeftOnDisk > TRACK_BUFFER_SIZE ) {
 			ptsTrack->dwLeftInBuffer = TRACK_BUFFER_SIZE;
-		} else   {
+		} else {
 			ptsTrack->dwLeftInBuffer = ptsTrack->dwLeftOnDisk;
 		}
 /*        bResult = ReadFile( hInFile, ptsTrack->pTrackStart,
@@ -927,7 +927,7 @@ BOOL RefillTrackBuffer( PINTRACKSTATE ptsTrack ) {
 			common->Printf( "MIDI: Read operation failed prematurely!!\n" );
 			ptsTrack->dwLeftInBuffer = dwBytesRead;
 			return( TRUE );
-		} else   {
+		} else {
 			return( FALSE );
 		}
 	}
@@ -967,7 +967,7 @@ static int AddEventToStreamBuffer( PTEMPEVENT pteTemp, CONVERTINFO* lpciInfo ) {
 		if ( lpciInfo->bTimesUp ) {
 			lpciInfo->bTimesUp = FALSE;
 			return( CONVERTERR_BUFFERFULL );
-		} else   {
+		} else {
 			lpciInfo->bTimesUp = TRUE;
 		}
 	}
@@ -1028,7 +1028,7 @@ static int AddEventToStreamBuffer( PTEMPEVENT pteTemp, CONVERTINFO* lpciInfo ) {
 			free( pteTemp->pLongData );
 			dwMallocBlocks--;
 		}
-	} else   {
+	} else {
 		// Better be a meta event.
 		//  BYTE    byEvent
 		//  BYTE    byEventType

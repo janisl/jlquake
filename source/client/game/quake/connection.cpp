@@ -63,11 +63,11 @@ int CLQW_CalcNet() {
 		qwframe_t* frame = &cl.qw_frames[ i & UPDATE_MASK_QW ];
 		if ( frame->receivedtime == -1 ) {
 			clqh_packet_latency[ i & NET_TIMINGSMASK_QH ] = 9999;		// dropped
-		} else if ( frame->receivedtime == -2 )     {
+		} else if ( frame->receivedtime == -2 ) {
 			clqh_packet_latency[ i & NET_TIMINGSMASK_QH ] = 10000;		// choked
-		} else if ( frame->invalid )     {
+		} else if ( frame->invalid ) {
 			clqh_packet_latency[ i & NET_TIMINGSMASK_QH ] = 9998;		// invalid delta
-		} else   {
+		} else {
 			clqh_packet_latency[ i & NET_TIMINGSMASK_QH ] = ( frame->receivedtime - frame->senttime ) * 20;
 		}
 	}
@@ -235,7 +235,7 @@ void CLQW_SendCmd() {
 		cl.qw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_QW ].delta_sequence = cl.qh_validsequence;
 		buf.WriteByte( qwclc_delta );
 		buf.WriteByte( cl.qh_validsequence & 255 );
-	} else   {
+	} else {
 		cl.qw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_QW ].delta_sequence = -1;
 	}
 

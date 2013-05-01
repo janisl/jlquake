@@ -25,7 +25,7 @@ void GL_Bind( image_t* image ) {
 	if ( !image ) {
 		common->Printf( S_COLOR_YELLOW "GL_Bind: NULL image\n" );
 		texnum = tr.defaultImage->texnum;
-	} else   {
+	} else {
 		texnum = image->texnum;
 	}
 
@@ -53,12 +53,12 @@ void GL_SelectTexture( int unit ) {
 		QGL_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 		qglClientActiveTextureARB( GL_TEXTURE0_ARB );
 		QGL_LogComment( "glClientActiveTextureARB( GL_TEXTURE0_ARB )\n" );
-	} else if ( unit == 1 )     {
+	} else if ( unit == 1 ) {
 		qglActiveTextureARB( GL_TEXTURE1_ARB );
 		QGL_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
 		qglClientActiveTextureARB( GL_TEXTURE1_ARB );
 		QGL_LogComment( "glClientActiveTextureARB( GL_TEXTURE1_ARB )\n" );
-	} else   {
+	} else {
 		common->Error( "GL_SelectTexture: unit = %i", unit );
 	}
 
@@ -104,7 +104,7 @@ void GL_State( unsigned long stateBits ) {
 	if ( diff & GLS_DEPTHFUNC_EQUAL ) {
 		if ( stateBits & GLS_DEPTHFUNC_EQUAL ) {
 			qglDepthFunc( GL_EQUAL );
-		} else   {
+		} else {
 			qglDepthFunc( GL_LEQUAL );
 		}
 	}
@@ -179,7 +179,7 @@ void GL_State( unsigned long stateBits ) {
 
 			qglEnable( GL_BLEND );
 			qglBlendFunc( srcFactor, dstFactor );
-		} else   {
+		} else {
 			qglDisable( GL_BLEND );
 		}
 	}
@@ -190,7 +190,7 @@ void GL_State( unsigned long stateBits ) {
 	if ( diff & GLS_DEPTHMASK_TRUE ) {
 		if ( stateBits & GLS_DEPTHMASK_TRUE ) {
 			qglDepthMask( GL_TRUE );
-		} else   {
+		} else {
 			qglDepthMask( GL_FALSE );
 		}
 	}
@@ -201,7 +201,7 @@ void GL_State( unsigned long stateBits ) {
 	if ( diff & GLS_POLYMODE_LINE ) {
 		if ( stateBits & GLS_POLYMODE_LINE ) {
 			qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-		} else   {
+		} else {
 			qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		}
 	}
@@ -212,7 +212,7 @@ void GL_State( unsigned long stateBits ) {
 	if ( diff & GLS_DEPTHTEST_DISABLE ) {
 		if ( stateBits & GLS_DEPTHTEST_DISABLE ) {
 			qglDisable( GL_DEPTH_TEST );
-		} else   {
+		} else {
 			qglEnable( GL_DEPTH_TEST );
 		}
 	}
@@ -255,19 +255,19 @@ void GL_Cull( int cullType ) {
 
 	if ( cullType == CT_TWO_SIDED ) {
 		qglDisable( GL_CULL_FACE );
-	} else   {
+	} else {
 		qglEnable( GL_CULL_FACE );
 
 		if ( cullType == CT_BACK_SIDED ) {
 			if ( backEnd.viewParms.isMirror ) {
 				qglCullFace( GL_FRONT );
-			} else   {
+			} else {
 				qglCullFace( GL_BACK );
 			}
-		} else   {
+		} else {
 			if ( backEnd.viewParms.isMirror ) {
 				qglCullFace( GL_BACK );
-			} else   {
+			} else {
 				qglCullFace( GL_FRONT );
 			}
 		}

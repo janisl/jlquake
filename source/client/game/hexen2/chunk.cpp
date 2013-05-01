@@ -20,13 +20,13 @@
 static void CLH2_InitChunkGlass( float final, qhandle_t* model ) {
 	if ( final < 0.20 ) {
 		*model = R_RegisterModel( "models/shard1.mdl" );
-	} else if ( final < 0.40 )     {
+	} else if ( final < 0.40 ) {
 		*model = R_RegisterModel( "models/shard2.mdl" );
-	} else if ( final < 0.60 )     {
+	} else if ( final < 0.60 ) {
 		*model = R_RegisterModel( "models/shard3.mdl" );
-	} else if ( final < 0.80 )     {
+	} else if ( final < 0.80 ) {
 		*model = R_RegisterModel( "models/shard4.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/shard5.mdl" );
 	}
 }
@@ -51,11 +51,11 @@ static void CLH2_InitChunkWebs( float final, qhandle_t* model, int* skinNum, int
 static void CLH2_InitChunkWood( float final, qhandle_t* model ) {
 	if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/splnter1.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/splnter2.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/splnter3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/splnter4.mdl" );
 	}
 }
@@ -63,11 +63,11 @@ static void CLH2_InitChunkWood( float final, qhandle_t* model ) {
 static void CLH2_InitChunkMetal( float final, qhandle_t* model ) {
 	if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/metlchk1.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/metlchk2.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/metlchk3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/metlchk4.mdl" );
 	}
 }
@@ -75,9 +75,9 @@ static void CLH2_InitChunkMetal( float final, qhandle_t* model ) {
 static void CLH2_InitChunkFlesh( float final, qhandle_t* model ) {
 	if ( final < 0.33 ) {
 		*model = R_RegisterModel( "models/flesh1.mdl" );
-	} else if ( final < 0.66 )     {
+	} else if ( final < 0.66 ) {
 		*model = R_RegisterModel( "models/flesh2.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/flesh3.mdl" );
 	}
 }
@@ -85,11 +85,11 @@ static void CLH2_InitChunkFlesh( float final, qhandle_t* model ) {
 static void CLH2_InitChunkGreyStone( float final, qhandle_t* model, int* skinNum ) {
 	if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/schunk1.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/schunk2.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/schunk3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/schunk4.mdl" );
 	}
 	*skinNum = 0;
@@ -103,11 +103,11 @@ static void CLH2_InitChunkBrownStone( float final, qhandle_t* model, int* skinNu
 static void CLH2_InitChunkClay( float final, qhandle_t* model ) {
 	if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/clshard1.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/clshard2.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/clshard3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/clshard4.mdl" );
 	}
 }
@@ -120,9 +120,9 @@ static void CLH2_InitChunkBone( float final, qhandle_t* model, int* skinNum ) {
 static void CLH2_InitChunkLeaves( float final, qhandle_t* model ) {
 	if ( final < 0.33 ) {
 		*model = R_RegisterModel( "models/leafchk1.mdl" );
-	} else if ( final < 0.66 )     {
+	} else if ( final < 0.66 ) {
 		*model = R_RegisterModel( "models/leafchk2.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/leafchk3.mdl" );
 	}
 }
@@ -130,9 +130,9 @@ static void CLH2_InitChunkLeaves( float final, qhandle_t* model ) {
 static void CLH2_InitChunkHay( float final, qhandle_t* model ) {
 	if ( final < 0.33 ) {
 		*model = R_RegisterModel( "models/hay1.mdl" );
-	} else if ( final < 0.66 )     {
+	} else if ( final < 0.66 ) {
 		*model = R_RegisterModel( "models/hay2.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/hay3.mdl" );
 	}
 }
@@ -140,9 +140,9 @@ static void CLH2_InitChunkHay( float final, qhandle_t* model ) {
 static void CLH2_InitChunkCloth( float final, qhandle_t* model ) {
 	if ( final < 0.33 ) {
 		*model = R_RegisterModel( "models/clthchk1.mdl" );
-	} else if ( final < 0.66 )     {
+	} else if ( final < 0.66 ) {
 		*model = R_RegisterModel( "models/clthchk2.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/clthchk3.mdl" );
 	}
 }
@@ -150,17 +150,17 @@ static void CLH2_InitChunkCloth( float final, qhandle_t* model ) {
 static void CLH2_InitChunkWoodAndLeaf( float final, qhandle_t* model ) {
 	if ( final < 0.14 ) {
 		*model = R_RegisterModel( "models/splnter1.mdl" );
-	} else if ( final < 0.28 )     {
+	} else if ( final < 0.28 ) {
 		*model = R_RegisterModel( "models/leafchk1.mdl" );
-	} else if ( final < 0.42 )     {
+	} else if ( final < 0.42 ) {
 		*model = R_RegisterModel( "models/splnter2.mdl" );
-	} else if ( final < 0.56 )     {
+	} else if ( final < 0.56 ) {
 		*model = R_RegisterModel( "models/leafchk2.mdl" );
-	} else if ( final < 0.70 )     {
+	} else if ( final < 0.70 ) {
 		*model = R_RegisterModel( "models/splnter3.mdl" );
-	} else if ( final < 0.84 )     {
+	} else if ( final < 0.84 ) {
 		*model = R_RegisterModel( "models/leafchk3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/splnter4.mdl" );
 	}
 }
@@ -168,19 +168,19 @@ static void CLH2_InitChunkWoodAndLeaf( float final, qhandle_t* model ) {
 static void CLH2_InitChunkWoodAndMetal( float final, qhandle_t* model ) {
 	if ( final < 0.125 ) {
 		*model = R_RegisterModel( "models/splnter1.mdl" );
-	} else if ( final < 0.25 )     {
+	} else if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/metlchk1.mdl" );
-	} else if ( final < 0.375 )     {
+	} else if ( final < 0.375 ) {
 		*model = R_RegisterModel( "models/splnter2.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/metlchk2.mdl" );
-	} else if ( final < 0.625 )     {
+	} else if ( final < 0.625 ) {
 		*model = R_RegisterModel( "models/splnter3.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/metlchk3.mdl" );
-	} else if ( final < 0.875 )     {
+	} else if ( final < 0.875 ) {
 		*model = R_RegisterModel( "models/splnter4.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/metlchk4.mdl" );
 	}
 }
@@ -188,19 +188,19 @@ static void CLH2_InitChunkWoodAndMetal( float final, qhandle_t* model ) {
 static void CLH2_InitChunkWoodAndStone( float final, qhandle_t* model ) {
 	if ( final < 0.125 ) {
 		*model = R_RegisterModel( "models/splnter1.mdl" );
-	} else if ( final < 0.25 )     {
+	} else if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/schunk1.mdl" );
-	} else if ( final < 0.375 )     {
+	} else if ( final < 0.375 ) {
 		*model = R_RegisterModel( "models/splnter2.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/schunk2.mdl" );
-	} else if ( final < 0.625 )     {
+	} else if ( final < 0.625 ) {
 		*model = R_RegisterModel( "models/splnter3.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/schunk3.mdl" );
-	} else if ( final < 0.875 )     {
+	} else if ( final < 0.875 ) {
 		*model = R_RegisterModel( "models/splnter4.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/schunk4.mdl" );
 	}
 }
@@ -208,19 +208,19 @@ static void CLH2_InitChunkWoodAndStone( float final, qhandle_t* model ) {
 static void CLH2_InitChunkMetalAndStone( float final, qhandle_t* model ) {
 	if ( final < 0.125 ) {
 		*model = R_RegisterModel( "models/metlchk1.mdl" );
-	} else if ( final < 0.25 )     {
+	} else if ( final < 0.25 ) {
 		*model = R_RegisterModel( "models/schunk1.mdl" );
-	} else if ( final < 0.375 )     {
+	} else if ( final < 0.375 ) {
 		*model = R_RegisterModel( "models/metlchk2.mdl" );
-	} else if ( final < 0.50 )     {
+	} else if ( final < 0.50 ) {
 		*model = R_RegisterModel( "models/schunk2.mdl" );
-	} else if ( final < 0.625 )     {
+	} else if ( final < 0.625 ) {
 		*model = R_RegisterModel( "models/metlchk3.mdl" );
-	} else if ( final < 0.75 )     {
+	} else if ( final < 0.75 ) {
 		*model = R_RegisterModel( "models/schunk3.mdl" );
-	} else if ( final < 0.875 )     {
+	} else if ( final < 0.875 ) {
 		*model = R_RegisterModel( "models/metlchk4.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/schunk4.mdl" );
 	}
 }
@@ -228,17 +228,17 @@ static void CLH2_InitChunkMetalAndStone( float final, qhandle_t* model ) {
 static void CLH2_InitChunkMetalAndCloth( float final, qhandle_t* model ) {
 	if ( final < 0.14 ) {
 		*model = R_RegisterModel( "models/metlchk1.mdl" );
-	} else if ( final < 0.28 )     {
+	} else if ( final < 0.28 ) {
 		*model = R_RegisterModel( "models/clthchk1.mdl" );
-	} else if ( final < 0.42 )     {
+	} else if ( final < 0.42 ) {
 		*model = R_RegisterModel( "models/metlchk2.mdl" );
-	} else if ( final < 0.56 )     {
+	} else if ( final < 0.56 ) {
 		*model = R_RegisterModel( "models/clthchk2.mdl" );
-	} else if ( final < 0.70 )     {
+	} else if ( final < 0.70 ) {
 		*model = R_RegisterModel( "models/metlchk3.mdl" );
-	} else if ( final < 0.84 )     {
+	} else if ( final < 0.84 ) {
 		*model = R_RegisterModel( "models/clthchk3.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/metlchk4.mdl" );
 	}
 }
@@ -266,9 +266,9 @@ static void CLH2_InitChunkGreenFlesh( float final, qhandle_t* model, int* skinNu
 	// spider guts
 	if ( final < 0.33 ) {
 		*model = R_RegisterModel( "models/sflesh1.mdl" );
-	} else if ( final < 0.66 )     {
+	} else if ( final < 0.66 ) {
 		*model = R_RegisterModel( "models/sflesh2.mdl" );
-	} else   {
+	} else {
 		*model = R_RegisterModel( "models/sflesh3.mdl" );
 	}
 	*skinNum = 0;
@@ -278,50 +278,50 @@ void CLH2_InitChunkModel( int chunkType, int* model, int* skinNumber, int* drawF
 	float final = ( rand() % 100 ) * .01;
 	if ( chunkType == H2THINGTYPE_GLASS ) {
 		CLH2_InitChunkGlass( final, model );
-	} else if ( chunkType == H2THINGTYPE_CLEARGLASS )     {
+	} else if ( chunkType == H2THINGTYPE_CLEARGLASS ) {
 		CLH2_InitChunkClearGlass( final, model, skinNumber, drawFlags );
-	} else if ( chunkType == H2THINGTYPE_REDGLASS )     {
+	} else if ( chunkType == H2THINGTYPE_REDGLASS ) {
 		CLH2_InitChunkRedGlass( final, model, skinNumber );
-	} else if ( chunkType == H2THINGTYPE_WEBS )     {
+	} else if ( chunkType == H2THINGTYPE_WEBS ) {
 		CLH2_InitChunkWebs( final, model, skinNumber, drawFlags );
-	} else if ( chunkType == H2THINGTYPE_WOOD )     {
+	} else if ( chunkType == H2THINGTYPE_WOOD ) {
 		CLH2_InitChunkWood( final, model );
-	} else if ( chunkType == H2THINGTYPE_METAL )     {
+	} else if ( chunkType == H2THINGTYPE_METAL ) {
 		CLH2_InitChunkMetal( final, model );
-	} else if ( chunkType == H2THINGTYPE_FLESH )     {
+	} else if ( chunkType == H2THINGTYPE_FLESH ) {
 		CLH2_InitChunkFlesh( final, model );
 	} else if ( chunkType == H2THINGTYPE_BROWNSTONE ||
 				( ( GGameType & GAME_HexenWorld ) && chunkType == H2THINGTYPE_DIRT ) ) {
 		CLH2_InitChunkBrownStone( final, model, skinNumber );
-	} else if ( chunkType == H2THINGTYPE_CLAY )     {
+	} else if ( chunkType == H2THINGTYPE_CLAY ) {
 		CLH2_InitChunkClay( final, model );
-	} else if ( !( GGameType & GAME_HexenWorld ) && chunkType == H2THINGTYPE_BONE )       {
+	} else if ( !( GGameType & GAME_HexenWorld ) && chunkType == H2THINGTYPE_BONE ) {
 		CLH2_InitChunkBone( final, model, skinNumber );
-	} else if ( chunkType == H2THINGTYPE_LEAVES )     {
+	} else if ( chunkType == H2THINGTYPE_LEAVES ) {
 		CLH2_InitChunkLeaves( final, model );
-	} else if ( chunkType == H2THINGTYPE_HAY )     {
+	} else if ( chunkType == H2THINGTYPE_HAY ) {
 		CLH2_InitChunkHay( final, model );
-	} else if ( chunkType == H2THINGTYPE_CLOTH )     {
+	} else if ( chunkType == H2THINGTYPE_CLOTH ) {
 		CLH2_InitChunkCloth( final, model );
-	} else if ( chunkType == H2THINGTYPE_WOOD_LEAF )     {
+	} else if ( chunkType == H2THINGTYPE_WOOD_LEAF ) {
 		CLH2_InitChunkWoodAndLeaf( final, model );
-	} else if ( chunkType == H2THINGTYPE_WOOD_METAL )     {
+	} else if ( chunkType == H2THINGTYPE_WOOD_METAL ) {
 		CLH2_InitChunkWoodAndMetal( final, model );
-	} else if ( chunkType == H2THINGTYPE_WOOD_STONE )     {
+	} else if ( chunkType == H2THINGTYPE_WOOD_STONE ) {
 		CLH2_InitChunkWoodAndStone( final, model );
-	} else if ( chunkType == H2THINGTYPE_METAL_STONE )     {
+	} else if ( chunkType == H2THINGTYPE_METAL_STONE ) {
 		CLH2_InitChunkMetalAndStone( final, model );
-	} else if ( chunkType == H2THINGTYPE_METAL_CLOTH )     {
+	} else if ( chunkType == H2THINGTYPE_METAL_CLOTH ) {
 		CLH2_InitChunkMetalAndCloth( final, model );
-	} else if ( chunkType == H2THINGTYPE_ICE )     {
+	} else if ( chunkType == H2THINGTYPE_ICE ) {
 		CLH2_InitChunkIce( model, skinNumber, drawFlags, frame, absoluteLight );
-	} else if ( chunkType == H2THINGTYPE_METEOR )     {
+	} else if ( chunkType == H2THINGTYPE_METEOR ) {
 		CLH2_InitChunkMeteor( model, skinNumber );
-	} else if ( chunkType == H2THINGTYPE_ACID )     {
+	} else if ( chunkType == H2THINGTYPE_ACID ) {
 		CLH2_InitChunkAcid( model, skinNumber );
-	} else if ( chunkType == H2THINGTYPE_GREENFLESH )     {
+	} else if ( chunkType == H2THINGTYPE_GREENFLESH ) {
 		CLH2_InitChunkGreenFlesh( final, model, skinNumber );
-	} else   {
+	} else {
 		CLH2_InitChunkGreyStone( final, model, skinNumber );
 	}
 }

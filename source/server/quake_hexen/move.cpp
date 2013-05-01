@@ -94,7 +94,7 @@ void SVQH_SetMoveTrace( const q1trace_t& trace ) {
 	*pr_globalVars.trace_plane_dist =  trace.plane.dist;
 	if ( trace.entityNum >= 0 ) {
 		*pr_globalVars.trace_ent = EDICT_TO_PROG( QH_EDICT_NUM( trace.entityNum ) );
-	} else   {
+	} else {
 		*pr_globalVars.trace_ent = EDICT_TO_PROG( sv.qh_edicts );
 	}
 }
@@ -126,12 +126,12 @@ bool SVQH_movestep( qhedict_t* ent, const vec3_t move, bool relink, bool noenemy
 						 ( int )ent->GetFlags() & H2FL_HUNTFACE ) {
 						//Go for face
 						dz = ent->GetOrigin()[ 2 ] - PROG_TO_EDICT( ent->GetEnemy() )->GetOrigin()[ 2 ] + PROG_TO_EDICT( ent->GetEnemy() )->GetViewOfs()[ 2 ];
-					} else   {
+					} else {
 						dz = ent->GetOrigin()[ 2 ] - PROG_TO_EDICT( ent->GetEnemy() )->GetOrigin()[ 2 ];
 					}
 					if ( dz > 40 ) {
 						neworg[ 2 ] -= 8;
-					} else if ( dz < 30 )     {
+					} else if ( dz < 30 ) {
 						neworg[ 2 ] += 8;
 					}
 				}
@@ -287,16 +287,16 @@ static void SVQH_NewChaseDir( qhedict_t* actor, qhedict_t* enemy, float dist ) {
 	float d[ 3 ];
 	if ( deltax > 10 ) {
 		d[ 1 ] = 0;
-	} else if ( deltax < -10 )     {
+	} else if ( deltax < -10 ) {
 		d[ 1 ] = 180;
-	} else   {
+	} else {
 		d[ 1 ] = DI_NODIR;
 	}
 	if ( deltay < -10 ) {
 		d[ 2 ] = 270;
-	} else if ( deltay > 10 )     {
+	} else if ( deltay > 10 ) {
 		d[ 2 ] = 90;
-	} else   {
+	} else {
 		d[ 2 ] = DI_NODIR;
 	}
 
@@ -305,7 +305,7 @@ static void SVQH_NewChaseDir( qhedict_t* actor, qhedict_t* enemy, float dist ) {
 		float tdir;
 		if ( d[ 1 ] == 0 ) {
 			tdir = d[ 2 ] == 90 ? 45 : 315;
-		} else   {
+		} else {
 			tdir = d[ 2 ] == 90 ? 135 : 215;
 		}
 
@@ -343,7 +343,7 @@ static void SVQH_NewChaseDir( qhedict_t* actor, qhedict_t* enemy, float dist ) {
 				return;
 			}
 		}
-	} else   {
+	} else {
 		for ( float tdir = 315; tdir >= 0; tdir -= 45 ) {
 			if ( tdir != turnaround && SVQH_StepDirection( actor, tdir, dist ) ) {
 				return;
@@ -405,7 +405,7 @@ void SVQH_MoveToGoal() {
 		if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_HexenWorld ) ) {
 			G_FLOAT( OFS_RETURN ) = 0;
 		}
-	} else   {
+	} else {
 		if ( ( rand() & 3 ) == 1 ) {
 			SVQH_NewChaseDir( ent, goal, dist );
 		}

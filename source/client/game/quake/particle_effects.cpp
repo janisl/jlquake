@@ -49,7 +49,7 @@ void CLQ1_BlobExplosion( const vec3_t origin ) {
 		if ( i & 1 ) {
 			p->type = pt_q1blob;
 			p->color = 66 + rand() % 6;
-		} else   {
+		} else {
 			p->type = pt_q1blob2;
 			p->color = 150 + rand() % 6;
 		}
@@ -98,12 +98,12 @@ static void RunParticleEffect( const vec3_t origin, const vec3_t direction, int 
 void CLQ1_RunParticleEffect( const vec3_t origin, const vec3_t direction, int colour, int count ) {
 	if ( !( GGameType & GAME_QuakeWorld ) ) {
 		RunParticleEffect( origin, direction, colour, count, 1, pt_q1slowgrav );
-	} else   {
+	} else {
 		if ( count > 130 ) {
 			RunParticleEffect( origin, direction, colour, count, 3, pt_q1grav );
-		} else if ( count > 20 )     {
+		} else if ( count > 20 ) {
 			RunParticleEffect( origin, direction, colour, count, 2, pt_q1grav );
-		} else   {
+		} else {
 			RunParticleEffect( origin, direction, colour, count, 1, pt_q1grav );
 		}
 	}
@@ -256,7 +256,7 @@ void CLQ1_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			p->type = pt_q1static;
 			if ( type == 3 ) {
 				p->color = 52 + ( ( tracercount & 4 ) << 1 );
-			} else   {
+			} else {
 				p->color = 230 + ( ( tracercount & 4 ) << 1 );
 			}
 
@@ -266,7 +266,7 @@ void CLQ1_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			if ( tracercount & 1 ) {
 				p->vel[ 0 ] = 30 * vec[ 1 ];
 				p->vel[ 1 ] = 30 * -vec[ 0 ];
-			} else   {
+			} else {
 				p->vel[ 0 ] = 30 * -vec[ 1 ];
 				p->vel[ 1 ] = 30 * vec[ 0 ];
 			}

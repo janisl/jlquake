@@ -67,12 +67,12 @@ int QClipMap46::PointLeafnum_r( const vec3_t P, int Num ) const {
 		float d;
 		if ( Plane->type < 3 ) {
 			d = P[ Plane->type ] - Plane->dist;
-		} else   {
+		} else {
 			d = DotProduct( Plane->normal, P ) - Plane->dist;
 		}
 		if ( d < 0 ) {
 			Num = Node->children[ 1 ];
-		} else   {
+		} else {
 			Num = Node->children[ 0 ];
 		}
 	}
@@ -130,9 +130,9 @@ void QClipMap46::BoxLeafnums_r( leafList_t* ll, int nodenum ) const {
 		int s = BoxOnPlaneSide( ll->bounds[ 0 ], ll->bounds[ 1 ], plane );
 		if ( s == 1 ) {
 			nodenum = node->children[ 0 ];
-		} else if ( s == 2 )     {
+		} else if ( s == 2 ) {
 			nodenum = node->children[ 1 ];
-		} else   {
+		} else {
 			// go down both
 			if ( ll->topnode == -1 ) {
 				ll->topnode = nodenum;
@@ -208,7 +208,7 @@ int QClipMap46::PointContentsQ3( const vec3_t P, clipHandle_t Model ) {
 	if ( Model ) {
 		cmodel_t* clipm = ClipHandleToModel( Model );
 		leaf = &clipm->leaf;
-	} else   {
+	} else {
 		int leafnum = PointLeafnum_r( P, 0 );
 		leaf = &leafs[ leafnum ];
 	}
@@ -430,7 +430,7 @@ void QClipMap46::AdjustAreaPortalState( int Area1, int Area2, bool Open ) {
 	if ( Open ) {
 		areaPortals[ Area1 * numAreas + Area2 ]++;
 		areaPortals[ Area2 * numAreas + Area1 ]++;
-	} else if ( ( GGameType & GAME_Quake3 ) || areaPortals[ Area2 * numAreas + Area1 ] )         {	// Ridah, fixes loadgame issue
+	} else if ( ( GGameType & GAME_Quake3 ) || areaPortals[ Area2 * numAreas + Area1 ] ) {	// Ridah, fixes loadgame issue
 		areaPortals[ Area1 * numAreas + Area2 ]--;
 		areaPortals[ Area2 * numAreas + Area1 ]--;
 		if ( areaPortals[ Area2 * numAreas + Area1 ] < 0 ) {
@@ -486,7 +486,7 @@ int QClipMap46::WriteAreaBits( byte* Buffer, int Area ) {
 	if ( cm_noAreas->integer || Area == -1 ) {
 		// for debugging, send everything
 		Com_Memset( Buffer, 255, bytes );
-	} else   {
+	} else {
 		int floodnum = areas[ Area ].floodnum;
 		for ( int i = 0; i < numAreas; i++ ) {
 			if ( areas[ i ].floodnum == floodnum || Area == -1 ) {

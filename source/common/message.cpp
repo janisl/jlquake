@@ -399,20 +399,20 @@ void QMsg::WriteBits( int Value, int NumBits ) {
 			_data[ cursize ] = Value;
 			cursize += 1;
 			bit += 8;
-		} else if ( NumBits == 16 )     {
+		} else if ( NumBits == 16 ) {
 			quint16* sp = ( quint16* )&_data[ cursize ];
 			*sp = LittleShort( Value );
 			cursize += 2;
 			bit += 16;
-		} else if ( NumBits == 32 )     {
+		} else if ( NumBits == 32 ) {
 			quint32* ip = ( quint32* )&_data[ cursize ];
 			*ip = LittleLong( Value );
 			cursize += 4;
 			bit += 32;
-		} else   {
+		} else {
 			common->Error( "can't read %d bits\n", NumBits );
 		}
-	} else   {
+	} else {
 		Value &= ( 0xffffffff >> ( 32 - NumBits ) );
 		if ( NumBits & 7 ) {
 			int nbits = NumBits & 7;
@@ -440,7 +440,7 @@ int QMsg::ReadBits( int NumBits ) {
 	if ( NumBits < 0 ) {
 		NumBits = -NumBits;
 		Sgn = true;
-	} else   {
+	} else {
 		Sgn = false;
 	}
 
@@ -449,20 +449,20 @@ int QMsg::ReadBits( int NumBits ) {
 			Value = _data[ readcount ];
 			readcount += 1;
 			bit += 8;
-		} else if ( NumBits == 16 )     {
+		} else if ( NumBits == 16 ) {
 			quint16* sp = ( quint16* )&_data[ readcount ];
 			Value = LittleShort( *sp );
 			readcount += 2;
 			bit += 16;
-		} else if ( NumBits == 32 )     {
+		} else if ( NumBits == 32 ) {
 			quint32* ip = ( quint32* )&_data[ readcount ];
 			Value = LittleLong( *ip );
 			readcount += 4;
 			bit += 32;
-		} else   {
+		} else {
 			common->Error( "can't read %d bits\n", NumBits );
 		}
-	} else   {
+	} else {
 		int nbits = 0;
 		if ( NumBits & 7 ) {
 			nbits = NumBits & 7;
@@ -536,7 +536,7 @@ void QMsg::WriteFloat( float F ) {
 void QMsg::WriteString( const char* S ) {
 	if ( !S ) {
 		WriteData( "", 1 );
-	} else   {
+	} else {
 		char string[ MAX_STRING_CHARS ];
 
 		int L = String::Length( S );
@@ -561,7 +561,7 @@ void QMsg::WriteString( const char* S ) {
 void QMsg::WriteString2( const char* S ) {
 	if ( !S ) {
 		WriteData( "", 1 );
-	} else   {
+	} else {
 		WriteData( S, String::Length( S ) + 1 );
 	}
 }
@@ -569,7 +569,7 @@ void QMsg::WriteString2( const char* S ) {
 void QMsg::WriteBigString( const char* S ) {
 	if ( !S ) {
 		WriteData( "", 1 );
-	} else   {
+	} else {
 		char string[ BIG_INFO_STRING ];
 
 		int L = String::Length( S );

@@ -104,7 +104,7 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 	int num;
 	if ( bits & Q1U_LONGENTITY ) {
 		num = message.ReadShort();
-	} else   {
+	} else {
 		num = message.ReadByte();
 	}
 
@@ -127,7 +127,7 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 		if ( modnum >= MAX_MODELS_Q1 ) {
 			common->Error( "CL_ParseModel: bad modnum" );
 		}
-	} else   {
+	} else {
 		modnum = baseline.modelindex;
 	}
 
@@ -139,10 +139,10 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 		if ( model ) {
 			if ( R_ModelSyncType( model ) == ST_RAND ) {
 				ent->syncbase = ( float )( rand() & 0x7fff ) / 0x7fff;
-			} else   {
+			} else {
 				ent->syncbase = 0.0;
 			}
-		} else   {
+		} else {
 			forcelink = true;	// hack to make null model players work
 		}
 		if ( num > 0 && num <= cl.qh_maxclients ) {
@@ -152,13 +152,13 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 
 	if ( bits & Q1U_FRAME ) {
 		ent->state.frame = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.frame = baseline.frame;
 	}
 
 	if ( bits & Q1U_COLORMAP ) {
 		ent->state.colormap = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.colormap = baseline.colormap;
 	}
 	if ( ent->state.colormap > cl.qh_maxclients ) {
@@ -168,7 +168,7 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 	int skin;
 	if ( bits & Q1U_SKIN ) {
 		skin = message.ReadByte();
-	} else   {
+	} else {
 		skin = baseline.skinnum;
 	}
 	if ( skin != ent->state.skinnum ) {
@@ -180,7 +180,7 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 
 	if ( bits & Q1U_EFFECTS ) {
 		ent->state.effects = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.effects = baseline.effects;
 	}
 
@@ -190,34 +190,34 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 
 	if ( bits & Q1U_ORIGIN1 ) {
 		ent->msg_origins[ 0 ][ 0 ] = message.ReadCoord();
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 0 ] = baseline.origin[ 0 ];
 	}
 	if ( bits & Q1U_ANGLE1 ) {
 		ent->msg_angles[ 0 ][ 0 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 0 ] = baseline.angles[ 0 ];
 	}
 
 	if ( bits & Q1U_ORIGIN2 ) {
 		ent->msg_origins[ 0 ][ 1 ] = message.ReadCoord();
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 1 ] = baseline.origin[ 1 ];
 	}
 	if ( bits & Q1U_ANGLE2 ) {
 		ent->msg_angles[ 0 ][ 1 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 1 ] = baseline.angles[ 1 ];
 	}
 
 	if ( bits & Q1U_ORIGIN3 ) {
 		ent->msg_origins[ 0 ][ 2 ] = message.ReadCoord();
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 2 ] = baseline.origin[ 2 ];
 	}
 	if ( bits & Q1U_ANGLE3 ) {
 		ent->msg_angles[ 0 ][ 2 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 2 ] = baseline.angles[ 2 ];
 	}
 
@@ -348,7 +348,7 @@ static void CLQW_ParsePacketEntities( QMsg& message, bool delta ) {
 		if ( ( from & UPDATE_MASK_QW ) != ( oldpacket & UPDATE_MASK_QW ) ) {
 			common->DPrintf( "WARNING: from mismatch\n" );
 		}
-	} else   {
+	} else {
 		oldpacket = -1;
 	}
 
@@ -363,7 +363,7 @@ static void CLQW_ParsePacketEntities( QMsg& message, bool delta ) {
 		}
 		cl.qh_validsequence = clc.netchan.incomingSequence;
 		oldp = &cl.qw_frames[ oldpacket & UPDATE_MASK_QW ].packet_entities;
-	} else   {
+	} else {
 		// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
@@ -485,7 +485,7 @@ void CLQW_ParsePlayerinfo( QMsg& message ) {
 	if ( flags & QWPF_MSEC ) {
 		int msec = message.ReadByte();
 		state->state_time = frame->senttime - msec * 0.001;
-	} else   {
+	} else {
 		state->state_time = frame->senttime;
 	}
 
@@ -498,31 +498,31 @@ void CLQW_ParsePlayerinfo( QMsg& message ) {
 	for ( int i = 0; i < 3; i++ ) {
 		if ( flags & ( QWPF_VELOCITY1ND << i ) ) {
 			state->velocity[ i ] = message.ReadShort();
-		} else   {
+		} else {
 			state->velocity[ i ] = 0;
 		}
 	}
 	if ( flags & QWPF_MODEL ) {
 		state->modelindex = message.ReadByte();
-	} else   {
+	} else {
 		state->modelindex = clq1_playerindex;
 	}
 
 	if ( flags & QWPF_SKINNUM ) {
 		state->skinnum = message.ReadByte();
-	} else   {
+	} else {
 		state->skinnum = 0;
 	}
 
 	if ( flags & QWPF_EFFECTS ) {
 		state->effects = message.ReadByte();
-	} else   {
+	} else {
 		state->effects = 0;
 	}
 
 	if ( flags & QWPF_WEAPONFRAME ) {
 		state->weaponframe = message.ReadByte();
-	} else   {
+	} else {
 		state->weaponframe = 0;
 	}
 
@@ -536,7 +536,7 @@ void CLQ1_SetRefEntAxis( refEntity_t* ent, vec3_t ent_angles ) {
 	if ( R_IsMeshModel( ent->hModel ) ) {
 		// stupid quake bug
 		angles[ PITCH ] = -ent_angles[ PITCH ];
-	} else   {
+	} else {
 		angles[ PITCH ] = ent_angles[ PITCH ];
 	}
 
@@ -611,11 +611,11 @@ void CLQ1_TranslatePlayerSkin( int playernum ) {
 			//skin data width
 			R_CreateOrUpdateTranslatedSkin( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
 				original, translate, 320, 200 );
-		} else   {
+		} else {
 			R_CreateOrUpdateTranslatedModelSkinQ1( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
 				cl.model_draw[ clq1_playerindex ], translate );
 		}
-	} else   {
+	} else {
 		q1entity_t* ent = &clq1_entities[ 1 + playernum ];
 
 		R_CreateOrUpdateTranslatedModelSkinQ1( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
@@ -659,7 +659,7 @@ static void CLQ1_RelinkEntities() {
 			float d = cl.qh_mviewangles[ 0 ][ j ] - cl.qh_mviewangles[ 1 ][ j ];
 			if ( d > 180 ) {
 				d -= 360;
-			} else if ( d < -180 )     {
+			} else if ( d < -180 ) {
 				d += 360;
 			}
 			cl.viewangles[ j ] = cl.qh_mviewangles[ 1 ][ j ] + frac * d;
@@ -702,7 +702,7 @@ static void CLQ1_RelinkEntities() {
 			float d = ent->msg_angles[ 0 ][ j ] - ent->msg_angles[ 1 ][ j ];
 			if ( d > 180 ) {
 				d -= 360;
-			} else if ( d < -180 )     {
+			} else if ( d < -180 ) {
 				d += 360;
 			}
 			ent->state.angles[ j ] = ent->msg_angles[ 1 ][ j ] + f * d;
@@ -730,18 +730,18 @@ static void CLQ1_RelinkEntities() {
 
 		if ( ModelFlags & Q1MDLEF_GIB ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 2 );
-		} else if ( ModelFlags & Q1MDLEF_ZOMGIB )     {
+		} else if ( ModelFlags & Q1MDLEF_ZOMGIB ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 4 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 3 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER2 )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER2 ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 5 );
-		} else if ( ModelFlags & Q1MDLEF_ROCKET )     {
+		} else if ( ModelFlags & Q1MDLEF_ROCKET ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 0 );
 			CLQ1_RocketLight( i, ent->state.origin );
-		} else if ( ModelFlags & Q1MDLEF_GRENADE )     {
+		} else if ( ModelFlags & Q1MDLEF_GRENADE ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 1 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER3 )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER3 ) {
 			CLQ1_TrailParticles( oldorg, ent->state.origin, 6 );
 		}
 
@@ -777,13 +777,13 @@ static void CLQW_LinkPacketEntities() {
 		// spawn light flashes, even ones coming from invisible objects
 		if ( ( s1->effects & ( QWEF_BLUE | QWEF_RED ) ) == ( QWEF_BLUE | QWEF_RED ) ) {
 			CLQ1_DimLight( s1->number, s1->origin, 3 );
-		} else if ( s1->effects & QWEF_BLUE )     {
+		} else if ( s1->effects & QWEF_BLUE ) {
 			CLQ1_DimLight( s1->number, s1->origin, 1 );
-		} else if ( s1->effects & QWEF_RED )     {
+		} else if ( s1->effects & QWEF_RED ) {
 			CLQ1_DimLight( s1->number, s1->origin, 2 );
-		} else if ( s1->effects & Q1EF_BRIGHTLIGHT )     {
+		} else if ( s1->effects & Q1EF_BRIGHTLIGHT ) {
 			CLQ1_BrightLight( s1->number, s1->origin );
-		} else if ( s1->effects & Q1EF_DIMLIGHT )     {
+		} else if ( s1->effects & Q1EF_DIMLIGHT ) {
 			CLQ1_DimLight( s1->number, s1->origin, 0 );
 		}
 
@@ -818,7 +818,7 @@ static void CLQW_LinkPacketEntities() {
 			angles[ 0 ] = 0;
 			angles[ 1 ] = autorotate;
 			angles[ 2 ] = 0;
-		} else   {
+		} else {
 			for ( int i = 0; i < 3; i++ ) {
 				float a1 = s1->angles[ i ];
 				float a2 = s2->angles[ i ];
@@ -867,17 +867,17 @@ static void CLQW_LinkPacketEntities() {
 		if ( ModelFlags & Q1MDLEF_ROCKET ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 0 );
 			CLQ1_RocketLight( s1->number, ent.origin );
-		} else if ( ModelFlags & Q1MDLEF_GRENADE )     {
+		} else if ( ModelFlags & Q1MDLEF_GRENADE ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 1 );
-		} else if ( ModelFlags & Q1MDLEF_GIB )     {
+		} else if ( ModelFlags & Q1MDLEF_GIB ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 2 );
-		} else if ( ModelFlags & Q1MDLEF_ZOMGIB )     {
+		} else if ( ModelFlags & Q1MDLEF_ZOMGIB ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 4 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 3 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER2 )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER2 ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 5 );
-		} else if ( ModelFlags & Q1MDLEF_TRACER3 )     {
+		} else if ( ModelFlags & Q1MDLEF_TRACER3 ) {
 			CLQ1_TrailParticles( old_origin, ent.origin, 6 );
 		}
 	}
@@ -894,40 +894,40 @@ static void CLQW_AddFlagModels( refEntity_t* ent, int team, vec3_t angles ) {
 		if ( ent->frame >= 29 && ent->frame <= 34 ) {	//axpain
 			if      ( ent->frame == 29 ) {
 				f = f + 2;
-			} else if ( ent->frame == 30 )     {
+			} else if ( ent->frame == 30 ) {
 				f = f + 8;
-			} else if ( ent->frame == 31 )     {
+			} else if ( ent->frame == 31 ) {
 				f = f + 12;
-			} else if ( ent->frame == 32 )     {
+			} else if ( ent->frame == 32 ) {
 				f = f + 11;
-			} else if ( ent->frame == 33 )     {
+			} else if ( ent->frame == 33 ) {
 				f = f + 10;
-			} else if ( ent->frame == 34 )     {
+			} else if ( ent->frame == 34 ) {
 				f = f + 4;
 			}
-		} else if ( ent->frame >= 35 && ent->frame <= 40 )     {// pain
+		} else if ( ent->frame >= 35 && ent->frame <= 40 ) {// pain
 			if      ( ent->frame == 35 ) {
 				f = f + 2;
-			} else if ( ent->frame == 36 )     {
+			} else if ( ent->frame == 36 ) {
 				f = f + 10;
-			} else if ( ent->frame == 37 )     {
+			} else if ( ent->frame == 37 ) {
 				f = f + 10;
-			} else if ( ent->frame == 38 )     {
+			} else if ( ent->frame == 38 ) {
 				f = f + 8;
-			} else if ( ent->frame == 39 )     {
+			} else if ( ent->frame == 39 ) {
 				f = f + 4;
-			} else if ( ent->frame == 40 )     {
+			} else if ( ent->frame == 40 ) {
 				f = f + 2;
 			}
 		}
-	} else if ( ent->frame >= 103 && ent->frame <= 118 )     {
+	} else if ( ent->frame >= 103 && ent->frame <= 118 ) {
 		if      ( ent->frame >= 103 && ent->frame <= 104 ) {
 			f = f + 6;												//nailattack
-		} else if ( ent->frame >= 105 && ent->frame <= 106 )     {
+		} else if ( ent->frame >= 105 && ent->frame <= 106 ) {
 			f = f + 6;												//light
-		} else if ( ent->frame >= 107 && ent->frame <= 112 )     {
+		} else if ( ent->frame >= 107 && ent->frame <= 112 ) {
 			f = f + 7;												//rocketattack
-		} else if ( ent->frame >= 112 && ent->frame <= 118 )     {
+		} else if ( ent->frame >= 112 && ent->frame <= 118 ) {
 			f = f + 7;												//shotattack
 		}
 	}
@@ -974,13 +974,13 @@ static void CLQW_LinkPlayers() {
 		// spawn light flashes, even ones coming from invisible objects
 		if ( ( state->effects & ( QWEF_BLUE | QWEF_RED ) ) == ( QWEF_BLUE | QWEF_RED ) ) {
 			CLQ1_DimLight( j, state->origin, 3 );
-		} else if ( state->effects & QWEF_BLUE )     {
+		} else if ( state->effects & QWEF_BLUE ) {
 			CLQ1_DimLight( j, state->origin, 1 );
-		} else if ( state->effects & QWEF_RED )     {
+		} else if ( state->effects & QWEF_RED ) {
 			CLQ1_DimLight( j, state->origin, 2 );
-		} else if ( state->effects & Q1EF_BRIGHTLIGHT )     {
+		} else if ( state->effects & Q1EF_BRIGHTLIGHT ) {
 			CLQ1_BrightLight( j, state->origin );
-		} else if ( state->effects & Q1EF_DIMLIGHT )     {
+		} else if ( state->effects & Q1EF_DIMLIGHT ) {
 			CLQ1_DimLight( j, state->origin, 0 );
 		}
 
@@ -1024,7 +1024,7 @@ static void CLQW_LinkPlayers() {
 		int msec = 500 * ( playertime - state->state_time );
 		if ( msec <= 0 || ( !cl_predict_players->value && !cl_predict_players2->value ) ) {
 			VectorCopy( state->origin, ent.origin );
-		} else   {
+		} else {
 			// predict players movement
 			if ( msec > 255 ) {
 				msec = 255;
@@ -1042,7 +1042,7 @@ static void CLQW_LinkPlayers() {
 
 		if ( state->effects & QWEF_FLAG1 ) {
 			CLQW_AddFlagModels( &ent, 0, angles );
-		} else if ( state->effects & QWEF_FLAG2 )     {
+		} else if ( state->effects & QWEF_FLAG2 ) {
 			CLQW_AddFlagModels( &ent, 1, angles );
 		}
 	}

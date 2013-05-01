@@ -112,7 +112,7 @@ q2trace_t QClipMap38::BoxTraceQ2( const vec3_t Start, const vec3_t End,
 		 Maxs[ 0 ] == 0 && Maxs[ 1 ] == 0 && Maxs[ 2 ] == 0 ) {
 		trace_ispoint = true;
 		VectorClear( trace_extents );
-	} else   {
+	} else {
 		trace_ispoint = false;
 		trace_extents[ 0 ] = -Mins[ 0 ] > Maxs[ 0 ] ? -Mins[ 0 ] : Maxs[ 0 ];
 		trace_extents[ 1 ] = -Mins[ 1 ] > Maxs[ 1 ] ? -Mins[ 1 ] : Maxs[ 1 ];
@@ -126,7 +126,7 @@ q2trace_t QClipMap38::BoxTraceQ2( const vec3_t Start, const vec3_t End,
 
 	if ( trace_trace.fraction == 1 ) {
 		VectorCopy( End, trace_trace.endpos );
-	} else   {
+	} else {
 		for ( int i = 0; i < 3; i++ ) {
 			trace_trace.endpos[ i ] = Start[ i ] + trace_trace.fraction * ( End[ i ] - Start[ i ] );
 		}
@@ -233,12 +233,12 @@ void QClipMap38::RecursiveHullCheck( int num, float p1f, float p2f, const vec3_t
 		t1 = p1[ plane->type ] - plane->dist;
 		t2 = p2[ plane->type ] - plane->dist;
 		offset = trace_extents[ plane->type ];
-	} else   {
+	} else {
 		t1 = DotProduct( plane->normal, p1 ) - plane->dist;
 		t2 = DotProduct( plane->normal, p2 ) - plane->dist;
 		if ( trace_ispoint ) {
 			offset = 0;
-		} else   {
+		} else {
 			offset = fabs( trace_extents[ 0 ] * plane->normal[ 0 ] ) +
 					 fabs( trace_extents[ 1 ] * plane->normal[ 1 ] ) +
 					 fabs( trace_extents[ 2 ] * plane->normal[ 2 ] );
@@ -261,12 +261,12 @@ void QClipMap38::RecursiveHullCheck( int num, float p1f, float p2f, const vec3_t
 		side = 1;
 		frac2 = ( t1 + offset + DIST_EPSILON ) * idist;
 		frac = ( t1 - offset + DIST_EPSILON ) * idist;
-	} else if ( t1 > t2 )     {
+	} else if ( t1 > t2 ) {
 		idist = 1.0 / ( t1 - t2 );
 		side = 0;
 		frac2 = ( t1 - offset - DIST_EPSILON ) * idist;
 		frac = ( t1 + offset + DIST_EPSILON ) * idist;
-	} else   {
+	} else {
 		side = 0;
 		frac = 1;
 		frac2 = 0;
@@ -379,13 +379,13 @@ void QClipMap38::ClipBoxToBrush( vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2,
 			for ( j = 0; j < 3; j++ ) {
 				if ( plane->normal[ j ] < 0 ) {
 					ofs[ j ] = maxs[ j ];
-				} else   {
+				} else {
 					ofs[ j ] = mins[ j ];
 				}
 			}
 			dist = DotProduct( ofs, plane->normal );
 			dist = plane->dist - dist;
-		} else   {					// special point case
+		} else {					// special point case
 			dist = plane->dist;
 		}
 
@@ -416,7 +416,7 @@ void QClipMap38::ClipBoxToBrush( vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2,
 				clipplane = plane;
 				leadside = side;
 			}
-		} else   {					// leave
+		} else {					// leave
 			f = ( d1 + DIST_EPSILON ) / ( d1 - d2 );
 			if ( f < leavefrac ) {
 				leavefrac = f;
@@ -506,7 +506,7 @@ void QClipMap38::TestBoxInBrush( vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t*
 		for ( j = 0; j < 3; j++ ) {
 			if ( plane->normal[ j ] < 0 ) {
 				ofs[ j ] = maxs[ j ];
-			} else   {
+			} else {
 				ofs[ j ] = mins[ j ];
 			}
 		}

@@ -146,7 +146,7 @@ static void R_RenderShadowEdges() {
 				qglVertex3fv( tess.xyz[ i2 + tess.numVertexes ] );
 				qglEnd();
 				c_edges++;
-			} else   {
+			} else {
 				c_rejected++;
 			}
 		}
@@ -201,7 +201,7 @@ void RB_ShadowTessEnd() {
 		float d = DotProduct( normal, lightDir );
 		if ( d > 0 ) {
 			facing[ i ] = 1;
-		} else   {
+		} else {
 			facing[ i ] = 0;
 		}
 

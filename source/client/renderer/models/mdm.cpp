@@ -39,7 +39,7 @@ frame.
 
 //#define DBG_PROFILE_BONES
 
-#define ANGLES_SHORT_TO_FLOAT( pf, sh )     { *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); }
+#define ANGLES_SHORT_TO_FLOAT( pf, sh ) { *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); }
 
 // ydnar
 
@@ -194,10 +194,10 @@ bool R_LoadMdm( model_t* mod, const void* buffer ) {
 			shader_t* sh = R_FindShader( surf->shader, LIGHTMAP_NONE, true );
 			if ( sh->defaultShader ) {
 				surf->shaderIndex = 0;
-			} else   {
+			} else {
 				surf->shaderIndex = sh->index;
 			}
-		} else   {
+		} else {
 			surf->shaderIndex = 0;
 		}
 
@@ -351,13 +351,13 @@ static int R_CullModel( trRefEntity_t* ent ) {
 				tr.pc.c_sphere_cull_md3_clip++;
 				break;
 			}
-		} else   {
+		} else {
 			int sphereCull, sphereCullB;
 
 			sphereCull  = R_CullLocalPointAndRadius( newFrame->localOrigin, newFrame->radius );
 			if ( newFrame == oldFrame ) {
 				sphereCullB = sphereCull;
-			} else   {
+			} else {
 				sphereCullB = R_CullLocalPointAndRadius( oldFrame->localOrigin, oldFrame->radius );
 			}
 
@@ -365,10 +365,10 @@ static int R_CullModel( trRefEntity_t* ent ) {
 				if ( sphereCull == CULL_OUT ) {
 					tr.pc.c_sphere_cull_md3_out++;
 					return CULL_OUT;
-				} else if ( sphereCull == CULL_IN )     {
+				} else if ( sphereCull == CULL_IN ) {
 					tr.pc.c_sphere_cull_md3_in++;
 					return CULL_IN;
-				} else   {
+				} else {
 					tr.pc.c_sphere_cull_md3_clip++;
 				}
 			}
@@ -462,7 +462,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 		shader_t* shader;
 		if ( ent->e.customShader ) {
 			shader = R_GetShaderByHandle( ent->e.customShader );
-		} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins )     {
+		} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins ) {
 			skin_t* skin = R_GetSkinByHandle( ent->e.customSkin );
 
 			// match the surface name to something in the skin file
@@ -498,10 +498,10 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 
 			if ( shader == tr.defaultShader ) {
 				common->DPrintf( S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name );
-			} else if ( shader->defaultShader )     {
+			} else if ( shader->defaultShader ) {
 				common->DPrintf( S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
 			}
-		} else   {
+		} else {
 			shader = R_GetShaderByHandle( surface->shaderIndex );
 		}
 
@@ -616,7 +616,7 @@ static void R_CalcBone( const int torsoParent, const refEntity_t* refent, int bo
 		if ( thisBoneInfo->torsoWeight == 1.0f ) {
 			fullTorso = true;
 		}
-	} else   {
+	} else {
 		isTorso = false;
 		fullTorso = false;
 	}
@@ -628,7 +628,7 @@ static void R_CalcBone( const int torsoParent, const refEntity_t* refent, int bo
 	if ( thisBoneInfo->parent >= 0 ) {
 		parentBone = &bones[ thisBoneInfo->parent ];
 		parentBoneInfo = &boneInfo[ thisBoneInfo->parent ];
-	} else   {
+	} else {
 		parentBone = NULL;
 		parentBoneInfo = NULL;
 	}
@@ -638,7 +638,7 @@ static void R_CalcBone( const int torsoParent, const refEntity_t* refent, int bo
 		sh = ( short* )cTBonePtr->angles;
 		pf = angles;
 		ANGLES_SHORT_TO_FLOAT( pf, sh );
-	} else   {
+	} else {
 		sh = ( short* )cBonePtr->angles;
 		pf = angles;
 		ANGLES_SHORT_TO_FLOAT( pf, sh );
@@ -674,7 +674,7 @@ static void R_CalcBone( const int torsoParent, const refEntity_t* refent, int bo
 			#endif
 
 			VectorMA( parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation );
-		} else   {
+		} else {
 			#ifndef YD_INGLES
 			sh = ( short* )cBonePtr->ofsAngles; pf = angles;
 			*( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = SHORT2ANGLE( *( sh++ ) ); *( pf++ ) = 0;
@@ -705,11 +705,11 @@ static void R_CalcBone( const int torsoParent, const refEntity_t* refent, int bo
 				SLerp_Normal( vec, v2, thisBoneInfo->torsoWeight, vec );
 				VectorMA( parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation );
 
-			} else   {		// legs bone
+			} else {		// legs bone
 				VectorMA( parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation );
 			}
 		}
-	} else   {		// just use the frame position
+	} else {		// just use the frame position
 		bonePtr->translation[ 0 ] = frame->parentOffset[ 0 ];
 		bonePtr->translation[ 1 ] = frame->parentOffset[ 1 ];
 		bonePtr->translation[ 2 ] = frame->parentOffset[ 2 ];
@@ -748,7 +748,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 	if ( thisBoneInfo->parent >= 0 ) {
 		parentBone = &bones[ thisBoneInfo->parent ];
 		parentBoneInfo = &boneInfo[ thisBoneInfo->parent ];
-	} else   {
+	} else {
 		parentBone = NULL;
 		parentBoneInfo = NULL;
 	}
@@ -760,7 +760,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 		if ( thisBoneInfo->torsoWeight == 1.0f ) {
 			fullTorso = true;
 		}
-	} else   {
+	} else {
 		isTorso = false;
 		fullTorso = false;
 	}
@@ -785,7 +785,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 		*( pf++ ) = a1 - torsoBacklerp * diff;
 		a1 = SHORT2ANGLE( *( sh++ ) ); a2 = SHORT2ANGLE( *( sh2++ ) ); diff = AngleNormalize180( a1 - a2 );
 		*( pf++ ) = a1 - torsoBacklerp * diff;
-	} else   {
+	} else {
 		sh = ( short* )cBonePtr->angles;
 		sh2 = ( short* )cOldBonePtr->angles;
 		pf = angles;
@@ -837,7 +837,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 			}
 			ingles[ j ] = sh[ j ] - torsoBacklerp * ingles[ j ];
 		}
-	} else   {
+	} else {
 		sh = ( short* )cBonePtr->angles;
 		sh2 = ( short* )cOldBonePtr->angles;
 		for ( j = 0; j < 3; j++ ) {
@@ -882,7 +882,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 		if ( fullTorso ) {
 			sh = ( short* )cTBonePtr->ofsAngles;
 			sh2 = ( short* )cOldTBonePtr->ofsAngles;
-		} else   {
+		} else {
 			sh = ( short* )cBonePtr->ofsAngles;
 			sh2 = ( short* )cOldBonePtr->ofsAngles;
 		}
@@ -914,7 +914,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 		// blend the angles together
 		if ( fullTorso ) {
 			SLerp_Normal( vec, v2, torsoFrontlerp, dir );
-		} else   {
+		} else {
 			SLerp_Normal( vec, v2, frontlerp, dir );
 		}
 
@@ -958,7 +958,7 @@ static void R_CalcBoneLerp( const int torsoParent, const refEntity_t* refent, in
 
 		VectorMA( parentBone->translation, thisBoneInfo->parentDist, dir, bonePtr->translation );
 
-	} else   {		// just interpolate the frame positions
+	} else {		// just interpolate the frame positions
 		bonePtr->translation[ 0 ] = frontlerp * frame->parentOffset[ 0 ] + backlerp * oldFrame->parentOffset[ 0 ];
 		bonePtr->translation[ 1 ] = frontlerp * frame->parentOffset[ 1 ] + backlerp * oldFrame->parentOffset[ 1 ];
 		bonePtr->translation[ 2 ] = frontlerp * frame->parentOffset[ 2 ] + backlerp * oldFrame->parentOffset[ 2 ];
@@ -989,27 +989,27 @@ R_BonesStillValid
 static qboolean R_BonesStillValid( const refEntity_t* refent ) {
 	if ( lastBoneEntity.hModel != refent->hModel ) {
 		return false;
-	} else if ( lastBoneEntity.frame != refent->frame )     {
+	} else if ( lastBoneEntity.frame != refent->frame ) {
 		return false;
-	} else if ( lastBoneEntity.oldframe != refent->oldframe )     {
+	} else if ( lastBoneEntity.oldframe != refent->oldframe ) {
 		return false;
-	} else if ( lastBoneEntity.frameModel != refent->frameModel )     {
+	} else if ( lastBoneEntity.frameModel != refent->frameModel ) {
 		return false;
-	} else if ( lastBoneEntity.oldframeModel != refent->oldframeModel )     {
+	} else if ( lastBoneEntity.oldframeModel != refent->oldframeModel ) {
 		return false;
-	} else if ( lastBoneEntity.backlerp != refent->backlerp )     {
+	} else if ( lastBoneEntity.backlerp != refent->backlerp ) {
 		return false;
-	} else if ( lastBoneEntity.torsoFrame != refent->torsoFrame )     {
+	} else if ( lastBoneEntity.torsoFrame != refent->torsoFrame ) {
 		return false;
-	} else if ( lastBoneEntity.oldTorsoFrame != refent->oldTorsoFrame )     {
+	} else if ( lastBoneEntity.oldTorsoFrame != refent->oldTorsoFrame ) {
 		return false;
-	} else if ( lastBoneEntity.torsoFrameModel != refent->torsoFrameModel )     {
+	} else if ( lastBoneEntity.torsoFrameModel != refent->torsoFrameModel ) {
 		return false;
-	} else if ( lastBoneEntity.oldTorsoFrameModel != refent->oldTorsoFrameModel )     {
+	} else if ( lastBoneEntity.oldTorsoFrameModel != refent->oldTorsoFrameModel ) {
 		return false;
-	} else if ( lastBoneEntity.torsoBacklerp != refent->torsoBacklerp )     {
+	} else if ( lastBoneEntity.torsoBacklerp != refent->torsoBacklerp ) {
 		return false;
-	} else if ( lastBoneEntity.reFlags != refent->reFlags )     {
+	} else if ( lastBoneEntity.reFlags != refent->reFlags ) {
 		return false;
 	} else if ( !VectorCompare( lastBoneEntity.torsoAxis[ 0 ], refent->torsoAxis[ 0 ] ) ||
 				!VectorCompare( lastBoneEntity.torsoAxis[ 1 ], refent->torsoAxis[ 1 ] ) ||
@@ -1069,7 +1069,7 @@ static void R_CalcBones( const refEntity_t* refent, int* boneList, int numBones 
 	if ( refent->oldframe == refent->frame && refent->oldframeModel == refent->frameModel ) {
 		backlerp = 0;
 		frontlerp = 1;
-	} else   {
+	} else {
 		backlerp = refent->backlerp;
 		frontlerp = 1.0f - backlerp;
 	}
@@ -1077,7 +1077,7 @@ static void R_CalcBones( const refEntity_t* refent, int* boneList, int numBones 
 	if ( refent->oldTorsoFrame == refent->torsoFrame && refent->oldTorsoFrameModel == refent->oldframeModel ) {
 		torsoBacklerp = 0;
 		torsoFrontlerp = 1;
-	} else   {
+	} else {
 		torsoBacklerp = refent->torsoBacklerp;
 		torsoFrontlerp = 1.0f - torsoBacklerp;
 	}
@@ -1131,7 +1131,7 @@ static void R_CalcBones( const refEntity_t* refent, int* boneList, int numBones 
 
 		}
 
-	} else   {		// interpolated
+	} else {		// interpolated
 		cOldBoneList = ( mdxBoneFrameCompressed_t* )( ( byte* )mdxOldFrameHeader + mdxOldFrameHeader->ofsFrames +
 													  ( refent->oldframe + 1 ) * sizeof ( mdxFrame_t ) +
 													  refent->oldframe * frameSize );
@@ -1230,7 +1230,7 @@ static float R_CalcMDMLod( refEntity_t* refent, vec3_t origin, float radius, flo
 
 		lodScale = r_lodscale->value;	// fudge factor since MDS uses a much smoother method of LOD
 		flod = projectedRadius * lodScale * modelScale;
-	} else   {
+	} else {
 		// object intersects near view plane, e.g. view weapon
 		flod = 1.0f;
 	}
@@ -1247,7 +1247,7 @@ static float R_CalcMDMLod( refEntity_t* refent, vec3_t origin, float radius, flo
 
 	if ( flod < 0.0 ) {
 		flod = 0.0;
-	} else if ( flod > 1.0f )     {
+	} else if ( flod > 1.0f ) {
 		flod = 1.0f;
 	}
 
@@ -1300,7 +1300,7 @@ void RB_MDM_SurfaceAnim( mdmSurface_t* surface ) {
 		}
 		render_count = ( int )( ( float )surface->numVerts * lodScale );
 
-	} else   {
+	} else {
 		render_count = ( int )( ( float )surface->numVerts * lodScale );
 		if ( render_count < surface->minLod ) {
 			if ( !( refent->reFlags & REFLAG_DEAD_LOD ) ) {
@@ -1355,7 +1355,7 @@ void RB_MDM_SurfaceAnim( mdmSurface_t* surface ) {
 			}
 		}
 		tess.numIndexes += indexes;
-	} else   {
+	} else {
 		int* collapseEnd;
 
 		pCollapse = collapse;
@@ -1489,7 +1489,7 @@ void RB_MDM_SurfaceAnim( mdmSurface_t* surface ) {
 
 				qglDepthRange( 0, 1 );
 				//}
-			} else if ( r_bonesDebug->integer == 9 )     {
+			} else if ( r_bonesDebug->integer == 9 ) {
 				if ( surface == ( mdmSurface_t* )( ( byte* )header + header->ofsSurfaces ) ) {
 					mdmTag_t* pTag = ( mdmTag_t* )( ( byte* )header + header->ofsTags );
 
@@ -1597,9 +1597,9 @@ void RB_MDM_SurfaceAnim( mdmSurface_t* surface ) {
 				if ( v->numWeights > 1 ) {
 					if ( v->numWeights == 2 ) {
 						qglColor3f( .4f, .4f, 0.f );
-					} else if ( v->numWeights == 3 )     {
+					} else if ( v->numWeights == 3 ) {
 						qglColor3f( .8f, .4f, 0.f );
-					} else   {
+					} else {
 						qglColor3f( 1.f, .4f, 0.f );
 					}
 					qglVertex3fv( tempVert );

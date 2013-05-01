@@ -741,7 +741,7 @@ const char* ED_ParseEdict( const char* data, qhedict_t* ent ) {
 		if ( !String::Cmp( token, "angle" ) ) {
 			String::Cpy( token, "angles" );
 			anglehack = true;
-		} else   {
+		} else {
 			anglehack = false;
 		}
 
@@ -781,7 +781,7 @@ const char* ED_ParseEdict( const char* data, qhedict_t* ent ) {
 			if ( String::ICmp( keyname,"MIDI" ) == 0 ) {
 				String::Cpy( sv.h2_midi_name,token );
 				continue;
-			} else if ( String::ICmp( keyname,"CD" ) == 0 )       {
+			} else if ( String::ICmp( keyname,"CD" ) == 0 ) {
 				sv.h2_cd_track = ( byte )atol( token );
 				continue;
 			}
@@ -865,10 +865,10 @@ qhedict_t* ED_Alloc() {
 			i--;	// step on whatever is the last edict
 			qhedict_t* e = QH_EDICT_NUM( i );
 			SVQH_UnlinkEdict( e );
-		} else   {
+		} else {
 			common->Error( "ED_Alloc: no free edicts" );
 		}
-	} else   {
+	} else {
 		sv.qh_num_edicts++;
 	}
 	qhedict_t* e = QH_EDICT_NUM( i );
@@ -915,7 +915,7 @@ qhedict_t* ED_Alloc_Temp() {
 			e->alloctime = sv.qh_time * 0.001f;
 
 			return e;
-		} else if ( e->alloctime < LeastTime || !LeastSet )     {
+		} else if ( e->alloctime < LeastTime || !LeastSet ) {
 			Least = e;
 			LeastTime = e->alloctime;
 			Found = j;
@@ -959,7 +959,7 @@ void ED_LoadFromFile( const char* data ) {
 
 		if ( !ent ) {
 			ent = QH_EDICT_NUM( 0 );
-		} else   {
+		} else {
 			ent = ED_Alloc();
 		}
 		data = ED_ParseEdict( data, ent );
@@ -972,13 +972,13 @@ void ED_LoadFromFile( const char* data ) {
 					inhibit++;
 					continue;
 				}
-			} else if ( svqh_coop->value )     {
+			} else if ( svqh_coop->value ) {
 				if ( ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_COOP ) ) {
 					ED_Free( ent );
 					inhibit++;
 					continue;
 				}
-			} else   {	// Gotta be single player
+			} else {	// Gotta be single player
 				if ( ( ( int )ent->GetSpawnFlags() & H2SPAWNFLAG_NOT_SINGLE ) ) {
 					ED_Free( ent );
 					inhibit++;
@@ -1031,7 +1031,7 @@ void ED_LoadFromFile( const char* data ) {
 				inhibit++;
 				continue;
 			}
-		} else   {
+		} else {
 			if ( GGameType & GAME_QuakeWorld || svqh_deathmatch->value ) {
 				if ( ( ( int )ent->GetSpawnFlags() & Q1SPAWNFLAG_NOT_DEATHMATCH ) ) {
 					ED_Free( ent );

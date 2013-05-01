@@ -87,14 +87,14 @@ void SVT3_DropClient( client_t* drop, const char* reason ) {
 		if ( !( drop->q3_entity && drop->q3_entity->GetSvFlagCastAI() ) ) {
 			SVT3_SendServerCommand( NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVT3_SendServerCommand( NULL, "print \"[lof]%s" S_COLOR_WHITE " [lon]%s\n\"", drop->name, reason );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		if ( ( !SVET_GameIsSinglePlayer() ) || ( !isBot ) ) {
 			// Gordon: we want this displayed elsewhere now
 			SVT3_SendServerCommand( NULL, "cpm \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
 		}
-	} else   {
+	} else {
 		SVT3_SendServerCommand( NULL, "print \"%s" S_COLOR_WHITE " %s\n\"", drop->name, reason );
 	}
 
@@ -110,11 +110,11 @@ void SVT3_DropClient( client_t* drop, const char* reason ) {
 	// this will remove the body, among other things
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameClientDisconnect( drop );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameClientDisconnect( drop );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameClientDisconnect( drop );
-	} else   {
+	} else {
 		SVQ3_GameClientDisconnect( drop );
 	}
 
@@ -353,16 +353,16 @@ void SVT3_WriteDownloadToClient( client_t* cl, QMsg* msg ) {
 				if ( missionPack ) {
 					String::Sprintf( errorMessage, sizeof ( errorMessage ), "Cannot autodownload Team Arena file \"%s\"\n"
 																			"The Team Arena mission pack can be found in your local game store.", cl->downloadName );
-				} else   {
+				} else {
 					String::Sprintf( errorMessage, sizeof ( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
 				}
-			} else   {
+			} else {
 				common->Printf( "clientDownload: %d : \"%s\" download disabled", static_cast<int>( cl - svs.clients ), cl->downloadName );
 				if ( svt3_pure->integer ) {
 					String::Sprintf( errorMessage, sizeof ( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																			"You will need to get this file elsewhere before you "
 																			"can connect to this pure server.\n", cl->downloadName );
-				} else   {
+				} else {
 					String::Sprintf( errorMessage, sizeof ( errorMessage ), "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
 																			"The server you are connecting to is not a pure server, "
 																			"set autodownload to No in your settings and you might be "
@@ -407,18 +407,18 @@ void SVT3_WriteDownloadToClient( client_t* cl, QMsg* msg ) {
 						}
 						msg->WriteLong( download_flag );	// flags
 						return;
-					} else   {
+					} else {
 						// that should NOT happen - even regular download would fail then anyway
 						common->Printf( "ERROR: Client '%s': couldn't extract file size for %s\n", cl->name, cl->downloadName );
 					}
-				} else   {
+				} else {
 					cl->et_bFallback = false;
 					if ( SVET_CheckFallbackURL( cl, msg ) ) {
 						return;
 					}
 					common->Printf( "Client '%s': falling back to regular downloading for failed file %s\n", cl->name, cl->downloadName );
 				}
-			} else   {
+			} else {
 				if ( SVET_CheckFallbackURL( cl, msg ) ) {
 					return;
 				}
@@ -502,7 +502,7 @@ void SVT3_WriteDownloadToClient( client_t* cl, QMsg* msg ) {
 		if ( bTellRate ) {
 			common->Printf( "'%s' downloading at rate %d\n", cl->name, rate );
 		}
-	} else   {
+	} else {
 		if ( svt3_maxRate->integer ) {
 			if ( svt3_maxRate->integer < 1000 ) {
 				Cvar_Set( "sv_MaxRate", "1000" );
@@ -515,7 +515,7 @@ void SVT3_WriteDownloadToClient( client_t* cl, QMsg* msg ) {
 
 	if ( !rate ) {
 		blockspersnap = 1;
-	} else   {
+	} else {
 		blockspersnap = ( ( rate * cl->q3_snapshotMsec ) / 1000 + MAX_DOWNLOAD_BLKSIZE ) /
 						MAX_DOWNLOAD_BLKSIZE;
 	}
@@ -540,7 +540,7 @@ void SVT3_WriteDownloadToClient( client_t* cl, QMsg* msg ) {
 			//the timeout should be based on client rate somehow
 			if ( svs.q3_time - cl->downloadSendTime > 1000 ) {
 				cl->downloadXmitBlock = cl->downloadClientBlock;
-			} else   {
+			} else {
 				return;
 			}
 		}
@@ -598,17 +598,17 @@ static void SVT3_UserinfoChanged( client_t* cl ) {
 	// internet public server, assume they don't need a rate choke
 	if ( SOCK_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && svt3_lanForceRate->integer == 1 ) {
 		cl->rate = 99999;	// lans should not rate limit
-	} else   {
+	} else {
 		val = Info_ValueForKey( cl->userinfo, "rate" );
 		if ( String::Length( val ) ) {
 			i = String::Atoi( val );
 			cl->rate = i;
 			if ( cl->rate < 1000 ) {
 				cl->rate = 1000;
-			} else if ( cl->rate > 90000 )     {
+			} else if ( cl->rate > 90000 ) {
 				cl->rate = 90000;
 			}
-		} else   {
+		} else {
 			cl->rate = GGameType & ( GAME_WolfMP | GAME_ET ) ? 5000 : 3000;
 		}
 	}
@@ -626,11 +626,11 @@ static void SVT3_UserinfoChanged( client_t* cl ) {
 		i = String::Atoi( val );
 		if ( i < 1 ) {
 			i = 1;
-		} else if ( i > 30 )     {
+		} else if ( i > 30 ) {
 			i = 30;
 		}
 		cl->q3_snapshotMsec = 1000 / i;
-	} else   {
+	} else {
 		cl->q3_snapshotMsec = 50;
 	}
 
@@ -645,7 +645,7 @@ static void SVT3_UserinfoChanged( client_t* cl ) {
 		//common->DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
 		if ( !SOCK_IsLocalAddress( cl->netchan.remoteAddress ) ) {
 			Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING_Q3 );
-		} else   {
+		} else {
 			// force the "ip" info key to "localhost" for local clients
 			Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING_Q3 );
 		}
@@ -672,11 +672,11 @@ static void SVT3_UpdateUserinfo_f( client_t* cl ) {
 	// call prog code to allow overrides
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameClientUserInfoChanged( cl - svs.clients );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameClientUserInfoChanged( cl - svs.clients );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameClientUserInfoChanged( cl - svs.clients );
-	} else   {
+	} else {
 		SVQ3_GameClientUserInfoChanged( cl - svs.clients );
 	}
 }
@@ -697,7 +697,7 @@ void SVT3_GetChallenge( netadr_t from ) {
 		if ( SVET_GameIsSinglePlayer() ) {
 			return;
 		}
-	} else   {
+	} else {
 		if ( Cvar_VariableValue( "g_gametype" ) == Q3GT_SINGLE_PLAYER || ( GGameType & GAME_Quake3 && Cvar_VariableValue( "ui_singlePlayerActive" ) ) ) {
 			return;
 		}
@@ -742,7 +742,7 @@ void SVT3_GetChallenge( netadr_t from ) {
 		challenge->pingTime = svs.q3_time;
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) && svwm_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, svwm_onlyVisibleClients->integer );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
 		}
 		return;
@@ -770,7 +770,7 @@ void SVT3_GetChallenge( netadr_t from ) {
 		if ( GGameType & GAME_WolfMP && svwm_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
 				"challengeResponse %i %i", challenge->challenge, svwm_onlyVisibleClients->integer );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
 				"challengeResponse %i", challenge->challenge );
 		}
@@ -786,7 +786,7 @@ void SVT3_GetChallenge( netadr_t from ) {
 
 		if ( GGameType & GAME_Quake3 ) {
 			String::Cpy( game, fs_PrimaryBaseGame );
-		} else   {
+		} else {
 			game[ 0 ] = 0;
 		}
 		fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
@@ -800,7 +800,7 @@ void SVT3_GetChallenge( netadr_t from ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.q3_authorizeAddress,
 				"getIpAuthorize %i %s %s 0 %s",  svs.challenges[ i ].challenge,
 				SOCK_BaseAdrToString( from ), game, svq3_strictAuth->string );
-		} else   {
+		} else {
 			fs = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
 			NET_OutOfBandPrint( NS_SERVER, svs.q3_authorizeAddress,
 				"getIpAuthorize %i %s %s %i",  svs.challenges[ i ].challenge,
@@ -847,7 +847,7 @@ void SVT3_AuthorizeIpPacket( netadr_t from ) {
 		if ( GGameType & GAME_WolfMP && svwm_onlyVisibleClients->integer ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr,
 				"challengeResponse %i %i", svs.challenges[ i ].challenge, svwm_onlyVisibleClients->integer );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr,
 				"challengeResponse %i", svs.challenges[ i ].challenge );
 		}
@@ -856,7 +856,7 @@ void SVT3_AuthorizeIpPacket( netadr_t from ) {
 	if ( !String::ICmp( s, "unknown" ) ) {
 		if ( !r ) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nAwaiting CD key authorization\n" );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\n%s\n", r );
 		}
 		// clear the challenge record so it won't timeout and let them through
@@ -867,7 +867,7 @@ void SVT3_AuthorizeIpPacket( netadr_t from ) {
 	// authorization failed
 	if ( !r ) {
 		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nSomeone is using this CD Key\n" );
-	} else   {
+	} else {
 		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\n%s\n", r );
 	}
 
@@ -890,9 +890,9 @@ void SVT3_DirectConnect( netadr_t from ) {
 		if ( GGameType & GAME_WolfMP && version <= 59 ) {
 			// old clients, don't send them the [err_drop] tag
 			NET_OutOfBandPrint( NS_SERVER, from, "print\n" WMPROTOCOL_MISMATCH_ERROR );
-		} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) )       {
+		} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_prot]" WMPROTOCOL_MISMATCH_ERROR );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i.\n", expectedVersion );
 		}
 		common->DPrintf( "    rejected connect from version %i\n", version );
@@ -943,7 +943,7 @@ void SVT3_DirectConnect( netadr_t from ) {
 		if ( chalengeIndex == MAX_CHALLENGES ) {
 			if ( GGameType & GAME_ET ) {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]No or bad challenge for address.\n" );
-			} else   {
+			} else {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\nNo or bad challenge for address.\n" );
 			}
 			return;
@@ -955,7 +955,7 @@ void SVT3_DirectConnect( netadr_t from ) {
 		if ( !( GGameType & ( GAME_WolfMP | GAME_ET ) ) || svs.challenges[ chalengeIndex ].firstPing == 0 ) {
 			ping = svs.q3_time - svs.challenges[ chalengeIndex ].pingTime;
 			svs.challenges[ chalengeIndex ].firstPing = ping;
-		} else   {
+		} else {
 			ping = svs.challenges[ chalengeIndex ].firstPing;
 		}
 
@@ -968,7 +968,7 @@ void SVT3_DirectConnect( netadr_t from ) {
 				// don't let them keep trying until they get a big delay
 				if ( GGameType & GAME_ET ) {
 					NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for high pings only\n" );
-				} else   {
+				} else {
 					NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is for high pings only\n" );
 				}
 				common->DPrintf( "Client %i rejected on a too low ping\n", chalengeIndex );
@@ -980,14 +980,14 @@ void SVT3_DirectConnect( netadr_t from ) {
 			if ( svt3_maxPing->value && ping > svt3_maxPing->value ) {
 				if ( GGameType & GAME_ET ) {
 					NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]Server is for low pings only\n" );
-				} else   {
+				} else {
 					NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is for low pings only\n" );
 				}
 				common->DPrintf( "Client %i rejected on a too high ping: %i\n", chalengeIndex, ping );
 				return;
 			}
 		}
-	} else   {
+	} else {
 		// force the "ip" info key to "localhost"
 		Info_SetValueForKey( userinfo, "ip", "localhost", MAX_INFO_STRING_Q3 );
 	}
@@ -1027,7 +1027,7 @@ void SVT3_DirectConnect( netadr_t from ) {
 	int startIndex;
 	if ( !String::Cmp( password, svt3_privatePassword->string ) ) {
 		startIndex = 0;
-	} else   {
+	} else {
 		// skip past the reserved slots
 		startIndex = svt3_privateClients->integer;
 	}
@@ -1054,14 +1054,14 @@ void SVT3_DirectConnect( netadr_t from ) {
 			if ( count >= sv_maxclients->integer - startIndex ) {
 				SVT3_DropClient( &svs.clients[ sv_maxclients->integer - 1 ], "only bots on server" );
 				newcl = &svs.clients[ sv_maxclients->integer - 1 ];
-			} else   {
+			} else {
 				common->FatalError( "server is full on local connect\n" );
 				return;
 			}
-		} else   {
+		} else {
 			if ( GGameType & GAME_ET ) {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", svet_fullmsg->string );
-			} else   {
+			} else {
 				NET_OutOfBandPrint( NS_SERVER, from, "print\nServer is full.\n" );
 			}
 			common->DPrintf( "Rejected a connection.\n" );
@@ -1081,11 +1081,11 @@ gotnewcl:
 	int clientNum = newcl - svs.clients;
 	if ( GGameType & GAME_WolfSP ) {
 		newcl->ws_gentity = SVWS_GentityNum( clientNum );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		newcl->wm_gentity = SVWM_GentityNum( clientNum );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		newcl->et_gentity = SVET_GentityNum( clientNum );
-	} else   {
+	} else {
 		newcl->q3_gentity = SVQ3_GentityNum( clientNum );
 	}
 	newcl->q3_entity = SVT3_EntityNum( clientNum );
@@ -1108,7 +1108,7 @@ gotnewcl:
 	if ( denied ) {
 		if ( GGameType & GAME_ET ) {
 			NET_OutOfBandPrint( NS_SERVER, from, "print\n[err_dialog]%s\n", denied );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, from, "print\n%s\n", denied );
 		}
 		common->DPrintf( "Game rejected a connection: %s.\n", denied );
@@ -1119,7 +1119,7 @@ gotnewcl:
 		// RF, create the reliable commands
 		if ( newcl->netchan.remoteAddress.type != NA_BOT ) {
 			SVWS_InitReliableCommandsForClient( newcl, MAX_RELIABLE_COMMANDS_WOLF );
-		} else   {
+		} else {
 			SVWS_InitReliableCommandsForClient( newcl, 0 );
 		}
 	}
@@ -1217,7 +1217,7 @@ static void SVT3_SendClientGameState( client_t* client ) {
 			msg.WriteByte( q3svc_baseline );
 			MSGWS_WriteDeltaEntity( &msg, &nullstate, base, true );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		wmentityState_t nullstate;
 		memset( &nullstate, 0, sizeof ( nullstate ) );
 		for ( start = 0; start < MAX_GENTITIES_Q3; start++ ) {
@@ -1228,7 +1228,7 @@ static void SVT3_SendClientGameState( client_t* client ) {
 			msg.WriteByte( q3svc_baseline );
 			MSGWM_WriteDeltaEntity( &msg, &nullstate, base, true );
 		}
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		etentityState_t nullstate;
 		memset( &nullstate, 0, sizeof ( nullstate ) );
 		for ( start = 0; start < MAX_GENTITIES_Q3; start++ ) {
@@ -1239,7 +1239,7 @@ static void SVT3_SendClientGameState( client_t* client ) {
 			msg.WriteByte( q3svc_baseline );
 			MSGET_WriteDeltaEntity( &msg, &nullstate, base, true );
 		}
-	} else   {
+	} else {
 		q3entityState_t nullstate;
 		Com_Memset( &nullstate, 0, sizeof ( nullstate ) );
 		for ( start = 0; start < MAX_GENTITIES_Q3; start++ ) {
@@ -1286,7 +1286,7 @@ static void SVET_WWWDownload_f( client_t* cl ) {
 		}
 		cl->et_bWWWing = true;
 		return;
-	} else if ( !String::ICmp( subcmd, "bbl8r" ) )       {
+	} else if ( !String::ICmp( subcmd, "bbl8r" ) ) {
 		SVT3_DropClient( cl, "acking disconnected download mode" );
 		return;
 	}
@@ -1303,7 +1303,7 @@ static void SVET_WWWDownload_f( client_t* cl ) {
 		*cl->downloadName = 0;
 		cl->et_bWWWing = false;
 		return;
-	} else if ( !String::ICmp( subcmd, "fail" ) )       {
+	} else if ( !String::ICmp( subcmd, "fail" ) ) {
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->et_bWWWing = false;
@@ -1311,7 +1311,7 @@ static void SVET_WWWDownload_f( client_t* cl ) {
 		// send a reconnect
 		SVT3_SendClientGameState( cl );
 		return;
-	} else if ( !String::ICmp( subcmd, "chkfail" ) )       {
+	} else if ( !String::ICmp( subcmd, "chkfail" ) ) {
 		common->Printf( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n", cl->name, cl->downloadName );
 		common->Printf( "         you should check your download redirect configuration.\n" );
 		cl->download = 0;
@@ -1353,7 +1353,7 @@ static void SVT3_VerifyPaks_f( client_t* cl ) {
 		const char* pArg = Cmd_Argv( nCurArg++ );
 		if ( !pArg ) {
 			bGood = false;
-		} else   {
+		} else {
 			// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
 			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
 			// since serverId is a frame count, it always goes up
@@ -1469,7 +1469,7 @@ static void SVT3_VerifyPaks_f( client_t* cl ) {
 
 		if ( bGood ) {
 			cl->q3_pureAuthentic = 1;
-		} else   {
+		} else {
 			cl->q3_pureAuthentic = 0;
 			cl->q3_nextSnapshotTime = -1;
 			cl->state = CS_ACTIVE;
@@ -1558,12 +1558,12 @@ static bool SVT3_ClientCommand( client_t* cl, QMsg* msg, bool premaprestart ) {
 			 svs.q3_time >= cl->q3_nextReliableTime ) {
 			cl->q3_nextReliableTime = svs.q3_time + 800;
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// don't allow another command for one second
 		if ( floodprotect ) {
 			cl->q3_nextReliableTime = svs.q3_time + 800;
 		}
-	} else   {
+	} else {
 		// don't allow another command for one second
 		cl->q3_nextReliableTime = svs.q3_time + 1000;
 	}
@@ -1584,7 +1584,7 @@ static bool SVT3_ClientCommand( client_t* cl, QMsg* msg, bool premaprestart ) {
 static void SVT3_UserMove( client_t* cl, QMsg* msg, bool delta ) {
 	if ( delta ) {
 		cl->q3_deltaMessage = cl->q3_messageAcknowledge;
-	} else   {
+	} else {
 		cl->q3_deltaMessage = -1;
 	}
 
@@ -1671,7 +1671,7 @@ static void SVT3_UserMove( client_t* cl, QMsg* msg, bool delta ) {
 			}
 			SVQ3_ClientThink( cl, &cmds[ i ] );
 		}
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		// also use the last acknowledged server command in the key
 		key ^= Com_HashKey( SVT3_GetReliableCommand( cl, cl->q3_reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WOLF - 1 ) ), 32 );
 
@@ -1727,7 +1727,7 @@ static void SVT3_UserMove( client_t* cl, QMsg* msg, bool delta ) {
 			}
 			SVWS_ClientThink( cl, &cmds[ i ] );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// also use the last acknowledged server command in the key
 		key ^= Com_HashKey( cl->q3_reliableCommands[ cl->q3_reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WOLF - 1 ) ], 32 );
 
@@ -1797,7 +1797,7 @@ static void SVT3_UserMove( client_t* cl, QMsg* msg, bool delta ) {
 			}
 			SVWM_ClientThink( cl, &cmds[ i ] );
 		}
-	} else   {
+	} else {
 		// also use the last acknowledged server command in the key
 		key ^= Com_HashKey( cl->q3_reliableCommands[ cl->q3_reliableAcknowledge & ( MAX_RELIABLE_COMMANDS_WOLF - 1 ) ], 32 );
 
@@ -1985,7 +1985,7 @@ void SVT3_ExecuteClientMessage( client_t* cl, QMsg* msg ) {
 	if ( c == q3clc_move ) {
 		SVT3_UserMove( cl, msg, true );
 		c = msg->ReadByte();
-	} else if ( c == q3clc_moveNoDelta )     {
+	} else if ( c == q3clc_moveNoDelta ) {
 		SVT3_UserMove( cl, msg, false );
 		c = msg->ReadByte();
 	}

@@ -286,7 +286,7 @@ void QClipMap29::InitBoxHull() {
 		box_clipnodes[ i ].children[ side ] = BSP29CONTENTS_EMPTY;
 		if ( i != 5 ) {
 			box_clipnodes[ i ].children[ side ^ 1 ] = numclipnodes + numnodes + i + 1;
-		} else   {
+		} else {
 			box_clipnodes[ i ].children[ side ^ 1 ] = BSP29CONTENTS_SOLID;
 		}
 

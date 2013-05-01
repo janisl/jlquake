@@ -110,7 +110,7 @@ void QClipMap46::TransformedBoxTraceQ3( q3trace_t* Results, const vec3_t Start,
 	bool rotated;
 	if ( Model != BOX_MODEL_HANDLE && ( Angles[ 0 ] || Angles[ 1 ] || Angles[ 2 ] ) ) {
 		rotated = true;
-	} else   {
+	} else {
 		rotated = false;
 	}
 
@@ -138,7 +138,7 @@ void QClipMap46::TransformedBoxTraceQ3( q3trace_t* Results, const vec3_t Start,
 		sphere.offset[ 0 ] = matrix[ 0 ][ 2 ] * t;
 		sphere.offset[ 1 ] = -matrix[ 1 ][ 2 ] * t;
 		sphere.offset[ 2 ] = matrix[ 2 ][ 2 ] * t;
-	} else   {
+	} else {
 		VectorSet( sphere.offset, 0, 0, t );
 	}
 
@@ -219,7 +219,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 	// if a sphere is already specified
 	if ( sphere ) {
 		tw.sphere = *sphere;
-	} else   {
+	} else {
 		tw.sphere.use = capsule;
 		tw.sphere.radius = ( tw.size[ 1 ][ 0 ] > tw.size[ 1 ][ 2 ] ) ? tw.size[ 1 ][ 2 ] : tw.size[ 1 ][ 0 ];
 		tw.sphere.halfheight = tw.size[ 1 ][ 2 ];
@@ -269,7 +269,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 	if ( tw.size[ 0 ][ 0 ] == 0 && tw.size[ 0 ][ 1 ] == 0 && tw.size[ 0 ][ 2 ] == 0 ) {
 		tw.isPoint = true;
 		VectorClear( tw.extents );
-	} else   {
+	} else {
 		tw.isPoint = false;
 		tw.extents[ 0 ] = tw.size[ 1 ][ 0 ];
 		tw.extents[ 1 ] = tw.size[ 1 ][ 1 ];
@@ -279,7 +279,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 	if ( GGameType & GAME_ET ) {
 		if ( positionTest ) {
 			CalcTraceBounds( &tw, false );
-		} else   {
+		} else {
 			vec3_t dir;
 			VectorSubtract( tw.end, tw.start, dir );
 			VectorCopy( dir, tw.dir );
@@ -289,7 +289,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 			tw.tracePlane2.dist = DotProduct( tw.tracePlane2.normal, tw.start );
 			if ( tw.isPoint ) {
 				tw.traceDist1 = tw.traceDist2 = 1.0f;
-			} else   {
+			} else {
 				tw.traceDist1 = tw.traceDist2 = 0.0f;
 				for ( i = 0; i < 8; i++ ) {
 					float dist = idMath::Fabs( DotProduct( tw.tracePlane1.normal, tw.offsets[ i ] ) - tw.tracePlane1.dist );
@@ -308,7 +308,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 
 			CalcTraceBounds( &tw, true );
 		}
-	} else   {
+	} else {
 		//
 		// calculate bounds
 		//
@@ -317,17 +317,17 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 				if ( tw.start[ i ] < tw.end[ i ] ) {
 					tw.bounds[ 0 ][ i ] = tw.start[ i ] - idMath::Fabs( tw.sphere.offset[ i ] ) - tw.sphere.radius;
 					tw.bounds[ 1 ][ i ] = tw.end[ i ] + idMath::Fabs( tw.sphere.offset[ i ] ) + tw.sphere.radius;
-				} else   {
+				} else {
 					tw.bounds[ 0 ][ i ] = tw.end[ i ] - idMath::Fabs( tw.sphere.offset[ i ] ) - tw.sphere.radius;
 					tw.bounds[ 1 ][ i ] = tw.start[ i ] + idMath::Fabs( tw.sphere.offset[ i ] ) + tw.sphere.radius;
 				}
 			}
-		} else   {
+		} else {
 			for ( i = 0; i < 3; i++ ) {
 				if ( tw.start[ i ] < tw.end[ i ] ) {
 					tw.bounds[ 0 ][ i ] = tw.start[ i ] + tw.size[ 0 ][ i ];
 					tw.bounds[ 1 ][ i ] = tw.end[ i ] + tw.size[ 1 ][ i ];
-				} else   {
+				} else {
 					tw.bounds[ 0 ][ i ] = tw.end[ i ] + tw.size[ 0 ][ i ];
 					tw.bounds[ 1 ][ i ] = tw.start[ i ] + tw.size[ 1 ][ i ];
 				}
@@ -346,7 +346,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 					tw.sphere.use = false;
 				}
 				TestInLeaf( &tw, &cmod->leaf );
-			} else   {
+			} else {
 #ifdef ALWAYS_BBOX_VS_BBOX	// bk010201 - FIXME - compile time flag?
 				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE ) {
 					tw.sphere.use = false;
@@ -360,17 +360,17 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 				if ( model == CAPSULE_MODEL_HANDLE ) {
 					if ( tw.sphere.use ) {
 						TestCapsuleInCapsule( &tw, model );
-					} else   {
+					} else {
 						TestBoundingBoxInCapsule( &tw, model );
 					}
-				} else   {
+				} else {
 					TestInLeaf( &tw, &cmod->leaf );
 				}
 			}
-		} else   {
+		} else {
 			PositionTest( &tw );
 		}
-	} else   {
+	} else {
 		//
 		// general sweeping through world
 		//
@@ -381,7 +381,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 					tw.sphere.use = false;
 				}
 				TraceThroughLeaf( &tw, &cmod->leaf );
-			} else   {
+			} else {
 #ifdef ALWAYS_BBOX_VS_BBOX
 				if ( model == BOX_MODEL_HANDLE || model == CAPSULE_MODEL_HANDLE ) {
 					tw.sphere.use = false;
@@ -395,14 +395,14 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 				if ( model == CAPSULE_MODEL_HANDLE ) {
 					if ( tw.sphere.use ) {
 						TraceCapsuleThroughCapsule( &tw, model );
-					} else   {
+					} else {
 						TraceBoundingBoxThroughCapsule( &tw, model );
 					}
-				} else   {
+				} else {
 					TraceThroughLeaf( &tw, &cmod->leaf );
 				}
 			}
-		} else   {
+		} else {
 			TraceThroughTree( &tw, 0, 0, 1, tw.start, tw.end );
 		}
 	}
@@ -410,7 +410,7 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 	// generate endpos from the original, unmodified start/end
 	if ( tw.trace.fraction == 1 ) {
 		VectorCopy( end, tw.trace.endpos );
-	} else   {
+	} else {
 		for ( i = 0; i < 3; i++ ) {
 			tw.trace.endpos[ i ] = start[ i ] + tw.trace.fraction * ( end[ i ] - start[ i ] );
 		}
@@ -468,12 +468,12 @@ void QClipMap46::TraceThroughTree( traceWork_t* tw, int num, float p1f, float p2
 		t1 = p1[ plane->type ] - plane->dist;
 		t2 = p2[ plane->type ] - plane->dist;
 		offset = tw->extents[ plane->type ];
-	} else   {
+	} else {
 		t1 = DotProduct( plane->normal, p1 ) - plane->dist;
 		t2 = DotProduct( plane->normal, p2 ) - plane->dist;
 		if ( tw->isPoint ) {
 			offset = 0;
-		} else   {
+		} else {
 #if 0	// bk010201 - DEAD
 			// an axial brush right behind a slanted bsp plane
 			// will poke through when expanded, so adjust
@@ -487,7 +487,7 @@ void QClipMap46::TraceThroughTree( traceWork_t* tw, int num, float p1f, float p2
 #endif
 			if ( GGameType & GAME_ET ) {
 				offset = tw->maxOffset;
-			} else   {
+			} else {
 				// this is silly
 				offset = 2048;
 			}
@@ -510,12 +510,12 @@ void QClipMap46::TraceThroughTree( traceWork_t* tw, int num, float p1f, float p2
 		side = 1;
 		frac2 = ( t1 + offset + SURFACE_CLIP_EPSILON ) * idist;
 		frac = ( t1 - offset + SURFACE_CLIP_EPSILON ) * idist;
-	} else if ( t1 > t2 )     {
+	} else if ( t1 > t2 ) {
 		idist = 1.0 / ( t1 - t2 );
 		side = 0;
 		frac2 = ( t1 - offset - SURFACE_CLIP_EPSILON ) * idist;
 		frac = ( t1 + offset + SURFACE_CLIP_EPSILON ) * idist;
-	} else   {
+	} else {
 		side = 0;
 		frac = 1;
 		frac2 = 0;
@@ -641,17 +641,17 @@ void QClipMap46::CalcTraceBounds( traceWork_t* tw, bool expand ) {
 			if ( tw->start[ i ] < tw->end[ i ] ) {
 				tw->bounds[ 0 ][ i ] = tw->start[ i ] - idMath::Fabs( tw->sphere.offset[ i ] ) - tw->sphere.radius;
 				tw->bounds[ 1 ][ i ] = tw->start[ i ] + tw->trace.fraction * tw->dir[ i ] + idMath::Fabs( tw->sphere.offset[ i ] ) + tw->sphere.radius;
-			} else   {
+			} else {
 				tw->bounds[ 0 ][ i ] = tw->start[ i ] + tw->trace.fraction * tw->dir[ i ] - idMath::Fabs( tw->sphere.offset[ i ] ) - tw->sphere.radius;
 				tw->bounds[ 1 ][ i ] = tw->start[ i ] + idMath::Fabs( tw->sphere.offset[ i ] ) + tw->sphere.radius;
 			}
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < 3; i++ ) {
 			if ( tw->start[ i ] < tw->end[ i ] ) {
 				tw->bounds[ 0 ][ i ] = tw->start[ i ] + tw->size[ 0 ][ i ];
 				tw->bounds[ 1 ][ i ] = tw->start[ i ] + tw->trace.fraction * tw->dir[ i ] + tw->size[ 1 ][ i ];
-			} else   {
+			} else {
 				tw->bounds[ 0 ][ i ] = tw->start[ i ] + tw->trace.fraction * tw->dir[ i ] + tw->size[ 0 ][ i ];
 				tw->bounds[ 1 ][ i ] = tw->start[ i ] + tw->size[ 1 ][ i ];
 			}
@@ -761,7 +761,7 @@ void QClipMap46::TraceThroughBrush( traceWork_t* tw, cbrush_t* brush ) {
 			if ( t > 0 ) {
 				VectorSubtract( tw->start, tw->sphere.offset, startp );
 				VectorSubtract( tw->end, tw->sphere.offset, endp );
-			} else   {
+			} else {
 				VectorAdd( tw->start, tw->sphere.offset, startp );
 				VectorAdd( tw->end, tw->sphere.offset, endp );
 			}
@@ -797,7 +797,7 @@ void QClipMap46::TraceThroughBrush( traceWork_t* tw, cbrush_t* brush ) {
 					clipplane = plane;
 					leadside = side;
 				}
-			} else   {		// leave
+			} else {		// leave
 				f = ( d1 + SURFACE_CLIP_EPSILON ) / ( d1 - d2 );
 				if ( f > 1 ) {
 					f = 1;
@@ -807,7 +807,7 @@ void QClipMap46::TraceThroughBrush( traceWork_t* tw, cbrush_t* brush ) {
 				}
 			}
 		}
-	} else   {
+	} else {
 		//
 		// compare the trace against all planes of the brush
 		// find the latest time the trace crosses a plane towards the interior
@@ -851,7 +851,7 @@ void QClipMap46::TraceThroughBrush( traceWork_t* tw, cbrush_t* brush ) {
 					clipplane = plane;
 					leadside = side;
 				}
-			} else   {		// leave
+			} else {		// leave
 				f = ( d1 + SURFACE_CLIP_EPSILON ) / ( d1 - d2 );
 				if ( f > 1 ) {
 					f = 1;
@@ -1084,7 +1084,7 @@ void QClipMap46::TraceThroughVerticalCylinder( traceWork_t* tw, vec3_t origin, f
 		//
 		if ( fraction < 0 ) {
 			fraction = 0;
-		} else   {
+		} else {
 			fraction /= length;
 		}
 		if ( fraction < tw->trace.fraction ) {
@@ -1111,7 +1111,7 @@ void QClipMap46::TraceThroughVerticalCylinder( traceWork_t* tw, vec3_t origin, f
 				tw->trace.contents = BSP46CONTENTS_BODY;
 			}
 		}
-	} else if ( d == 0 )     {
+	} else if ( d == 0 ) {
 		//t[0] = (- b ) / 2 * a;
 		// slide along the cylinder
 	}
@@ -1176,7 +1176,7 @@ void QClipMap46::TraceThroughSphere( traceWork_t* tw, vec3_t origin, float radiu
 		//
 		if ( fraction < 0 ) {
 			fraction = 0;
-		} else   {
+		} else {
 			fraction /= length;
 		}
 		if ( fraction < tw->trace.fraction ) {
@@ -1197,7 +1197,7 @@ void QClipMap46::TraceThroughSphere( traceWork_t* tw, vec3_t origin, float radiu
 			tw->trace.plane.dist = DotProduct( tw->trace.plane.normal, intersection );
 			tw->trace.contents = BSP46CONTENTS_BODY;
 		}
-	} else if ( d == 0 )     {
+	} else if ( d == 0 ) {
 		//t1 = (- b ) / 2;
 		// slide along the sphere
 	}
@@ -1352,7 +1352,7 @@ void QClipMap46::TestBoxInBrush( traceWork_t* tw, cbrush_t* brush ) {
 			t = DotProduct( plane->normal, tw->sphere.offset );
 			if ( t > 0 ) {
 				VectorSubtract( tw->start, tw->sphere.offset, startp );
-			} else   {
+			} else {
 				VectorAdd( tw->start, tw->sphere.offset, startp );
 			}
 			d1 = DotProduct( startp, plane->normal ) - dist;
@@ -1361,7 +1361,7 @@ void QClipMap46::TestBoxInBrush( traceWork_t* tw, cbrush_t* brush ) {
 				return;
 			}
 		}
-	} else   {
+	} else {
 		// the first six planes are the axial planes, so we only
 		// need to test the remainder
 		for ( i = 6; i < brush->numsides; i++ ) {

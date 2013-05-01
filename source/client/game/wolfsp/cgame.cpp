@@ -83,7 +83,7 @@ static void CLWS_GameRefEntToEngine( const wsrefEntity_t* gameRefent, refEntity_
 	Com_Memset( refent, 0, sizeof ( *refent ) );
 	if ( gameRefent->reType < 0 || gameRefent->reType >= 10 ) {
 		refent->reType = RT_MAX_REF_ENTITY_TYPE;
-	} else   {
+	} else {
 		refent->reType = clws_gameRefEntTypeToEngine[ gameRefent->reType ];
 	}
 	refent->renderfx = gameRefent->renderfx & ( RF_MINLIGHT | RF_THIRD_PERSON |
@@ -181,7 +181,7 @@ static void CLWS_ClearLoopingSounds( int killAll ) {
 	// RF, if killall, then stop all sounds
 	if ( killAll == 1 ) {
 		S_ClearSounds( true, false );
-	} else if ( killAll == 2 )     {
+	} else if ( killAll == 2 ) {
 		S_ClearSounds( true, true );
 	}
 }

@@ -490,7 +490,7 @@ nextInstruction2:
 					common->Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 				}
 #endif
-			} else   {
+			} else {
 				programCounter = vm->instructionPointers[ programCounter ];
 			}
 			goto nextInstruction;
@@ -567,7 +567,7 @@ nextInstruction2:
 			if ( r1 == r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -577,7 +577,7 @@ nextInstruction2:
 			if ( r1 != r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -587,7 +587,7 @@ nextInstruction2:
 			if ( r1 < r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -597,7 +597,7 @@ nextInstruction2:
 			if ( r1 <= r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -607,7 +607,7 @@ nextInstruction2:
 			if ( r1 > r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -617,7 +617,7 @@ nextInstruction2:
 			if ( r1 >= r0 ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -627,7 +627,7 @@ nextInstruction2:
 			if ( ( ( unsigned )r1 ) < ( ( unsigned )r0 ) ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -637,7 +637,7 @@ nextInstruction2:
 			if ( ( ( unsigned )r1 ) <= ( ( unsigned )r0 ) ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -647,7 +647,7 @@ nextInstruction2:
 			if ( ( ( unsigned )r1 ) > ( ( unsigned )r0 ) ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -657,7 +657,7 @@ nextInstruction2:
 			if ( ( ( unsigned )r1 ) >= ( ( unsigned )r0 ) ) {
 				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				goto nextInstruction;
 			}
@@ -667,7 +667,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;
@@ -678,7 +678,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;
@@ -689,7 +689,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;
@@ -700,7 +700,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;
@@ -711,7 +711,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;
@@ -722,7 +722,7 @@ nextInstruction2:
 				programCounter = r2;	//vm->instructionPointers[r2];
 				opStack -= 2;
 				goto nextInstruction;
-			} else   {
+			} else {
 				programCounter += 4;
 				opStack -= 2;
 				goto nextInstruction;

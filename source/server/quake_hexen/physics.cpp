@@ -71,18 +71,18 @@ void SVQH_RegisterPhysicsCvars() {
 		if ( GGameType & GAME_Hexen2 ) {
 			svqh_maxspeed = Cvar_Get( "sv_maxspeed", "360", CVAR_SERVERINFO );
 			svqh_waterfriction = Cvar_Get( "sv_waterfriction", "1", 0 );
-		} else   {
+		} else {
 			svqh_maxspeed = Cvar_Get( "sv_maxspeed", "320", 0 );
 			svqh_waterfriction = Cvar_Get( "sv_waterfriction", "4", 0 );
 		}
-	} else   {
+	} else {
 		svqh_gravity = Cvar_Get( "sv_gravity", "800", CVAR_SERVERINFO );
 		svqh_friction = Cvar_Get( "sv_friction", "4", CVAR_SERVERINFO );
 		svqh_edgefriction = Cvar_Get( "edgefriction", "2", 0 );
 		svqh_nostep = Cvar_Get( "sv_nostep", "0", 0 );
 		if ( GGameType & GAME_Hexen2 ) {
 			svqh_maxspeed = Cvar_Get( "sv_maxspeed", "640", CVAR_SERVERINFO );
-		} else   {
+		} else {
 			svqh_maxspeed = Cvar_Get( "sv_maxspeed", "320", CVAR_SERVERINFO );
 		}
 	}
@@ -116,7 +116,7 @@ static void SVQH_CheckVelocity( qhedict_t* ent ) {
 		}
 		if ( ent->GetVelocity()[ i ] > svqh_maxvelocity->value ) {
 			ent->GetVelocity()[ i ] = svqh_maxvelocity->value;
-		} else if ( ent->GetVelocity()[ i ] < -svqh_maxvelocity->value )       {
+		} else if ( ent->GetVelocity()[ i ] < -svqh_maxvelocity->value ) {
 			ent->GetVelocity()[ i ] = -svqh_maxvelocity->value;
 		}
 	}
@@ -287,7 +287,7 @@ static int SVQH_FlyMove( qhedict_t* ent, float time, q1trace_t* steptrace ) {
 		if ( i != numplanes ) {
 			// go along this plane
 			ent->SetVelocity( new_velocity );
-		} else   {
+		} else {
 			// go along the crease
 			if ( numplanes != 2 ) {
 				ent->SetVelocity( vec3_origin );
@@ -321,11 +321,11 @@ static void SVQH_FlyExtras( qhedict_t* ent ) {
 		if ( ent->GetVelocity()[ 2 ] >= 6 ) {
 			ent->SetHoverZ( -hoverinc );
 			ent->GetVelocity()[ 2 ] += ent->GetHoverZ();
-		} else if ( ent->GetVelocity()[ 2 ] <= -6 )       {
+		} else if ( ent->GetVelocity()[ 2 ] <= -6 ) {
 			ent->SetHoverZ( hoverinc );
 			ent->GetVelocity()[ 2 ] += ent->GetHoverZ();
 		}
-	} else   {	// friction for upward or downward progress once key is released
+	} else {	// friction for upward or downward progress once key is released
 		ent->GetVelocity()[ 2 ] -= ent->GetVelocity()[ 2 ] * 0.1;
 	}
 }
@@ -350,12 +350,12 @@ static q1trace_t SVQH_PushEntity( qhedict_t* ent, const vec3_t push ) {
 	if ( ent->GetMoveType() == QHMOVETYPE_FLYMISSILE ||
 		 ( GGameType & GAME_Hexen2 && ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE ) ) {
 		trace = SVQH_Move( ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_MISSILE, ent );
-	} else if ( ent->GetSolid() == QHSOLID_TRIGGER || ent->GetSolid() == QHSOLID_NOT )     {
+	} else if ( ent->GetSolid() == QHSOLID_TRIGGER || ent->GetSolid() == QHSOLID_NOT ) {
 		// only clip against bmodels
 		trace = SVQH_Move( ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_NOMONSTERS, ent );
-	} else if ( GGameType & GAME_Hexen2 && ent->GetMoveType() == H2MOVETYPE_SWIM )     {
+	} else if ( GGameType & GAME_Hexen2 && ent->GetMoveType() == H2MOVETYPE_SWIM ) {
 		trace = SVQH_Move( ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, H2MOVE_WATER, ent );
-	} else   {
+	} else {
 		trace = SVQH_Move( ent->GetOrigin(), ent->GetMins(), ent->GetMaxs(), end, QHMOVE_NORMAL, ent );
 	}
 
@@ -363,12 +363,12 @@ static q1trace_t SVQH_PushEntity( qhedict_t* ent, const vec3_t push ) {
 		if ( ent->GetSolid() != H2SOLID_PHASE ) {
 			if ( ent->GetMoveType() != QHMOVETYPE_BOUNCE || ( trace.allsolid == 0 && trace.startsolid == 0 ) ) {
 				ent->SetOrigin( trace.endpos );			// Macro - watchout
-			} else   {
+			} else {
 				trace.fraction = 0;
 
 				return trace;
 			}
-		} else   {	// Entity is PHASED so bounce off walls and other entities, go through monsters and players
+		} else {	// Entity is PHASED so bounce off walls and other entities, go through monsters and players
 			if ( trace.entityNum >= 0 ) {
 				// Go through MONSTERS and PLAYERS, can't use QHFL_CLIENT cause rotating brushes do
 				if ( ( ( int )QH_EDICT_NUM( trace.entityNum )->GetFlags() & QHFL_MONSTER ) ||
@@ -383,14 +383,14 @@ static q1trace_t SVQH_PushEntity( qhedict_t* ent, const vec3_t push ) {
 					SVQH_Impact( ent, impact_e );
 
 					ent->SetOrigin( trace.endpos );
-				} else   {
+				} else {
 					ent->SetOrigin( trace.endpos );
 				}
-			} else   {
+			} else {
 				ent->SetOrigin( trace.endpos );
 			}
 		}
-	} else   {
+	} else {
 		ent->SetOrigin( trace.endpos );
 	}
 
@@ -487,7 +487,7 @@ static bool SVQH_Push( qhedict_t* pusher, const vec3_t move ) {
 				num_moved--;
 				continue;
 			}
-		} else   {
+		} else {
 			pusher->SetSolid( QHSOLID_NOT );
 			SVQH_PushEntity( check, move );
 			pusher->SetSolid( QHSOLID_BSP );
@@ -613,7 +613,7 @@ static void SVQH_PushRotate( qhedict_t* pusher, float movetime ) {
 		if ( ( int )check->GetFlags() & QHFL_ONGROUND ) {
 			if ( ground == pusher ) {
 				moveit = true;
-			} else   {
+			} else {
 				for ( i = 0; i < slaves_moved; i++ ) {
 					if ( ground == moved_edict[ MAX_EDICTS_QH - i - 1 ] ) {
 						moveit = true;
@@ -843,14 +843,14 @@ static void SVQH_Physics_Pusher( qhedict_t* ent, float frametime ) {
 		if ( movetime < 0 ) {
 			movetime = 0;
 		}
-	} else   {
+	} else {
 		movetime = frametime;
 	}
 
 	if ( movetime ) {
 		if ( GGameType & GAME_Hexen2 && ( ent->GetAVelocity()[ 0 ] || ent->GetAVelocity()[ 1 ] || ent->GetAVelocity()[ 2 ] ) ) {
 			SVQH_PushRotate( ent, movetime );
-		} else   {
+		} else {
 			// advances ent->v.ltime if not blocked
 			SVQH_PushMove( ent, movetime );
 		}
@@ -914,7 +914,7 @@ static void SVQH_CheckWaterTransition( qhedict_t* ent ) {
 		}
 		ent->SetWaterType( cont );
 		ent->SetWaterLevel( 1 );
-	} else   {
+	} else {
 		if ( ent->GetWaterType() != BSP29CONTENTS_EMPTY ) {	// just crossed into water
 			SVQH_StartSound( ent, 0, GGameType & GAME_Hexen2 ? "misc/hith2o.wav" : "misc/h2ohit1.wav", 255, 1 );
 		}
@@ -967,12 +967,12 @@ static void SVQH_Physics_Toss( qhedict_t* ent, float frametime ) {
 	float backoff;
 	if ( ent->GetMoveType() == QHMOVETYPE_BOUNCE ) {
 		backoff = 1.5;
-	} else if ( GGameType & GAME_Hexen2 && ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE )     {	// Solid phased missiles don't bounce on monsters or players
+	} else if ( GGameType & GAME_Hexen2 && ent->GetMoveType() == H2MOVETYPE_BOUNCEMISSILE ) {	// Solid phased missiles don't bounce on monsters or players
 		if ( ( ent->GetSolid() == H2SOLID_PHASE ) && ( ( ( int )QH_EDICT_NUM( trace.entityNum )->GetFlags() & QHFL_MONSTER ) || ( ( int )QH_EDICT_NUM( trace.entityNum )->GetMoveType() == QHMOVETYPE_WALK ) ) ) {
 			return;
 		}
 		backoff = 2.0;
-	} else   {
+	} else {
 		backoff = 1;
 	}
 
@@ -1002,7 +1002,7 @@ static void SVQH_Physics_Step( qhedict_t* ent, float frametime ) {
 		bool hitsound;
 		if ( ent->GetVelocity()[ 2 ] < movevars.gravity * -0.1 ) {
 			hitsound = true;
-		} else   {
+		} else {
 			hitsound = false;
 		}
 
@@ -1240,7 +1240,7 @@ static void SVQH_WalkMove( qhedict_t* ent, float frametime ) {
 			ent->SetFlags( ( int )ent->GetFlags() | QHFL_ONGROUND );
 			ent->SetGroundEntity( EDICT_TO_PROG( QH_EDICT_NUM( downtrace.entityNum ) ) );
 		}
-	} else   {
+	} else {
 		// if the push down didn't end up on good ground, use the move without
 		// the step up.  This happens near wall / slope combinations, and can
 		// cause the player to hop up higher on a slope too steep to climb
@@ -1358,7 +1358,7 @@ static void SVQH_RunEntity( qhedict_t* ent, int i, float frametime, float realti
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) &&
 		 i > 0 && i <= svs.qh_maxclients ) {
 		SVQH_Physics_Client( ent, i, frametime );
-	} else   {
+	} else {
 		switch ( ( int )ent->GetMoveType() ) {
 		case QHMOVETYPE_PUSH:
 			SVQH_Physics_Pusher( ent, frametime );
@@ -1527,7 +1527,7 @@ static void SVQH_UserFriction( qhedict_t* sv_player, float frametime ) {
 	float friction;
 	if ( trace.fraction == 1.0 ) {
 		friction = svqh_friction->value * svqh_edgefriction->value;
-	} else   {
+	} else {
 		friction = svqh_friction->value;
 	}
 	if ( GGameType & GAME_Hexen2 ) {
@@ -1611,17 +1611,17 @@ static void SVQH_WaterMove( client_t* client, float frametime ) {
 
 		if ( !client->h2_lastUsercmd.forwardmove && !client->h2_lastUsercmd.sidemove && !client->h2_lastUsercmd.upmove ) {
 			wishvel[ 2 ] -= 60;			// drift towards bottom
-		} else   {
+		} else {
 			wishvel[ 2 ] += client->h2_lastUsercmd.upmove;
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < 3; i++ ) {
 			wishvel[ i ] = forward[ i ] * client->q1_lastUsercmd.forwardmove + right[ i ] * client->q1_lastUsercmd.sidemove;
 		}
 
 		if ( !client->q1_lastUsercmd.forwardmove && !client->q1_lastUsercmd.sidemove && !client->q1_lastUsercmd.upmove ) {
 			wishvel[ 2 ] -= 60;			// drift towards bottom
-		} else   {
+		} else {
 			wishvel[ 2 ] += client->q1_lastUsercmd.upmove;
 		}
 	}
@@ -1635,22 +1635,22 @@ static void SVQH_WaterMove( client_t* client, float frametime ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( sv_player->GetPlayerClass() == CLASS_DEMON ) {		// Paladin Special Ability #1 - unrestricted movement in water
 			wishspeed *= 0.5;
-		} else if ( sv_player->GetPlayerClass() != CLASS_PALADIN )     {// Paladin Special Ability #1 - unrestricted movement in water
+		} else if ( sv_player->GetPlayerClass() != CLASS_PALADIN ) {// Paladin Special Ability #1 - unrestricted movement in water
 			wishspeed *= 0.7;
-		} else if ( sv_player->GetLevel() == 1 )     {
+		} else if ( sv_player->GetLevel() == 1 ) {
 			wishspeed *= 0.75;
-		} else if ( sv_player->GetLevel() == 2 )     {
+		} else if ( sv_player->GetLevel() == 2 ) {
 			wishspeed *= 0.80;
-		} else if ( ( sv_player->GetLevel() == 3 ) || ( sv_player->GetLevel() == 4 ) )         {
+		} else if ( ( sv_player->GetLevel() == 3 ) || ( sv_player->GetLevel() == 4 ) ) {
 			wishspeed *= 0.85;
-		} else if ( ( sv_player->GetLevel() == 5 ) || ( sv_player->GetLevel() == 6 ) )         {
+		} else if ( ( sv_player->GetLevel() == 5 ) || ( sv_player->GetLevel() == 6 ) ) {
 			wishspeed *= 0.90;
-		} else if ( ( sv_player->GetLevel() == 7 ) || ( sv_player->GetLevel() == 8 ) )         {
+		} else if ( ( sv_player->GetLevel() == 7 ) || ( sv_player->GetLevel() == 8 ) ) {
 			wishspeed *= 0.95;
-		} else   {
+		} else {
 			wishspeed = wishspeed;
 		}
-	} else   {
+	} else {
 		wishspeed *= 0.7;
 	}
 
@@ -1665,7 +1665,7 @@ static void SVQH_WaterMove( client_t* client, float frametime ) {
 			newspeed = 0;
 		}
 		VectorScale( sv_player->GetVelocity(), newspeed / speed, sv_player->GetVelocity() );
-	} else   {
+	} else {
 		newspeed = 0;
 	}
 
@@ -1712,7 +1712,7 @@ static void SVQH_AirMove( client_t* client, float frametime ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		fmove = client->h2_lastUsercmd.forwardmove;
 		smove = client->h2_lastUsercmd.sidemove;
-	} else   {
+	} else {
 		fmove = client->q1_lastUsercmd.forwardmove;
 		smove = client->q1_lastUsercmd.sidemove;
 	}
@@ -1730,10 +1730,10 @@ static void SVQH_AirMove( client_t* client, float frametime ) {
 	if ( ( int )sv_player->GetMoveType() != QHMOVETYPE_WALK ) {
 		if ( GGameType & GAME_Hexen2 ) {
 			wishvel[ 2 ] = client->h2_lastUsercmd.upmove;
-		} else   {
+		} else {
 			wishvel[ 2 ] = client->q1_lastUsercmd.upmove;
 		}
-	} else   {
+	} else {
 		wishvel[ 2 ] = 0;
 	}
 
@@ -1747,10 +1747,10 @@ static void SVQH_AirMove( client_t* client, float frametime ) {
 
 	if ( sv_player->GetMoveType() == QHMOVETYPE_NOCLIP ) {	// noclip
 		sv_player->SetVelocity( wishvel );
-	} else if ( ( int )sv_player->GetFlags() & QHFL_ONGROUND )       {
+	} else if ( ( int )sv_player->GetFlags() & QHFL_ONGROUND ) {
 		SVQH_UserFriction( sv_player, frametime );
 		SVQH_Accelerate( sv_player->GetVelocity(), frametime, wishdir, wishspeed );
-	} else   {	// not on ground, so little effect on velocity
+	} else {	// not on ground, so little effect on velocity
 		SVQH_AirAccelerate( sv_player->GetVelocity(), frametime, wishspeed, wishvel );
 	}
 }
@@ -1789,7 +1789,7 @@ static void SVH2_FlightMove( client_t* client, float frametime ) {
 			newspeed = 0;
 		}
 		VectorScale( sv_player->GetVelocity(), newspeed / speed, sv_player->GetVelocity() );
-	} else   {
+	} else {
 		newspeed = 0;
 	}
 
@@ -1857,7 +1857,7 @@ void SVQH_ClientThink( client_t* client, float frametime ) {
 		 ( sv_player->GetMoveType() != QHMOVETYPE_NOCLIP ) ) {
 		SVQH_WaterMove( client, frametime );
 		return;
-	} else if ( GGameType & GAME_Hexen2 && sv_player->GetMoveType() == QHMOVETYPE_FLY )     {
+	} else if ( GGameType & GAME_Hexen2 && sv_player->GetMoveType() == QHMOVETYPE_FLY ) {
 		SVH2_FlightMove( client, frametime );
 		return;
 	}

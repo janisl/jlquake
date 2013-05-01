@@ -490,9 +490,9 @@ vec3_t monster_flash_offset [] =
 void CLQ2_LogoutEffect( vec3_t org, int type ) {
 	if ( type == Q2MZ_LOGIN ) {
 		CLQ2_PlayerSpawnParticles( org, 0xd0 );		// green
-	} else if ( type == Q2MZ_LOGOUT )     {
+	} else if ( type == Q2MZ_LOGOUT ) {
 		CLQ2_PlayerSpawnParticles( org, 0x40 );		// red
-	} else   {
+	} else {
 		CLQ2_PlayerSpawnParticles( org, 0xe0 );		// yellow
 	}
 }
@@ -1040,7 +1040,7 @@ void CLQ2_FlyEffect( q2centity_t* ent, vec3_t origin ) {
 	if ( ent->fly_stoptime < cl.serverTime ) {
 		starttime = cl.serverTime;
 		ent->fly_stoptime = cl.serverTime + 60000;
-	} else   {
+	} else {
 		starttime = ent->fly_stoptime - 60000;
 	}
 
@@ -1048,11 +1048,11 @@ void CLQ2_FlyEffect( q2centity_t* ent, vec3_t origin ) {
 	int count;
 	if ( n < 20000 ) {
 		count = n * 162 / 20000.0;
-	} else   {
+	} else {
 		n = ent->fly_stoptime - cl.serverTime;
 		if ( n < 20000 ) {
 			count = n * 162 / 20000.0;
-		} else   {
+		} else {
 			count = 162;
 		}
 	}

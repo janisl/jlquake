@@ -187,7 +187,7 @@ static void Inv_Update( bool force ) {
 		// Just to be safe
 		if ( cl.h2_inv_selected >= 0 && cl.h2_inv_count > 0 ) {
 			cl.h2_v.inventory = cl.h2_inv_order[ cl.h2_inv_selected ] + 1;
-		} else   {
+		} else {
 			cl.h2_v.inventory = 0;
 		}
 
@@ -215,7 +215,7 @@ static void InvLeft_f() {
 				cl.h2_inv_startpos = cl.h2_inv_selected;
 			}
 		}
-	} else   {
+	} else {
 		sbh2_inv_flg = true;
 	}
 	S_StartLocalSound( "misc/invmove.wav" );
@@ -235,7 +235,7 @@ static void InvRight_f() {
 				cl.h2_inv_startpos = cl.h2_inv_selected - INV_MAX_ICON + 1;
 			}
 		}
-	} else   {
+	} else {
 		sbh2_inv_flg = true;
 	}
 	S_StartLocalSound( "misc/invmove.wav" );
@@ -418,7 +418,7 @@ static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
 		int frame;
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
-		} else   {
+		} else {
 			frame = *ptr - '0';
 		}
 		SbarH2_DrawPic( x, y, sbh2_nums[ frame ] );
@@ -431,9 +431,9 @@ static void UpdateHeight() {
 	float BarTargetHeight;
 	if ( sbh2_ShowInfo && !cl.qh_intermission ) {
 		BarTargetHeight = BAR_TOTAL_HEIGHT;
-	} else if ( cl.qh_intermission || ( scr_viewsize->value >= 110.0 && !sbtrans->value ) )       {
+	} else if ( cl.qh_intermission || ( scr_viewsize->value >= 110.0 && !sbtrans->value ) ) {
 		BarTargetHeight = 0.0 - BAR_BUMP_HEIGHT;
-	} else   {
+	} else {
 		BarTargetHeight = BAR_TOP_HEIGHT;
 	}
 
@@ -447,7 +447,7 @@ static void UpdateHeight() {
 		if ( BarHeight > BarTargetHeight ) {
 			BarHeight = BarTargetHeight;
 		}
-	} else if ( BarHeight > BarTargetHeight )     {
+	} else if ( BarHeight > BarTargetHeight ) {
 		float delta = ( ( BarHeight - BarTargetHeight ) * BarSpeed->value )
 					  * cls.frametime * 0.001;
 		if ( delta < 0.5 ) {
@@ -501,7 +501,7 @@ static void DrawFullScreenInfo() {
 static void SetChainPosition( float health, float maxHealth ) {
 	if ( health < 0 ) {
 		health = 0;
-	} else if ( health > maxHealth )     {
+	} else if ( health > maxHealth ) {
 		health = maxHealth;
 	}
 	float chainTargetPosition = ( health * 195 ) / maxHealth;
@@ -517,7 +517,7 @@ static void SetChainPosition( float health, float maxHealth ) {
 		if ( sbh2_ChainPosition > chainTargetPosition ) {
 			sbh2_ChainPosition = chainTargetPosition;
 		}
-	} else if ( sbh2_ChainPosition > chainTargetPosition )     {
+	} else if ( sbh2_ChainPosition > chainTargetPosition ) {
 		float delta = ( ( sbh2_ChainPosition - chainTargetPosition ) * 5 ) * cls.frametime * 0.001;
 		if ( delta < 0.5 ) {
 			delta = 0.5;
@@ -600,7 +600,7 @@ static void DrawTopBar() {
 	// HP
 	if ( cl.h2_v.health < -99 ) {
 		SbarH2_DrawNum( 58, 14, -99, 3 );
-	} else   {
+	} else {
 		SbarH2_DrawNum( 58, 14, cl.h2_v.health, 3 );
 	}
 	SetChainPosition( cl.h2_v.health, cl.h2_v.max_health );
@@ -773,7 +773,7 @@ static void DrawArtifactInventory() {
 
 	if ( BarHeight < 0 ) {
 		y = BarHeight - 34;
-	} else   {
+	} else {
 		y = -37;
 	}
 	for ( i = 0, x = 64; i < INV_MAX_ICON; i++, x += 33 ) {
@@ -923,7 +923,7 @@ static void SbarH2_NormalOverlay() {
 		if ( piece < 4 ) {
 			MQH_DrawPicShader( 10, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 45, y, name );
-		} else   {
+		} else {
 			MQH_DrawPicShader( 310 - 32, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
 		}
@@ -989,14 +989,14 @@ static void FindColor( int slot, int* color1, int* color2 ) {
 		if ( *colorA != 255 ) {
 			if ( top >= 0 ) {
 				*color1 = *sourceA;
-			} else   {
+			} else {
 				*color1 = *colorA;
 			}
 		}
 		if ( *colorB != 255 ) {
 			if ( bottom >= 0 ) {
 				*color2 = *sourceB;
-			} else   {
+			} else {
 				*color2 = *colorB;
 			}
 		}
@@ -1073,9 +1073,9 @@ void SbarH2_DeathmatchOverlay() {
 					UI_DrawString( x + 160, y, S_COLOR_RED "6" );
 					if ( s->siege_team == 1 ) {
 						UI_DrawChar( x + 152, y, 143 );	//shield
-					} else if ( s->siege_team == 2 )     {
+					} else if ( s->siege_team == 2 ) {
 						UI_DrawChar( x + 152, y, 144 );	//sword
-					} else   {
+					} else {
 						UI_DrawString( x + 152, y, S_COLOR_RED "?" );	//no team
 					}
 
@@ -1094,7 +1094,7 @@ void SbarH2_DeathmatchOverlay() {
 					UI_DrawString( x + 144, y, S_COLOR_RED "-" );
 					if ( !s->level ) {
 						UI_DrawString( x + 152, y, S_COLOR_RED "01" );
-					} else if ( ( int )s->level < 10 )       {
+					} else if ( ( int )s->level < 10 ) {
 						UI_DrawString( x + 152, y, S_COLOR_RED "0" );
 						char num[ 40 ];
 						sprintf( num, S_COLOR_RED "%1d",s->level );
@@ -1115,7 +1115,7 @@ void SbarH2_DeathmatchOverlay() {
 			if ( GGameType & GAME_HexenWorld ) {
 				UI_FillPal( x + 8, y, 28, 4, top );
 				UI_FillPal( x + 8, y + 4, 28, 4, bottom );
-			} else   {
+			} else {
 				UI_FillPal( x + 80, y, 40, 4, top );
 				UI_FillPal( x + 80, y + 4, 40, 4, bottom );
 			}
@@ -1137,7 +1137,7 @@ void SbarH2_DeathmatchOverlay() {
 				float total;
 				if ( cl.qh_intermission ) {
 					total = cl.qh_completed_time - s->entertime;
-				} else   {
+				} else {
 					total = cls.realtime * 0.001 - s->entertime;
 				}
 				int minutes = ( int )total / 60;
@@ -1147,7 +1147,7 @@ void SbarH2_DeathmatchOverlay() {
 				// draw name
 				if ( clhw_siege && s->siege_team == 2 ) {	//attacker
 					UI_DrawString( x + 178, y, s->name );
-				} else   {
+				} else {
 					UI_DrawString( x + 178, y, va( S_COLOR_RED "%s", s->name ) );
 				}
 			} else {
@@ -1171,7 +1171,7 @@ void SbarH2_DeathmatchOverlay() {
 			float total;
 			if ( cl.qh_intermission ) {
 				total = cl.qh_completed_time - s->entertime;
-			} else   {
+			} else {
 				total = cls.realtime * 0.001 - s->entertime;
 			}
 			int minutes = ( int )total / 60;
@@ -1196,7 +1196,7 @@ static void DrawTime( int x, int y, int disp_time ) {
 	sprintf( num, S_COLOR_RED "%2d",show_sec );
 	if ( show_sec >= 10 ) {
 		UI_DrawString( x + 40, y, num );
-	} else   {
+	} else {
 		UI_DrawString( x + 40, y, num );
 		UI_DrawString( x + 40, y, S_COLOR_RED "0" );
 	}
@@ -1224,7 +1224,7 @@ static void SbarH2_SmallDeathmatchOverlay() {
 			l = i;
 		}
 		y = 46;
-	} else if ( DMMode->value == 2 )     {
+	} else if ( DMMode->value == 2 ) {
 		if ( l > 4 ) {
 			l = 4;
 		}
@@ -1242,7 +1242,7 @@ static void SbarH2_SmallDeathmatchOverlay() {
 		UI_DrawChar( x + 32, y, 58 );	// ":"
 		if ( clhw_timelimit > cl.qh_serverTimeFloat + clhw_server_time_offset ) {
 			DrawTime( x,y,( int )( clhw_timelimit - ( cl.qh_serverTimeFloat + clhw_server_time_offset ) ) );
-		} else if ( ( int )cl.qh_serverTimeFloat % 2 )       {	//odd number, draw 00:00, this will make it flash every second
+		} else if ( ( int )cl.qh_serverTimeFloat % 2 ) {	//odd number, draw 00:00, this will make it flash every second
 			UI_DrawString( x + 16, y, S_COLOR_RED "00" );
 			UI_DrawString( x + 40, y, S_COLOR_RED "00" );
 		}
@@ -1261,13 +1261,13 @@ static void SbarH2_SmallDeathmatchOverlay() {
 			if ( s->siege_team == 1 ) {	//defender
 				if ( s->frags > 0 ) {
 					def_frags += s->frags;
-				} else   {
+				} else {
 					att_frags -= s->frags;
 				}
-			} else if ( s->siege_team == 2 )     {	//attacker
+			} else if ( s->siege_team == 2 ) {	//attacker
 				if ( s->frags > 0 ) {
 					att_frags += s->frags;
-				} else   {
+				} else {
 					def_frags -= s->frags;
 				}
 			}
@@ -1342,7 +1342,7 @@ static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
 		if ( Red > 0 && Red < 3 ) {	//def
 			if ( Red == true ) {
 				UI_DrawChar( u, v, 143 );	//shield
-			} else   {
+			} else {
 				UI_DrawChar( u, v, 130 );	//crown
 			}
 			UI_DrawString( u + 8, v, Name, 256 );
@@ -1352,7 +1352,7 @@ static void R_DrawName( vec3_t origin, const char* Name, int Red ) {
 		} else {
 			UI_DrawString( u + 8, v, Name );
 		}
-	} else   {
+	} else {
 		UI_DrawString( u, v, Name );
 	}
 }
@@ -1366,23 +1366,23 @@ static void SB_PlacePlayerNames() {
 					if ( cl.h2_players[ i ].siege_team == HWST_ATTACKER ) {	//attacker
 						if ( i == clhw_keyholder ) {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,10 );
-						} else   {
+						} else {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,false );
 						}
-					} else if ( cl.h2_players[ i ].siege_team == HWST_DEFENDER )       {//def
+					} else if ( cl.h2_players[ i ].siege_team == HWST_DEFENDER ) {//def
 						if ( i == clhw_keyholder && i == clhw_doc ) {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,12 );
-						} else if ( i == clhw_keyholder )     {
+						} else if ( i == clhw_keyholder ) {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,11 );
-						} else if ( i == clhw_doc )     {
+						} else if ( i == clhw_doc ) {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,2 );
-						} else   {
+						} else {
 							R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,1 );
 						}
-					} else   {
+					} else {
 						R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,3 );
 					}
-				} else   {
+				} else {
 					R_DrawName( cl.h2_players[ i ].origin, cl.h2_players[ i ].name,false );
 				}
 			}
@@ -1414,7 +1414,7 @@ void SbarH2_Draw() {
 		} else {
 			SbarH2_NormalOverlay();
 		}
-	} else if ( ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) && DMMode->value )       {
+	} else if ( ( GGameType & GAME_HexenWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) && DMMode->value ) {
 		SbarH2_SmallDeathmatchOverlay();
 	}
 }

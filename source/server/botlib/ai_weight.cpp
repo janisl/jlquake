@@ -70,7 +70,7 @@ static bool ReadFuzzyWeight( source_t* source, fuzzyseperator_t* fs ) {
 		if ( !PC_ExpectTokenString( source, ")" ) ) {
 			return false;
 		}
-	} else   {
+	} else {
 		fs->type = 0;
 		if ( !ReadValue( source, &fs->weight ) ) {
 			return false;
@@ -142,7 +142,7 @@ static fuzzyseperator_t* ReadFuzzySeperators_r( source_t* source ) {
 			fs->index = index;
 			if ( lastfs ) {
 				lastfs->next = fs;
-			} else   {
+			} else {
 				firstfs = fs;
 			}
 			lastfs = fs;
@@ -154,7 +154,7 @@ static fuzzyseperator_t* ReadFuzzySeperators_r( source_t* source ) {
 				}
 				fs->value = MAX_INVENTORYVALUE;
 				founddefault = true;
-			} else   {
+			} else {
 				if ( !PC_ExpectTokenType( source, TT_NUMBER, TT_INTEGER, &token ) ) {
 					FreeFuzzySeperators_r( firstfs );
 					return NULL;
@@ -178,13 +178,13 @@ static fuzzyseperator_t* ReadFuzzySeperators_r( source_t* source ) {
 					FreeFuzzySeperators_r( firstfs );
 					return NULL;
 				}
-			} else if ( !String::Cmp( token.string, "switch" ) )       {
+			} else if ( !String::Cmp( token.string, "switch" ) ) {
 				fs->child = ReadFuzzySeperators_r( source );
 				if ( !fs->child ) {
 					FreeFuzzySeperators_r( firstfs );
 					return NULL;
 				}
-			} else   {
+			} else {
 				SourceError( source, "invalid name %s\n", token.string );
 				return NULL;
 			}
@@ -194,7 +194,7 @@ static fuzzyseperator_t* ReadFuzzySeperators_r( source_t* source ) {
 					return NULL;
 				}
 			}
-		} else   {
+		} else {
 			FreeFuzzySeperators_r( firstfs );
 			SourceError( source, "invalid name %s\n", token.string );
 			return NULL;
@@ -215,7 +215,7 @@ static fuzzyseperator_t* ReadFuzzySeperators_r( source_t* source ) {
 		fs->child = NULL;
 		if ( lastfs ) {
 			lastfs->next = fs;
-		} else   {
+		} else {
 			firstfs = fs;
 		}
 		lastfs = fs;
@@ -301,7 +301,7 @@ weightconfig_t* ReadWeightConfig( const char* filename ) {
 					return NULL;
 				}
 				config->weights[ config->numweights ].firstseperator = fs;
-			} else if ( !String::Cmp( token.string, "return" ) )       {
+			} else if ( !String::Cmp( token.string, "return" ) ) {
 				fuzzyseperator_t* fs = ( fuzzyseperator_t* )Mem_ClearedAlloc( sizeof ( fuzzyseperator_t ) );
 				fs->index = 0;
 				fs->value = MAX_INVENTORYVALUE;
@@ -314,7 +314,7 @@ weightconfig_t* ReadWeightConfig( const char* filename ) {
 					return NULL;
 				}
 				config->weights[ config->numweights ].firstseperator = fs;
-			} else   {
+			} else {
 				SourceError( source, "invalid name %s\n", token.string );
 				FreeWeightConfig( config );
 				FreeSource( source );
@@ -328,7 +328,7 @@ weightconfig_t* ReadWeightConfig( const char* filename ) {
 				}
 			}
 			config->numweights++;
-		} else   {
+		} else {
 			SourceError( source, "invalid name %s\n", token.string );
 			FreeWeightConfig( config );
 			FreeSource( source );
@@ -365,23 +365,23 @@ static float FuzzyWeight_r( const int* inventory, fuzzyseperator_t* fs ) {
 	if ( inventory[ fs->index ] < fs->value ) {
 		if ( fs->child ) {
 			return FuzzyWeight_r( inventory, fs->child );
-		} else   {
+		} else {
 			return fs->weight;
 		}
-	} else if ( fs->next )     {
+	} else if ( fs->next ) {
 		if ( inventory[ fs->index ] < fs->next->value ) {
 			//first weight
 			float w1;
 			if ( fs->child ) {
 				w1 = FuzzyWeight_r( inventory, fs->child );
-			} else   {
+			} else {
 				w1 = fs->weight;
 			}
 			//second weight
 			float w2;
 			if ( fs->next->child ) {
 				w2 = FuzzyWeight_r( inventory, fs->next->child );
-			} else   {
+			} else {
 				w2 = fs->next->weight;
 			}
 			//the scale factor
@@ -398,23 +398,23 @@ static float FuzzyWeightUndecided_r( const int* inventory, fuzzyseperator_t* fs 
 	if ( inventory[ fs->index ] < fs->value ) {
 		if ( fs->child ) {
 			return FuzzyWeightUndecided_r( inventory, fs->child );
-		} else   {
+		} else {
 			return fs->minweight + random() * ( fs->maxweight - fs->minweight );
 		}
-	} else if ( fs->next )     {
+	} else if ( fs->next ) {
 		if ( inventory[ fs->index ] < fs->next->value ) {
 			//first weight
 			float w1;
 			if ( fs->child ) {
 				w1 = FuzzyWeightUndecided_r( inventory, fs->child );
-			} else   {
+			} else {
 				w1 = fs->minweight + random() * ( fs->maxweight - fs->minweight );
 			}
 			//second weight
 			float w2;
 			if ( fs->next->child ) {
 				w2 = FuzzyWeight_r( inventory, fs->next->child );
-			} else   {
+			} else {
 				w2 = fs->next->minweight + random() * ( fs->next->maxweight - fs->next->minweight );
 			}
 			//the scale factor
@@ -438,17 +438,17 @@ float FuzzyWeightUndecided( const int* inventory, const weightconfig_t* wc, int 
 static void EvolveFuzzySeperator_r( fuzzyseperator_t* fs ) {
 	if ( fs->child ) {
 		EvolveFuzzySeperator_r( fs->child );
-	} else if ( fs->type == WT_BALANCE )     {
+	} else if ( fs->type == WT_BALANCE ) {
 		//every once in a while an evolution leap occurs, mutation
 		if ( random() < 0.01 ) {
 			fs->weight += crandom() * ( fs->maxweight - fs->minweight );
-		} else   {
+		} else {
 			fs->weight += crandom() * ( fs->maxweight - fs->minweight ) * 0.5;
 		}
 		//modify bounds if necesary because of mutation
 		if ( fs->weight < fs->minweight ) {
 			fs->minweight = fs->weight;
-		} else if ( fs->weight > fs->maxweight )     {
+		} else if ( fs->weight > fs->maxweight ) {
 			fs->maxweight = fs->weight;
 		}
 	}
@@ -473,7 +473,7 @@ static int InterbreedFuzzySeperator_r( fuzzyseperator_t* fs1, fuzzyseperator_t* 
 		if ( !InterbreedFuzzySeperator_r( fs2->child, fs2->child, fsout->child ) ) {
 			return false;
 		}
-	} else if ( fs1->type == WT_BALANCE )     {
+	} else if ( fs1->type == WT_BALANCE ) {
 		if ( fs2->type != WT_BALANCE || fsout->type != WT_BALANCE ) {
 			BotImport_Print( PRT_ERROR, "cannot interbreed weight configs, unequal balance\n" );
 			return false;

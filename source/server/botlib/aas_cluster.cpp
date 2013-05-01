@@ -59,7 +59,7 @@ static bool AAS_UpdatePortal( int areanum, int clusternum ) {
 	//if the portal has no back cluster yet
 	else if ( !portal->backcluster ) {
 		portal->backcluster = clusternum;
-	} else   {
+	} else {
 		//remove the cluster portal flag contents
 		aasworld->areasettings[ areanum ].contents &= ~AREACONTENTS_CLUSTERPORTAL;
 		Log_Write( "portal area %d is seperating more than two clusters\r\n", areanum );
@@ -295,7 +295,7 @@ static void AAS_ConnectedAreas_r( int* areanums, int numareas, int* connectedare
 		int otherareanum;
 		if ( face->frontarea != areanums[ curarea ] ) {
 			otherareanum = face->frontarea;
-		} else   {
+		} else {
 			otherareanum = face->backarea;
 		}
 		//check if the face is leading to one of the other areas
@@ -351,7 +351,7 @@ static int AAS_GetAdjacentAreasWithLessPresenceTypes_r( int* areanums, int numar
 		int otherareanum;
 		if ( face->frontarea != curareanum ) {
 			otherareanum = face->frontarea;
-		} else   {
+		} else {
 			otherareanum = face->backarea;
 		}
 
@@ -431,7 +431,7 @@ static int AAS_CheckAreaForPossiblePortals( int areanum ) {
 			int otherareanum;
 			if ( face->frontarea == areanums[ i ] ) {
 				otherareanum = face->backarea;
-			} else   {
+			} else {
 				otherareanum = face->frontarea;
 			}
 			//if the other area already is a cluter portal
@@ -453,7 +453,7 @@ static int AAS_CheckAreaForPossiblePortals( int areanum ) {
 					frontareanums[ numfrontareas++ ] = otherareanum;
 				}
 				numareafrontfaces[ i ]++;
-			} else if ( backplanenum < 0 || faceplanenum == backplanenum )     {
+			} else if ( backplanenum < 0 || faceplanenum == backplanenum ) {
 				backplanenum = faceplanenum;
 				backfacenums[ numbackfaces++ ] = facenum;
 				for ( k = 0; k < numbackareas; k++ ) {
@@ -465,7 +465,7 @@ static int AAS_CheckAreaForPossiblePortals( int areanum ) {
 					backareanums[ numbackareas++ ] = otherareanum;
 				}
 				numareabackfaces[ i ]++;
-			} else   {
+			} else {
 				return 0;
 			}
 		}

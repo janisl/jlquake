@@ -203,7 +203,7 @@ store:
 			dest += 4;
 			if ( t2 < 0 ) {
 				t2 = 0;
-			} else if ( t2 > 255 )     {
+			} else if ( t2 > 255 ) {
 				t2 = 255;
 			}
 			overbrightDest[ 0 ] = t2;

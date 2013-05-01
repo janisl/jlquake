@@ -99,7 +99,7 @@ static void CLET_GameRefEntToEngine( const etrefEntity_t* gameRefent, refEntity_
 	Com_Memset( refent, 0, sizeof ( *refent ) );
 	if ( gameRefent->reType < 0 || gameRefent->reType >= 10 ) {
 		refent->reType = RT_MAX_REF_ENTITY_TYPE;
-	} else   {
+	} else {
 		refent->reType = clet_gameRefEntTypeToEngine[ gameRefent->reType ];
 	}
 	refent->renderfx = gameRefent->renderfx & ( RF_MINLIGHT | RF_THIRD_PERSON |
@@ -212,7 +212,7 @@ void CLET_GetHunkInfo( int* hunkused, int* hunkexpected ) {
 static void CLET_ClearSounds( int clearType ) {
 	if ( clearType == 0 ) {
 		S_ClearSounds( true, false );
-	} else if ( clearType == 1 )     {
+	} else if ( clearType == 1 ) {
 		S_ClearSounds( true, true );
 	}
 }

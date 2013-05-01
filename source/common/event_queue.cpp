@@ -87,7 +87,7 @@ void Com_InitJournaling() {
 		common->Printf( "Journaling events\n" );
 		com_journalFile = FS_FOpenFileWrite( "journal.dat" );
 		com_journalDataFile = FS_FOpenFileWrite( "journaldata.dat" );
-	} else if ( com_journal->integer == 2 )     {
+	} else if ( com_journal->integer == 2 ) {
 		common->Printf( "Replaying journaled events\n" );
 		FS_FOpenFileRead( "journal.dat", &com_journalFile, true );
 		FS_FOpenFileRead( "journaldata.dat", &com_journalDataFile, true );
@@ -198,7 +198,7 @@ static sysEvent_t Com_GetRealEvent() {
 				common->FatalError( "Error reading from journal file" );
 			}
 		}
-	} else   {
+	} else {
 		ev = Sys_GetEvent();
 
 		// write the journal value out if needed
@@ -235,7 +235,7 @@ static void Com_PushEvent( sysEvent_t* event ) {
 			Mem_Free( ev->evPtr );
 		}
 		com_pushedEventsTail++;
-	} else   {
+	} else {
 		printedWarning = false;
 	}
 
@@ -350,7 +350,7 @@ int Com_EventLoop() {
 				Com_Memcpy( buf._data, ( byte* )( ( netadr_t* )ev.evPtr + 1 ), buf.cursize );
 				if ( com_sv_running->integer ) {
 					Com_RunAndTimeServerPacket( &evFrom, &buf );
-				} else   {
+				} else {
 					CLT3_PacketEvent( evFrom, &buf );
 				}
 			}

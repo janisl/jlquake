@@ -341,7 +341,7 @@ public:
 		if ( first ) {
 			startPos.Set( x, y, z );
 			first = false;
-		} else   {
+		} else {
 			endPos.Set( x, y, z );
 			first = true;
 		}
@@ -436,7 +436,7 @@ public:
 			float percent = ( t - startTime ) / length;
 			if ( percent < 0.0 ) {
 				percent = 0.0;
-			} else if ( percent > 1.0 )     {
+			} else if ( percent > 1.0 ) {
 				percent = 1.0;
 			}
 			float temp = endFOV - startFOV;

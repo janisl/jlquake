@@ -327,10 +327,10 @@ void CLQ2_DiminishingTrail( vec3_t start, vec3_t end, q2centity_t* old, int flag
 	if ( old->trailcount > 900 ) {
 		orgscale = 4;
 		velscale = 15;
-	} else if ( old->trailcount > 800 )     {
+	} else if ( old->trailcount > 800 ) {
 		orgscale = 2;
 		velscale = 10;
-	} else   {
+	} else {
 		orgscale = 1;
 		velscale = 5;
 	}
@@ -357,7 +357,7 @@ void CLQ2_DiminishingTrail( vec3_t start, vec3_t end, q2centity_t* old, int flag
 					p->accel[ j ] = 0;
 				}
 				p->vel[ 2 ] -= PARTICLE_GRAVITY;
-			} else if ( flags & Q2EF_GREENGIB )     {
+			} else if ( flags & Q2EF_GREENGIB ) {
 				p->alpha = 1.0;
 				p->alphavel = -1.0 / ( 1 + frand() * 0.4 );
 				p->color = 0xdb + ( rand() & 7 );
@@ -367,7 +367,7 @@ void CLQ2_DiminishingTrail( vec3_t start, vec3_t end, q2centity_t* old, int flag
 					p->accel[ j ] = 0;
 				}
 				p->vel[ 2 ] -= PARTICLE_GRAVITY;
-			} else   {
+			} else {
 				p->alpha = 1.0;
 				p->alphavel = -1.0 / ( 1 + frand() * 0.2 );
 				p->color = 4 + ( rand() & 7 );
@@ -529,7 +529,7 @@ void CLQ2_IonripperTrail( vec3_t start, vec3_t ent ) {
 		if ( left ) {
 			left = false;
 			p->vel[ 0 ] = 10;
-		} else   {
+		} else {
 			left = true;
 			p->vel[ 0 ] = -10;
 		}
@@ -959,7 +959,7 @@ void CLQ2_HeatbeamPaticles( vec3_t start, vec3_t forward ) {
 			if ( i < 10 ) {
 				VectorScale( right, c * ( i / 10.0 ), dir );
 				VectorMA( dir, s * ( i / 10.0 ), up, dir );
-			} else   {
+			} else {
 				VectorScale( right, c, dir );
 				VectorMA( dir, s, up, dir );
 			}

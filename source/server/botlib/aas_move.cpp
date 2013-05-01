@@ -82,7 +82,7 @@ static void AAS_InitSettingsWolf() {
 	if ( GGameType & GAME_WolfMP ) {
 		// Ridah, calculate maxbarrier according to jumpvel and gravity
 		aassettings.phys_maxbarrier = -0.8 + ( 0.5 * aassettings.phys_jumpvel * aassettings.phys_jumpvel / aassettings.phys_gravity );
-	} else   {
+	} else {
 		aassettings.phys_maxbarrier = 49;
 	}
 	aassettings.rs_waterjump = 700;
@@ -107,7 +107,7 @@ static void AAS_InitSettingsWolf() {
 void AAS_InitSettings() {
 	if ( GGameType & GAME_Quake3 ) {
 		AAS_InitSettingsQ3();
-	} else   {
+	} else {
 		AAS_InitSettingsWolf();
 	}
 }
@@ -238,7 +238,7 @@ static bool AAS_ClipToBBox( aas_trace_t* trace, const vec3_t start, const vec3_t
 		float planedist;
 		if ( dir[ i ] > 0 ) {
 			planedist = absmins[ i ];
-		} else   {
+		} else {
 			planedist = absmaxs[ i ];
 		}
 		//calculate collision fraction
@@ -592,7 +592,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 			if ( !swimming ) {
 				frame_test_vel[ 2 ] = savevel[ 2 ];
 			}
-		} else if ( n < cmdframes )     {
+		} else if ( n < cmdframes ) {
 			int ax = 0;
 			float maxvel = phys_maxwalkvelocity;
 			float accelerate = phys_airaccelerate;
@@ -610,7 +610,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 					jump_frame = n;
 					//jumping so air accelerate
 					accelerate = phys_airaccelerate;
-				} else   {
+				} else {
 					accelerate = phys_walkaccelerate;
 				}
 				ax = 2;
@@ -619,7 +619,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				maxvel = phys_maxswimvelocity;
 				accelerate = phys_swimaccelerate;
 				ax = 3;
-			} else   {
+			} else {
 				wishdir[ 2 ] = 0;
 			}
 
@@ -634,7 +634,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 		if ( !( GGameType & GAME_ET ) ) {
 			if ( crouch ) {
 				presencetype = PRESENCE_CROUCH;
-			} else if ( presencetype == PRESENCE_CROUCH )     {
+			} else if ( presencetype == PRESENCE_CROUCH ) {
 				if ( AAS_PointPresenceType( org ) & PRESENCE_NORMAL ) {
 					presencetype = PRESENCE_NORMAL;
 				}
@@ -657,7 +657,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				trace.fraction = bsptrace.fraction;
 				VectorCopy( bsptrace.endpos, trace.endpos );
 				trace.ent = bsptrace.ent;
-			} else   {
+			} else {
 				trace = AAS_TraceClientBBox( org, end, presencetype, entnum );
 			}
 
@@ -800,7 +800,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				if ( GGameType & GAME_ET ) {
 					//JL HACK ALERT! Should use cplane_t internally.
 					plane = reinterpret_cast<aas_plane_t*>( &bsptrace.plane );
-				} else   {
+				} else {
 					plane = AAS_PlaneFromNum( trace.planenum );
 				}
 
@@ -845,7 +845,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 						steptrace.fraction = stepbsptrace.fraction;
 						VectorCopy( stepbsptrace.endpos, steptrace.endpos );
 						steptrace.ent = stepbsptrace.ent;
-					} else   {
+					} else {
 						steptrace = AAS_TraceClientBBox( start, stepend, presencetype, entnum );
 					}
 
@@ -854,7 +854,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 						if ( GGameType & GAME_ET ) {
 							//JL HACK again
 							plane2 = reinterpret_cast<aas_plane_t*>( &stepbsptrace.plane );
-						} else   {
+						} else {
 							plane2 = AAS_PlaneFromNum( steptrace.planenum );
 						}
 						vec3_t up = {0, 0, 1};
@@ -908,7 +908,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 							 frame_test_vel[ 2 ] > old_frame_test_vel[ 2 ] &&
 							 !onground ) {
 							delta = old_frame_test_vel[ 2 ];
-						} else if ( onground )     {
+						} else if ( onground ) {
 							delta = frame_test_vel[ 2 ] - old_frame_test_vel[ 2 ];
 						}
 						if ( delta ) {
@@ -929,7 +929,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 									if ( move->endarea ) {
 										move->presencetype = aasworld->areasettings[ move->endarea ].presencetype;
 									}
-								} else   {
+								} else {
 									move->presencetype = presencetype;
 								}
 								move->endcontents = 0;
@@ -1004,7 +1004,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 					if ( move->endarea ) {
 						move->presencetype = aasworld->areasettings[ move->endarea ].presencetype;
 					}
-				} else   {
+				} else {
 					move->presencetype = presencetype;
 				}
 				move->endcontents = 0;
@@ -1012,7 +1012,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				move->frames = n;
 				return true;
 			}
-		} else if ( stopevent & SE_LEAVEGROUND )     {
+		} else if ( stopevent & SE_LEAVEGROUND ) {
 			VectorCopy( org, move->endpos );
 			move->endarea = AAS_PointAreaNum( org );
 			VectorScale( frame_test_vel, 1 / frametime, move->velocity );
@@ -1023,14 +1023,14 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				if ( move->endarea ) {
 					move->presencetype = aasworld->areasettings[ move->endarea ].presencetype;
 				}
-			} else   {
+			} else {
 				move->presencetype = presencetype;
 			}
 			move->endcontents = 0;
 			move->time = n * frametime;
 			move->frames = n;
 			return true;
-		} else if ( stopevent & SE_GAP )     {
+		} else if ( stopevent & SE_GAP ) {
 			aas_trace_t gaptrace;
 			bsp_trace_t gapbsptrace;
 
@@ -1045,7 +1045,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				gaptrace.fraction = gapbsptrace.fraction;
 				VectorCopy( gapbsptrace.endpos, gaptrace.endpos );
 				gaptrace.ent = gapbsptrace.ent;
-			} else   {
+			} else {
 				gaptrace = AAS_TraceClientBBox( start, end, PRESENCE_CROUCH, -1 );
 			}
 			//if solid is found the bot cannot walk any further and will not fall into a gap
@@ -1066,7 +1066,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 							if ( areanum ) {
 								move->presencetype = aasworld->areasettings[ areanum ].presencetype;
 							}
-						} else   {
+						} else {
 							move->presencetype = presencetype;
 						}
 						move->endcontents = 0;
@@ -1089,7 +1089,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 					if ( move->endarea ) {
 						move->presencetype = aasworld->areasettings[ move->endarea ].presencetype;
 					}
-				} else   {
+				} else {
 					move->presencetype = presencetype;
 				}
 				move->endcontents = 0;
@@ -1110,7 +1110,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 					if ( move->endarea ) {
 						move->presencetype = aasworld->areasettings[ move->endarea ].presencetype;
 					}
-				} else   {
+				} else {
 					move->presencetype = presencetype;
 				}
 				move->endcontents = 0;
@@ -1128,7 +1128,7 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 	if ( GGameType & GAME_ET ) {
 		int areanum = AAS_PointAreaNum( org );
 		move->presencetype = aasworld->areasettings ? aasworld->areasettings[ areanum ].presencetype : 0;
-	} else   {
+	} else {
 		move->presencetype = presencetype;
 	}
 	move->endcontents = 0;

@@ -144,7 +144,7 @@ float R_ProcessLightmap( byte* buf_p, int in_padding, int width, int height, byt
 
 			if ( intensity > 255 ) {
 				intensity = 1.0f;
-			} else   {
+			} else {
 				intensity /= 255.0f;
 			}
 
@@ -159,14 +159,14 @@ float R_ProcessLightmap( byte* buf_p, int in_padding, int width, int height, byt
 				image[ j * 4 + 0 ] = out[ 2 ] * 255;
 				image[ j * 4 + 1 ] = out[ 1 ] * 255;
 				image[ j * 4 + 2 ] = out[ 0 ] * 255;
-			} else   {
+			} else {
 				image[ j * 4 + 0 ] = out[ 0 ] * 255;
 				image[ j * 4 + 1 ] = out[ 1 ] * 255;
 				image[ j * 4 + 2 ] = out[ 2 ] * 255;
 				image[ j * 4 + 3 ] = 255;
 			}
 		}
-	} else   {
+	} else {
 		for ( int j = 0; j < width * height; j++ ) {
 			R_ColorShiftLightingBytes( &buf_p[ j * in_padding ], &image[ j * 4 ] );
 			image[ j * 4 + 3 ] = 255;
@@ -571,7 +571,7 @@ static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	float scale = r_drawfoliage->value;
 	if ( scale < 0.0f ) {
 		scale = 1.0f;
-	} else if ( scale > 2.0f )     {
+	} else if ( scale > 2.0f ) {
 		scale = 2.0f;
 	}
 
@@ -727,7 +727,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 			//
 			if ( n ) {
 				offset1 = ( grid1->height - 1 ) * grid1->width;
-			} else   {
+			} else {
 				offset1 = 0;
 			}
 			if ( R_MergedWidthPoints( grid1, offset1 ) ) {
@@ -737,7 +737,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
 						offset2 = ( grid2->height - 1 ) * grid2->width;
-					} else   {
+					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedWidthPoints( grid2, offset2 ) ) {
@@ -761,7 +761,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
 						offset2 = grid2->width - 1;
-					} else   {
+					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedHeightPoints( grid2, offset2 ) ) {
@@ -787,7 +787,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 		for ( n = 0; n < 2; n++ ) {
 			if ( n ) {
 				offset1 = grid1->width - 1;
-			} else   {
+			} else {
 				offset1 = 0;
 			}
 			if ( R_MergedHeightPoints( grid1, offset1 ) ) {
@@ -797,7 +797,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
 						offset2 = ( grid2->height - 1 ) * grid2->width;
-					} else   {
+					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedWidthPoints( grid2, offset2 ) ) {
@@ -821,7 +821,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
 						offset2 = grid2->width - 1;
-					} else   {
+					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedHeightPoints( grid2, offset2 ) ) {
@@ -893,7 +893,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 		int offset1;
 		if ( n ) {
 			offset1 = ( grid1->height - 1 ) * grid1->width;
-		} else   {
+		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedWidthPoints( grid1, offset1 ) ) {
@@ -907,7 +907,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = ( grid2->height - 1 ) * grid2->width;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->width - 1; l++ ) {
@@ -948,7 +948,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int row;
 					if ( m ) {
 						row = grid2->height - 1;
-					} else   {
+					} else {
 						row = 0;
 					}
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
@@ -965,7 +965,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = grid2->width - 1;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->height - 1; l++ ) {
@@ -1005,7 +1005,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int column;
 					if ( m ) {
 						column = grid2->width - 1;
-					} else   {
+					} else {
 						column = 0;
 					}
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
@@ -1021,7 +1021,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 		int offset1;
 		if ( n ) {
 			offset1 = grid1->width - 1;
-		} else   {
+		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedHeightPoints( grid1, offset1 ) ) {
@@ -1035,7 +1035,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = ( grid2->height - 1 ) * grid2->width;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->width - 1; l++ ) {
@@ -1075,7 +1075,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int row;
 					if ( m ) {
 						row = grid2->height - 1;
-					} else   {
+					} else {
 						row = 0;
 					}
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
@@ -1092,7 +1092,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = grid2->width - 1;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->height - 1; l++ ) {
@@ -1132,7 +1132,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int column;
 					if ( m ) {
 						column = grid2->width - 1;
-					} else   {
+					} else {
 						column = 0;
 					}
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
@@ -1148,7 +1148,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 		int offset1;
 		if ( n ) {
 			offset1 = ( grid1->height - 1 ) * grid1->width;
-		} else   {
+		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedWidthPoints( grid1, offset1 ) ) {
@@ -1162,7 +1162,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = ( grid2->height - 1 ) * grid2->width;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->width - 1; l++ ) {
@@ -1202,7 +1202,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int row;
 					if ( m ) {
 						row = grid2->height - 1;
-					} else   {
+					} else {
 						row = 0;
 					}
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
@@ -1219,7 +1219,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = grid2->width - 1;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->height - 1; l++ ) {
@@ -1259,7 +1259,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int column;
 					if ( m ) {
 						column = grid2->width - 1;
-					} else   {
+					} else {
 						column = 0;
 					}
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
@@ -1278,7 +1278,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 		int offset1;
 		if ( n ) {
 			offset1 = grid1->width - 1;
-		} else   {
+		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedHeightPoints( grid1, offset1 ) ) {
@@ -1292,7 +1292,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = ( grid2->height - 1 ) * grid2->width;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->width - 1; l++ ) {
@@ -1332,7 +1332,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int row;
 					if ( m ) {
 						row = grid2->height - 1;
-					} else   {
+					} else {
 						row = 0;
 					}
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
@@ -1349,7 +1349,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 				int offset2;
 				if ( m ) {
 					offset2 = grid2->width - 1;
-				} else   {
+				} else {
 					offset2 = 0;
 				}
 				for ( int l = 0; l < grid2->height - 1; l++ ) {
@@ -1389,7 +1389,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					int column;
 					if ( m ) {
 						column = grid2->width - 1;
-					} else   {
+					} else {
 						column = 0;
 					}
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
@@ -1527,7 +1527,7 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 			if ( GGameType & GAME_ET ) {
 				// ydnar: faces and triangle surfaces are now homogenous
 				ParseTriSurf( in, dv, out, indexes );
-			} else   {
+			} else {
 				ParseFace( in, dv, out, indexes );
 			}
 			numFaces++;
@@ -1638,7 +1638,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump 
 			p = LittleLong( in->children[ j ] );
 			if ( p >= 0 ) {
 				out->children[ j ] = s_worldData.nodes + p;
-			} else   {
+			} else {
 				out->children[ j ] = s_worldData.nodes + numNodes + ( -1 - p );
 			}
 		}
@@ -1812,7 +1812,7 @@ static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t
 		if ( GGameType & GAME_ET && out->originalBrushNumber == -1 ) {
 			VectorSet( out->bounds[ 0 ], MIN_WORLD_COORD, MIN_WORLD_COORD, MIN_WORLD_COORD );
 			VectorSet( out->bounds[ 1 ], MAX_WORLD_COORD, MAX_WORLD_COORD, MAX_WORLD_COORD );
-		} else   {
+		} else {
 			if ( ( unsigned )out->originalBrushNumber >= ( unsigned )brushesCount ) {
 				common->Error( "fog brushNumber out of range" );
 			}
@@ -1886,7 +1886,7 @@ static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t
 
 		if ( sideNum < 0 || sideNum >= sidesCount ) {
 			out->hasSurface = false;
-		} else   {
+		} else {
 			out->hasSurface = true;
 			int planeNum = LittleLong( sides[ firstSide + sideNum ].planeNum );
 			VectorSubtract( vec3_origin, s_worldData.planes[ planeNum ].normal, out->surface );
@@ -2206,7 +2206,7 @@ mbrush46_node_t* R_PointInLeaf( const vec3_t p ) {
 		float d = DotProduct( p, plane->normal ) - plane->dist;
 		if ( d > 0 ) {
 			node = node->children[ 0 ];
-		} else   {
+		} else {
 			node = node->children[ 1 ];
 		}
 	}

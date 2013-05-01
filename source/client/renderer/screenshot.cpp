@@ -98,7 +98,7 @@ static void RB_TakeScreenshot( int x, int y, int width, int height, const char* 
 	if ( IsJpeg ) {
 		FS_WriteFile( fileName, buffer, 1 );		// create path
 		R_SaveJPG( fileName, 95, width, height, buffer );
-	} else   {
+	} else {
 		R_SaveTGA( fileName, buffer, width, height, false );
 	}
 
@@ -184,7 +184,7 @@ void R_ScreenShot_f() {
 	if ( Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
 		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		// scan for a free filename
 		if ( !R_FindAvailableScreenshotFilename( lastNumber, checkname, "tga" ) ) {
 			return;
@@ -193,7 +193,7 @@ void R_ScreenShot_f() {
 
 	if ( GGameType & GAME_Tech3 ) {
 		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false );
-	} else   {
+	} else {
 		RB_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false );
 	}
 
@@ -219,7 +219,7 @@ void R_ScreenShotJPEG_f() {
 	if ( Cmd_Argc() == 2 && !silent ) {
 		// explicit filename
 		String::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		// scan for a free filename
 		if ( !R_FindAvailableScreenshotFilename( lastNumber, checkname, "jpg" ) ) {
 			return;
@@ -228,7 +228,7 @@ void R_ScreenShotJPEG_f() {
 
 	if ( GGameType & GAME_Tech3 ) {
 		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true );
-	} else   {
+	} else {
 		R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true );
 	}
 
@@ -266,7 +266,7 @@ static void SCR_DrawCharToSnap( int num, byte* dest, int width ) {
 		for ( int x = 0; x < 8; x++ ) {
 			if ( source[ x ] ) {
 				dest[ x ] = source[ x ];
-			} else   {
+			} else {
 				dest[ x ] = 98;
 			}
 		}

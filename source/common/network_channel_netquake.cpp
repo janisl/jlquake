@@ -240,7 +240,7 @@ static int UDP_Init() {
 	if ( i ) {
 		if ( i < COM_Argc() - 1 ) {
 			net_interface = COM_Argv( i + 1 );
-		} else   {
+		} else {
 			common->FatalError( "NET_Init: you must specify an IP address after -ip" );
 		}
 	}
@@ -363,7 +363,7 @@ static int Datagram_SendMessage( netchan_t* chan, QMsg* data ) {
 	if ( data->cursize <= MAX_DATAGRAM_QH ) {
 		dataLen = data->cursize;
 		eom = NETFLAG_EOM;
-	} else   {
+	} else {
 		dataLen = MAX_DATAGRAM_QH;
 		eom = 0;
 	}
@@ -390,7 +390,7 @@ static int SendMessageNext( netchan_t* chan ) {
 	if ( chan->reliableOrUnsentLength <= MAX_DATAGRAM_QH ) {
 		dataLen = chan->reliableOrUnsentLength;
 		eom = NETFLAG_EOM;
-	} else   {
+	} else {
 		dataLen = MAX_DATAGRAM_QH;
 		eom = 0;
 	}
@@ -417,7 +417,7 @@ static int ReSendMessage( netchan_t* chan ) {
 	if ( chan->reliableOrUnsentLength <= MAX_DATAGRAM_QH ) {
 		dataLen = chan->reliableOrUnsentLength;
 		eom = NETFLAG_EOM;
-	} else   {
+	} else {
 		dataLen = MAX_DATAGRAM_QH;
 		eom = 0;
 	}
@@ -556,7 +556,7 @@ static int Datagram_GetMessage( netchan_t* chan, QMsg* message ) {
 				if ( chan->incomingReliableAcknowledged != chan->outgoingReliableSequence ) {
 					common->DPrintf( "ack sequencing error\n" );
 				}
-			} else   {
+			} else {
 				common->DPrintf( "Duplicate ACK received\n" );
 				continue;
 			}
@@ -564,7 +564,7 @@ static int Datagram_GetMessage( netchan_t* chan, QMsg* message ) {
 			if ( chan->reliableOrUnsentLength > 0 ) {
 				Com_Memcpy( chan->reliableOrUnsentBuffer, chan->reliableOrUnsentBuffer + MAX_DATAGRAM_QH, chan->reliableOrUnsentLength );
 				chan->sendNext = true;
-			} else   {
+			} else {
 				chan->reliableOrUnsentLength = 0;
 				chan->canSend = true;
 			}
@@ -672,7 +672,7 @@ void NET_Close( netchan_t* chan ) {
 	// call the driver_Close function
 	if ( chan->remoteAddress.type == NA_LOOPBACK ) {
 		Loop_Close( chan );
-	} else   {
+	} else {
 		Datagram_Close( chan );
 	}
 
@@ -698,7 +698,7 @@ int NET_GetMessage( netchan_t* chan, QMsg* message ) {
 	int ret;
 	if ( chan->remoteAddress.type == NA_LOOPBACK ) {
 		ret = Loop_GetMessage( chan, message );
-	} else   {
+	} else {
 		ret = Datagram_GetMessage( chan, message );
 	}
 
@@ -716,7 +716,7 @@ int NET_GetMessage( netchan_t* chan, QMsg* message ) {
 			chan->lastReceived = net_time * 1000;
 			if ( ret == 1 ) {
 				messagesReceived++;
-			} else if ( ret == 2 )     {
+			} else if ( ret == 2 ) {
 				unreliableMessagesReceived++;
 			}
 		}
@@ -744,7 +744,7 @@ int NET_SendMessage( netchan_t* chan, QMsg* data ) {
 	int r;
 	if ( chan->remoteAddress.type == NA_LOOPBACK ) {
 		r = Loop_SendMessage( chan, data );
-	} else   {
+	} else {
 		r = Datagram_SendMessage( chan, data );
 	}
 	if ( r == 1 && chan->remoteAddress.type == NA_IP ) {
@@ -768,7 +768,7 @@ int NET_SendUnreliableMessage( netchan_t* chan, QMsg* data ) {
 	int r;
 	if ( chan->remoteAddress.type == NA_LOOPBACK ) {
 		r = Loop_SendUnreliableMessage( chan, data );
-	} else   {
+	} else {
 		r = Datagram_SendUnreliableMessage( chan, data );
 	}
 	if ( r == 1 && chan->remoteAddress.type == NA_IP ) {
@@ -794,7 +794,7 @@ bool NET_CanSendMessage( netchan_t* chan ) {
 	int r;
 	if ( chan->remoteAddress.type == NA_LOOPBACK ) {
 		r = Loop_CanSendMessage( chan );
-	} else   {
+	} else {
 		r = Datagram_CanSendMessage( chan );
 	}
 
@@ -849,7 +849,7 @@ void NETQH_Init() {
 	if ( i ) {
 		if ( i < COM_Argc() - 1 ) {
 			DEFAULTnet_hostport = String::Atoi( COM_Argv( i + 1 ) );
-		} else   {
+		} else {
 			common->FatalError( "NET_Init: you must specify a number after -port" );
 		}
 	}

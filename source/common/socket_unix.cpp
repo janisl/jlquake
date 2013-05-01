@@ -66,12 +66,12 @@ static void NetadrToSockadr( const netadr_t* a, sockaddr_in* s ) {
 
 		s->sin_port = a->port;
 		*( int* )& s->sin_addr = -1;
-	} else if ( a->type == NA_IP )     {
+	} else if ( a->type == NA_IP ) {
 		s->sin_family = AF_INET;
 
 		*( int* )& s->sin_addr = *( int* )&a->ip;
 		s->sin_port = a->port;
-	} else   {
+	} else {
 		common->FatalError( "Invalid address type" );
 	}
 }
@@ -102,7 +102,7 @@ static bool SOCK_StringToSockaddr( const char* s, sockaddr_in* sadr ) {
 
 	if ( s[ 0 ] >= '0' && s[ 0 ] <= '9' ) {
 		*( int* )& sadr->sin_addr = inet_addr( s );
-	} else   {
+	} else {
 		hostent* h = gethostbyname( s );
 		if ( !h ) {
 			return false;
@@ -238,7 +238,7 @@ void SOCK_OpenSocks( int port ) {
 	if ( rfc1929 ) {
 		buf[ 1 ] = 2;
 		len = 4;
-	} else   {
+	} else {
 		buf[ 1 ] = 1;
 		len = 3;
 	}
@@ -371,7 +371,7 @@ void SOCK_CloseSocks() {
 int SOCK_Open( const char* net_interface, int port ) {
 	if ( net_interface ) {
 		common->Printf( "Opening IP socket: %s:%i\n", net_interface, port );
-	} else   {
+	} else {
 		common->Printf( "Opening IP socket: localhost:%i\n", port );
 	}
 
@@ -400,13 +400,13 @@ int SOCK_Open( const char* net_interface, int port ) {
 	sockaddr_in address;
 	if ( !net_interface || !net_interface[ 0 ] || !String::ICmp( net_interface, "localhost" ) ) {
 		address.sin_addr.s_addr = INADDR_ANY;
-	} else   {
+	} else {
 		SOCK_StringToSockaddr( net_interface, &address );
 	}
 
 	if ( port == PORT_ANY ) {
 		address.sin_port = 0;
-	} else   {
+	} else {
 		address.sin_port = htons( ( short )port );
 	}
 
@@ -445,7 +445,7 @@ int SOCK_Recv( int socket, void* buf, int len, netadr_t* From ) {
 	if ( usingSocks ) {
 		SocksBuf.SetNum( len + 10 );
 		ret = recvfrom( socket, SocksBuf.Ptr(), len + 10, 0, ( sockaddr* )&addr, &addrlen );
-	} else   {
+	} else {
 		ret = recvfrom( socket, buf, len, 0, ( sockaddr* )&addr, &addrlen );
 	}
 
@@ -478,7 +478,7 @@ int SOCK_Recv( int socket, void* buf, int len, netadr_t* From ) {
 			if ( ret > 0 ) {
 				Com_Memcpy( buf, &SocksBuf[ 10 ], ret );
 			}
-		} else   {
+		} else {
 			SockadrToNetadr( &addr, From );
 			if ( ret > len ) {
 				ret = len;
@@ -487,7 +487,7 @@ int SOCK_Recv( int socket, void* buf, int len, netadr_t* From ) {
 				Com_Memcpy( buf, SocksBuf.Ptr(), ret );
 			}
 		}
-	} else   {
+	} else {
 		SockadrToNetadr( &addr, From );
 	}
 	return ret;
@@ -515,7 +515,7 @@ int SOCK_Send( int socket, const void* data, int length, const netadr_t& to ) {
 		*( short* )&socksBuf[ 8 ] = addr.sin_port;
 		Com_Memcpy( &socksBuf[ 10 ], data, length );
 		ret = sendto( socket, socksBuf.Ptr(), length + 10, 0, &socksRelayAddr, sizeof ( socksRelayAddr ) );
-	} else   {
+	} else {
 		ret = sendto( socket, data, length, 0, ( struct sockaddr* )&addr, sizeof ( addr ) );
 	}
 

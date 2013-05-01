@@ -121,7 +121,7 @@ void Cbuf_ExecuteText( int ExecWhen, const char* Text ) {
 	case EXEC_NOW:
 		if ( Text && String::Length( Text ) > 0 ) {
 			Cmd_ExecuteString( Text );
-		} else   {
+		} else {
 			Cbuf_Execute();
 		}
 		break;
@@ -179,7 +179,7 @@ void Cbuf_Execute() {
 
 		if ( i == cmd_text.cursize ) {
 			cmd_text.cursize = 0;
-		} else   {
+		} else {
 			i++;
 			cmd_text.cursize -= i;
 			memmove( text, text + i, cmd_text.cursize );
@@ -215,7 +215,7 @@ void Cbuf_InsertFromDefer() {
 static void Cmd_Wait_f() {
 	if ( Cmd_Argc() == 2 ) {
 		cmd_wait = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		cmd_wait = 1;
 	}
 }
@@ -228,7 +228,7 @@ static void Cmd_Echo_f() {
 			Cbuf_AddText( va( "%s ", Cmd_Argv( i ) ) );
 		}
 		Cbuf_AddText( "\"\n" );
-	} else   {
+	} else {
 		for ( int i = 1; i < Cmd_Argc(); i++ ) {
 			common->Printf( "%s ",Cmd_Argv( i ) );
 		}
@@ -323,7 +323,7 @@ static void Cmd_List_f() {
 
 	if ( Cmd_Argc() > 1 ) {
 		match = Cmd_Argv( 1 );
-	} else   {
+	} else {
 		match = NULL;
 	}
 
@@ -596,7 +596,7 @@ void Cmd_TokenizeString( const char* TextIn, bool MacroExpand ) {
 					return;		// all tokens parsed
 				}
 				Text += 2;
-			} else   {
+			} else {
 				break;			// we are ready to parse a token
 			}
 		}
@@ -611,7 +611,7 @@ void Cmd_TokenizeString( const char* TextIn, bool MacroExpand ) {
 				for (; l >= 0; l-- ) {
 					if ( cmd_args[ l ] <= ' ' ) {
 						cmd_args[ l ] = 0;
-					} else   {
+					} else {
 						break;
 					}
 				}
@@ -733,16 +733,16 @@ static void Cmd_HandleUnknownCommand() {
 		if ( cl_warncmd->value || com_developer->value ) {
 			common->Printf( "Unknown command \"%s\"\n", Cmd_Argv( 0 ) );
 		}
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		common->Printf( "Unknown command \"%s\"\n", Cmd_Argv( 0 ) );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		if ( com_dedicated && com_dedicated->integer ) {
 			common->Printf( "Unknown command \"%s\"\n", Cmd_Argv( 0 ) );
 			return;
 		}
 		// send it as a server command if we are connected
 		CL_ForwardCommandToServer();
-	} else   {
+	} else {
 		// check client game commands
 		if ( com_cl_running && com_cl_running->integer && CLT3_GameCommand() ) {
 			return;
@@ -790,7 +790,7 @@ void Cmd_ExecuteString( const char* text ) {
 					break;
 				}
 				CL_ForwardKnownCommandToServer();
-			} else   {
+			} else {
 				cmd->function();
 			}
 			return;
@@ -870,7 +870,7 @@ static void PrintMatches( const char* s ) {
 	if ( !String::NICmp( s, shortestMatch, String::Length( shortestMatch ) ) ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "  ^9%s^0\n", s );
-		} else   {
+		} else {
 			common->Printf( "    %s\n", s );
 		}
 	}
@@ -880,7 +880,7 @@ static void PrintCvarMatches( const char* s ) {
 	if ( !String::NICmp( s, shortestMatch, String::Length( shortestMatch ) ) ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
-		} else   {
+		} else {
 			common->Printf( "    %s\n", s );
 		}
 	}
@@ -953,7 +953,7 @@ void Field_CompleteCommand( field_t* field, int& acLength ) {
 			String::Sprintf( completionField->buffer, sizeof ( completionField->buffer ), "\\%s", shortestMatch );
 			if ( Cmd_Argc() == 1 ) {
 				String::Cat( completionField->buffer, sizeof ( completionField->buffer ), " " );
-			} else   {
+			} else {
 				ConcatRemaining( temp.buffer, completionString );
 			}
 			completionField->cursor = String::Length( completionField->buffer );
@@ -971,7 +971,7 @@ void Field_CompleteCommand( field_t* field, int& acLength ) {
 		// run through again, printing matches
 		Cmd_CommandCompletion( PrintMatches );
 		Cvar_CommandCompletion( PrintCvarMatches );
-	} else if ( matchCount != 1 )     {
+	} else if ( matchCount != 1 ) {
 		// get the next match and show instead
 		char lastMatch[ MAX_TOKEN_CHARS_Q3 ];
 		String::NCpyZ( lastMatch, shortestMatch, sizeof ( lastMatch ) );

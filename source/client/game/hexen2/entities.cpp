@@ -140,7 +140,7 @@ void CLH2_ParseReference( QMsg& message ) {
 		cl.h2_frames[ 0 ].count = cl.h2_frames[ 1 ].count = cl.h2_frames[ 2 ].count = 0;
 		cl.h2_need_build = 1;
 		cl.h2_reference_frame = cl.h2_current_frame;
-	} else if ( cl.h2_last_sequence != cl.h2_current_sequence )     {
+	} else if ( cl.h2_last_sequence != cl.h2_current_sequence ) {
 		if ( cl.h2_reference_frame >= 1 && cl.h2_reference_frame <= H2MAX_FRAMES ) {
 			short RemovePlace, OrigPlace, NewPlace, AddedIndex;
 			RemovePlace = OrigPlace = NewPlace = AddedIndex = 0;
@@ -157,7 +157,7 @@ void CLH2_ParseReference( QMsg& message ) {
 						AddedIndex++;
 						cl.h2_frames[ 2 ].count++;
 					}
-				} else   {
+				} else {
 					RemovePlace++;
 				}
 
@@ -173,7 +173,7 @@ void CLH2_ParseReference( QMsg& message ) {
 		cl.h2_frames[ 1 ].count = cl.h2_frames[ 2 ].count = 0;
 		cl.h2_need_build = 1;
 		cl.h2_reference_frame = cl.h2_current_frame;
-	} else   {
+	} else {
 		cl.h2_need_build = 0;
 	}
 
@@ -228,7 +228,7 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 	int num;
 	if ( bits & H2U_LONGENTITY ) {
 		num = message.ReadShort();
-	} else   {
+	} else {
 		num = message.ReadByte();
 	}
 	h2entity_t* ent = CLH2_EntityNum( num );
@@ -272,7 +272,7 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 		// new sequence, first valid frame
 		set_ent = &cl.h2_frames[ 1 ].states[ cl.h2_frames[ 1 ].count ];
 		cl.h2_frames[ 1 ].count++;
-	} else   {
+	} else {
 		set_ent = &dummy;
 	}
 
@@ -287,7 +287,7 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 	bool forcelink;
 	if ( ent->msgtime != cl.qh_mtime[ 1 ] ) {
 		forcelink = true;	// no previous frame to lerp from
-	} else   {
+	} else {
 		forcelink = false;
 	}
 
@@ -299,7 +299,7 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 		if ( modnum >= MAX_MODELS_H2 ) {
 			common->Error( "CL_ParseModel: bad modnum" );
 		}
-	} else   {
+	} else {
 		modnum = ref_ent->modelindex;
 	}
 
@@ -313,10 +313,10 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 		if ( model ) {
 			if ( R_ModelSyncType( model ) == ST_RAND ) {
 				ent->syncbase = rand() * ( 1.0 / RAND_MAX );	//(float)(rand()&0x7fff) / 0x7fff;
-			} else   {
+			} else {
 				ent->syncbase = 0.0;
 			}
-		} else   {
+		} else {
 			forcelink = true;	// hack to make null model players work
 		}
 		if ( num > 0 && num <= cl.qh_maxclients ) {
@@ -326,27 +326,27 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 
 	if ( bits & H2U_FRAME ) {
 		set_ent->frame = ent->state.frame = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.frame = ref_ent->frame;
 	}
 
 	if ( bits & H2U_COLORMAP ) {
 		set_ent->colormap = ent->state.colormap = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.colormap = ref_ent->colormap;
 	}
 
 	if ( bits & H2U_SKIN ) {
 		set_ent->skinnum = ent->state.skinnum = message.ReadByte();
 		set_ent->drawflags = ent->state.drawflags = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.skinnum = ref_ent->skinnum;
 		ent->state.drawflags = ref_ent->drawflags;
 	}
 
 	if ( bits & H2U_EFFECTS ) {
 		set_ent->effects = ent->state.effects = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.effects = ref_ent->effects;
 	}
 
@@ -357,42 +357,42 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 	if ( bits & H2U_ORIGIN1 ) {
 		set_ent->origin[ 0 ] = ent->msg_origins[ 0 ][ 0 ] = message.ReadCoord();
 		//if (num == 2) fprintf(FH,"Read origin[0] %f\n",set_ent->angles[0]);
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 0 ] = ref_ent->origin[ 0 ];
 		//if (num == 2) fprintf(FH,"Restored origin[0] %f\n",ref_ent->angles[0]);
 	}
 	if ( bits & H2U_ANGLE1 ) {
 		set_ent->angles[ 0 ] = ent->msg_angles[ 0 ][ 0 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 0 ] = ref_ent->angles[ 0 ];
 	}
 
 	if ( bits & H2U_ORIGIN2 ) {
 		set_ent->origin[ 1 ] = ent->msg_origins[ 0 ][ 1 ] = message.ReadCoord();
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 1 ] = ref_ent->origin[ 1 ];
 	}
 	if ( bits & H2U_ANGLE2 ) {
 		set_ent->angles[ 1 ] = ent->msg_angles[ 0 ][ 1 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 1 ] = ref_ent->angles[ 1 ];
 	}
 
 	if ( bits & H2U_ORIGIN3 ) {
 		set_ent->origin[ 2 ] = ent->msg_origins[ 0 ][ 2 ] = message.ReadCoord();
-	} else   {
+	} else {
 		ent->msg_origins[ 0 ][ 2 ] = ref_ent->origin[ 2 ];
 	}
 	if ( bits & H2U_ANGLE3 ) {
 		set_ent->angles[ 2 ] = ent->msg_angles[ 0 ][ 2 ] = message.ReadAngle();
-	} else   {
+	} else {
 		ent->msg_angles[ 0 ][ 2 ] = ref_ent->angles[ 2 ];
 	}
 
 	if ( bits & H2U_SCALE ) {
 		set_ent->scale = ent->state.scale = message.ReadByte();
 		set_ent->abslight = ent->state.abslight = message.ReadByte();
-	} else   {
+	} else {
 		ent->state.scale = ref_ent->scale;
 		ent->state.abslight = ref_ent->abslight;
 	}
@@ -462,7 +462,7 @@ static void CLHW_ParseDelta( QMsg& message, h2entity_state_t* from, h2entity_sta
 	if ( bits & HWU_MODEL ) {
 		if ( bits & HWU_MODEL16 ) {
 			to->modelindex = message.ReadShort();
-		} else   {
+		} else {
 			to->modelindex = message.ReadByte();
 		}
 	}
@@ -572,7 +572,7 @@ static void CLHW_ParsePacketEntities( QMsg& message, bool delta ) {
 		if ( ( from & UPDATE_MASK_HW ) != ( oldpacket & UPDATE_MASK_HW ) ) {
 			common->DPrintf( "WARNING: from mismatch\n" );
 		}
-	} else   {
+	} else {
 		oldpacket = -1;
 	}
 
@@ -584,7 +584,7 @@ static void CLHW_ParsePacketEntities( QMsg& message, bool delta ) {
 		}
 		cl.qh_validsequence = clc.netchan.incomingSequence;
 		oldp = &cl.hw_frames[ oldpacket & UPDATE_MASK_HW ].packet_entities;
-	} else   {	// this is a full update that we can start delta compressing from now
+	} else {	// this is a full update that we can start delta compressing from now
 		oldp = &dummy;
 		dummy.num_entities = 0;
 		cl.qh_validsequence = clc.netchan.incomingSequence;
@@ -714,7 +714,7 @@ void CLHW_ParsePlayerinfo( QMsg& message ) {
 	if ( flags & HWPF_MSEC ) {
 		msec = message.ReadByte();
 		state->state_time = cl.hw_frames[ cl.qh_parsecount & UPDATE_MASK_HW ].senttime - msec * 0.001;
-	} else   {
+	} else {
 		state->state_time = cl.hw_frames[ cl.qh_parsecount & UPDATE_MASK_HW ].senttime;
 	}
 
@@ -725,66 +725,66 @@ void CLHW_ParsePlayerinfo( QMsg& message ) {
 	for ( i = 0; i < 3; i++ ) {
 		if ( flags & ( HWPF_VELOCITY1 << i ) ) {
 			state->velocity[ i ] = message.ReadShort();
-		} else   {
+		} else {
 			state->velocity[ i ] = 0;
 		}
 	}
 
 	if ( flags & HWPF_MODEL ) {
 		state->modelindex = message.ReadShort();
-	} else   {
+	} else {
 		playermodel = true;
 		i = info->playerclass;
 		if ( i >= 1 && i <= MAX_PLAYER_CLASS ) {
 			state->modelindex = clhw_playerindex[ i - 1 ];
-		} else   {
+		} else {
 			state->modelindex = clhw_playerindex[ 0 ];
 		}
 	}
 
 	if ( flags & HWPF_SKINNUM ) {
 		state->skinnum = message.ReadByte();
-	} else   {
+	} else {
 		if ( info->siege_team == HWST_ATTACKER && playermodel ) {
 			state->skinnum = 1;	//using a playermodel and attacker - skin is set to 1
-		} else   {
+		} else {
 			state->skinnum = 0;
 		}
 	}
 
 	if ( flags & HWPF_EFFECTS ) {
 		state->effects = message.ReadByte();
-	} else   {
+	} else {
 		state->effects = 0;
 	}
 
 	if ( flags & HWPF_EFFECTS2 ) {
 		state->effects |= ( message.ReadByte() << 8 );
-	} else   {
+	} else {
 		state->effects &= 0xff;
 	}
 
 	if ( flags & HWPF_WEAPONFRAME ) {
 		state->weaponframe = message.ReadByte();
-	} else   {
+	} else {
 		state->weaponframe = 0;
 	}
 
 	if ( flags & HWPF_DRAWFLAGS ) {
 		state->drawflags = message.ReadByte();
-	} else   {
+	} else {
 		state->drawflags = 0;
 	}
 
 	if ( flags & HWPF_SCALE ) {
 		state->scale = message.ReadByte();
-	} else   {
+	} else {
 		state->scale = 0;
 	}
 
 	if ( flags & HWPF_ABSLIGHT ) {
 		state->abslight = message.ReadByte();
-	} else   {
+	} else {
 		state->abslight = 0;
 	}
 
@@ -823,10 +823,10 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 			angles[ ROLL ] = entityAngles[ ROLL ];
 
 			AnglesToAxis( angles, entity->axis );
-		} else   {
+		} else {
 			if ( R_ModelFlags( entity->hModel ) & H2MDLEF_ROTATE ) {
 				angles[ YAW ] = AngleMod( ( entity->origin[ 0 ] + entity->origin[ 1 ] ) * 0.8 + ( 108 * cl.serverTime * 0.001 ) );
-			} else   {
+			} else {
 				angles[ YAW ] = entityAngles[ YAW ];
 			}
 			angles[ ROLL ] = entityAngles[ ROLL ];
@@ -842,7 +842,7 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 				AnglesToAxis( angleAdd, AddAxis );
 
 				MatrixMultiply( AddAxis, BaseAxis, entity->axis );
-			} else   {
+			} else {
 				AnglesToAxis( angles, entity->axis );
 			}
 		}
@@ -905,7 +905,7 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 			VectorScale( entity->axis[ 2 ], esz, entity->axis[ 2 ] );
 			entity->nonNormalizedAxes = true;
 		}
-	} else   {
+	} else {
 		angles[ YAW ] = entityAngles[ YAW ];
 		angles[ ROLL ] = entityAngles[ ROLL ];
 		angles[ PITCH ] = entityAngles[ PITCH ];
@@ -930,7 +930,7 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 	if ( mls == H2MLS_ABSLIGHT ) {
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
 		entity->absoluteLight = absoluteLight / 128.0;
-	} else if ( mls != H2MLS_NONE )     {
+	} else if ( mls != H2MLS_NONE ) {
 		// Use a model light style (25-30)
 		entity->renderfx |= RF_ABSOLUTE_LIGHT;
 		entity->absoluteLight = cl_lightstyle[ 24 + mls ].value[ 0 ] / 2;
@@ -962,7 +962,7 @@ void CLH2_TranslatePlayerSkin( int playernum ) {
 	if ( player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses() ) {
 		classIndex = player->playerclass - 1;
 		player->Translated = true;
-	} else   {
+	} else {
 		classIndex = 0;
 	}
 
@@ -983,7 +983,7 @@ void CLH2_HandleCustomSkin( refEntity_t* entity, int playerIndex ) {
 		}
 
 		entity->customSkin = R_GetImageHandle( clh2_extra_textures[ entity->skinNum - 100 ] );
-	} else if ( playerIndex >= 0 && entity->hModel )     {
+	} else if ( playerIndex >= 0 && entity->hModel ) {
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
 		//FIXME? What about Dwarf?
@@ -1046,7 +1046,7 @@ static void CLH2_RelinkEntities() {
 			d = cl.qh_mviewangles[ 0 ][ j ] - cl.qh_mviewangles[ 1 ][ j ];
 			if ( d > 180 ) {
 				d -= 360;
-			} else if ( d < -180 )     {
+			} else if ( d < -180 ) {
 				d += 360;
 			}
 			cl.viewangles[ j ] = cl.qh_mviewangles[ 1 ][ j ] + frac * d;
@@ -1072,7 +1072,7 @@ static void CLH2_RelinkEntities() {
 												// so move to the final spot
 			VectorCopy( ent->msg_origins[ 0 ], ent->state.origin );
 			VectorCopy( ent->msg_angles[ 0 ], ent->state.angles );
-		} else   {	// if the delta is large, assume a teleport and don't lerp
+		} else {	// if the delta is large, assume a teleport and don't lerp
 			f = frac;
 			for ( j = 0; j < 3; j++ ) {
 				delta[ j ] = ent->msg_origins[ 0 ][ j ] - ent->msg_origins[ 1 ][ j ];
@@ -1089,7 +1089,7 @@ static void CLH2_RelinkEntities() {
 				d = ent->msg_angles[ 0 ][ j ] - ent->msg_angles[ 1 ][ j ];
 				if ( d > 180 ) {
 					d -= 360;
-				} else if ( d < -180 )     {
+				} else if ( d < -180 ) {
 					d += 360;
 				}
 				ent->state.angles[ j ] = ent->msg_angles[ 1 ][ j ] + f * d;
@@ -1119,44 +1119,44 @@ static void CLH2_RelinkEntities() {
 		int ModelFlags = R_ModelFlags( cl.model_draw[ ent->state.modelindex ] );
 		if ( ModelFlags & H2MDLEF_GIB ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_blood );
-		} else if ( ModelFlags & H2MDLEF_ZOMGIB )     {
+		} else if ( ModelFlags & H2MDLEF_ZOMGIB ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_slight_blood );
-		} else if ( ModelFlags & H2MDLEF_BLOODSHOT )     {
+		} else if ( ModelFlags & H2MDLEF_BLOODSHOT ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_bloodshot );
-		} else if ( ModelFlags & H2MDLEF_TRACER )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_tracer );
-		} else if ( ModelFlags & H2MDLEF_TRACER2 )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER2 ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_tracer2 );
-		} else if ( ModelFlags & H2MDLEF_ROCKET )     {
+		} else if ( ModelFlags & H2MDLEF_ROCKET ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_rocket_trail );
-		} else if ( ModelFlags & H2MDLEF_FIREBALL )     {
+		} else if ( ModelFlags & H2MDLEF_FIREBALL ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_fireball );
 			CLH2_FireBallLight( i, ent->state.origin );
-		} else if ( ModelFlags & H2MDLEF_ACIDBALL )     {
+		} else if ( ModelFlags & H2MDLEF_ACIDBALL ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_acidball );
 			CLH2_FireBallLight( i, ent->state.origin );
-		} else if ( ModelFlags & H2MDLEF_ICE )     {
+		} else if ( ModelFlags & H2MDLEF_ICE ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_ice );
-		} else if ( ModelFlags & H2MDLEF_SPIT )     {
+		} else if ( ModelFlags & H2MDLEF_SPIT ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_spit );
 			CLH2_SpitLight( i, ent->state.origin );
-		} else if ( ModelFlags & H2MDLEF_SPELL )     {
+		} else if ( ModelFlags & H2MDLEF_SPELL ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_spell );
-		} else if ( ModelFlags & H2MDLEF_GRENADE )     {
+		} else if ( ModelFlags & H2MDLEF_GRENADE ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_smoke );
-		} else if ( ModelFlags & H2MDLEF_TRACER3 )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER3 ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_voor_trail );
-		} else if ( ModelFlags & H2MDLEF_VORP_MISSILE )     {
+		} else if ( ModelFlags & H2MDLEF_VORP_MISSILE ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_vorpal );
-		} else if ( ModelFlags & H2MDLEF_SET_STAFF )     {
+		} else if ( ModelFlags & H2MDLEF_SET_STAFF ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin,rt_setstaff );
-		} else if ( ModelFlags & H2MDLEF_MAGICMISSILE )     {
+		} else if ( ModelFlags & H2MDLEF_MAGICMISSILE ) {
 			if ( ( rand() & 3 ) < 1 ) {
 				CLH2_TrailParticles( oldorg, ent->state.origin, rt_magicmissile );
 			}
-		} else if ( ModelFlags & H2MDLEF_BONESHARD )     {
+		} else if ( ModelFlags & H2MDLEF_BONESHARD ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_boneshard );
-		} else if ( ModelFlags & H2MDLEF_SCARAB )     {
+		} else if ( ModelFlags & H2MDLEF_SCARAB ) {
 			CLH2_TrailParticles( oldorg, ent->state.origin, rt_scarab );
 		}
 
@@ -1350,43 +1350,43 @@ static void CLHW_LinkPacketEntities() {
 		// Model Flags
 		if ( ModelFlags & H2MDLEF_GIB ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_blood );
-		} else if ( ModelFlags & H2MDLEF_ZOMGIB )     {
+		} else if ( ModelFlags & H2MDLEF_ZOMGIB ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_slight_blood );
-		} else if ( ModelFlags & H2MDLEF_TRACER )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_tracer );
-		} else if ( ModelFlags & H2MDLEF_TRACER2 )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER2 ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_tracer2 );
-		} else if ( ModelFlags & H2MDLEF_ROCKET )     {
+		} else if ( ModelFlags & H2MDLEF_ROCKET ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_rocket_trail );
-		} else if ( ModelFlags & H2MDLEF_FIREBALL )     {
+		} else if ( ModelFlags & H2MDLEF_FIREBALL ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_fireball );
 			CLH2_FireBallLight( i, ent.origin );
-		} else if ( ModelFlags & H2MDLEF_ICE )     {
+		} else if ( ModelFlags & H2MDLEF_ICE ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_ice );
-		} else if ( ModelFlags & H2MDLEF_SPIT )     {
+		} else if ( ModelFlags & H2MDLEF_SPIT ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_spit );
 			CLH2_SpitLight( i, ent.origin );
-		} else if ( ModelFlags & H2MDLEF_SPELL )     {
+		} else if ( ModelFlags & H2MDLEF_SPELL ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_spell );
-		} else if ( ModelFlags & H2MDLEF_GRENADE )     {
+		} else if ( ModelFlags & H2MDLEF_GRENADE ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_grensmoke );
-		} else if ( ModelFlags & H2MDLEF_TRACER3 )     {
+		} else if ( ModelFlags & H2MDLEF_TRACER3 ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_voor_trail );
-		} else if ( ModelFlags & H2MDLEF_VORP_MISSILE )     {
+		} else if ( ModelFlags & H2MDLEF_VORP_MISSILE ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_vorpal );
-		} else if ( ModelFlags & H2MDLEF_SET_STAFF )     {
+		} else if ( ModelFlags & H2MDLEF_SET_STAFF ) {
 			CLH2_TrailParticles( old_origin, ent.origin,rt_setstaff );
-		} else if ( ModelFlags & H2MDLEF_MAGICMISSILE )     {
+		} else if ( ModelFlags & H2MDLEF_MAGICMISSILE ) {
 			if ( ( rand() & 3 ) < 1 ) {
 				CLH2_TrailParticles( old_origin, ent.origin, rt_magicmissile );
 			}
-		} else if ( ModelFlags & H2MDLEF_BONESHARD )     {
+		} else if ( ModelFlags & H2MDLEF_BONESHARD ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_boneshard );
-		} else if ( ModelFlags & H2MDLEF_SCARAB )     {
+		} else if ( ModelFlags & H2MDLEF_SCARAB ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_scarab );
-		} else if ( ModelFlags & H2MDLEF_ACIDBALL )     {
+		} else if ( ModelFlags & H2MDLEF_ACIDBALL ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_acidball );
-		} else if ( ModelFlags & H2MDLEF_BLOODSHOT )     {
+		} else if ( ModelFlags & H2MDLEF_BLOODSHOT ) {
 			CLH2_TrailParticles( old_origin, ent.origin, rt_bloodshot );
 		}
 	}
@@ -1454,7 +1454,7 @@ static void CLHW_LinkPlayers() {
 		int msec = 500 * ( playertime - state->state_time );
 		if ( msec <= 0 || ( !cl_predict_players->value && !cl_predict_players2->value ) || j == cl.playernum ) {
 			VectorCopy( state->origin, ent.origin );
-		} else   {
+		} else {
 			// predict players movement
 			if ( msec > 255 ) {
 				msec = 255;
@@ -1499,21 +1499,21 @@ static void CLHW_LinkPlayers() {
 			}
 			if ( ( ambientlight + shadelight ) > 75 || ( clhw_siege && my_team == ve_team ) ) {
 				info->shownames_off = false;
-			} else   {
+			} else {
 				info->shownames_off = true;
 			}
 			if ( clhw_siege ) {
 				if ( cl.h2_players[ cl.playernum ].playerclass == CLASS_DWARF && ent.skinNum == 101 ) {
 					colorshade = 141;
 					info->shownames_off = false;
-				} else if ( cl.h2_players[ cl.playernum ].playerclass == CLASS_DWARF && ( ambientlight + shadelight ) < 151 )         {
+				} else if ( cl.h2_players[ cl.playernum ].playerclass == CLASS_DWARF && ( ambientlight + shadelight ) < 151 ) {
 					colorshade = 138 + ( int )( ( ambientlight + shadelight ) / 30 );
 					info->shownames_off = false;
-				} else if ( ve_team == HWST_DEFENDER )     {
+				} else if ( ve_team == HWST_DEFENDER ) {
 					//tint gold since we can't have seperate skins
 					colorshade = 165;
 				}
-			} else   {
+			} else {
 				char client_team[ 16 ];
 				String::NCpy( client_team, Info_ValueForKey( cl.h2_players[ cl.playernum ].userinfo, "team" ), 16 );
 				client_team[ 15 ] = 0;

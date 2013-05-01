@@ -381,7 +381,7 @@ static void CLH2_FreeEffectEntityHW( int index ) {
 static void CLH2_FreeEffect( int index ) {
 	if ( GGameType & GAME_HexenWorld ) {
 		CLH2_FreeEffectEntityHW( index );
-	} else   {
+	} else {
 		CLH2_FreeEffectEntityH2( index );
 	}
 
@@ -533,9 +533,9 @@ static const char* CLH2_ChooseOnFireModel() {
 	int rdm = rand() & 3;
 	if ( rdm < 1 ) {
 		return "models/firewal1.spr";
-	} else if ( rdm < 2 )     {
+	} else if ( rdm < 2 ) {
 		return "models/firewal2.spr";
-	} else   {
+	} else {
 		return "models/firewal3.spr";
 	}
 }
@@ -560,9 +560,9 @@ static bool CLHW_ParseEffectRipple( int index, QMsg& message ) {
 	if ( cl.h2_Effects[ index ].Smoke.framelength == 2 ) {
 		CLH2_SplashParticleEffect( cl.h2_Effects[ index ].Smoke.origin, 200, 406 + rand() % 8, pt_h2slowgrav, 40 );
 		S_StartSound( cl.h2_Effects[ index ].Smoke.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_splash, 1, 1 );
-	} else if ( cl.h2_Effects[ index ].Smoke.framelength == 1 )       {
+	} else if ( cl.h2_Effects[ index ].Smoke.framelength == 1 ) {
 		CLH2_SplashParticleEffect( cl.h2_Effects[ index ].Smoke.origin, 100, 406 + rand() % 8, pt_h2slowgrav, 20 );
-	} else   {
+	} else {
 		S_StartSound( cl.h2_Effects[ index ].Smoke.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_ripple, 1, 1 );
 	}
 	cl.h2_Effects[ index ].Smoke.framelength = 0.05;
@@ -995,7 +995,7 @@ static void CLHW_ParseEffectXBowShoot( int index, QMsg& message ) {
 
 	if ( cl.h2_Effects[ index ].Xbow.bolts == 3 ) {
 		S_StartSound( origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowshoot, 1, 1 );
-	} else if ( cl.h2_Effects[ index ].Xbow.bolts == 5 )       {
+	} else if ( cl.h2_Effects[ index ].Xbow.bolts == 5 ) {
 		S_StartSound( origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_xbowfshoot, 1, 1 );
 	}
 
@@ -1007,7 +1007,7 @@ static void CLHW_ParseEffectXBowShoot( int index, QMsg& message ) {
 			vec3_t forward2;
 			CLHW_ParseEffectXBowThunderbolt( index, message, i, forward2 );
 			VectorScale( forward2, 800 + clh2_random.SeedRand() * 500, cl.h2_Effects[ index ].Xbow.vel[ i ] );
-		} else   {
+		} else {
 			VectorScale( forward, 800 + clh2_random.SeedRand() * 500, cl.h2_Effects[ index ].Xbow.vel[ i ] );
 
 			vec3_t vtemp;
@@ -1024,7 +1024,7 @@ static void CLHW_ParseEffectXBowShoot( int index, QMsg& message ) {
 		}
 		if ( cl.h2_Effects[ index ].Xbow.bolts == 5 ) {
 			CLHW_InitXBowEffectEntity( index, i, "models/flaming.mdl" );
-		} else   {
+		} else {
 			CLHW_InitXBowEffectEntity( index, i, "models/arrow.mdl" );
 		}
 	}
@@ -1052,7 +1052,7 @@ static void CLHW_ParseEffectSheepinator( int index, QMsg& message ) {
 			vec3_t forward2;
 			CLHW_ParseEffectXBowThunderbolt( index, message, i, forward2 );
 			VectorScale( forward2, 700, cl.h2_Effects[ index ].Xbow.vel[ i ] );
-		} else   {
+		} else {
 			VectorCopy( origin, cl.h2_Effects[ index ].Xbow.origin[ i ] );
 			VectorScale( forward, 700, cl.h2_Effects[ index ].Xbow.vel[ i ] );
 			vec3_t vtemp;
@@ -1641,7 +1641,7 @@ void CLH2_ParseEffect( QMsg& message ) {
 	bool ImmediateFree;
 	if ( !( GGameType & GAME_HexenWorld ) ) {
 		ImmediateFree = CLH2_ParseEffectType( index, message );
-	} else   {
+	} else {
 		ImmediateFree = CLHW_ParseEffectType( index, message );
 	}
 
@@ -1729,7 +1729,7 @@ static void CLHW_ParseReviseEffectScarabChain( QMsg& message, int index ) {
 			effect_entity_t* ent = &EffectEntities[ cl.h2_Effects[ index ].Chain.ent1 ];
 			CLHW_XbowImpactPuff( ent->state.origin, cl.h2_Effects[ index ].Chain.material );
 		}
-	} else   {
+	} else {
 		cl.h2_Effects[ index ].Chain.state = 2;
 	}
 }
@@ -1800,7 +1800,7 @@ static void CLHW_ParseReviseEffectXBowShoot( QMsg& message, int index ) {
 
 			if ( takedamage ) {
 				cl.h2_Effects[ index ].Xbow.gonetime[ curEnt ] = cl.serverTime / 1000.0;
-			} else   {
+			} else {
 				cl.h2_Effects[ index ].Xbow.gonetime[ curEnt ] += cl.serverTime / 1000.0;
 			}
 
@@ -1828,7 +1828,7 @@ static void CLHW_ParseReviseEffectXBowShoot( QMsg& message, int index ) {
 
 			CLHW_XbowImpact( ent->state.origin, forward, material, takedamage, cl.h2_Effects[ index ].Xbow.bolts );
 		}
-	} else   {
+	} else {
 		CLHW_ParseReviseEffectXBowDirectionChange( message, index, revisionCode, curEnt );
 	}
 }
@@ -1850,7 +1850,7 @@ static void CLHW_ParseReviseEffectSheepinator( QMsg& message, int index ) {
 			VectorAdd( cl.h2_Effects[ index ].Xbow.origin[ curEnt ],forward,ent->state.origin );
 			CLH2_ColouredParticleExplosion( ent->state.origin,( rand() % 16 ) + 144	/*(144,159)*/,20,30 );
 		}
-	} else   {
+	} else {
 		CLHW_ParseReviseEffectXBowDirectionChange( message, index, revisionCode, curEnt );
 	}
 }
@@ -1879,7 +1879,7 @@ static void CLHW_ParseReviseEffectDrilla( QMsg& message, int index ) {
 		VectorScale( forward, 36, forward );
 		VectorAdd( forward, pos, pos );
 		CLHW_XbowImpactPuff( pos, material );
-	} else   {	//turn
+	} else {	//turn
 		vec3_t angles;
 		CLHW_ParseDirectionChangeAngles( message, angles );
 
@@ -1920,7 +1920,7 @@ static void CLHW_SkipReviseEffectXBowShoot( QMsg& message ) {
 	int revisionCode = message.ReadByte();
 	if ( revisionCode & 1 ) {	//impact effect:
 		message.ReadCoord();
-	} else   {
+	} else {
 		message.ReadAngle();
 		message.ReadAngle();
 		if ( revisionCode & 128 ) {	//new origin
@@ -1935,7 +1935,7 @@ static void CLHW_SkipReviseEffectSheepinator( QMsg& message ) {
 	int revisionCode = message.ReadByte();
 	if ( revisionCode & 1 ) {	//impact
 		message.ReadCoord();
-	} else   {	//direction change
+	} else {	//direction change
 		message.ReadAngle();
 		message.ReadAngle();
 		if ( revisionCode & 128 ) {	//new origin
@@ -1953,7 +1953,7 @@ static void CLHW_SkipReviseEffectDrilla( QMsg& message ) {
 		message.ReadCoord();
 		message.ReadCoord();
 		message.ReadByte();
-	} else   {	//turn
+	} else {	//turn
 		message.ReadAngle();
 		message.ReadAngle();
 		message.ReadCoord();
@@ -1988,7 +1988,7 @@ void CLHW_ParseReviseEffect( QMsg& message ) {
 
 	if ( cl.h2_Effects[ index ].type == type ) {
 		CLHW_ParseReviseEffectType( message, index );
-	} else   {
+	} else {
 		CLHW_SkipReviseEffectType( message, type );
 	}
 }
@@ -2236,7 +2236,7 @@ static void CLHW_UpdateEffectRipple( int index, float frametime ) {
 
 	if ( ent->state.frame >= 10 ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_LinkEffectEntity( ent );
 	}
 }
@@ -2253,7 +2253,7 @@ static void CLH2_UpdateEffectExplosionCommon( int index, float frametime, float 
 
 	if ( ent->state.frame >= R_ModelNumFrames( ent->model ) ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_LinkEffectEntity( ent );
 	}
 }
@@ -2270,13 +2270,13 @@ static void CLH2_UpdateEffectLShock( int index ) {
 	effect_entity_t* ent = &EffectEntities[ cl.h2_Effects[ index ].Smoke.entity_index ];
 	if ( ent->state.skinnum == 0 ) {
 		ent->state.skinnum = 1;
-	} else if ( ent->state.skinnum == 1 )     {
+	} else if ( ent->state.skinnum == 1 ) {
 		ent->state.skinnum = 0;
 	}
 	ent->state.scale -= 10;
 	if ( ent->state.scale <= 10 ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_LinkEffectEntity( ent );
 	}
 }
@@ -2291,10 +2291,10 @@ static void CLH2_UpdateEffectFlash( int index, float frametime ) {
 			if ( ent->state.frame >= R_ModelNumFrames( ent->model ) - 1 ) {	// Ran through forward animation
 				cl.h2_Effects[ index ].Flash.reverse = 1;
 				ent->state.frame--;
-			} else   {
+			} else {
 				ent->state.frame++;
 			}
-		} else   {
+		} else {
 			ent->state.frame--;
 		}
 		cl.h2_Effects[ index ].Flash.time_amount -= HX_FRAME_TIME;
@@ -2302,7 +2302,7 @@ static void CLH2_UpdateEffectFlash( int index, float frametime ) {
 
 	if ( ent->state.frame <= 0 && cl.h2_Effects[ index ].Flash.reverse ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_LinkEffectEntity( ent );
 	}
 }
@@ -2320,7 +2320,7 @@ static void CLH2_UpdateEffectGravityWell( int index, float frametime ) {
 
 	if ( cl.h2_Effects[ index ].GravityWell.lifetime < cl.serverTime * 0.001 ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_GravityWellParticle( rand() % 8, org, cl.h2_Effects[ index ].GravityWell.color );
 	}
 }
@@ -2367,7 +2367,7 @@ static void CLH2_UpdateEffectTeleporterBody( int index, float frametime ) {
 
 	if ( ent->state.scale <= 10 ) {
 		CLH2_FreeEffect( index );
-	} else   {
+	} else {
 		CLH2_LinkEffectEntity( ent );
 	}
 }
@@ -2447,12 +2447,12 @@ static void CLHW_UpdateEffectXBowShot( int index, float frametime ) {
 			ent->state.origin[ 2 ] += frametime * cl.h2_Effects[ index ].Xbow.vel[ i ][ 2 ];
 
 			CLH2_LinkEffectEntity( ent );
-		} else if ( cl.h2_Effects[ index ].Xbow.bolts == 5 )       {//fiery bolts don't just go away
+		} else if ( cl.h2_Effects[ index ].Xbow.bolts == 5 ) {//fiery bolts don't just go away
 			if ( cl.h2_Effects[ index ].Xbow.state[ i ] == 0 ) {//waiting to explode state
 				if ( cl.h2_Effects[ index ].Xbow.gonetime[ i ] > cl.serverTime * 0.001 ) {	//fiery bolts stick around for a while
 					effect_entity_t* ent = &EffectEntities[ cl.h2_Effects[ index ].Xbow.ent[ i ] ];
 					CLH2_LinkEffectEntity( ent );
-				} else   {	//when time's up on fiery guys, they explode
+				} else {	//when time's up on fiery guys, they explode
 							//set state to exploding
 					cl.h2_Effects[ index ].Xbow.state[ i ] = 1;
 
@@ -2475,7 +2475,7 @@ static void CLHW_UpdateEffectXBowShot( int index, float frametime ) {
 
 					CLH2_LinkEffectEntity( ent );
 				}
-			} else if ( cl.h2_Effects[ index ].Xbow.state[ i ] == 1 )         {	//fiery bolt exploding state
+			} else if ( cl.h2_Effects[ index ].Xbow.state[ i ] == 1 ) {	//fiery bolt exploding state
 				effect_entity_t* ent = &EffectEntities[ cl.h2_Effects[ index ].Xbow.ent[ i ] ];
 
 				//increment frame if it's time
@@ -2487,7 +2487,7 @@ static void CLHW_UpdateEffectXBowShot( int index, float frametime ) {
 
 				if ( ent->state.frame >= R_ModelNumFrames( ent->model ) ) {
 					cl.h2_Effects[ index ].Xbow.state[ i ] = 2;	//if anim is over, set me to inactive state
-				} else   {
+				} else {
 					CLH2_LinkEffectEntity( ent );
 				}
 			}
@@ -2530,7 +2530,7 @@ static void CLHW_UpdateEffectDeathBubbles( int index, float frametime ) {
 				//not in water anymore
 				CLH2_FreeEffect( index );
 				return;
-			} else   {
+			} else {
 				CLHW_SpawnDeathBubble( org );
 			}
 		}
@@ -2563,7 +2563,7 @@ static void CLHW_UpdateEffectScarabChain( int index, float frametime ) {
 				VectorCopy( es->origin, ent->state.origin );
 				ent->state.origin[ 2 ] += cl.h2_Effects[ index ].Chain.height;
 				CLHW_XbowImpactPuff( ent->state.origin, cl.h2_Effects[ index ].Chain.material );
-			} else   {
+			} else {
 				VectorScale( org, 500 * frametime, org );
 				VectorAdd( ent->state.origin, org, ent->state.origin );
 			}
@@ -2584,7 +2584,7 @@ static void CLHW_UpdateEffectScarabChain( int index, float frametime ) {
 		if ( fabs( VectorNormalize( org ) ) > 350 * frametime ) {	//closer than 30 is too close?
 			VectorScale( org, 350 * frametime, org );
 			VectorAdd( ent->state.origin, org, ent->state.origin );
-		} else   {	//done--flash & git outa here (change type to redflash)
+		} else {	//done--flash & git outa here (change type to redflash)
 			S_StartSound( ent->state.origin, CLH2_TempSoundChannel(), 1, clh2_fxsfx_scarabbyebye, 1, 1 );
 			cl.h2_Effects[ index ].Flash.entity_index = cl.h2_Effects[ index ].Chain.ent1;
 			cl.h2_Effects[ index ].type = HWCE_RED_FLASH;
@@ -2635,7 +2635,7 @@ static void CLHW_UpdateEffectEidolonStar( int index, float frametime ) {
 		if ( cl.h2_Effects[ index ].Star.scale >= 1 ) {
 			cl.h2_Effects[ index ].Star.scaleDir = 0;
 		}
-	} else   {
+	} else {
 		cl.h2_Effects[ index ].Star.scale -= 0.05;
 		if ( cl.h2_Effects[ index ].Star.scale <= 0.01 ) {
 			cl.h2_Effects[ index ].Star.scaleDir = 1;
@@ -2707,7 +2707,7 @@ static void CLH2_UpdateEffectChunk( int index, float frametime ) {
 			cl.h2_Effects[ index ].Chunk.velocity[ i ][ 2 ] = 0;
 
 			moving = false;
-		} else   {
+		} else {
 			ent->state.angles[ 0 ] += frametime * cl.h2_Effects[ index ].Chunk.avel[ i % 3 ][ 0 ];
 			ent->state.angles[ 1 ] += frametime * cl.h2_Effects[ index ].Chunk.avel[ i % 3 ][ 1 ];
 			ent->state.angles[ 2 ] += frametime * cl.h2_Effects[ index ].Chunk.avel[ i % 3 ][ 2 ];
@@ -2801,7 +2801,7 @@ static void CLH2_UpdateEffectRiderDeath( int index, float frametime ) {
 
 	if ( cl.h2_Effects[ index ].RD.stage <= 6 ) {
 		CLH2_RiderParticles( cl.h2_Effects[ index ].RD.stage + 1, org );
-	} else   {
+	} else {
 		// To set the rider's origin point for the particles
 		CLH2_RiderParticles( 0, org );
 		if ( cl.h2_Effects[ index ].RD.stage == 7 ) {
@@ -2809,7 +2809,7 @@ static void CLH2_UpdateEffectRiderDeath( int index, float frametime ) {
 			cl.qh_cshifts[ CSHIFT_BONUS ].destcolor[ 1 ] = 255;
 			cl.qh_cshifts[ CSHIFT_BONUS ].destcolor[ 2 ] = 255;
 			cl.qh_cshifts[ CSHIFT_BONUS ].percent = 256;
-		} else if ( cl.h2_Effects[ index ].RD.stage > 13 )       {
+		} else if ( cl.h2_Effects[ index ].RD.stage > 13 ) {
 			CLH2_FreeEffect( index );
 		}
 	}
@@ -3049,7 +3049,7 @@ void CLH2_UpdateEffects() {
 		}
 		if ( GGameType & GAME_HexenWorld ) {
 			CLHW_UpdateEffect( index, frametime );
-		} else   {
+		} else {
 			CLH2_UpdateEffect( index, frametime );
 		}
 	}

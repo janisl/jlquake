@@ -56,7 +56,7 @@ static void CLT3_Netchan_Encode( QMsg* msg ) {
 		}
 		if ( string[ index ] > 127 || string[ index ] == '%' ) {
 			key ^= '.' << ( i & 1 );
-		} else   {
+		} else {
 			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;
@@ -91,7 +91,7 @@ static void CLT3_Netchan_Decode( QMsg* msg ) {
 		}
 		if ( string[ index ] > 127 || string[ index ] == '%' ) {
 			key ^= '.' << ( i & 1 );
-		} else   {
+		} else {
 			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;

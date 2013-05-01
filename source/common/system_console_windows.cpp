@@ -134,7 +134,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 				if ( HIWORD( wParam ) ) {	// minimized flag
 					Cvar_Set( "viewlog", "2" );
 				}
-			} else if ( com_viewlog->integer == 2 )     {
+			} else if ( com_viewlog->integer == 2 ) {
 				if ( !HIWORD( wParam ) ) {		// minimized flag
 					Cvar_Set( "viewlog", "1" );
 				}
@@ -147,9 +147,9 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			char* cmdString = ( char* )Mem_Alloc( 5 );
 			String::Cpy( cmdString, "quit" );
 			Sys_QueEvent( 0, SE_CONSOLE, 0, 0, String::Length( cmdString ) + 1, cmdString );
-		} else if ( s_wcd.quitOnClose )     {
+		} else if ( s_wcd.quitOnClose ) {
 			PostQuitMessage( 0 );
-		} else   {
+		} else {
 			Sys_ShowConsole( 0, false );
 			Cvar_Set( "viewlog", "0" );
 		}
@@ -171,11 +171,11 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 #endif
 			return ( long )s_wcd.hbrEditBackground;
-		} else if ( ( HWND )lParam == s_wcd.hwndErrorBox )       {
+		} else if ( ( HWND )lParam == s_wcd.hwndErrorBox ) {
 			if ( s_timePolarity ) {
 				SetBkColor( ( HDC )wParam, RGB( 0x80, 0x80, 0x80 ) );
 				SetTextColor( ( HDC )wParam, RGB( 0xff, 0x0, 0x00 ) );
-			} else   {
+			} else {
 				SetBkColor( ( HDC )wParam, RGB( 0x80, 0x80, 0x80 ) );
 				SetTextColor( ( HDC )wParam, RGB( 0x00, 0x0, 0x00 ) );
 			}
@@ -187,15 +187,15 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		if ( wParam == COPY_ID ) {
 			SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 			SendMessage( s_wcd.hwndBuffer, WM_COPY, 0, 0 );
-		} else if ( wParam == QUIT_ID )     {
+		} else if ( wParam == QUIT_ID ) {
 			if ( s_wcd.quitOnClose ) {
 				PostQuitMessage( 0 );
-			} else   {
+			} else {
 				char* cmdString = ( char* )Mem_Alloc( 5 );
 				String::Cpy( cmdString, "quit" );
 				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, String::Length( cmdString ) + 1, cmdString );
 			}
-		} else if ( wParam == CLEAR_ID )     {
+		} else if ( wParam == CLEAR_ID ) {
 			SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 			SendMessage( s_wcd.hwndBuffer, EM_REPLACESEL, FALSE, ( LPARAM )"" );
 			UpdateWindow( s_wcd.hwndBuffer );
@@ -510,7 +510,7 @@ void Sys_Print( const char* pMsg ) {
 	const char* msg;
 	if ( String::Length( pMsg ) > CONSOLE_BUFFER_SIZE - 1 ) {
 		msg = pMsg + String::Length( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
-	} else   {
+	} else {
 		msg = pMsg;
 	}
 
@@ -526,17 +526,17 @@ void Sys_Print( const char* pMsg ) {
 			b[ 1 ] = '\n';
 			b += 2;
 			i++;
-		} else if ( msg[ i ] == '\r' )       {
+		} else if ( msg[ i ] == '\r' ) {
 			b[ 0 ] = '\r';
 			b[ 1 ] = '\n';
 			b += 2;
-		} else if ( msg[ i ] == '\n' )       {
+		} else if ( msg[ i ] == '\n' ) {
 			b[ 0 ] = '\r';
 			b[ 1 ] = '\n';
 			b += 2;
-		} else if ( Q_IsColorString( &msg[ i ] ) )         {
+		} else if ( Q_IsColorString( &msg[ i ] ) ) {
 			i++;
-		} else   {
+		} else {
 			*b = msg[ i ];
 			b++;
 		}
@@ -553,7 +553,7 @@ void Sys_Print( const char* pMsg ) {
 	if ( s_totalChars > CONSOLE_BUFFER_SIZE ) {
 		SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0, -1 );
 		s_totalChars = bufLen;
-	} else   {
+	} else {
 		// always append at the bottom of the textbox
 		SendMessage( s_wcd.hwndBuffer, EM_SETSEL, 0xFFFF, 0xFFFF );
 	}

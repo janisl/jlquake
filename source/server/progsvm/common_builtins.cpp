@@ -64,7 +64,7 @@ void PF_normalize() {
 	vec3_t newvalue;
 	if ( len == 0 ) {
 		newvalue[ 0 ] = newvalue[ 1 ] = newvalue[ 2 ] = 0;
-	} else   {
+	} else {
 		len = 1 / len;
 		newvalue[ 0 ] = value1[ 0 ] * len;
 		newvalue[ 1 ] = value1[ 1 ] * len;
@@ -152,7 +152,7 @@ void PF_dprintf() {
 	char temp[ 256 ];
 	if ( v == ( int )v ) {
 		String::Sprintf( temp, sizeof ( temp ), "%d",( int )v );
-	} else   {
+	} else {
 		String::Sprintf( temp, sizeof ( temp ), "%5.1f",v );
 	}
 
@@ -173,7 +173,7 @@ void PF_ftos() {
 
 	if ( v == ( int )v ) {
 		String::Sprintf( pr_string_temp, sizeof ( pr_string_temp ), "%d",( int )v );
-	} else   {
+	} else {
 		String::Sprintf( pr_string_temp, sizeof ( pr_string_temp ), "%5.1f",v );
 	}
 	G_INT( OFS_RETURN ) = PR_SetString( pr_string_temp );
@@ -210,7 +210,7 @@ void PF_rint() {
 	float f = G_FLOAT( OFS_PARM0 );
 	if ( f > 0 ) {
 		G_FLOAT( OFS_RETURN ) = ( int )( f + 0.5 );
-	} else   {
+	} else {
 		G_FLOAT( OFS_RETURN ) = ( int )( f - 0.5 );
 	}
 }
@@ -219,7 +219,7 @@ void PFH2_rint() {
 	float f = G_FLOAT( OFS_PARM0 );
 	if ( f > 0 ) {
 		G_FLOAT( OFS_RETURN ) = ( int )( f + 0.1 );
-	} else   {
+	} else {
 		G_FLOAT( OFS_RETURN ) = ( int )( f - 0.1 );
 	}
 }

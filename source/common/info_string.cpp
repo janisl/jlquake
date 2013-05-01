@@ -272,7 +272,7 @@ void Info_SetValueForKey( char* s, const char* key, const char* value,
 			}
 		}
 		*s = 0;
-	} else   {
+	} else {
 		String::Cat( newi, sizeof ( newi ), s );
 		String::Cpy( s, newi );
 	}
@@ -362,7 +362,7 @@ void Info_Print( const char* s ) {
 		if ( l < 20 ) {
 			Com_Memset( o, ' ', 20 - l );
 			key[ 20 ] = 0;
-		} else   {
+		} else {
 			*o = 0;
 		}
 		common->Printf( "%s", key );

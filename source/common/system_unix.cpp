@@ -124,7 +124,7 @@ static void Sys_ListFilteredFiles( const char* basedir, const char* subdirs, con
 
 	if ( String::Length( subdirs ) ) {
 		String::Sprintf( search, sizeof ( search ), "%s/%s", basedir, subdirs );
-	} else   {
+	} else {
 		String::Sprintf( search, sizeof ( search ), "%s", basedir );
 	}
 
@@ -142,7 +142,7 @@ static void Sys_ListFilteredFiles( const char* basedir, const char* subdirs, con
 			if ( String::ICmp( d->d_name, "." ) && String::ICmp( d->d_name, ".." ) ) {
 				if ( String::Length( subdirs ) ) {
 					String::Sprintf( newsubdirs, sizeof ( newsubdirs ), "%s/%s", subdirs, d->d_name );
-				} else   {
+				} else {
 					String::Sprintf( newsubdirs, sizeof ( newsubdirs ), "%s", d->d_name );
 				}
 				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
@@ -377,7 +377,7 @@ void Sys_DoStartProcess( const char* cmdline ) {
 	case 0:
 		if ( strchr( cmdline, ' ' ) ) {
 			system( cmdline );
-		} else   {
+		} else {
 			execl( cmdline, cmdline, NULL );
 			printf( "execl failed: %s\n", strerror( errno ) );
 		}
@@ -441,7 +441,7 @@ void Sys_Error( const char* error, ... ) {
 
 	if ( GGameType & GAME_QuakeHexen ) {
 		ComQH_HostShutdown();
-	} else   {
+	} else {
 		CL_Shutdown();
 	}
 

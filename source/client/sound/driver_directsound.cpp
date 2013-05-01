@@ -122,9 +122,9 @@ bool SNDDMA_Init() {
 
 	if ( s_khz->integer == 44 ) {
 		dma.speed = 44100;
-	} else if ( s_khz->integer == 22 )     {
+	} else if ( s_khz->integer == 22 ) {
 		dma.speed = 22050;
-	} else   {
+	} else {
 		dma.speed = 11025;
 	}
 
@@ -154,7 +154,7 @@ bool SNDDMA_Init() {
 	common->DPrintf( "...creating secondary buffer: " );
 	if ( DS_OK == pDS->CreateSoundBuffer( &dsbuf, &pDSBuf, NULL ) ) {
 		common->Printf( "locked hardware.  ok\n" );
-	} else   {
+	} else {
 		// Couldn't get hardware, fallback to software.
 		dsbuf.dwFlags = DSBCAPS_LOCSOFTWARE;
 		if ( use8 ) {
@@ -309,7 +309,7 @@ void SNDDMA_BeginPainting() {
 			common->Printf( "SNDDMA_BeginPainting: Lock failed with error '%s'\n", DSoundError( hresult ) );
 			SNDDMA_Shutdown();
 			return;
-		} else   {
+		} else {
 			pDSBuf->Restore();
 		}
 

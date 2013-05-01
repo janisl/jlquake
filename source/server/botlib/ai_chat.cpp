@@ -266,12 +266,12 @@ void BotRemoveConsoleMessage( int chatstate, int handle ) {
 		if ( m->handle == handle ) {
 			if ( m->next ) {
 				m->next->prev = m->prev;
-			} else   {
+			} else {
 				cs->lastmessage = m->prev;
 			}
 			if ( m->prev ) {
 				m->prev->next = m->next;
-			} else   {
+			} else {
 				cs->firstmessage = m->next;
 			}
 
@@ -306,7 +306,7 @@ void BotQueueConsoleMessage( int chatstate, int type, const char* message ) {
 		cs->lastmessage->next = m;
 		m->prev = cs->lastmessage;
 		cs->lastmessage = m;
-	} else   {
+	} else {
 		cs->lastmessage = m;
 		cs->firstmessage = m;
 		m->prev = NULL;
@@ -419,7 +419,7 @@ int StringContains( const char* str1, const char* str2, bool casesensitive ) {
 				if ( str1[ j ] != str2[ j ] ) {
 					break;
 				}
-			} else   {
+			} else {
 				if ( String::ToUpper( str1[ j ] ) != String::ToUpper( str2[ j ] ) ) {
 					break;
 				}
@@ -452,7 +452,7 @@ static char* StringContainsWord( char* str1, const char* str2, bool casesensitiv
 				if ( str1[ j ] != str2[ j ] ) {
 					break;
 				}
-			} else   {
+			} else {
 				if ( String::ToUpper( str1[ j ] ) != String::ToUpper( str2[ j ] ) ) {
 					break;
 				}
@@ -535,7 +535,7 @@ static bot_synonymlist_t* BotLoadSynonyms( const char* filename ) {
 					FreeSource( source );
 					return NULL;
 				}
-			} else if ( token.type == TT_PUNCTUATION )     {
+			} else if ( token.type == TT_PUNCTUATION ) {
 				if ( !String::Cmp( token.string, "}" ) ) {
 					contextlevel--;
 					if ( contextlevel < 0 ) {
@@ -544,7 +544,7 @@ static bot_synonymlist_t* BotLoadSynonyms( const char* filename ) {
 						return NULL;
 					}
 					context &= ~contextstack[ contextlevel ];
-				} else if ( !String::Cmp( token.string, "[" ) )       {
+				} else if ( !String::Cmp( token.string, "[" ) ) {
 					size += sizeof ( bot_synonymlist_t );
 					if ( pass ) {
 						syn = ( bot_synonymlist_t* )ptr;
@@ -554,7 +554,7 @@ static bot_synonymlist_t* BotLoadSynonyms( const char* filename ) {
 						syn->next = NULL;
 						if ( lastsyn ) {
 							lastsyn->next = syn;
-						} else   {
+						} else {
 							synlist = syn;
 						}
 						lastsyn = syn;
@@ -583,7 +583,7 @@ static bot_synonymlist_t* BotLoadSynonyms( const char* filename ) {
 
 							if ( lastsynonym ) {
 								lastsynonym->next = synonym;
-							} else   {
+							} else {
 								syn->firstsynonym = synonym;
 							}
 							lastsynonym = synonym;
@@ -612,7 +612,7 @@ static bot_synonymlist_t* BotLoadSynonyms( const char* filename ) {
 						FreeSource( source );
 						return NULL;
 					}
-				} else   {
+				} else {
 					SourceError( source, "unexpected %s", token.string );
 					FreeSource( source );
 					return NULL;
@@ -758,7 +758,7 @@ static int BotLoadChatMessage( source_t* source, char* chatmessagestring ) {
 				return false;
 			}
 			sprintf( &ptr[ String::Length( ptr ) ], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR );
-		} else   {
+		} else {
 			SourceError( source, "unknown message component %s\n", token.string );
 			return false;
 		}
@@ -818,7 +818,7 @@ static bot_randomlist_t* BotLoadRandomStrings( const char* filename ) {
 				//
 				if ( lastrandom ) {
 					lastrandom->next = random;
-				} else   {
+				} else {
 					randomlist = random;
 				}
 				lastrandom = random;
@@ -924,11 +924,11 @@ static bot_matchpiece_t* BotLoadMatchPieces( source_t* source, const char* endto
 			matchpiece->next = NULL;
 			if ( lastpiece ) {
 				lastpiece->next = matchpiece;
-			} else   {
+			} else {
 				firstpiece = matchpiece;
 			}
 			lastpiece = matchpiece;
-		} else if ( token.type == TT_STRING )     {
+		} else if ( token.type == TT_STRING ) {
 			bot_matchpiece_t* matchpiece = ( bot_matchpiece_t* )Mem_ClearedAlloc( sizeof ( bot_matchpiece_t ) );
 			matchpiece->firststring = NULL;
 			matchpiece->type = MT_STRING;
@@ -936,7 +936,7 @@ static bot_matchpiece_t* BotLoadMatchPieces( source_t* source, const char* endto
 			matchpiece->next = NULL;
 			if ( lastpiece ) {
 				lastpiece->next = matchpiece;
-			} else   {
+			} else {
 				firstpiece = matchpiece;
 			}
 			lastpiece = matchpiece;
@@ -962,7 +962,7 @@ static bot_matchpiece_t* BotLoadMatchPieces( source_t* source, const char* endto
 				matchstring->next = NULL;
 				if ( lastmatchstring ) {
 					lastmatchstring->next = matchstring;
-				} else   {
+				} else {
 					matchpiece->firststring = matchstring;
 				}
 				lastmatchstring = matchstring;
@@ -971,7 +971,7 @@ static bot_matchpiece_t* BotLoadMatchPieces( source_t* source, const char* endto
 			if ( !emptystring ) {
 				lastwasvariable = false;
 			}
-		} else   {
+		} else {
 			SourceError( source, "invalid token %s\n", token.string );
 			FreeSource( source );
 			BotFreeMatchPieces( firstpiece );
@@ -1041,7 +1041,7 @@ static bot_matchtemplate_t* BotLoadMatchTemplates( const char* matchfile ) {
 			//add the match template to the list
 			if ( lastmatch ) {
 				lastmatch->next = matchtemplate;
-			} else   {
+			} else {
 				matches = matchtemplate;
 			}
 			lastmatch = matchtemplate;
@@ -1107,7 +1107,7 @@ static bool StringsMatch( bot_matchpiece_t* pieces, bot_match_t* match ) {
 							newstrptr - match->variables[ lastvariable ].ptr;
 						lastvariable = -1;
 						break;
-					} else if ( index == 0 )     {
+					} else if ( index == 0 ) {
 						break;
 					}
 					newstrptr = NULL;
@@ -1209,7 +1209,7 @@ static void BotMatchVariable( bot_match_t* match, int variable, char* buf, int s
 			size = match->variables[ variable ].length + 1;
 		}
 		String::NCpyZ( buf, match->variables[ variable ].ptr, size );
-	} else   {
+	} else {
 		String::Cpy( buf, "" );
 	}
 	return;
@@ -1303,7 +1303,7 @@ static bot_stringlist_t* BotCheckChatMessageIntegrety( const char* message, bot_
 				BotImport_Print( PRT_FATAL, "BotCheckChatMessageIntegrety: message \"%s\" invalid escape char\n", message );
 				break;
 			}
-		} else   {
+		} else {
 			msgptr++;
 		}
 	}
@@ -1375,10 +1375,10 @@ static void BotCheckValidReplyChatKeySet( source_t* source, bot_replychatkey_t* 
 						hasvariableskey = true;
 					}
 				}
-			} else if ( key->flags & RCKFL_STRING )     {
+			} else if ( key->flags & RCKFL_STRING ) {
 				hasstringkey = true;
 			}
-		} else if ( ( key->flags & RCKFL_AND ) && ( key->flags & RCKFL_STRING ) )         {
+		} else if ( ( key->flags & RCKFL_AND ) && ( key->flags & RCKFL_STRING ) ) {
 			for ( bot_replychatkey_t* key2 = keys; key2; key2 = key2->next ) {
 				if ( key2 == key ) {
 					continue;
@@ -1399,7 +1399,7 @@ static void BotCheckValidReplyChatKeySet( source_t* source, bot_replychatkey_t* 
 							if ( ms ) {
 								break;
 							}
-						} else if ( m->type == MT_VARIABLE )     {
+						} else if ( m->type == MT_VARIABLE ) {
 							break;
 						}
 					}
@@ -1422,7 +1422,7 @@ static void BotCheckValidReplyChatKeySet( source_t* source, bot_replychatkey_t* 
 					if ( StringContains( key2->string, key->string, false ) != -1 ) {
 						SourceWarning( source, "the key %s with prefix ! is inside the key %s", key->string, key2->string );
 					}
-				} else if ( key2->flags & RCKFL_VARIABLES )     {
+				} else if ( key2->flags & RCKFL_VARIABLES ) {
 					for ( bot_matchpiece_t* m = key2->match; m; m = m->next ) {
 						if ( m->type == MT_STRING ) {
 							for ( bot_matchstring_t* ms = m->firststring; ms; ms = ms->next ) {
@@ -1483,26 +1483,26 @@ static bot_replychat_t* BotLoadReplyChat( const char* filename ) {
 			//check for MUST BE PRESENT and MUST BE ABSENT keys
 			if ( PC_CheckTokenString( source, "&" ) ) {
 				key->flags |= RCKFL_AND;
-			} else if ( PC_CheckTokenString( source, "!" ) )       {
+			} else if ( PC_CheckTokenString( source, "!" ) ) {
 				key->flags |= RCKFL_NOT;
 			}
 			//special keys
 			if ( PC_CheckTokenString( source, "name" ) ) {
 				key->flags |= RCKFL_NAME;
-			} else if ( PC_CheckTokenString( source, "female" ) )       {
+			} else if ( PC_CheckTokenString( source, "female" ) ) {
 				key->flags |= RCKFL_GENDERFEMALE;
-			} else if ( PC_CheckTokenString( source, "male" ) )       {
+			} else if ( PC_CheckTokenString( source, "male" ) ) {
 				key->flags |= RCKFL_GENDERMALE;
-			} else if ( PC_CheckTokenString( source, "it" ) )       {
+			} else if ( PC_CheckTokenString( source, "it" ) ) {
 				key->flags |= RCKFL_GENDERLESS;
-			} else if ( PC_CheckTokenString( source, "(" ) )       {//match key
+			} else if ( PC_CheckTokenString( source, "(" ) ) {//match key
 				key->flags |= RCKFL_VARIABLES;
 				key->match = BotLoadMatchPieces( source, ")" );
 				if ( !key->match ) {
 					BotFreeReplyChat( replychatlist );
 					return NULL;
 				}
-			} else if ( PC_CheckTokenString( source, "<" ) )       {//bot names
+			} else if ( PC_CheckTokenString( source, "<" ) ) {//bot names
 				key->flags |= RCKFL_BOTNAMES;
 				char namebuffer[ MAX_MESSAGE_SIZE ];
 				String::Cpy( namebuffer, "" );
@@ -1525,7 +1525,7 @@ static bot_replychat_t* BotLoadReplyChat( const char* filename ) {
 				}
 				key->string = ( char* )Mem_ClearedAlloc( String::Length( namebuffer ) + 1 );
 				String::Cpy( key->string, namebuffer );
-			} else   {	//normal string key
+			} else {	//normal string key
 				key->flags |= RCKFL_STRING;
 				if ( !PC_ExpectTokenType( source, TT_STRING, 0, &token ) ) {
 					BotFreeReplyChat( replychatlist );
@@ -1693,7 +1693,7 @@ static bot_chat_t* BotLoadInitialChat( const char* chatfile, const char* chatnam
 							size += sizeof ( bot_chatmessage_t ) + String::Length( chatmessagestring ) + 1;
 						}
 					}
-				} else   {	//skip the bot chat
+				} else {	//skip the bot chat
 					int indent = 1;
 					while ( indent ) {
 						if ( !PC_ExpectAnyToken( source, &token ) ) {
@@ -1702,12 +1702,12 @@ static bot_chat_t* BotLoadInitialChat( const char* chatfile, const char* chatnam
 						}
 						if ( !String::Cmp( token.string, "{" ) ) {
 							indent++;
-						} else if ( !String::Cmp( token.string, "}" ) )       {
+						} else if ( !String::Cmp( token.string, "}" ) ) {
 							indent--;
 						}
 					}
 				}
-			} else   {
+			} else {
 				SourceError( source, "unknown definition %s\n", token.string );
 				FreeSource( source );
 				return NULL;
@@ -1840,7 +1840,7 @@ static bool BotExpandChatMessage( char* outmessage, const char* message, unsigne
 					if ( reply ) {
 						//replace the reply synonyms in the variables
 						BotReplaceReplySynonyms( temp, vcontext );
-					} else   {
+					} else {
 						//replace synonyms in the variable context
 						BotReplaceSynonyms( temp, vcontext );
 					}
@@ -1886,7 +1886,7 @@ static bool BotExpandChatMessage( char* outmessage, const char* message, unsigne
 				BotImport_Print( PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message );
 				break;
 			}
-		} else   {
+		} else {
 			outputbuf[ len++ ] = *msgptr++;
 			if ( len >= MAX_MESSAGE_SIZE ) {
 				BotImport_Print( PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message );
@@ -1943,7 +1943,7 @@ static const char* BotChooseInitialChatMessage( bot_chatstate_t* cs, const char*
 				if ( bestchatmessage ) {
 					return bestchatmessage->chatmessage;
 				}
-			} else   {	//choose a chat message randomly
+			} else {	//choose a chat message randomly
 				int n = random() * numchatmessages;
 				for ( bot_chatmessage_t* m = t->firstchatmessage; m; m = m->next ) {
 					if ( m->time > AAS_Time() ) {
@@ -2060,17 +2060,17 @@ bool BotReplyChat( int chatstate, const char* message, int mcontext, int vcontex
 			//get the match result
 			if ( key->flags & RCKFL_NAME ) {
 				res = ( StringContains( message, cs->name, false ) != -1 );
-			} else if ( key->flags & RCKFL_BOTNAMES )     {
+			} else if ( key->flags & RCKFL_BOTNAMES ) {
 				res = ( StringContains( key->string, cs->name, false ) != -1 );
-			} else if ( key->flags & RCKFL_GENDERFEMALE )     {
+			} else if ( key->flags & RCKFL_GENDERFEMALE ) {
 				res = ( cs->gender == CHAT_GENDERFEMALE );
-			} else if ( key->flags & RCKFL_GENDERMALE )     {
+			} else if ( key->flags & RCKFL_GENDERMALE ) {
 				res = ( cs->gender == CHAT_GENDERMALE );
-			} else if ( key->flags & RCKFL_GENDERLESS )     {
+			} else if ( key->flags & RCKFL_GENDERLESS ) {
 				res = ( cs->gender == CHAT_GENDERLESS );
-			} else if ( key->flags & RCKFL_VARIABLES )     {
+			} else if ( key->flags & RCKFL_VARIABLES ) {
 				res = StringsMatch( key->match, &match );
-			} else if ( key->flags & RCKFL_STRING )     {
+			} else if ( key->flags & RCKFL_STRING ) {
 				res = ( StringContainsWord( const_cast<char*>( message ), key->string, false ) != NULL );
 			}
 			//if the key must be present
@@ -2086,7 +2086,7 @@ bool BotReplyChat( int chatstate, const char* message, int mcontext, int vcontex
 					found = false;
 					break;
 				}
-			} else if ( res )     {
+			} else if ( res ) {
 				found = true;
 			}
 		}
@@ -2159,7 +2159,7 @@ bool BotReplyChat( int chatstate, const char* message, int mcontext, int vcontex
 				BotRemoveTildes( cs->chatmessage );
 				BotImport_Print( PRT_MESSAGE, "%s\n", cs->chatmessage );
 			}
-		} else   {
+		} else {
 			bestchatmessage->time = AAS_Time() + CHATMESSAGE_RECENTTIME;
 			BotConstructChatMessage( cs, bestchatmessage->chatmessage, mcontext, bestmatch.variables, vcontext, true );
 		}
@@ -2240,7 +2240,7 @@ void BotFreeChatState( int handle ) {
 			//remove the console message
 			BotRemoveConsoleMessage( handle, h );
 		}
-	} else   {
+	} else {
 		bot_consolemessage_wolf_t m;
 		for ( int h = BotNextConsoleMessageWolf( handle, &m ); h; h = BotNextConsoleMessageWolf( handle, &m ) ) {
 			//remove the console message
@@ -2329,7 +2329,7 @@ void BotEnterChatQ3( int chatstate, int clientto, int sendto ) {
 		BotRemoveTildes( cs->chatmessage );
 		if ( LibVarGetValue( "bot_testichat" ) ) {
 			BotImport_Print( PRT_MESSAGE, "%s\n", cs->chatmessage );
-		} else   {
+		} else {
 			switch ( sendto ) {
 			case CHAT_TEAM:
 				EA_Command( cs->client, va( "say_team %s", cs->chatmessage ) );
@@ -2357,10 +2357,10 @@ void BotEnterChatWolf( int chatstate, int client, int sendto ) {
 		BotRemoveTildes( cs->chatmessage );
 		if ( LibVarGetValue( "bot_testichat" ) ) {
 			BotImport_Print( PRT_MESSAGE, "%s\n", cs->chatmessage );
-		} else   {
+		} else {
 			if ( sendto == CHAT_TEAM ) {
 				EA_SayTeam( client, cs->chatmessage );
-			} else   {
+			} else {
 				EA_Say( client, cs->chatmessage );
 			}
 		}

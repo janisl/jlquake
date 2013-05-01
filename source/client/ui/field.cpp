@@ -161,7 +161,7 @@ void Field_CharEvent( field_t* edit, int ch ) {
 		}
 		edit->buffer[ edit->cursor ] = ch;
 		edit->cursor++;
-	} else   {		// insert mode
+	} else {		// insert mode
 		if ( len == maxLen ) {
 			return;	// all full
 		}
@@ -189,7 +189,7 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 	// guarantee that cursor will be visible
 	if ( len <= drawLen ) {
 		prestep = 0;
-	} else   {
+	} else {
 		if ( edit->scroll + drawLen > len ) {
 			edit->scroll = len - drawLen;
 			if ( edit->scroll < 0 ) {
@@ -215,9 +215,9 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 	// draw it
 	if ( !( GGameType & GAME_Tech3 ) ) {
 		UI_DrawString( x, y, str );
-	} else if ( size == SMALLCHAR_WIDTH )     {
+	} else if ( size == SMALLCHAR_WIDTH ) {
 		SCR_DrawSmallString( x, y, str );
-	} else   {
+	} else {
 		// draw big string with drop shadow
 		SCR_DrawBigString( x, y, str, 1.0 );
 	}
@@ -239,12 +239,12 @@ static void Field_VariableSizeDraw( field_t* edit, int x, int y, int size, bool 
 
 		if ( size == SMALLCHAR_WIDTH ) {
 			SCR_DrawSmallChar( x + ( edit->cursor - prestep - i ) * size, y, cursorChar );
-		} else   {
+		} else {
 			str[ 0 ] = cursorChar;
 			str[ 1 ] = 0;
 			SCR_DrawBigString( x + ( edit->cursor - prestep - i ) * size, y, str, 1.0 );
 		}
-	} else   {
+	} else {
 		UI_DrawChar( x + ( edit->cursor - edit->scroll ) * 8, y, cursorChar );
 	}
 }

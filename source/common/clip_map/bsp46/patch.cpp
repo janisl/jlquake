@@ -127,7 +127,7 @@ void cGrid_t::SetWrapWidth() {
 	}
 	if ( i == height ) {
 		wrapWidth = true;
-	} else   {
+	} else {
 		wrapWidth = false;
 	}
 }
@@ -324,13 +324,13 @@ void cGrid_t::Transpose() {
 					VectorCopy( points[ i ][ j ], temp );
 					VectorCopy( points[ j ][ i ], points[ i ][ j ] );
 					VectorCopy( temp, points[ j ][ i ] );
-				} else   {
+				} else {
 					// just copy
 					VectorCopy( points[ j ][ i ], points[ i ][ j ] );
 				}
 			}
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < width; i++ ) {
 			for ( int j = i + 1; j < height; j++ ) {
 				if ( j < width ) {
@@ -339,7 +339,7 @@ void cGrid_t::Transpose() {
 					VectorCopy( points[ j ][ i ], temp );
 					VectorCopy( points[ i ][ j ], points[ j ][ i ] );
 					VectorCopy( temp, points[ i ][ j ] );
-				} else   {
+				} else {
 					// just copy
 					VectorCopy( points[ i ][ j ], points[ j ][ i ] );
 				}
@@ -482,7 +482,7 @@ void patchCollide_t::FromGrid( cGrid_t* grid ) {
 			borders[ EN_TOP ] = -1;
 			if ( j > 0 ) {
 				borders[ EN_TOP ] = gridPlanes[ i ][ j - 1 ][ 1 ];
-			} else if ( grid->wrapHeight )     {
+			} else if ( grid->wrapHeight ) {
 				borders[ EN_TOP ] = gridPlanes[ i ][ grid->height - 2 ][ 1 ];
 			}
 			noAdjust[ EN_TOP ] = ( borders[ EN_TOP ] == gridPlanes[ i ][ j ][ 0 ] );
@@ -493,7 +493,7 @@ void patchCollide_t::FromGrid( cGrid_t* grid ) {
 			borders[ EN_BOTTOM ] = -1;
 			if ( j < grid->height - 2 ) {
 				borders[ EN_BOTTOM ] = gridPlanes[ i ][ j + 1 ][ 0 ];
-			} else if ( grid->wrapHeight )     {
+			} else if ( grid->wrapHeight ) {
 				borders[ EN_BOTTOM ] = gridPlanes[ i ][ 0 ][ 0 ];
 			}
 			noAdjust[ EN_BOTTOM ] = ( borders[ EN_BOTTOM ] == gridPlanes[ i ][ j ][ 1 ] );
@@ -504,7 +504,7 @@ void patchCollide_t::FromGrid( cGrid_t* grid ) {
 			borders[ EN_LEFT ] = -1;
 			if ( i > 0 ) {
 				borders[ EN_LEFT ] = gridPlanes[ i - 1 ][ j ][ 0 ];
-			} else if ( grid->wrapWidth )     {
+			} else if ( grid->wrapWidth ) {
 				borders[ EN_LEFT ] = gridPlanes[ grid->width - 2 ][ j ][ 0 ];
 			}
 			noAdjust[ EN_LEFT ] = ( borders[ EN_LEFT ] == gridPlanes[ i ][ j ][ 1 ] );
@@ -515,7 +515,7 @@ void patchCollide_t::FromGrid( cGrid_t* grid ) {
 			borders[ EN_RIGHT ] = -1;
 			if ( i < grid->width - 2 ) {
 				borders[ EN_RIGHT ] = gridPlanes[ i + 1 ][ j ][ 1 ];
-			} else if ( grid->wrapWidth )     {
+			} else if ( grid->wrapWidth ) {
 				borders[ EN_RIGHT ] = gridPlanes[ 0 ][ j ][ 1 ];
 			}
 			noAdjust[ EN_RIGHT ] = ( borders[ EN_RIGHT ] == gridPlanes[ i ][ j ][ 0 ] );
@@ -548,7 +548,7 @@ void patchCollide_t::FromGrid( cGrid_t* grid ) {
 					AddFacetBevels( facet );
 					cm_patch_numFacets++;
 				}
-			} else   {
+			} else {
 				// two seperate triangles
 				facet->surfacePlane = gridPlanes[ i ][ j ][ 0 ];
 				facet->numBorders = 3;
@@ -805,12 +805,12 @@ void patchCollide_t::SetBorderInward( facet_t* facet, cGrid_t* grid,
 
 		if ( front && !back ) {
 			facet->borderInward[ k ] = true;
-		} else if ( back && !front )     {
+		} else if ( back && !front ) {
 			facet->borderInward[ k ] = false;
-		} else if ( !front && !back )     {
+		} else if ( !front && !back ) {
 			// flat side border
 			facet->borderPlanes[ k ] = -1;
-		} else   {
+		} else {
 			// bisecting side border
 			common->DPrintf( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
 			facet->borderInward[ k ] = false;
@@ -942,7 +942,7 @@ void patchCollide_t::AddFacetBevels( facet_t* facet ) {
 			plane[ axis ] = dir;
 			if ( dir == 1 ) {
 				plane[ 3 ] = maxs[ axis ];
-			} else   {
+			} else {
 				plane[ 3 ] = -mins[ axis ];
 			}
 			//if it's the surface plane
@@ -958,12 +958,12 @@ void patchCollide_t::AddFacetBevels( facet_t* facet ) {
 						if ( cm_patch_planes[ facet->borderPlanes[ i ] ].plane[ axis ] >= 0.9999f ) {
 							break;
 						}
-					} else   {
+					} else {
 						if ( cm_patch_planes[ facet->borderPlanes[ i ] ].plane[ axis ] <= -0.9999f ) {
 							break;
 						}
 					}
-				} else   {
+				} else {
 					if ( PlaneEqual( &cm_patch_planes[ facet->borderPlanes[ i ] ], plane, &flipped ) ) {
 						break;
 					}
@@ -1079,7 +1079,7 @@ void patchCollide_t::AddFacetBevels( facet_t* facet ) {
 					if ( !w2 ) {
 						common->DPrintf( "WARNING: CM_AddFacetBevels... invalid bevel\n" );
 						continue;
-					} else   {
+					} else {
 						CM46_FreeWinding( w2 );
 					}
 					//
@@ -1222,11 +1222,11 @@ void patchCollide_t::TraceThrough( traceWork_t* tw ) const {
 			if ( t > 0.0f ) {
 				VectorSubtract( tw->start, tw->sphere.offset, startp );
 				VectorSubtract( tw->end, tw->sphere.offset, endp );
-			} else   {
+			} else {
 				VectorAdd( tw->start, tw->sphere.offset, startp );
 				VectorAdd( tw->end, tw->sphere.offset, endp );
 			}
-		} else   {
+		} else {
 			float offset = DotProduct( tw->offsets[ planes->signbits ], plane );
 			plane[ 3 ] -= offset;
 			VectorCopy( tw->start, startp );
@@ -1247,7 +1247,7 @@ void patchCollide_t::TraceThrough( traceWork_t* tw ) const {
 			if ( facet->borderInward[ j ] ) {
 				VectorNegate( planes->plane, plane );
 				plane[ 3 ] = -planes->plane[ 3 ];
-			} else   {
+			} else {
 				VectorCopy( planes->plane, plane );
 				plane[ 3 ] = planes->plane[ 3 ];
 			}
@@ -1260,11 +1260,11 @@ void patchCollide_t::TraceThrough( traceWork_t* tw ) const {
 				if ( t > 0.0f ) {
 					VectorSubtract( tw->start, tw->sphere.offset, startp );
 					VectorSubtract( tw->end, tw->sphere.offset, endp );
-				} else   {
+				} else {
 					VectorAdd( tw->start, tw->sphere.offset, startp );
 					VectorAdd( tw->end, tw->sphere.offset, endp );
 				}
-			} else   {
+			} else {
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct( tw->offsets[ planes->signbits ], plane );
 				plane[ 3 ] += idMath::Fabs( offset );
@@ -1325,7 +1325,7 @@ void patchCollide_t::TracePointThrough( traceWork_t* tw ) const {
 			// FIXME: until I get player sized clipping working right
 			return;
 		}
-	} else   {
+	} else {
 		if ( !cm_playerCurveClip->integer || !tw->isPoint ) {
 			return;
 		}
@@ -1341,12 +1341,12 @@ void patchCollide_t::TracePointThrough( traceWork_t* tw ) const {
 		float d2 = DotProduct( tw->end, planes->plane ) - planes->plane[ 3 ] + offset;
 		if ( d1 <= 0 ) {
 			frontFacing[ i ] = false;
-		} else   {
+		} else {
 			frontFacing[ i ] = true;
 		}
 		if ( d1 == d2 ) {
 			intersection[ i ] = 99999;
-		} else   {
+		} else {
 			intersection[ i ] = d1 / ( d1 - d2 );
 			if ( intersection[ i ] <= 0 ) {
 				intersection[ i ] = 99999;
@@ -1375,7 +1375,7 @@ void patchCollide_t::TracePointThrough( traceWork_t* tw ) const {
 				if ( intersection[ k ] > intersect ) {
 					break;
 				}
-			} else   {
+			} else {
 				if ( intersection[ k ] < intersect ) {
 					break;
 				}
@@ -1443,7 +1443,7 @@ int patchCollide_t::CheckFacetPlane( float* plane, vec3_t start, vec3_t end,
 			*enterFrac = f;
 			*hit = true;
 		}
-	} else   {
+	} else {
 		// leave
 		float f = ( d1 + SURFACE_CLIP_EPSILON ) / ( d1 - d2 );
 		if ( f > 1 ) {
@@ -1494,10 +1494,10 @@ bool patchCollide_t::PositionTest( traceWork_t* tw ) const {
 			float t = DotProduct( plane, tw->sphere.offset );
 			if ( t > 0 ) {
 				VectorSubtract( tw->start, tw->sphere.offset, startp );
-			} else   {
+			} else {
 				VectorAdd( tw->start, tw->sphere.offset, startp );
 			}
-		} else   {
+		} else {
 			float offset = DotProduct( tw->offsets[ planes->signbits ], plane );
 			plane[ 3 ] -= offset;
 			VectorCopy( tw->start, startp );
@@ -1513,7 +1513,7 @@ bool patchCollide_t::PositionTest( traceWork_t* tw ) const {
 			if ( facet->borderInward[ j ] ) {
 				VectorNegate( planes->plane, plane );
 				plane[ 3 ] = -planes->plane[ 3 ];
-			} else   {
+			} else {
 				VectorCopy( planes->plane, plane );
 				plane[ 3 ] = planes->plane[ 3 ];
 			}
@@ -1525,10 +1525,10 @@ bool patchCollide_t::PositionTest( traceWork_t* tw ) const {
 				float t = DotProduct( plane, tw->sphere.offset );
 				if ( t > 0.0f ) {
 					VectorSubtract( tw->start, tw->sphere.offset, startp );
-				} else   {
+				} else {
 					VectorAdd( tw->start, tw->sphere.offset, startp );
 				}
-			} else   {
+			} else {
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				float offset = DotProduct( tw->offsets[ planes->signbits ], plane );
 				plane[ 3 ] += idMath::Fabs( offset );
@@ -1570,9 +1570,9 @@ bool patchCollide_t::PositionTestWolfMP( traceWork_t* tw ) const {
 		float offset = idMath::Fabs( DotProduct( tw->offsets[ planes->signbits ], planes->plane ) );
 		if ( d < -offset ) {
 			cross[ i ] = BOX_FRONT;
-		} else if ( d > offset )     {
+		} else if ( d > offset ) {
 			cross[ i ] = BOX_BACK;
-		} else   {
+		} else {
 			cross[ i ] = BOX_CROSS;
 		}
 	}
@@ -1649,7 +1649,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 			if ( k < facet->numBorders ) {
 				planenum = facet->borderPlanes[ k ];
 				inward = facet->borderInward[ k ];
-			} else   {
+			} else {
 				planenum = facet->surfacePlane;
 				inward = false;
 				//continue;
@@ -1668,7 +1668,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 			for ( n = 0; n < 3; n++ ) {
 				if ( plane[ n ] > 0 ) {
 					v1[ n ] = maxs[ n ];
-				} else   {
+				} else {
 					v1[ n ] = mins[ n ];
 				}
 			}	//end for
@@ -1682,7 +1682,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 				if ( j < facet->numBorders ) {
 					curplanenum = facet->borderPlanes[ j ];
 					curinward = facet->borderInward[ j ];
-				} else   {
+				} else {
 					curplanenum = facet->surfacePlane;
 					curinward = false;
 					//continue;
@@ -1703,7 +1703,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 				for ( n = 0; n < 3; n++ ) {
 					if ( plane[ n ] > 0 ) {
 						v1[ n ] = maxs[ n ];
-					} else   {
+					} else {
 						v1[ n ] = mins[ n ];
 					}
 				}	//end for
@@ -1716,11 +1716,11 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 				if ( facet == debugFacet ) {
 					drawPoly( 4, w->numpoints, w->p[ 0 ] );
 					//common->Printf("blue facet has %d border planes\n", facet->numBorders);
-				} else   {
+				} else {
 					drawPoly( 1, w->numpoints, w->p[ 0 ] );
 				}
 				CM46_FreeWinding( w );
-			} else   {
+			} else {
 				common->Printf( "winding chopped away by border planes\n" );
 			}
 		}

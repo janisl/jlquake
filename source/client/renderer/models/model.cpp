@@ -83,29 +83,29 @@ void R_ModelInit() {
 static void R_FreeModel( model_t* mod ) {
 	if ( mod->type == MOD_SPRITE ) {
 		Mod_FreeSpriteModel( mod );
-	} else if ( mod->type == MOD_SPRITE2 )     {
+	} else if ( mod->type == MOD_SPRITE2 ) {
 		Mod_FreeSprite2Model( mod );
-	} else if ( mod->type == MOD_MESH1 )     {
+	} else if ( mod->type == MOD_MESH1 ) {
 		Mod_FreeMdlModel( mod );
-	} else if ( mod->type == MOD_MESH2 )     {
+	} else if ( mod->type == MOD_MESH2 ) {
 		Mod_FreeMd2Model( mod );
-	} else if ( mod->type == MOD_MESH3 )     {
+	} else if ( mod->type == MOD_MESH3 ) {
 		R_FreeMd3( mod );
-	} else if ( mod->type == MOD_MD4 )     {
+	} else if ( mod->type == MOD_MD4 ) {
 		R_FreeMd4( mod );
-	} else if ( mod->type == MOD_MDC )     {
+	} else if ( mod->type == MOD_MDC ) {
 		R_FreeMdc( mod );
-	} else if ( mod->type == MOD_MDS )     {
+	} else if ( mod->type == MOD_MDS ) {
 		R_FreeMds( mod );
-	} else if ( mod->type == MOD_MDM )     {
+	} else if ( mod->type == MOD_MDM ) {
 		R_FreeMdm( mod );
-	} else if ( mod->type == MOD_MDX )     {
+	} else if ( mod->type == MOD_MDX ) {
 		R_FreeMdx( mod );
-	} else if ( mod->type == MOD_BRUSH29 )     {
+	} else if ( mod->type == MOD_BRUSH29 ) {
 		Mod_FreeBsp29( mod );
-	} else if ( mod->type == MOD_BRUSH38 )     {
+	} else if ( mod->type == MOD_BRUSH38 ) {
 		Mod_FreeBsp38( mod );
-	} else if ( mod->type == MOD_BRUSH46 )     {
+	} else if ( mod->type == MOD_BRUSH46 ) {
 		R_FreeBsp46Model( mod );
 	}
 	delete mod;
@@ -201,7 +201,7 @@ void R_LoadWorld( const char* name ) {
 				skytexturenum = i;
 			}
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		switch ( LittleLong( *( unsigned* )buffer ) ) {
 		case BSP38_HEADER:
 			Mod_LoadBrush38Model( mod, buffer );
@@ -211,7 +211,7 @@ void R_LoadWorld( const char* name ) {
 			common->Error( "Mod_NumForName: unknown fileid for %s", name );
 			break;
 		}
-	} else   {
+	} else {
 		R_LoadBrush46Model( buffer );
 	}
 
@@ -238,7 +238,7 @@ bool R_GetEntityToken( char* buffer, int size ) {
 	if ( !s_worldData.entityParsePoint || !s[ 0 ] ) {
 		s_worldData.entityParsePoint = s_worldData.entityString;
 		return false;
-	} else   {
+	} else {
 		return true;
 	}
 }
@@ -277,12 +277,12 @@ static void R_LoadModelShadow( model_t* mod ) {
 		if ( String::Length( buf ) >= MAX_QPATH ) {
 			common->Printf( "R_LoadModelShadow: Shader name exceeds MAX_QPATH\n" );
 			mod->q3_shadowShader = 0;
-		} else   {
+		} else {
 			shader_t* sh = R_FindShader( buf, LIGHTMAP_NONE, true );
 
 			if ( sh->defaultShader ) {
 				mod->q3_shadowShader = 0;
-			} else   {
+			} else {
 				mod->q3_shadowShader = sh->index;
 			}
 		}
@@ -320,7 +320,7 @@ static bool R_FindCachedModel( const char* name, model_t* newmod ) {
 						if ( ( j == MD3_MAX_LODS - 1 ) || ( ( *mod )->q3_md3[ j ] != ( *mod )->q3_md3[ j + 1 ] ) ) {
 							newmod->q3_md3[ j ] = ( *mod )->q3_md3[ j ];
 							R_RegisterMd3Shaders( newmod, j );
-						} else   {
+						} else {
 							newmod->q3_md3[ j ] = ( *mod )->q3_md3[ j + 1 ];
 						}
 					}
@@ -332,7 +332,7 @@ static bool R_FindCachedModel( const char* name, model_t* newmod ) {
 						if ( ( j == MD3_MAX_LODS - 1 ) || ( ( *mod )->q3_mdc[ j ] != ( *mod )->q3_mdc[ j + 1 ] ) ) {
 							newmod->q3_mdc[ j ] = ( *mod )->q3_mdc[ j ];
 							R_RegisterMdcShaders( newmod, j );
-						} else   {
+						} else {
 							newmod->q3_mdc[ j ] = ( *mod )->q3_mdc[ j + 1 ];
 						}
 					}
@@ -780,7 +780,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ], startFrame, tagName, startIndex, &start );
 		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ], endFrame, tagName, startIndex, &end );
 
-	} else if ( model->type == MOD_MDS )     {
+	} else if ( model->type == MOD_MDS ) {
 		// use bone lerping
 		retval = R_GetBoneTagMds( tag, model->q3_mds, startIndex, refent, tagName );
 
@@ -790,7 +790,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 
 		// failed
 		return -1;
-	} else if ( model->type == MOD_MDM )     {
+	} else if ( model->type == MOD_MDM ) {
 		// use bone lerping
 		retval = R_MDM_GetBoneTag( tag, model->q3_mdm, startIndex, refent, tagName );
 
@@ -800,7 +800,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 
 		// failed
 		return -1;
-	} else   {
+	} else {
 		// psuedo-compressed MDC tags
 		mdcTag_t* cstart;
 		mdcTag_t* cend;
@@ -823,7 +823,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 
 			start = &ustart;
 			end = &uend;
-		} else   {
+		} else {
 			start = NULL;
 			end = NULL;
 		}
@@ -941,7 +941,7 @@ void R_BackupModels() {
 			*modBack = mod;
 			modBack++;
 			numBackupModels++;
-		} else   {
+		} else {
 			R_FreeModel( mod );
 		}
 	}

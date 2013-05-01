@@ -249,7 +249,7 @@ void SbarQ1_InitImages() {
 static void SbarQ1_DrawPic( int x, int y, qhandle_t shader ) {
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawPicShader( x, y + ( viddef.height - Q1SBAR_HEIGHT ), shader );
-	} else   {
+	} else {
 		UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ), y + ( viddef.height - Q1SBAR_HEIGHT ), shader );
 	}
 }
@@ -262,7 +262,7 @@ static void SbarQ1_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int src
 static void SbarQ1_DrawCharacter( int x, int y, int num ) {
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawChar( x + 4, y + viddef.height - Q1SBAR_HEIGHT, num );
-	} else   {
+	} else {
 		UI_DrawChar( x + ( ( viddef.width - 320 ) >> 1 ) + 4, y + viddef.height - Q1SBAR_HEIGHT, num );
 	}
 }
@@ -270,7 +270,7 @@ static void SbarQ1_DrawCharacter( int x, int y, int num ) {
 static void SbarQ1_DrawString( int x, int y, const char* str ) {
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawString( x, y + viddef.height - Q1SBAR_HEIGHT, str );
-	} else   {
+	} else {
 		UI_DrawString( x + ( ( viddef.width - 320 ) >> 1 ), y + viddef.height - Q1SBAR_HEIGHT, str );
 	}
 }
@@ -314,7 +314,7 @@ static void SbarQ1_DrawNum( int x, int y, int num, int digits, int color ) {
 		int frame;
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
-		} else   {
+		} else {
 			frame = *ptr - '0';
 		}
 
@@ -453,10 +453,10 @@ static void SbarQ1_DrawInventory() {
 			if ( flashon >= 10 ) {
 				if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] == ( Q1IT_SHOTGUN << i ) ) {
 					flashon = 1;
-				} else   {
+				} else {
 					flashon = 0;
 				}
-			} else   {
+			} else {
 				flashon = ( flashon % 5 ) + 2;
 			}
 
@@ -464,7 +464,7 @@ static void SbarQ1_DrawInventory() {
 				if ( i || viddef.height > 200 ) {
 					SbarQ1_DrawSubPic( ( hudswap ) ? 0 : ( viddef.width - 24 ),-68 - ( 7 - i ) * 16, sbq1_weapons[ flashon ][ i ],0,0,24,16 );
 				}
-			} else   {
+			} else {
 				SbarQ1_DrawPic( i * 24, -16, sbq1_weapons[ flashon ][ i ] );
 			}
 		}
@@ -481,10 +481,10 @@ static void SbarQ1_DrawInventory() {
 				if ( flashon >= 10 ) {
 					if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] == ( 1 << hipweapons[ i ] ) ) {
 						flashon = 1;
-					} else   {
+					} else {
 						flashon = 0;
 					}
-				} else   {
+				} else {
 					flashon = ( flashon % 5 ) + 2;
 				}
 
@@ -496,17 +496,17 @@ static void SbarQ1_DrawInventory() {
 							SbarQ1_DrawPic( 96, -16, hsbq1_weapons[ flashon ][ 2 ] );
 						}
 					}
-				} else if ( i == 3 )     {
+				} else if ( i == 3 ) {
 					if ( cl.q1_items & ( Q1IT_SHOTGUN << 4 ) ) {
 						if ( flashon && !grenadeflashing ) {
 							SbarQ1_DrawPic( 96, -16, hsbq1_weapons[ flashon ][ 3 ] );
-						} else if ( !grenadeflashing )     {
+						} else if ( !grenadeflashing ) {
 							SbarQ1_DrawPic( 96, -16, hsbq1_weapons[ 0 ][ 3 ] );
 						}
-					} else   {
+					} else {
 						SbarQ1_DrawPic( 96, -16, hsbq1_weapons[ flashon ][ 4 ] );
 					}
-				} else   {
+				} else {
 					SbarQ1_DrawPic( 176 + ( i * 24 ), -16, hsbq1_weapons[ flashon ][ i ] );
 				}
 			}
@@ -539,7 +539,7 @@ static void SbarQ1_DrawInventory() {
 			if ( num[ 2 ] != ' ' ) {
 				SbarQ1_DrawCharacter( ( hudswap ) ? 19 : ( viddef.width - 23 ), -24 - ( 4 - i ) * 11, 18 + num[ 2 ] - '0' );
 			}
-		} else   {
+		} else {
 			if ( num[ 0 ] != ' ' ) {
 				SbarQ1_DrawCharacter( ( 6 * i + 1 ) * 8 - 2, -24, 18 + num[ 0 ] - '0' );
 			}
@@ -579,7 +579,7 @@ static void SbarQ1_DrawInventory() {
 				SbarQ1_DrawPic( 288 + i * 16, -16, rsbq1_items[ i ] );
 			}
 		}
-	} else   {
+	} else {
 		// sigils
 		for ( int i = 0; i < 4; i++ ) {
 			if ( ( GGameType & GAME_QuakeWorld ? cl.qh_stats[ QWSTAT_ITEMS ] : cl.q1_items ) & ( 1 << ( 28 + i ) ) ) {
@@ -625,7 +625,7 @@ static void SbarQ1_DrawFrags() {
 	int xofs;
 	if ( GGameType & GAME_QuakeWorld || cl.qh_gametype == QHGAME_DEATHMATCH ) {
 		xofs = 0;
-	} else   {
+	} else {
 		xofs = ( viddef.width - 320 ) >> 1;
 	}
 	int y = viddef.height - Q1SBAR_HEIGHT - 23;
@@ -678,7 +678,7 @@ static void SbarQ1_DrawFace() {
 		int xofs;
 		if ( cl.qh_gametype == QHGAME_DEATHMATCH ) {
 			xofs = 113;
-		} else   {
+		} else {
 			xofs = ( ( viddef.width - 320 ) >> 1 ) + 113;
 		}
 
@@ -731,14 +731,14 @@ static void SbarQ1_DrawFace() {
 	int f;
 	if ( cl.qh_stats[ Q1STAT_HEALTH ] >= 100 ) {
 		f = 4;
-	} else   {
+	} else {
 		f = cl.qh_stats[ Q1STAT_HEALTH ] / 20;
 	}
 
 	int anim;
 	if ( cl.qh_serverTimeFloat <= cl.q1_faceanimtime ) {
 		anim = 1;
-	} else   {
+	} else {
 		anim = 0;
 	}
 	SbarQ1_DrawPic( 112, 0, sbq1_faces[ f ][ anim ] );
@@ -766,25 +766,25 @@ static void SbarQ1_DrawNormal() {
 	if ( items & Q1IT_INVULNERABILITY ) {
 		SbarQ1_DrawNum( 24, 0, 666, 3, 1 );
 		SbarQ1_DrawPic( 0, 0, sbq1_disc );
-	} else   {
+	} else {
 		if ( q1_rogue ) {
 			SbarQ1_DrawNum( 24, 0, cl.qh_stats[ Q1STAT_ARMOR ], 3,
 				cl.qh_stats[ Q1STAT_ARMOR ] <= 25 );
 			if ( items & Q1RIT_ARMOR3 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 2 ] );
-			} else if ( items & Q1RIT_ARMOR2 )     {
+			} else if ( items & Q1RIT_ARMOR2 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 1 ] );
-			} else if ( items & Q1RIT_ARMOR1 )     {
+			} else if ( items & Q1RIT_ARMOR1 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 0 ] );
 			}
-		} else   {
+		} else {
 			SbarQ1_DrawNum( 24, 0, cl.qh_stats[ Q1STAT_ARMOR ], 3,
 				cl.qh_stats[ Q1STAT_ARMOR ] <= 25 );
 			if ( items & Q1IT_ARMOR3 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 2 ] );
-			} else if ( items & Q1IT_ARMOR2 )     {
+			} else if ( items & Q1IT_ARMOR2 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 1 ] );
-			} else if ( items & Q1IT_ARMOR1 )     {
+			} else if ( items & Q1IT_ARMOR1 ) {
 				SbarQ1_DrawPic( 0, 0, sbq1_armor[ 0 ] );
 			}
 		}
@@ -801,27 +801,27 @@ static void SbarQ1_DrawNormal() {
 	if ( q1_rogue ) {
 		if ( items & Q1RIT_SHELLS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 0 ] );
-		} else if ( items & Q1RIT_NAILS )     {
+		} else if ( items & Q1RIT_NAILS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 1 ] );
-		} else if ( items & Q1RIT_ROCKETS )     {
+		} else if ( items & Q1RIT_ROCKETS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 2 ] );
-		} else if ( items & Q1RIT_CELLS )     {
+		} else if ( items & Q1RIT_CELLS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 3 ] );
-		} else if ( items & Q1RIT_LAVA_NAILS )     {
+		} else if ( items & Q1RIT_LAVA_NAILS ) {
 			SbarQ1_DrawPic( 224, 0, rsbq1_ammo[ 0 ] );
-		} else if ( items & Q1RIT_PLASMA_AMMO )     {
+		} else if ( items & Q1RIT_PLASMA_AMMO ) {
 			SbarQ1_DrawPic( 224, 0, rsbq1_ammo[ 1 ] );
-		} else if ( items & Q1RIT_MULTI_ROCKETS )     {
+		} else if ( items & Q1RIT_MULTI_ROCKETS ) {
 			SbarQ1_DrawPic( 224, 0, rsbq1_ammo[ 2 ] );
 		}
-	} else   {
+	} else {
 		if ( items & Q1IT_SHELLS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 0 ] );
-		} else if ( items & Q1IT_NAILS )     {
+		} else if ( items & Q1IT_NAILS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 1 ] );
-		} else if ( items & Q1IT_ROCKETS )     {
+		} else if ( items & Q1IT_ROCKETS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 2 ] );
-		} else if ( items & Q1IT_CELLS )     {
+		} else if ( items & Q1IT_CELLS ) {
 			SbarQ1_DrawPic( 224, 0, sbq1_ammo[ 3 ] );
 		}
 	}
@@ -853,9 +853,9 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	int y;
 	if ( start ) {
 		y = start;
-	} else if ( GGameType & GAME_QuakeWorld )     {
+	} else if ( GGameType & GAME_QuakeWorld ) {
 		y = 32;
-	} else   {
+	} else {
 		y = 40;
 	}
 	int x;
@@ -875,7 +875,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			UI_DrawString( x, y, "\x1d\x1e\x1e\x1f \x1d\x1f \x1d\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1f \x1d\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f" );
 			y += 8;
 		}
-	} else   {
+	} else {
 		x = 80 + ( ( viddef.width - 320 ) >> 1 );
 	}
 
@@ -906,7 +906,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			sprintf( num, "%3i", p );
 			if ( p > 25 ) {
 				UI_DrawString( x + 32, y, num, 0x80 );
-			} else   {
+			} else {
 				UI_DrawString( x + 32, y, num );
 			}
 
@@ -915,7 +915,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 				// draw name
 				if ( teamplay ) {
 					UI_DrawString( x + 152 + 40, y, s->name );
-				} else   {
+				} else {
 					UI_DrawString( x + 152, y, s->name );
 				}
 				y += skip;
@@ -926,7 +926,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 			int total;
 			if ( cl.qh_intermission ) {
 				total = cl.qh_completed_time - s->entertime;
-			} else   {
+			} else {
 				total = cls.realtime * 0.001 - s->entertime;
 			}
 			int minutes = ( int )total / 60;
@@ -941,11 +941,11 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 		if ( GGameType & GAME_QuakeWorld ) {
 			if ( sbq1_largegame ) {
 				UI_FillPal( x + 104, y + 1, 40, 3, top );
-			} else   {
+			} else {
 				UI_FillPal( x + 104, y, 40, 4, top );
 			}
 			UI_FillPal( x + 104, y + 4, 40, 4, bottom );
-		} else   {
+		} else {
 			UI_FillPal( x, y, 40, 4, top );
 			UI_FillPal( x, y + 4, 40, 4, bottom );
 		}
@@ -1035,7 +1035,7 @@ static void SbarQW_TeamOverlay() {
 		int pavg;
 		if ( !tm->players ) {
 			pavg = 999;
-		} else   {
+		} else {
 			pavg = tm->ptotal / tm->players;
 		}
 		if ( pavg < 0 || pavg > 999 ) {
@@ -1114,7 +1114,7 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 
 	if ( i == sbq1_scoreboardlines ) {	// we're not there, we are probably a spectator, just display top
 		i = 0;
-	} else   {	// figure out start
+	} else {	// figure out start
 		i = i - numlines / 2;
 	}
 
@@ -1169,7 +1169,7 @@ static void SbarQ1_MiniDeathmatchOverlay() {
 		}
 		if ( teamplay ) {
 			UI_DrawString( x + 48 + 40, y, name );
-		} else   {
+		} else {
 			UI_DrawString( x + 48, y, name );
 		}
 		y += 8;
@@ -1299,7 +1299,7 @@ static void SbarQ1_IntermissionNumber( int x, int y, int num, int digits, int co
 	while ( *ptr ) {
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
-		} else   {
+		} else {
 			frame = *ptr - '0';
 		}
 

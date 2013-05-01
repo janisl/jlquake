@@ -37,7 +37,7 @@ static worldSector_t* SV_CreateworldSector( int depth, vec3_t mins, vec3_t maxs 
 	VectorSubtract( maxs, mins, size );
 	if ( size[ 0 ] > size[ 1 ] ) {
 		anode->axis = 0;
-	} else   {
+	} else {
 		anode->axis = 1;
 	}
 

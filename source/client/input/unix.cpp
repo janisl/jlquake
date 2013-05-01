@@ -397,7 +397,7 @@ static char* XLateKey( XKeyEvent* ev, int& key ) {
 			else if ( key >= 1 && key <= 26 ) {
 				key = key + 'a' - 1;
 			}
-		} else   {
+		} else {
 			key = shiftlessbuf[ 0 ];
 		}
 		break;
@@ -514,11 +514,11 @@ static void install_grabs() {
 			// unable to query, probalby not supported, force the setting to 0
 			common->Printf( "Failed to detect XF86DGA Mouse\n" );
 			Cvar_Set( "in_dgamouse", "0" );
-		} else   {
+		} else {
 			if ( !XF86DGADirectVideo( dpy, DefaultScreen( dpy ), XF86DGADirectMouse ) ) {
 				common->Printf( "XF86DGADirectVideo failed despite advertised XF86DGAQueryVersion - broken drivers?" );
 				Cvar_Set( "in_dgamouse", "0" );
-			} else   {
+			} else {
 				XWarpPointer( dpy, None, win, 0, 0, 0, 0, 0, 0 );
 			}
 		}
@@ -563,7 +563,7 @@ void IN_ActivateMouse() {
 	if ( !mouse_active ) {
 		if ( !in_nograb->value ) {
 			install_grabs();
-		} else if ( in_dgamouse->value )     {	// force dga mouse to 0 if using nograb
+		} else if ( in_dgamouse->value ) {	// force dga mouse to 0 if using nograb
 			Cvar_Set( "in_dgamouse", "0" );
 		}
 		mouse_active = true;
@@ -578,7 +578,7 @@ void IN_DeactivateMouse() {
 	if ( mouse_active ) {
 		if ( !in_nograb->value ) {
 			uninstall_grabs();
-		} else if ( in_dgamouse->value )     {	// force dga mouse to 0 if using nograb
+		} else if ( in_dgamouse->value ) {	// force dga mouse to 0 if using nograb
 			Cvar_Set( "in_dgamouse", "0" );
 		}
 		mouse_active = false;
@@ -691,20 +691,20 @@ void Sys_SendKeyEvents() {
 			t = Sys_XTimeToSysTime( event.xkey.time );
 			if ( event.xbutton.button == 4 ) {
 				Sys_QueEvent( t, SE_KEY, K_MWHEELUP, true, 0, NULL );
-			} else if ( event.xbutton.button == 5 )     {
+			} else if ( event.xbutton.button == 5 ) {
 				Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, true, 0, NULL );
-			} else   {
+			} else {
 				// NOTE TTimo there seems to be a weird mapping for K_MOUSE1 K_MOUSE2 K_MOUSE3 ..
 				int b = -1;
 				if ( event.xbutton.button == 1 ) {
 					b = 0;	// K_MOUSE1
-				} else if ( event.xbutton.button == 2 )     {
+				} else if ( event.xbutton.button == 2 ) {
 					b = 2;	// K_MOUSE3
-				} else if ( event.xbutton.button == 3 )     {
+				} else if ( event.xbutton.button == 3 ) {
 					b = 1;	// K_MOUSE2
-				} else if ( event.xbutton.button == 6 )     {
+				} else if ( event.xbutton.button == 6 ) {
 					b = 3;	// K_MOUSE4
-				} else if ( event.xbutton.button == 7 )     {
+				} else if ( event.xbutton.button == 7 ) {
 					b = 4;	// K_MOUSE5
 				}
 				if ( b >= 0 ) {
@@ -717,19 +717,19 @@ void Sys_SendKeyEvents() {
 			t = Sys_XTimeToSysTime( event.xkey.time );
 			if ( event.xbutton.button == 4 ) {
 				Sys_QueEvent( t, SE_KEY, K_MWHEELUP, false, 0, NULL );
-			} else if ( event.xbutton.button == 5 )     {
+			} else if ( event.xbutton.button == 5 ) {
 				Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, false, 0, NULL );
-			} else   {
+			} else {
 				int b = -1;
 				if ( event.xbutton.button == 1 ) {
 					b = 0;
-				} else if ( event.xbutton.button == 2 )     {
+				} else if ( event.xbutton.button == 2 ) {
 					b = 2;
-				} else if ( event.xbutton.button == 3 )     {
+				} else if ( event.xbutton.button == 3 ) {
 					b = 1;
-				} else if ( event.xbutton.button == 6 )     {
+				} else if ( event.xbutton.button == 6 ) {
 					b = 3;	// K_MOUSE4
-				} else if ( event.xbutton.button == 7 )     {
+				} else if ( event.xbutton.button == 7 ) {
 					b = 4;	// K_MOUSE5
 				}
 				if ( b >= 0 ) {
@@ -745,15 +745,15 @@ void Sys_SendKeyEvents() {
 					if ( in_dgamouse->value >= 2 ) {
 						mx += event.xmotion.x_root;
 						my += event.xmotion.y_root;
-					} else   {
+					} else {
 						if ( abs( event.xmotion.x_root ) > 1 ) {
 							mx += event.xmotion.x_root * 2;
-						} else   {
+						} else {
 							mx += event.xmotion.x_root;
 						}
 						if ( abs( event.xmotion.y_root ) > 1 ) {
 							my += event.xmotion.y_root * 2;
-						} else   {
+						} else {
 							my += event.xmotion.y_root;
 						}
 					}
@@ -762,7 +762,7 @@ void Sys_SendKeyEvents() {
 					}
 					mx = 0;
 					my = 0;
-				} else   {
+				} else {
 					// If it's a center motion, we've just returned from our warp
 					if ( event.xmotion.x == glConfig.vidWidth / 2 &&
 						 event.xmotion.y == glConfig.vidHeight / 2 ) {
@@ -779,12 +779,12 @@ void Sys_SendKeyEvents() {
 					int dy = ( ( int )event.xmotion.y - mwy );
 					if ( abs( dx ) > 1 ) {
 						mx += dx * 2;
-					} else   {
+					} else {
 						mx += dx;
 					}
 					if ( abs( dy ) > 1 ) {
 						my += dy * 2;
-					} else   {
+					} else {
 						my += dy;
 					}
 
@@ -896,12 +896,12 @@ static void IN_JoyMove() {
 
 		if ( event.type & JS_EVENT_BUTTON ) {
 			Sys_QueEvent( 0, SE_KEY, K_JOY1 + event.number, event.value, 0, NULL );
-		} else if ( event.type & JS_EVENT_AXIS )     {
+		} else if ( event.type & JS_EVENT_AXIS ) {
 			if ( event.number >= 16 ) {
 				continue;
 			}
 			axes_state[ event.number ] = event.value;
-		} else   {
+		} else {
 			common->Printf( "Unknown joystick event type\n" );
 		}
 
@@ -914,7 +914,7 @@ static void IN_JoyMove() {
 
 		if ( f < -joy_threshold->value ) {
 			axes |= ( 1 << ( i * 2 ) );
-		} else if ( f > joy_threshold->value )     {
+		} else if ( f > joy_threshold->value ) {
 			axes |= ( 1 << ( ( i * 2 ) + 1 ) );
 		}
 	}
@@ -979,7 +979,7 @@ void IN_Init() {
 
 	if ( in_mouse->value ) {
 		mouse_avail = true;
-	} else   {
+	} else {
 		mouse_avail = false;
 	}
 

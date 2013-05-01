@@ -119,7 +119,7 @@ static Cvar* Cvar_Set2( const char* var_name, const char* value, bool force ) {
 		// create it
 		if ( !force ) {
 			return Cvar_Get( var_name, value, CVAR_USER_CREATED );
-		} else   {
+		} else {
 			return Cvar_Get( var_name, value, 0 );
 		}
 	}
@@ -178,7 +178,7 @@ static Cvar* Cvar_Set2( const char* var_name, const char* value, bool force ) {
 					return var;
 				}
 				Mem_Free( var->latchedString );
-			} else   {
+			} else {
 				if ( String::Cmp( value, var->string ) == 0 ) {
 					return var;
 				}
@@ -190,7 +190,7 @@ static Cvar* Cvar_Set2( const char* var_name, const char* value, bool force ) {
 			var->modificationCount++;
 			return var;
 		}
-	} else   {
+	} else {
 		if ( var->latchedString ) {
 			Mem_Free( var->latchedString );
 			var->latchedString = NULL;
@@ -228,7 +228,7 @@ void Cvar_SetValue( const char* var_name, float value ) {
 
 	if ( value == ( int )value ) {
 		String::Sprintf( val, sizeof ( val ), "%i", ( int )value );
-	} else   {
+	} else {
 		String::Sprintf( val, sizeof ( val ), "%f", value );
 	}
 	Cvar_Set( var_name, val );
@@ -239,7 +239,7 @@ void Cvar_SetValueLatched( const char* var_name, float value ) {
 
 	if ( value == ( int )value ) {
 		String::Sprintf( val, sizeof ( val ), "%i", ( int )value );
-	} else   {
+	} else {
 		String::Sprintf( val, sizeof ( val ), "%f", value );
 	}
 	Cvar_SetLatched( var_name, val );
@@ -284,7 +284,7 @@ Cvar* Cvar_Get( const char* VarName, const char* VarValue, int Flags ) {
 			// we don't have a reset string yet
 			Mem_Free( var->resetString );
 			var->resetString = __CopyString( VarValue );
-		} else if ( VarValue[ 0 ] && String::Cmp( var->resetString, VarValue ) )         {
+		} else if ( VarValue[ 0 ] && String::Cmp( var->resetString, VarValue ) ) {
 			common->DPrintf( "Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				VarName, var->resetString, VarValue );
 		}
@@ -391,7 +391,7 @@ void Cvar_VariableStringBuffer( const char* var_name, char* buffer, int bufsize 
 	Cvar* var = Cvar_FindVar( var_name );
 	if ( !var ) {
 		*buffer = 0;
-	} else   {
+	} else {
 		String::NCpyZ( buffer, var->string, bufsize );
 	}
 }
@@ -400,10 +400,10 @@ void Cvar_LatchedVariableStringBuffer( const char* var_name, char* buffer, int b
 	Cvar* var = Cvar_FindVar( var_name );
 	if ( !var ) {
 		*buffer = 0;
-	} else   {
+	} else {
 		if ( var->latchedString ) {
 			String::NCpyZ( buffer, var->latchedString, bufsize );
-		} else   {
+		} else {
 			String::NCpyZ( buffer, var->string, bufsize );
 		}
 	}
@@ -598,7 +598,7 @@ static void Cvar_Cycle_f() {
 	int step;
 	if ( Cmd_Argc() == 5 ) {
 		step = abs( String::Atoi( Cmd_Argv( 4 ) ) );
-	} else   {
+	} else {
 		step = 1;
 	}
 
@@ -611,7 +611,7 @@ static void Cvar_Cycle_f() {
 		if ( value < end ) {
 			value = start - ( step - ( oldvalue - end + 1 ) );
 		}
-	} else   {
+	} else {
 		value += step;
 		if ( value > end ) {
 			value = start + ( step - ( end - oldvalue + 1 ) );
@@ -628,7 +628,7 @@ static void Cvar_Set_f() {
 	if ( c < 3 ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "usage: set <variable> <value> [unsafe]\n" );
-		} else   {
+		} else {
 			common->Printf( "usage: set <variable> <value>\n" );
 		}
 		return;
@@ -658,7 +658,7 @@ static void Cvar_SetU_f() {
 	if ( Cmd_Argc() < 3 ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "usage: setu <variable> <value> [unsafe]\n" );
-		} else   {
+		} else {
 			common->Printf( "usage: setu <variable> <value>\n" );
 		}
 		return;
@@ -676,7 +676,7 @@ static void Cvar_SetS_f() {
 	if ( Cmd_Argc() < 3 ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "usage: sets <variable> <value> [unsafe]\n" );
-		} else   {
+		} else {
 			common->Printf( "usage: sets <variable> <value>\n" );
 		}
 		return;
@@ -694,7 +694,7 @@ static void Cvar_SetA_f() {
 	if ( Cmd_Argc() < 3 ) {
 		if ( GGameType & GAME_ET ) {
 			common->Printf( "usage: seta <variable> <value> [unsafe]\n" );
-		} else   {
+		} else {
 			common->Printf( "usage: seta <variable> <value>\n" );
 		}
 		return;
@@ -720,7 +720,7 @@ static void Cvar_List_f() {
 
 	if ( Cmd_Argc() > 1 ) {
 		match = Cmd_Argv( 1 );
-	} else   {
+	} else {
 		match = NULL;
 	}
 
@@ -732,37 +732,37 @@ static void Cvar_List_f() {
 
 		if ( var->flags & CVAR_SERVERINFO ) {
 			common->Printf( "S" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & CVAR_USERINFO ) {
 			common->Printf( "U" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & CVAR_ROM ) {
 			common->Printf( "R" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & CVAR_INIT ) {
 			common->Printf( "I" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & CVAR_ARCHIVE ) {
 			common->Printf( "A" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & ( CVAR_LATCH | CVAR_LATCH2 ) ) {
 			common->Printf( "L" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 		if ( var->flags & CVAR_CHEAT ) {
 			common->Printf( "C" );
-		} else   {
+		} else {
 			common->Printf( " " );
 		}
 
@@ -821,7 +821,7 @@ static void Cvar_Restart_f() {
 void Cvar_Init() {
 	if ( GGameType & GAME_WolfSP ) {
 		cvar_cheats = Cvar_Get( "sv_cheats", "0", CVAR_ROM | CVAR_SYSTEMINFO );
-	} else   {
+	} else {
 		cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
 	}
 
@@ -855,13 +855,13 @@ void Cvar_WriteVariables( fileHandle_t f ) {
 			if ( var->latchedString ) {
 				if ( GGameType & GAME_ET && var->flags & CVAR_UNSAFE ) {
 					String::Sprintf( buffer, sizeof ( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->latchedString );
-				} else   {
+				} else {
 					String::Sprintf( buffer, sizeof ( buffer ), "seta %s \"%s\"\n", var->name, var->latchedString );
 				}
-			} else   {
+			} else {
 				if ( GGameType & GAME_ET && var->flags & CVAR_UNSAFE ) {
 					String::Sprintf( buffer, sizeof ( buffer ), "seta %s \"%s\" unsafe\n", var->name, var->string );
-				} else   {
+				} else {
 					String::Sprintf( buffer, sizeof ( buffer ), "seta %s \"%s\"\n", var->name, var->string );
 				}
 			}

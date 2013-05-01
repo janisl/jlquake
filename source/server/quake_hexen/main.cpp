@@ -112,7 +112,7 @@ int SVQH_CalcPing( client_t* cl ) {
 				count++;
 			}
 		}
-	} else   {
+	} else {
 		qwclient_frame_t* frame = cl->qw_frames;
 		for ( int i = 0; i < UPDATE_BACKUP_QW; i++, frame++ ) {
 			if ( frame->ping_time > 0 ) {
@@ -157,7 +157,7 @@ void SVQHW_FullClientUpdate( client_t* client, QMsg* buf ) {
 			buf->WriteByte( h2svc_time );	//send server time upon connection
 			buf->WriteFloat( sv.qh_time * 0.001f );
 		}
-	} else   {
+	} else {
 		buf->WriteByte( q1svc_updatefrags );
 		buf->WriteByte( i );
 		buf->WriteShort( client->qh_old_frags );
@@ -192,7 +192,7 @@ void SVQHW_FullClientUpdateToClient( client_t* client, client_t* cl ) {
 	if ( cl->qw_num_backbuf ) {
 		SVQHW_FullClientUpdate( client, &cl->qw_backbuf );
 		SVQH_ClientReliable_FinishWrite( cl );
-	} else   {
+	} else {
 		SVQHW_FullClientUpdate( client, &cl->netchan.message );
 	}
 }
@@ -265,7 +265,7 @@ void SVQHW_ExtractFromUserinfo( client_t* cl ) {
 			if ( tmp[ 0 ] == '(' ) {
 				if ( tmp[ 2 ] == ')' ) {
 					p = tmp + 3;
-				} else if ( tmp[ 3 ] == ')' )       {
+				} else if ( tmp[ 3 ] == ')' ) {
 					p = tmp + 4;
 				}
 			}
@@ -273,7 +273,7 @@ void SVQHW_ExtractFromUserinfo( client_t* cl ) {
 			sprintf( newname, "(%d)%-.40s", dupc++, p );
 			Info_SetValueForKey( cl->userinfo, "name", newname, MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value );
 			val = Info_ValueForKey( cl->userinfo, "name" );
-		} else   {
+		} else {
 			break;
 		}
 	}
@@ -283,7 +283,7 @@ void SVQHW_ExtractFromUserinfo( client_t* cl ) {
 			if ( !cl->qw_lastnametime || svs.realtime * 0.001 - cl->qw_lastnametime > 5 ) {
 				cl->qw_lastnamecount = 0;
 				cl->qw_lastnametime = svs.realtime * 0.001;
-			} else if ( cl->qw_lastnamecount++ > 4 )     {
+			} else if ( cl->qw_lastnamecount++ > 4 ) {
 				SVQH_BroadcastPrintf( PRINT_HIGH, "%s was kicked for name spam\n", cl->name );
 				SVQH_ClientPrintf( cl, PRINT_HIGH, "You were kicked from the game for name spamming\n" );
 				SVQHW_DropClient( cl );
@@ -333,7 +333,7 @@ const char* SVQ1_GetMapName() {
 const char* SVH2_GetMapName() {
 	if ( sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count ) {
 		return &prh2_global_strings[ prh2_string_index[ ( int )sv.qh_edicts->GetMessage() - 1 ] ];
-	} else   {
+	} else {
 		return PR_GetString( sv.qh_edicts->GetNetName() );
 	}
 }
@@ -352,7 +352,7 @@ void SVQH_SendServerinfo( client_t* client ) {
 		if ( GGameType & GAME_Hexen2 ) {
 			client->qh_message.WriteShort( svh2_kingofhill );
 		}
-	} else   {
+	} else {
 		client->qh_message.WriteByte( QHGAME_COOP );
 	}
 
@@ -376,7 +376,7 @@ void SVQH_SendServerinfo( client_t* client ) {
 
 		client->qh_message.WriteByte( h2svc_midi_name );
 		client->qh_message.WriteString2( sv.h2_midi_name );
-	} else   {
+	} else {
 		client->qh_message.WriteByte( q1svc_cdtrack );
 		client->qh_message.WriteByte( sv.qh_edicts->GetSounds() );
 		client->qh_message.WriteByte( sv.qh_edicts->GetSounds() );
@@ -432,7 +432,7 @@ static void SVQH_ConnectClient( int clientnum ) {
 
 	if ( sv.loadgame ) {
 		Com_Memcpy( client->qh_spawn_parms, spawn_parms, sizeof ( spawn_parms ) );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		// call the progs to get default spawn parms for the new client
 		PR_ExecuteProgram( *pr_globalVars.SetNewParms );
 		for ( int i = 0; i < NUM_SPAWN_PARMS; i++ ) {
@@ -533,7 +533,7 @@ static void SVCQHW_Log( const netadr_t& net_from ) {
 	int seq;
 	if ( Cmd_Argc() == 2 ) {
 		seq = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		seq = -1;
 	}
 
@@ -604,7 +604,7 @@ static void SVCQHW_DirectConnect( const netadr_t& net_from ) {
 	char userinfo[ 1024 ];
 	if ( GGameType & GAME_HexenWorld ) {
 		String::NCpy( userinfo, Cmd_Argv( 2 ), sizeof ( userinfo ) - 1 );
-	} else   {
+	} else {
 		int version = String::Atoi( Cmd_Argv( 1 ) );
 		if ( version != QWPROTOCOL_VERSION ) {
 			NET_OutOfBandPrint( NS_SERVER, net_from, "%c\nServer is JLQuake version " JLQUAKE_VERSION_STRING ".\n", A2C_PRINT );
@@ -651,7 +651,7 @@ static void SVCQHW_DirectConnect( const netadr_t& net_from ) {
 		Info_RemoveKey( userinfo, "spectator", MAX_INFO_STRING_QW );	// remove passwd
 		Info_SetValueForKey( userinfo, "*spectator", "1", MAX_INFO_STRING_QW, 64, 64, !svqh_highchars->value );
 		spectator = true;
-	} else   {
+	} else {
 		s = Info_ValueForKey( userinfo, "password" );
 		if ( svqhw_password->string[ 0 ] &&
 			 String::ICmp( svqhw_password->string, "none" ) &&
@@ -684,7 +684,7 @@ static void SVCQHW_DirectConnect( const netadr_t& net_from ) {
 				*p++ = *q;
 			}
 		}
-	} else   {
+	} else {
 		String::NCpy( newcl->userinfo, userinfo, MAX_INFO_STRING_QW - 1 );
 	}
 
@@ -719,7 +719,7 @@ static void SVCQHW_DirectConnect( const netadr_t& net_from ) {
 		}
 		if ( cl->qh_spectator ) {
 			spectators++;
-		} else   {
+		} else {
 			clients++;
 		}
 	}
@@ -800,7 +800,7 @@ static void SVCQHW_DirectConnect( const netadr_t& net_from ) {
 
 	if ( newcl->qh_spectator ) {
 		common->Printf( "Spectator %s connected\n", newcl->name );
-	} else   {
+	} else {
 		common->DPrintf( "Client %s connected\n", newcl->name );
 	}
 	if ( GGameType & GAME_QuakeWorld ) {
@@ -831,7 +831,7 @@ static void SVCQHW_RemoteCommand( const netadr_t& net_from, QMsg& message ) {
 		SVQHW_BeginRedirect( net_from );
 
 		common->Printf( "Bad rcon_password.\n" );
-	} else   {
+	} else {
 		common->Printf( "Rcon from %s:\n%s\n",
 			SOCK_AdrToString( net_from ), message._data + 4 );
 
@@ -873,24 +873,24 @@ static void SVQHW_ConnectionlessPacket( const netadr_t& net_from, QMsg& message 
 	if ( c[ 0 ] == A2A_ACK && ( c[ 1 ] == 0 || c[ 1 ] == '\n' ) ) {
 		common->Printf( "A2A_ACK from %s\n", SOCK_AdrToString( net_from ) );
 		return;
-	} else if ( GGameType & GAME_HexenWorld && c[ 0 ] == A2S_ECHO )       {
+	} else if ( GGameType & GAME_HexenWorld && c[ 0 ] == A2S_ECHO ) {
 		NET_SendPacket( NS_SERVER, message.cursize, message._data, net_from );
 		return;
-	} else if ( !String::Cmp( c,"status" ) )       {
+	} else if ( !String::Cmp( c,"status" ) ) {
 		SVCQHW_Status( net_from );
 		return;
-	} else if ( !String::Cmp( c,"log" ) )       {
+	} else if ( !String::Cmp( c,"log" ) ) {
 		SVCQHW_Log( net_from );
 		return;
-	} else if ( !String::Cmp( c,"connect" ) )       {
+	} else if ( !String::Cmp( c,"connect" ) ) {
 		SVCQHW_DirectConnect( net_from );
 		return;
-	} else if ( GGameType & GAME_QuakeWorld && !String::Cmp( c,"getchallenge" ) )       {
+	} else if ( GGameType & GAME_QuakeWorld && !String::Cmp( c,"getchallenge" ) ) {
 		SVCQW_GetChallenge( net_from );
 		return;
-	} else if ( !String::Cmp( c, "rcon" ) )       {
+	} else if ( !String::Cmp( c, "rcon" ) ) {
 		SVCQHW_RemoteCommand( net_from, message );
-	} else   {
+	} else {
 		common->Printf( "bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString( net_from ), s );
 	}
@@ -1126,7 +1126,7 @@ static void SVQHW_ReadPackets() {
 				if ( cl->state != CS_ZOMBIE ) {
 					if ( GGameType & GAME_HexenWorld ) {
 						SVHW_ExecuteClientMessage( cl, net_message );
-					} else   {
+					} else {
 						SVQW_ExecuteClientMessage( cl, net_message );
 					}
 				}
@@ -1232,7 +1232,7 @@ void SVQH_Shutdown() {
 				if ( NET_CanSendMessage( &host_client->netchan ) ) {
 					NET_SendMessage( &host_client->netchan, &host_client->qh_message );
 					host_client->qh_message.Clear();
-				} else   {
+				} else {
 					NET_GetMessage( &host_client->netchan, &net_message );
 					count++;
 				}
@@ -1352,7 +1352,7 @@ static void SVQHW_CheckVars() {
 	common->Printf( "Updated needpass.\n" );
 	if ( !v ) {
 		Info_SetValueForKey( svs.qh_info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value );
-	} else   {
+	} else {
 		Info_SetValueForKey( svs.qh_info, "needpass", va( "%i",v ), MAX_SERVERINFO_STRING, 64, 64, !svqh_highchars->value );
 	}
 }
@@ -1482,7 +1482,7 @@ static void SVH2_Edicts_f() {
 	const char* Name;
 	if ( Cmd_Argc() < 2 ) {
 		Name = "edicts.txt";
-	} else   {
+	} else {
 		Name = Cmd_Argv( 1 );
 	}
 
@@ -1496,10 +1496,10 @@ static void SVQH_FindMaxClients() {
 	if ( i ) {
 		if ( i != ( COM_Argc() - 1 ) ) {
 			svs.qh_maxclients = String::Atoi( COM_Argv( i + 1 ) );
-		} else   {
+		} else {
 			svs.qh_maxclients = 8;
 		}
-	} else if ( com_dedicated->integer )     {
+	} else if ( com_dedicated->integer ) {
 		svs.qh_maxclients = 8;
 	}
 
@@ -1510,13 +1510,13 @@ static void SVQH_FindMaxClients() {
 		}
 		if ( i != ( COM_Argc() - 1 ) ) {
 			svs.qh_maxclients = String::Atoi( COM_Argv( i + 1 ) );
-		} else   {
+		} else {
 			svs.qh_maxclients = 8;
 		}
 	}
 	if ( svs.qh_maxclients < 1 ) {
 		svs.qh_maxclients = 8;
-	} else if ( svs.qh_maxclients > MAX_CLIENTS_QH )     {
+	} else if ( svs.qh_maxclients > MAX_CLIENTS_QH ) {
 		svs.qh_maxclients = MAX_CLIENTS_QH;
 	}
 
@@ -1528,7 +1528,7 @@ static void SVQH_FindMaxClients() {
 
 	if ( svs.qh_maxclients > 1 ) {
 		Cvar_SetValue( "deathmatch", 1.0 );
-	} else   {
+	} else {
 		Cvar_SetValue( "deathmatch", 0.0 );
 	}
 }
@@ -1589,7 +1589,7 @@ void SVQH_Init() {
 		SVQH_InitOperatorCommands();
 
 		SVQH_FindMaxClients();
-	} else   {
+	} else {
 		svqh_deathmatch = Cvar_Get( "deathmatch", "1", CVAR_SERVERINFO );			// 0, 1, or 2
 		svqh_highchars = Cvar_Get( "sv_highchars", "1", 0 );
 		qhw_allow_download = Cvar_Get( "allow_download", "1", 0 );

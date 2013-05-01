@@ -124,7 +124,7 @@ static inline int AAS_ClusterAreaNum( int cluster, int areanum ) {
 	int areacluster = aasworld->areasettings[ areanum ].cluster;
 	if ( areacluster > 0 ) {
 		return aasworld->areasettings[ areanum ].clusterareanum;
-	} else   {
+	} else {
 		int side = aasworld->portals[ -areacluster ].frontcluster != cluster;
 		return aasworld->portals[ -areacluster ].clusterareanum[ side ];
 	}
@@ -171,7 +171,7 @@ static void AAS_LinkCache( aas_routingcache_t* cache ) {
 	if ( aasworld->newestcache ) {
 		aasworld->newestcache->time_next = cache;
 		cache->time_prev = aasworld->newestcache;
-	} else   {
+	} else {
 		aasworld->oldestcache = cache;
 		cache->time_prev = NULL;
 	}
@@ -182,12 +182,12 @@ static void AAS_LinkCache( aas_routingcache_t* cache ) {
 static void AAS_UnlinkCache( aas_routingcache_t* cache ) {
 	if ( cache->time_next ) {
 		cache->time_next->time_prev = cache->time_prev;
-	} else   {
+	} else {
 		aasworld->newestcache = cache->time_prev;
 	}
 	if ( cache->time_prev ) {
 		cache->time_prev->time_next = cache->time_next;
-	} else   {
+	} else {
 		aasworld->oldestcache = cache->time_next;
 	}
 	cache->time_next = NULL;
@@ -237,7 +237,7 @@ static void AAS_RemoveRoutingCacheUsingArea( int areanum ) {
 	if ( clusternum > 0 ) {
 		//remove all the cache in the cluster the area is in
 		AAS_RemoveRoutingCacheInCluster( clusternum );
-	} else   {
+	} else {
 		// if this is a portal remove all cache in both the front and back cluster
 		AAS_RemoveRoutingCacheInCluster( aasworld->portals[ -clusternum ].frontcluster );
 		AAS_RemoveRoutingCacheInCluster( aasworld->portals[ -clusternum ].backcluster );
@@ -274,23 +274,23 @@ int AAS_EnableRoutingArea( int areanum, int enable ) {
 		if ( ( enable & 1 ) || ( enable < 0 ) ) {
 			// clear all flags
 			bitflag = ETAREA_AVOID | AREA_DISABLED | ETAREA_TEAM_AXIS | ETAREA_TEAM_ALLIES | ETAREA_TEAM_AXIS_DISGUISED | ETAREA_TEAM_ALLIES_DISGUISED;
-		} else if ( enable & 0x10 )     {
+		} else if ( enable & 0x10 ) {
 			bitflag = ETAREA_AVOID;
-		} else if ( enable & 0x20 )     {
+		} else if ( enable & 0x20 ) {
 			bitflag = ETAREA_TEAM_AXIS;
-		} else if ( enable & 0x40 )     {
+		} else if ( enable & 0x40 ) {
 			bitflag = ETAREA_TEAM_ALLIES;
-		} else if ( enable & 0x80 )     {
+		} else if ( enable & 0x80 ) {
 			bitflag = ETAREA_TEAM_AXIS_DISGUISED;
-		} else if ( enable & 0x100 )     {
+		} else if ( enable & 0x100 ) {
 			bitflag = ETAREA_TEAM_ALLIES_DISGUISED;
-		} else   {
+		} else {
 			bitflag = AREA_DISABLED;
 		}
 
 		// remove avoidance flag
 		enable &= 1;
-	} else   {
+	} else {
 		bitflag = AREA_DISABLED;
 	}
 
@@ -301,7 +301,7 @@ int AAS_EnableRoutingArea( int areanum, int enable ) {
 
 	if ( enable ) {
 		aasworld->areasettings[ areanum ].areaflags &= ~bitflag;
-	} else   {
+	} else {
 		aasworld->areasettings[ areanum ].areaflags |= bitflag;
 	}
 
@@ -330,11 +330,11 @@ static int AAS_GetAreaContentsTravelFlags( int areanum ) {
 	int tfl = 0;
 	if ( contents & AREACONTENTS_WATER ) {
 		tfl |= TFL_WATER;
-	} else if ( contents & AREACONTENTS_SLIME )     {
+	} else if ( contents & AREACONTENTS_SLIME ) {
 		tfl |= TFL_SLIME;
-	} else if ( contents & AREACONTENTS_LAVA )     {
+	} else if ( contents & AREACONTENTS_LAVA ) {
 		tfl |= TFL_LAVA;
-	} else   {
+	} else {
 		tfl |= TFL_AIR;
 	}
 	if ( contents & AREACONTENTS_DONOTENTER ) {
@@ -350,7 +350,7 @@ static int AAS_GetAreaContentsTravelFlags( int areanum ) {
 		if ( aasworld->areasettings[ areanum ].areaflags & Q3AREA_BRIDGE ) {
 			tfl |= Q3TFL_BRIDGE;
 		}
-	} else   {
+	} else {
 		if ( contents & WOLFAREACONTENTS_DONOTENTER_LARGE ) {
 			tfl |= WOLFTFL_DONOTENTER_LARGE;
 		}
@@ -563,17 +563,17 @@ static bool AAS_FreeOldestCache() {
 			// unlink from cluster area cache
 			if ( cache->prev ) {
 				cache->prev->next = cache->next;
-			} else   {
+			} else {
 				aasworld->clusterareacache[ cache->cluster ][ clusterareanum ] = cache->next;
 			}
 			if ( cache->next ) {
 				cache->next->prev = cache->prev;
 			}
-		} else   {
+		} else {
 			// unlink from portal cache
 			if ( cache->prev ) {
 				cache->prev->next = cache->next;
-			} else   {
+			} else {
 				aasworld->portalcache[ cache->areanum ] = cache->next;
 			}
 			if ( cache->next ) {
@@ -661,7 +661,7 @@ static int AAS_CompressVis( const byte* vis, int numareas, byte* dest ) {
 		for ( j++; j < numareas; j++ ) {
 			if ( vis[ j ] != check || rep == 255 ) {
 				break;
-			} else   {
+			} else {
 				rep++;
 			}
 		}
@@ -728,7 +728,7 @@ static void AAS_CreateVisibility( bool waypointsOnly ) {
 				validareas[ i ] = 1;
 			}
 			numvalid++;
-		} else   {
+		} else {
 			VectorClear( aasworld->areawaypoints[ i ] );
 		}
 	}
@@ -795,7 +795,7 @@ static void AAS_CreateVisibility( bool waypointsOnly ) {
 					areaTable[ ( i * numAreaBits ) + ( j >> 3 ) ] |= ( 1 << ( j & 7 ) );
 				}
 				aasworld->decompressedvis[ j ] = 1;
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				aasworld->decompressedvis[ j ] = 0;
 			}
 		}
@@ -864,7 +864,7 @@ static void AAS_InitRoutingUpdate() {
 		//allocate memory for the routing update fields
 		aasworld->areaupdate = ( aas_routingupdate_t* )Mem_ClearedAlloc(
 			maxreachabilityareas * sizeof ( aas_routingupdate_t ) );
-	} else   {
+	} else {
 		// Ridah, had to change it to numareas for hidepos checking
 		aasworld->areaupdate = ( aas_routingupdate_t* )Mem_ClearedAlloc(
 			aasworld->numareas * sizeof ( aas_routingupdate_t ) );
@@ -917,14 +917,14 @@ void AAS_WriteRouteCache() {
 		routecacheheader.numareacache = numareacache;
 		//write the header
 		FS_Write( &routecacheheader, sizeof ( routecacheheader_q3_t ), fp );
-	} else   {
+	} else {
 		routecacheheader_wolf_t routecacheheader;
 		routecacheheader.ident = RCID;
 		if ( GGameType & GAME_WolfSP ) {
 			routecacheheader.version = RCVERSION_WS;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			routecacheheader.version = RCVERSION_WM;
-		} else   {
+		} else {
 			routecacheheader.version = RCVERSION_ET;
 		}
 		routecacheheader.numareas = aasworld->numareas;
@@ -1017,7 +1017,7 @@ static aas_routingcache_t* AAS_ReadCache( fileHandle_t fp ) {
 		}
 		AAS_LinkCache( cache );
 		return cache;
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		int size, i;
 		aas_routingcache_t* cache;
 
@@ -1036,7 +1036,7 @@ static aas_routingcache_t* AAS_ReadCache( fileHandle_t fp ) {
 			cache->traveltimes[ i ] = LittleShort( cache->traveltimes[ i ] );
 		}
 		return cache;
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		int size, i;
 		aas_routingcache_t* cache;
 
@@ -1068,7 +1068,7 @@ static aas_routingcache_t* AAS_ReadCache( fileHandle_t fp ) {
 			cache->traveltimes[ i ] = LittleShort( cache->traveltimes[ i ] );
 		}
 		return cache;
-	} else   {
+	} else {
 		int size;
 		aas_routingcache_t* cache;
 
@@ -1190,7 +1190,7 @@ static bool AAS_ReadRouteCache() {
 			FS_FCloseFile( fp );
 			return false;
 		}
-	} else   {
+	} else {
 		if ( !ReadRouteCacheHeaderWolf( filename, fp, numportalcache, numareacache ) ) {
 			FS_FCloseFile( fp );
 			return false;
@@ -1327,7 +1327,7 @@ static void AAS_UpdateAreaRoutingCache( aas_routingcache_t* areacache ) {
 	curupdate->areanum = areacache->areanum;
 	if ( GGameType & GAME_Quake3 ) {
 		curupdate->areatraveltimes = startareatraveltimes;
-	} else   {
+	} else {
 		curupdate->areatraveltimes = aasworld->areatraveltimes[ areacache->areanum ][ 0 ];
 	}
 	curupdate->tmptraveltime = areacache->starttraveltime;
@@ -1344,7 +1344,7 @@ static void AAS_UpdateAreaRoutingCache( aas_routingcache_t* areacache ) {
 		//
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -1391,9 +1391,9 @@ static void AAS_UpdateAreaRoutingCache( aas_routingcache_t* areacache ) {
 				//if trying to avoid this area
 				if ( aasworld->areasettings[ reach->areanum ].areaflags & ETAREA_AVOID ) {
 					t += 1000;
-				} else if ( ( aasworld->areasettings[ reach->areanum ].areaflags & ETAREA_AVOID_AXIS ) && ( areacache->travelflags & ETTFL_TEAM_AXIS ) )           {
+				} else if ( ( aasworld->areasettings[ reach->areanum ].areaflags & ETAREA_AVOID_AXIS ) && ( areacache->travelflags & ETTFL_TEAM_AXIS ) ) {
 					t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
-				} else if ( ( aasworld->areasettings[ reach->areanum ].areaflags & ETAREA_AVOID_ALLIES ) && ( areacache->travelflags & ETTFL_TEAM_ALLIES ) )           {
+				} else if ( ( aasworld->areasettings[ reach->areanum ].areaflags & ETAREA_AVOID_ALLIES ) && ( areacache->travelflags & ETTFL_TEAM_ALLIES ) ) {
 					t += 200;	// + (curupdate->areatraveltimes[i] + reach->traveltime) * 30;
 				}
 			}
@@ -1420,7 +1420,7 @@ static void AAS_UpdateAreaRoutingCache( aas_routingcache_t* areacache ) {
 					nextupdate->prev = updatelistend;
 					if ( updatelistend ) {
 						updatelistend->next = nextupdate;
-					} else   {
+					} else {
 						updateliststart = nextupdate;
 					}
 					updatelistend = nextupdate;
@@ -1470,7 +1470,7 @@ static aas_routingcache_t* AAS_GetAreaRoutingCache( int clusternum, int areanum,
 		}
 		aasworld->clusterareacache[ clusternum ][ clusterareanum ] = cache;
 		AAS_UpdateAreaRoutingCache( cache );
-	} else   {
+	} else {
 		AAS_UnlinkCache( cache );
 	}
 	//the cache has been accessed
@@ -1507,7 +1507,7 @@ static void AAS_UpdatePortalRoutingCache( aas_routingcache_t* portalcache ) {
 		//remove the current update from the list
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -1547,7 +1547,7 @@ static void AAS_UpdatePortalRoutingCache( aas_routingcache_t* portalcache ) {
 				aas_routingupdate_t* nextupdate = &aasworld->portalupdate[ portalnum ];
 				if ( portal->frontcluster == curupdate->cluster ) {
 					nextupdate->cluster = portal->backcluster;
-				} else   {
+				} else {
 					nextupdate->cluster = portal->frontcluster;
 				}
 				nextupdate->areanum = portal->areanum;
@@ -1561,7 +1561,7 @@ static void AAS_UpdatePortalRoutingCache( aas_routingcache_t* portalcache ) {
 					nextupdate->prev = updatelistend;
 					if ( updatelistend ) {
 						updatelistend->next = nextupdate;
-					} else   {
+					} else {
 						updateliststart = nextupdate;
 					}
 					updatelistend = nextupdate;
@@ -1597,7 +1597,7 @@ static aas_routingcache_t* AAS_GetPortalRoutingCache( int clusternum, int areanu
 		aasworld->portalcache[ areanum ] = cache;
 		//update the cache
 		AAS_UpdatePortalRoutingCache( cache );
-	} else   {
+	} else {
 		AAS_UnlinkCache( cache );
 	}
 	//the cache has been accessed
@@ -1647,9 +1647,9 @@ int AAS_NextAreaReachability( int areanum, int reachnum ) {
 int AAS_NextModelReachability( int num, int modelnum ) {
 	if ( num <= 0 ) {
 		num = 1;
-	} else if ( num >= aasworld->reachabilitysize )     {
+	} else if ( num >= aasworld->reachabilitysize ) {
 		return 0;
-	} else   {
+	} else {
 		num++;
 	}
 
@@ -1658,7 +1658,7 @@ int AAS_NextModelReachability( int num, int modelnum ) {
 			if ( aasworld->reachability[ i ].facenum == modelnum ) {
 				return i;
 			}
-		} else if ( ( aasworld->reachability[ i ].traveltype & TRAVELTYPE_MASK ) == TRAVEL_FUNCBOB )         {
+		} else if ( ( aasworld->reachability[ i ].traveltype & TRAVELTYPE_MASK ) == TRAVEL_FUNCBOB ) {
 			if ( ( aasworld->reachability[ i ].facenum & 0x0000FFFF ) == modelnum ) {
 				return i;
 			}
@@ -1991,7 +1991,7 @@ bool AAS_PredictRoute( aas_predictroute_t* route, int areanum, const vec3_t orig
 			int testareanum;
 			if ( j >= reachareas->numareas ) {
 				testareanum = reach->areanum;
-			} else   {
+			} else {
 				testareanum = aasworld->reachabilityareaindex[ reachareas->firstarea + j ];
 			}
 			if ( stopevent & RSE_ENTERCONTENTS ) {
@@ -2079,7 +2079,7 @@ static void AAS_CreateAllRoutingCache() {
 int AAS_ListAreasInRange( const vec3_t srcpos, int srcarea, float range, int travelflags, vec3_t* outareas, int maxareas ) {
 	if ( !aasworld->hidetraveltimes ) {
 		aasworld->hidetraveltimes = ( unsigned short int* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( unsigned short int ) );
-	} else   {
+	} else {
 		memset( aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof ( unsigned short int ) );
 	}
 
@@ -2106,7 +2106,7 @@ int AAS_ListAreasInRange( const vec3_t srcpos, int srcarea, float range, int tra
 		//
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -2159,7 +2159,7 @@ int AAS_ListAreasInRange( const vec3_t srcpos, int srcarea, float range, int tra
 				nextupdate->prev = updatelistend;
 				if ( updatelistend ) {
 					updatelistend->next = nextupdate;
-				} else   {
+				} else {
 					updateliststart = nextupdate;
 				}
 				updatelistend = nextupdate;
@@ -2180,7 +2180,7 @@ int AAS_AvoidDangerArea( const vec3_t srcpos, int srcarea, const vec3_t dangerpo
 
 	if ( !aasworld->hidetraveltimes ) {
 		aasworld->hidetraveltimes = ( unsigned short int* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( unsigned short int ) );
-	} else   {
+	} else {
 		memset( aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof ( unsigned short int ) );
 	}
 
@@ -2213,7 +2213,7 @@ int AAS_AvoidDangerArea( const vec3_t srcpos, int srcarea, const vec3_t dangerpo
 		//
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -2288,7 +2288,7 @@ int AAS_AvoidDangerArea( const vec3_t srcpos, int srcarea, const vec3_t dangerpo
 				nextupdate->prev = updatelistend;
 				if ( updatelistend ) {
 					updatelistend->next = nextupdate;
-				} else   {
+				} else {
 					updateliststart = nextupdate;
 				}
 				updatelistend = nextupdate;
@@ -2509,7 +2509,7 @@ int AAS_Retreat( const int* dangerSpots, int dangerSpotCount, const vec3_t srcpo
 		//
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -2583,7 +2583,7 @@ int AAS_Retreat( const int* dangerSpots, int dangerSpotCount, const vec3_t srcpo
 			nextupdate->prev = updatelistend;
 			if ( updatelistend ) {
 				updatelistend->next = nextupdate;
-			} else   {
+			} else {
 				updateliststart = nextupdate;
 			}
 			updatelistend = nextupdate;
@@ -2627,7 +2627,7 @@ void AAS_InitRouting() {
 	if ( GGameType & GAME_ET && LibVarGetValue( "bot_norcd" ) ) {
 		// RF, create the waypoints for each area
 		AAS_CreateVisibility( true );
-	} else   {
+	} else {
 		// read any routing cache if available
 		if ( !AAS_ReadRouteCache() ) {
 			if ( !( GGameType & GAME_Quake3 ) ) {
@@ -2669,13 +2669,13 @@ int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum,
 
 	if ( !aasworld->hidetraveltimes ) {
 		aasworld->hidetraveltimes = ( unsigned short int* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( unsigned short int ) );
-	} else   {
+	} else {
 		memset( aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof ( unsigned short int ) );
 	}
 
 	if ( !aasworld->visCache ) {
 		aasworld->visCache = ( byte* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( byte ) );
-	} else   {
+	} else {
 		memset( aasworld->visCache, 0, aasworld->numareas * sizeof ( byte ) );
 	}
 	unsigned short int besttraveltime = 0;
@@ -2711,7 +2711,7 @@ int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum,
 
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -2785,7 +2785,7 @@ int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum,
 			vec3_t v2;
 			if ( j < 3 ) {
 				VectorSubtract( enemyorigin, reach->end, v2 );
-			} else   {
+			} else {
 				VectorSubtract( enemyorigin, p, v2 );
 			}
 			float dist2 = VectorLength( v2 );
@@ -2830,7 +2830,7 @@ int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum,
 							aasworld->visCache[ nextareanum ] = 2;
 							besttraveltime = t;
 							bestarea = nextareanum;
-						} else   {
+						} else {
 							aasworld->visCache[ nextareanum ] = 1;
 						}
 					}
@@ -2856,7 +2856,7 @@ int AAS_NearestHideArea( int srcnum, vec3_t origin, int areanum, int enemynum,
 					nextupdate->prev = updatelistend;
 					if ( updatelistend ) {
 						updatelistend->next = nextupdate;
-					} else   {
+					} else {
 						updateliststart = nextupdate;
 					}
 					updatelistend = nextupdate;
@@ -2894,13 +2894,13 @@ int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float
 
 	if ( !aasworld->hidetraveltimes ) {
 		aasworld->hidetraveltimes = ( unsigned short int* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( unsigned short int ) );
-	} else   {
+	} else {
 		memset( aasworld->hidetraveltimes, 0, aasworld->numareas * sizeof ( unsigned short int ) );
 	}
 
 	if ( !aasworld->visCache ) {
 		aasworld->visCache = ( byte* )Mem_ClearedAlloc( aasworld->numareas * sizeof ( byte ) );
-	} else   {
+	} else {
 		memset( aasworld->visCache, 0, aasworld->numareas * sizeof ( byte ) );
 	}
 
@@ -2916,7 +2916,7 @@ int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float
 		srcarea = AAS_BestReachableEntityArea( srcnum );
 		rangearea = AAS_BestReachableEntityArea( rangenum );
 		enemyarea = AAS_BestReachableEntityArea( enemynum );
-	} else   {
+	} else {
 		srcarea = BotFuzzyPointReachabilityArea( srcorg );
 		rangearea = BotFuzzyPointReachabilityArea( rangeorg );
 		enemyarea = BotFuzzyPointReachabilityArea( enemyorg );
@@ -2946,7 +2946,7 @@ int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float
 
 		if ( curupdate->next ) {
 			curupdate->next->prev = NULL;
-		} else   {
+		} else {
 			updatelistend = NULL;
 		}
 		updateliststart = curupdate->next;
@@ -3019,7 +3019,7 @@ int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float
 						aasworld->visCache[ nextareanum ] = 2;
 						besttraveltime = srctraveltime;
 						bestarea = nextareanum;
-					} else   {
+					} else {
 						aasworld->visCache[ nextareanum ] = 1;
 					}
 				}
@@ -3037,7 +3037,7 @@ int AAS_FindAttackSpotWithinRange( int srcnum, int rangenum, int enemynum, float
 				nextupdate->prev = updatelistend;
 				if ( updatelistend ) {
 					updatelistend->next = nextupdate;
-				} else   {
+				} else {
 					updateliststart = nextupdate;
 				}
 				updatelistend = nextupdate;

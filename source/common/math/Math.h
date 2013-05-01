@@ -336,10 +336,10 @@ inline float idMath::Sin16( float a ) {
 		if ( a > HALF_PI ) {
 			a = PI - a;
 		}
-	} else   {
+	} else {
 		if ( a > PI + HALF_PI ) {
 			a = a - TWO_PI;
-		} else   {
+		} else {
 			a = PI - a;
 		}
 	}
@@ -372,14 +372,14 @@ inline float idMath::Cos16( float a ) {
 		if ( a > HALF_PI ) {
 			a = PI - a;
 			d = -1.0f;
-		} else   {
+		} else {
 			d = 1.0f;
 		}
-	} else   {
+	} else {
 		if ( a > PI + HALF_PI ) {
 			a = a - TWO_PI;
 			d = 1.0f;
-		} else   {
+		} else {
 			a = PI - a;
 			d = -1.0f;
 		}
@@ -389,7 +389,7 @@ inline float idMath::Cos16( float a ) {
 	if ( fabs( a ) >= HALF_PI ) {
 		a = ( ( a < 0.0f ) ? -PI : PI ) - a;
 		d = 1.0f;
-	} else   {
+	} else {
 		d = -1.0f;
 	}
 #endif
@@ -428,14 +428,14 @@ inline void idMath::SinCos16( float a, float& s, float& c ) {
 		if ( a > HALF_PI ) {
 			a = PI - a;
 			d = -1.0f;
-		} else   {
+		} else {
 			d = 1.0f;
 		}
-	} else   {
+	} else {
 		if ( a > PI + HALF_PI ) {
 			a = a - TWO_PI;
 			d = 1.0f;
-		} else   {
+		} else {
 			a = PI - a;
 			d = -1.0f;
 		}
@@ -445,7 +445,7 @@ inline void idMath::SinCos16( float a, float& s, float& c ) {
 	if ( fabs( a ) >= HALF_PI ) {
 		a = ( ( a < 0.0f ) ? -PI : PI ) - a;
 		d = 1.0f;
-	} else   {
+	} else {
 		d = -1.0f;
 	}
 #endif
@@ -486,14 +486,14 @@ inline float idMath::Tan16( float a ) {
 		if ( a > ONEFOURTH_PI ) {
 			a = HALF_PI - a;
 			reciprocal = true;
-		} else   {
+		} else {
 			reciprocal = false;
 		}
-	} else   {
+	} else {
 		if ( a > HALF_PI + ONEFOURTH_PI ) {
 			a = a - PI;
 			reciprocal = false;
-		} else   {
+		} else {
 			a = HALF_PI - a;
 			reciprocal = true;
 		}
@@ -503,7 +503,7 @@ inline float idMath::Tan16( float a ) {
 	if ( fabs( a ) >= ONEFOURTH_PI ) {
 		a = ( ( a < 0.0f ) ? -HALF_PI : HALF_PI ) - a;
 		reciprocal = false;
-	} else   {
+	} else {
 		reciprocal = true;
 	}
 #endif
@@ -511,7 +511,7 @@ inline float idMath::Tan16( float a ) {
 	s = a * ( ( ( ( ( ( 9.5168091e-03f * s + 2.900525e-03f ) * s + 2.45650893e-02f ) * s + 5.33740603e-02f ) * s + 1.333923995e-01f ) * s + 3.333314036e-01f ) * s + 1.0f );
 	if ( reciprocal ) {
 		return 1.0f / s;
-	} else   {
+	} else {
 		return s;
 	}
 }
@@ -537,7 +537,7 @@ inline float idMath::ASin16( float a ) {
 		}
 		a = fabs( a );
 		return ( ( ( -0.0187293f * a + 0.0742610f ) * a - 0.2121144f ) * a + 1.5707288f ) * sqrt( 1.0f - a ) - HALF_PI;
-	} else   {
+	} else {
 		if ( a >= 1.0f ) {
 			return HALF_PI;
 		}
@@ -574,7 +574,7 @@ inline float idMath::ACos16( float a ) {
 		}
 		a = fabs( a );
 		return PI - ( ( ( -0.0187293f * a + 0.0742610f ) * a - 0.2121144f ) * a + 1.5707288f ) * sqrt( 1.0f - a );
-	} else   {
+	} else {
 		if ( a >= 1.0f ) {
 			return 0.0f;
 		}
@@ -606,10 +606,10 @@ inline float idMath::ATan16( float a ) {
 						 * s + 0.1065626393f ) * s - 0.1420889944f ) * s + 0.1999355085f ) * s - 0.3333314528f ) * s ) + 1.0f ) * a;
 		if ( FLOATSIGNBITSET( a ) ) {
 			return s - HALF_PI;
-		} else   {
+		} else {
 			return s + HALF_PI;
 		}
-	} else   {
+	} else {
 		s = a * a;
 		return ( ( ( ( ( ( ( ( ( 0.0028662257f * s - 0.0161657367f ) * s + 0.0429096138f ) * s - 0.0752896400f )
 						   * s + 0.1065626393f ) * s - 0.1420889944f ) * s + 0.1999355085f ) * s - 0.3333314528f ) * s ) + 1.0f ) * a;
@@ -634,10 +634,10 @@ inline float idMath::ATan16( float y, float x ) {
 						 * s + 0.1065626393f ) * s - 0.1420889944f ) * s + 0.1999355085f ) * s - 0.3333314528f ) * s ) + 1.0f ) * a;
 		if ( FLOATSIGNBITSET( a ) ) {
 			return s - HALF_PI;
-		} else   {
+		} else {
 			return s + HALF_PI;
 		}
-	} else   {
+	} else {
 		a = y / x;
 		s = a * a;
 		return ( ( ( ( ( ( ( ( ( 0.0028662257f * s - 0.0161657367f ) * s + 0.0429096138f ) * s - 0.0752896400f )

@@ -92,7 +92,7 @@ static void AAS_ShowFacePolygon( int facenum, int color, int flip ) {
 			VectorCopy( aasworld->vertexes[ edge->v[ edgenum < 0 ] ], points[ numpoints ] );
 			numpoints++;
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < face->numedges; i++ ) {
 			//edge number
 			int edgenum = aasworld->edgeindex[ face->firstedge + i ];
@@ -183,7 +183,7 @@ static void AAS_DrawArrow( const vec3_t start, const vec3_t end, int linecolor, 
 	vec3_t cross;
 	if ( dot > 0.99 || dot < -0.99 ) {
 		VectorSet( cross, 1, 0, 0 );
-	} else   {
+	} else {
 		CrossProduct( dir, up, cross );
 	}
 
@@ -229,7 +229,7 @@ void AAS_ShowReachability( const aas_reachability_t* reach ) {
 			AAS_JumpReachRunStart( reach, dir );
 			AAS_DrawCross( dir, 4, LINECOLOR_BLUE );
 		}
-	} else if ( reach->traveltype == TRAVEL_ROCKETJUMP )     {
+	} else if ( reach->traveltype == TRAVEL_ROCKETJUMP ) {
 		float zvel = AAS_RocketJumpZVelocity( reach->start );
 		float speed;
 		AAS_HorizontalVelocityForJump( zvel, reach->start, reach->end, &speed );
@@ -250,7 +250,7 @@ void AAS_ShowReachability( const aas_reachability_t* reach ) {
 			SE_ENTERWATER | SE_ENTERSLIME |
 			SE_ENTERLAVA | SE_HITGROUNDDAMAGE |
 			SE_TOUCHJUMPPAD | SE_HITGROUNDAREA, reach->areanum, true );
-	} else if ( reach->traveltype == TRAVEL_JUMPPAD )     {
+	} else if ( reach->traveltype == TRAVEL_JUMPPAD ) {
 		vec3_t cmdmove;
 		VectorSet( cmdmove, 0, 0, 0 );
 

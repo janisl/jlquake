@@ -40,7 +40,7 @@ float VQH_CalcRoll( const vec3_t angles, const vec3_t velocity ) {
 
 	if ( side < cl_rollspeed->value ) {
 		side = side * value / cl_rollspeed->value;
-	} else   {
+	} else {
 		side = value;
 	}
 

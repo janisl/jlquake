@@ -57,7 +57,7 @@ static void CLT3_CreateNewCommands() {
 		cmd.holdable = inCmd.holdable;
 		cmd.cld = inCmd.cld;
 		cl.ws_cmds[ cmdNum ] = cmd;
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		wmusercmd_t cmd;
 		memset( &cmd, 0, sizeof ( cmd ) );
 		cmd.buttons = inCmd.buttons & 0xff;
@@ -75,7 +75,7 @@ static void CLT3_CreateNewCommands() {
 		cmd.mpSetup = inCmd.mpSetup;
 		cmd.identClient = inCmd.identClient;
 		cl.wm_cmds[ cmdNum ] = cmd;
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		etusercmd_t cmd;
 		memset( &cmd, 0, sizeof ( cmd ) );
 		cmd.buttons = inCmd.buttons & 0xff;
@@ -92,7 +92,7 @@ static void CLT3_CreateNewCommands() {
 		cmd.identClient = inCmd.identClient;
 		cmd.flags = inCmd.flags;
 		cl.et_cmds[ cmdNum ] = cmd;
-	} else   {
+	} else {
 		q3usercmd_t cmd;
 		Com_Memset( &cmd, 0, sizeof ( cmd ) );
 		cmd.forwardmove = inCmd.forwardmove;
@@ -147,7 +147,7 @@ static bool CLT3_ReadyToSendPacket() {
 	// check for exceeding cl_maxpackets
 	if ( clt3_maxpackets->integer < 15 ) {
 		Cvar_Set( "cl_maxpackets", "15" );
-	} else if ( clt3_maxpackets->integer > ( GGameType & GAME_Quake3 ? 125 : 100 ) )       {
+	} else if ( clt3_maxpackets->integer > ( GGameType & GAME_Quake3 ? 125 : 100 ) ) {
 		Cvar_Set( "cl_maxpackets", GGameType & GAME_Quake3 ? "125" : "100" );
 	}
 	int oldPacketNum = ( clc.netchan.outgoingSequence - 1 ) & PACKET_MASK_Q3;
@@ -212,7 +212,7 @@ void CLT3_WritePacket() {
 	// all the cmds will make it to the server
 	if ( clt3_packetdup->integer < 0 ) {
 		Cvar_Set( "cl_packetdup", "0" );
-	} else if ( clt3_packetdup->integer > 5 )     {
+	} else if ( clt3_packetdup->integer > 5 ) {
 		Cvar_Set( "cl_packetdup", "5" );
 	}
 	int oldPacketNum = ( clc.netchan.outgoingSequence - 1 - clt3_packetdup->integer ) & PACKET_MASK_Q3;
@@ -237,7 +237,7 @@ void CLT3_WritePacket() {
 		if ( cl_nodelta->integer || !snap_valid || clc.q3_demowaiting ||
 			 clc.q3_serverMessageSequence != snap_messageNum ) {
 			buf.WriteByte( q3clc_moveNoDelta );
-		} else   {
+		} else {
 			buf.WriteByte( q3clc_move );
 		}
 
@@ -263,7 +263,7 @@ void CLT3_WritePacket() {
 				oldcmd = cmd;
 			}
 			oldcmd_serverTime = oldcmd->serverTime;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			wmusercmd_t nullcmd = {};
 			wmusercmd_t* oldcmd = &nullcmd;
 
@@ -275,7 +275,7 @@ void CLT3_WritePacket() {
 				oldcmd = cmd;
 			}
 			oldcmd_serverTime = oldcmd->serverTime;
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			etusercmd_t nullcmd = {};
 			etusercmd_t* oldcmd = &nullcmd;
 
@@ -287,7 +287,7 @@ void CLT3_WritePacket() {
 				oldcmd = cmd;
 			}
 			oldcmd_serverTime = oldcmd->serverTime;
-		} else   {
+		} else {
 			q3usercmd_t nullcmd = {};
 			q3usercmd_t* oldcmd = &nullcmd;
 
@@ -385,7 +385,7 @@ static void CLT3_BeginDownload( const char* localName, const char* remoteName ) 
 	if ( GGameType & GAME_ET ) {
 		String::NCpyZ( cls.et_downloadName, localName, sizeof ( cls.et_downloadName ) );
 		String::Sprintf( cls.et_downloadTempName, sizeof ( cls.et_downloadTempName ), "%s.tmp", localName );
-	} else   {
+	} else {
 		String::NCpyZ( clc.downloadName, localName, sizeof ( clc.downloadName ) );
 		String::Sprintf( clc.downloadTempName, sizeof ( clc.downloadTempName ), "%s.tmp", localName );
 	}
@@ -488,7 +488,7 @@ void CLT3_NextDownload() {
 		char* localName = s;
 		if ( ( s = strchr( s, '@' ) ) != NULL ) {
 			*s++ = 0;
-		} else   {
+		} else {
 			s = localName + String::Length( localName );	// point at the nul byte
 
 		}
@@ -496,7 +496,7 @@ void CLT3_NextDownload() {
 
 		if ( GGameType & GAME_ET ) {
 			cls.et_downloadRestart = true;
-		} else   {
+		} else {
 			clc.downloadRestart = true;
 		}
 
@@ -539,7 +539,7 @@ void CLT3_InitDownloads() {
 		char missingfiles[ 1024 ];
 		if ( FS_ComparePaks( missingfiles, sizeof ( missingfiles ), false ) ) {
 			Cvar_Set( "com_missingFiles", missingfiles );
-		} else   {
+		} else {
 			Cvar_Set( "com_missingFiles", "" );
 		}
 	}
@@ -553,7 +553,7 @@ void CLT3_InitDownloads() {
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 			// this gets printed to UI, i18n
 			common->Printf( CL_TranslateStringBuf( "Need paks: %s\n" ), clc.downloadList );
-		} else   {
+		} else {
 			common->Printf( "Need paks: %s\n", clc.downloadList );
 		}
 
@@ -587,7 +587,7 @@ void CLT3_Disconnect( bool showMainMenu ) {
 		}
 		if ( GGameType & GAME_ET ) {
 			*cls.et_downloadTempName = *cls.et_downloadName = 0;
-		} else   {
+		} else {
 			*clc.downloadTempName = *clc.downloadName = 0;
 		}
 		Cvar_Set( "cl_downloadName", "" );
@@ -640,7 +640,7 @@ void CLT3_Disconnect( bool showMainMenu ) {
 
 		// init the UI
 		CLT3_InitUI();
-	} else   {
+	} else {
 		cls.state = CA_DISCONNECTED;
 	}
 }
@@ -737,11 +737,11 @@ void CLT3_CheckForResend() {
 		String::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING_Q3 ), sizeof ( info ) );
 		if ( GGameType & GAME_WolfSP ) {
 			Info_SetValueForKey( info, "protocol", va( "%i", WSPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			Info_SetValueForKey( info, "protocol", va( "%i", WMPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			Info_SetValueForKey( info, "protocol", va( "%i", ETPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-		} else   {
+		} else {
 			Info_SetValueForKey( info, "protocol", va( "%i", Q3PROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
 		}
 		Info_SetValueForKey( info, "qport", va( "%i", port ), MAX_INFO_STRING_Q3 );
@@ -749,7 +749,7 @@ void CLT3_CheckForResend() {
 
 		if ( GGameType & GAME_WolfSP ) {
 			NET_OutOfBandPrint( NS_CLIENT, clc.q3_serverAddress, "connect \"%s\"", info );
-		} else   {
+		} else {
 			String::Cpy( data, "connect " );
 			// TTimo adding " " around the userinfo string to avoid truncated userinfo on the server
 			//   (Com_TokenizeString tokenizes around spaces)
@@ -796,7 +796,7 @@ void CLT3_MapLoading() {
 		Com_Memset( &cl.et_gameState, 0, sizeof ( cl.et_gameState ) );
 		clc.q3_lastPacketSentTime = -9999;
 		SCR_UpdateScreen();
-	} else   {
+	} else {
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "nextmap", "" );
 		CL_Disconnect( true );
@@ -838,7 +838,7 @@ static void CLT3_RequestMotd() {
 		// NOTE: the Com_Milliseconds xoring only affects the lower 16-bit word,
 		//   but I decided it was enough randomization
 		String::Sprintf( cls.q3_updateChallenge, sizeof ( cls.q3_updateChallenge ), "%i", ( ( rand() << 16 ) ^ rand() ) ^ Com_Milliseconds() );
-	} else   {
+	} else {
 		String::Sprintf( cls.q3_updateChallenge, sizeof ( cls.q3_updateChallenge ), "%i", rand() );
 	}
 
@@ -863,7 +863,7 @@ void CLT3_Connect_f() {
 
 	if ( GGameType & GAME_Quake3 ) {
 		Cvar_Set( "ui_singlePlayerActive", "0" );
-	} else   {
+	} else {
 		// starting to load a map so we get out of full screen ui mode
 		Cvar_Set( "r_uiFullScreen", "0" );
 	}
@@ -907,7 +907,7 @@ void CLT3_Connect_f() {
 	// with the cd key
 	if ( SOCK_IsLocalAddress( clc.q3_serverAddress ) ) {
 		cls.state = CA_CHALLENGING;
-	} else   {
+	} else {
 		cls.state = CA_CONNECTING;
 	}
 
@@ -990,7 +990,7 @@ static void CLT3_DisconnectPacket( netadr_t from ) {
 		common->Printf( "%s", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( true );
-	} else   {
+	} else {
 		CL_Disconnect( false );
 		Cvar_Set( "ui_connecting", "1" );
 		Cvar_Set( "ui_dl_running", "1" );
@@ -1032,10 +1032,10 @@ static void CLT3_PrintPacket( netadr_t from, QMsg* msg ) {
 			String::NCpyZ( clc.q3_serverMessage, s + 12, sizeof ( clc.q3_serverMessage ) );
 			if ( GGameType & GAME_ET ) {
 				common->Error( "%s", clc.q3_serverMessage );
-			} else   {
+			} else {
 				Cvar_Set( "com_errorMessage", clc.q3_serverMessage );
 			}
-		} else if ( !String::NICmp( s, "[err_prot]", 10 ) )       {
+		} else if ( !String::NICmp( s, "[err_prot]", 10 ) ) {
 			String::NCpyZ( clc.q3_serverMessage, s + 10, sizeof ( clc.q3_serverMessage ) );
 			const char* msg = "ERROR: Protocol Mismatch Between Client and Server.\n\n"
 							  "The server you attempted to join is running an incompatible version of the game.\n"
@@ -1043,21 +1043,21 @@ static void CLT3_PrintPacket( netadr_t from, QMsg* msg ) {
 							  " button if it appears on the Main Menu screen.";
 			if ( GGameType & GAME_ET ) {
 				common->Error( "%s", CL_TranslateStringBuf( msg ) );
-			} else   {
+			} else {
 				Cvar_Set( "com_errorMessage", CL_TranslateStringBuf( msg ) );
 			}
-		} else if ( GGameType & GAME_ET && !String::NICmp( s, "[err_update]", 12 ) )       {
+		} else if ( GGameType & GAME_ET && !String::NICmp( s, "[err_update]", 12 ) ) {
 			String::NCpyZ( clc.q3_serverMessage, s + 12, sizeof ( clc.q3_serverMessage ) );
 			common->Error( "%s", clc.q3_serverMessage );
-		} else if ( GGameType & GAME_ET && !String::NICmp( s, "ET://", 5 ) )       {			// fretn
+		} else if ( GGameType & GAME_ET && !String::NICmp( s, "ET://", 5 ) ) {			// fretn
 			String::NCpyZ( clc.q3_serverMessage, s, sizeof ( clc.q3_serverMessage ) );
 			Cvar_Set( "com_errorMessage", clc.q3_serverMessage );
 			common->Error( "%s", clc.q3_serverMessage );
-		} else   {
+		} else {
 			String::NCpyZ( clc.q3_serverMessage, s, sizeof ( clc.q3_serverMessage ) );
 		}
 		common->Printf( "%s", clc.q3_serverMessage );
-	} else   {
+	} else {
 		const char* s = msg->ReadString();
 		String::NCpyZ( clc.q3_serverMessage, s, sizeof ( clc.q3_serverMessage ) );
 		common->Printf( "%s", s );
@@ -1081,13 +1081,13 @@ static void CLT3_ConnectionlessPacket( netadr_t from, QMsg* msg ) {
 	if ( !String::ICmp( c, "challengeResponse" ) ) {
 		if ( cls.state != CA_CONNECTING ) {
 			common->Printf( "Unwanted challenge response received.  Ignored.\n" );
-		} else   {
+		} else {
 			// start sending challenge repsonse instead of challenge request packets
 			clc.q3_challenge = String::Atoi( Cmd_Argv( 1 ) );
 			if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 				if ( Cmd_Argc() > 2 ) {
 					clc.wm_onlyVisibleClients = String::Atoi( Cmd_Argv( 2 ) );				// DHM - Nerve
-				} else   {
+				} else {
 					clc.wm_onlyVisibleClients = 0;
 				}
 			}
@@ -1245,15 +1245,15 @@ void CLT3_CheckTimeout() {
 		if ( ++cl.timeoutcount > 5 ) {			// timeoutcount saves debugger
 			if ( GGameType & GAME_WolfMP ) {
 				Cvar_Set( "com_errorMessage", CL_TranslateStringBuf( "Server connection timed out." ) );
-			} else if ( GGameType & GAME_ET )     {
+			} else if ( GGameType & GAME_ET ) {
 				Cvar_Set( "com_errorMessage", "Server connection timed out." );
-			} else   {
+			} else {
 				common->Printf( "\nServer connection timed out.\n" );
 			}
 			CL_Disconnect( true );
 			return;
 		}
-	} else   {
+	} else {
 		cl.timeoutcount = 0;
 	}
 }
@@ -1296,18 +1296,18 @@ void CLET_WWWDownload() {
 		if ( cls.et_bWWWDlDisconnected ) {
 			// reconnect to the server, which might send us to a new disconnected download
 			Cbuf_ExecuteText( EXEC_APPEND, "reconnect\n" );
-		} else   {
+		} else {
 			CL_AddReliableCommand( "wwwdl done" );
 			// tracking potential web redirects leading us to wrong checksum - only works in connected mode
 			if ( String::Length( clc.et_redirectedList ) + String::Length( cls.et_originalDownloadName ) + 1 >= ( int )sizeof ( clc.et_redirectedList ) ) {
 				// just to be safe
 				common->Printf( "ERROR: redirectedList overflow (%s)\n", clc.et_redirectedList );
-			} else   {
+			} else {
 				String::Cat( clc.et_redirectedList, sizeof ( clc.et_redirectedList ), "@" );
 				String::Cat( clc.et_redirectedList, sizeof ( clc.et_redirectedList ), cls.et_originalDownloadName );
 			}
 		}
-	} else   {
+	} else {
 		if ( cls.et_bWWWDlDisconnected ) {
 			// in a connected download, we'd tell the server about failure and wait for a reply
 			// but in this case we can't get anything from server
@@ -1317,7 +1317,7 @@ void CLET_WWWDownload() {
 			cls.et_bWWWDlDisconnected = false;	// need clearing structs before ERR_DROP, or it goes into endless reload
 			CLET_ClearStaticDownload();
 			common->Error( "%s", error );
-		} else   {
+		} else {
 			// see CLT3_ParseDownload, same abort strategy
 			common->Printf( "Download failure while getting '%s'\n", cls.et_downloadName );
 			CL_AddReliableCommand( "wwwdl fail" );

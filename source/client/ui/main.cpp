@@ -27,9 +27,9 @@
 void UI_Init() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Init();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_Init();
-	} else   {
+	} else {
 		UIT3_Init();
 	}
 }
@@ -43,9 +43,9 @@ void UI_KeyEvent( int key, bool down ) {
 void UI_KeyDownEvent( int key ) {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Keydown( key );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_Keydown( key );
-	} else   {
+	} else {
 		UIT3_KeyDownEvent( key );
 	}
 }
@@ -53,9 +53,9 @@ void UI_KeyDownEvent( int key ) {
 void UI_CharEvent( int key ) {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_CharEvent( key );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_CharEvent( key );
-	} else   {
+	} else {
 		UIT3_KeyEvent( key | K_CHAR_FLAG, true );
 	}
 }
@@ -69,9 +69,9 @@ void UI_MouseEvent( int dx, int dy ) {
 void UI_DrawMenu() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Draw();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_Draw();
-	} else   {
+	} else {
 		UIT3_Refresh( cls.realtime );
 	}
 }
@@ -86,7 +86,7 @@ bool UI_IsFullscreen() {
 void UI_ForceMenuOff() {
 	if ( GGameType & GAME_Quake2 ) {
 		MQ2_ForceMenuOff();
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		UIT3_ForceMenuOff();
 	}
 }
@@ -94,9 +94,9 @@ void UI_ForceMenuOff() {
 void UI_SetMainMenu() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Menu_Main_f();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_Menu_Main_f();
-	} else   {
+	} else {
 		UIT3_SetMainMenu();
 	}
 }
@@ -104,9 +104,9 @@ void UI_SetMainMenu() {
 void UI_SetInGameMenu() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		MQH_Menu_Main_f();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MQ2_Menu_Main_f();
-	} else   {
+	} else {
 		UIT3_SetInGameMenu();
 	}
 }
@@ -120,7 +120,7 @@ void CL_InitRenderer() {
 		Cvar* conheight = Cvar_Get( "conheight", "0", 0 );
 		if ( conwidth->integer ) {
 			viddef.width = conwidth->integer;
-		} else   {
+		} else {
 			viddef.width = 640;
 		}
 
@@ -152,16 +152,16 @@ void CL_InitRenderer() {
 			CLH2_InitPlayerTranslation();
 			CLH2_ClearEntityTextureArrays();
 			SbarH2_InitImages();
-		} else   {
+		} else {
 			Com_Memset( clq1_playertextures, 0, sizeof ( clq1_playertextures ) );
 			SbarQ1_InitImages();
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		viddef.width = cls.glconfig.vidWidth;
 		viddef.height = cls.glconfig.vidHeight;
 
 		char_texture = R_LoadQuake2FontImage( "pics/conchars.pcx" );
-	} else   {
+	} else {
 		// all drawing is done to a 480 pixels high virtual screen size
 		// and will be automatically scaled to the real resolution
 		viddef.width = 480 * cls.glconfig.windowAspect;
@@ -173,15 +173,15 @@ void CL_InitRenderer() {
 			cls.charSetShader = R_RegisterShader( "gfx/2d/bigchars" );
 			cls.consoleShader = R_RegisterShader( "console" );
 			cls.consoleShader2 = R_RegisterShader( "console2" );
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			cls.charSetShader = R_RegisterShader( "gfx/2d/hudchars" );
 			cls.consoleShader = R_RegisterShader( "console-16bit" );	// JPW NERVE shader works with 16bit
 			cls.consoleShader2 = R_RegisterShader( "console2-16bit" );		// JPW NERVE same
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			cls.charSetShader = R_RegisterShader( "gfx/2d/consolechars" );
 			cls.consoleShader = R_RegisterShader( "console-16bit" );	// JPW NERVE shader works with 16bit
 			cls.consoleShader2 = R_RegisterShader( "console2-16bit" );		// JPW NERVE same
-		} else   {
+		} else {
 			cls.charSetShader = R_RegisterShader( "gfx/2d/bigchars" );
 			cls.consoleShader = R_RegisterShader( "console" );
 		}

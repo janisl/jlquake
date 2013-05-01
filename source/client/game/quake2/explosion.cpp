@@ -277,11 +277,11 @@ void CLQ2_AddExplosions() {
 				if ( entity->skinNum < 0 ) {
 					entity->skinNum = 0;
 				}
-			} else   {
+			} else {
 				entity->renderfx |= RF_TRANSLUCENT;
 				if ( frame < 13 ) {
 					entity->skinNum = 5;
-				} else   {
+				} else {
 					entity->skinNum = 6;
 				}
 			}

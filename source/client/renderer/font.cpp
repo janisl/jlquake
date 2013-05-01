@@ -145,7 +145,7 @@ static glyphInfo_t* RE_ConstructGlyphInfo( unsigned char* imageOut, int* xOut, i
 		FT_Bitmap* bitmap = R_RenderGlyph( face->glyph, &glyph );
 		if ( bitmap ) {
 			glyph.xSkip = ( face->glyph->metrics.horiAdvance >> 6 ) + 1;
-		} else   {
+		} else {
 			return &glyph;
 		}
 
@@ -170,11 +170,11 @@ static glyphInfo_t* RE_ConstructGlyphInfo( unsigned char* imageOut, int* xOut, i
 				delete[] bitmap->buffer;
 				delete bitmap;
 				return &glyph;
-			} else   {
+			} else {
 				*xOut = 0;
 				*yOut += *maxHeight + 1;
 			}
-		} else if ( *yOut + *maxHeight + 1 >= 255 )     {
+		} else if ( *yOut + *maxHeight + 1 >= 255 ) {
 			*yOut = -1;
 			*xOut = -1;
 			delete[] bitmap->buffer;
@@ -212,7 +212,7 @@ static glyphInfo_t* RE_ConstructGlyphInfo( unsigned char* imageOut, int* xOut, i
 				dst += 256;
 
 			}
-		} else   {
+		} else {
 			for ( int i = 0; i < glyph.height; i++ ) {
 				Com_Memcpy( dst, src, glyph.pitch );
 				src += glyph.pitch;
@@ -272,7 +272,7 @@ void R_RegisterFont( const char* fontName, int pointSize, fontInfo_t* font ) {
 	char name[ 1024 ];
 	if ( GGameType & GAME_ET ) {
 		String::Sprintf( name, sizeof ( name ), "fonts/%s_%i.dat", fontName, pointSize );
-	} else   {
+	} else {
 		String::Sprintf( name, sizeof ( name ), "fonts/fontImage_%i.dat", pointSize );
 	}
 	for ( int i = 0; i < registeredFontCount; i++ ) {
@@ -407,7 +407,7 @@ void R_RegisterFont( const char* fontName, int pointSize, fontInfo_t* font ) {
 			yOut = 0;
 			delete[] imageBuff;
 			i++;
-		} else   {
+		} else {
 			Com_Memcpy( &font->glyphs[ i ], glyph, sizeof ( glyphInfo_t ) );
 			i++;
 		}

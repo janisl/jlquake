@@ -67,12 +67,12 @@ int QClipMap38::PointLeafnum_r( const vec3_t P, int Num ) const {
 		float d;
 		if ( Plane->type < 3 ) {
 			d = P[ Plane->type ] - Plane->dist;
-		} else   {
+		} else {
 			d = DotProduct( Plane->normal, P ) - Plane->dist;
 		}
 		if ( d < 0 ) {
 			Num = Node->children[ 1 ];
-		} else   {
+		} else {
 			Num = Node->children[ 0 ];
 		}
 	}
@@ -110,9 +110,9 @@ void QClipMap38::BoxLeafnums_r( leafList_t* ll, int NodeNum ) const {
 		int s = BOX_ON_PLANE_SIDE( ll->bounds[ 0 ], ll->bounds[ 1 ], plane );
 		if ( s == 1 ) {
 			NodeNum = node->children[ 0 ];
-		} else if ( s == 2 )     {
+		} else if ( s == 2 ) {
 			NodeNum = node->children[ 1 ];
-		} else   {
+		} else {
 			// go down both
 			if ( ll->topnode == -1 ) {
 				ll->topnode = NodeNum;
@@ -325,7 +325,7 @@ void QClipMap38::DecompressVis( const byte* in, byte* out ) {
 byte* QClipMap38::ClusterPVS( int Cluster ) {
 	if ( Cluster == -1 ) {
 		Com_Memset( pvsrow, 0, ( numclusters + 7 ) >> 3 );
-	} else   {
+	} else {
 		DecompressVis( visibility + vis->bitofs[ Cluster ][ BSP38DVIS_PVS ], pvsrow );
 	}
 	return pvsrow;
@@ -340,7 +340,7 @@ byte* QClipMap38::ClusterPVS( int Cluster ) {
 byte* QClipMap38::ClusterPHS( int Cluster ) {
 	if ( Cluster == -1 ) {
 		Com_Memset( phsrow, 0, ( numclusters + 7 ) >> 3 );
-	} else   {
+	} else {
 		DecompressVis( visibility + vis->bitofs[ Cluster ][ BSP38DVIS_PHS ], phsrow );
 	}
 	return phsrow;
@@ -446,7 +446,7 @@ void QClipMap38::AdjustAreaPortalState( int Area1, int Area2, bool Open ) {
 		if ( p->otherarea == Area2 ) {
 			if ( Open ) {
 				portalopen[ p->portalnum ]++;
-			} else   {
+			} else {
 				portalopen[ p->portalnum ]--;
 			}
 		}
@@ -497,7 +497,7 @@ int QClipMap38::WriteAreaBits( byte* Buffer, int Area ) {
 	if ( map_noareas->value ) {
 		// for debugging, send everything
 		Com_Memset( Buffer, 255, bytes );
-	} else   {
+	} else {
 		Com_Memset( Buffer, 0, bytes );
 
 		int floodnum = areas[ Area ].floodnum;

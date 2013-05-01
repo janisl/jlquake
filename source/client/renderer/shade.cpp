@@ -469,7 +469,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 						tess.svars.colors[ i ][ 3 ] *= alphaval;
 					}
 				}
-			} else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) )           {
+			} else if ( r_lightmap->integer && ( pStage->bundle[ 0 ].isLightmap || pStage->bundle[ 1 ].isLightmap ) ) {
 				// ydnar: lightmap stages should be GL_ONE GL_ZERO so they can be seen
 				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
 										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );

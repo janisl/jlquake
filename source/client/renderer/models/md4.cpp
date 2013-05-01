@@ -138,7 +138,7 @@ bool R_LoadMD4( model_t* mod, void* buffer, const char* mod_name ) {
 			shader_t* sh = R_FindShader( surf->shader, LIGHTMAP_NONE, true );
 			if ( sh->defaultShader ) {
 				surf->shaderIndex = 0;
-			} else   {
+			} else {
 				surf->shaderIndex = sh->index;
 			}
 
@@ -230,7 +230,7 @@ void RB_SurfaceAnim( md4Surface_t* surface ) {
 	if ( backEnd.currentEntity->e.oldframe == backEnd.currentEntity->e.frame ) {
 		backlerp = 0;
 		frontlerp = 1;
-	} else   {
+	} else {
 		backlerp = backEnd.currentEntity->e.backlerp;
 		frontlerp = 1.0f - backlerp;
 	}
@@ -262,7 +262,7 @@ void RB_SurfaceAnim( md4Surface_t* surface ) {
 	if ( !backlerp ) {
 		// no lerping needed
 		bonePtr = frame->bones;
-	} else   {
+	} else {
 		bonePtr = bones;
 		for ( int i = 0; i < header->numBones * 12; i++ ) {
 			( ( float* )bonePtr )[ i ] = frontlerp * ( ( float* )frame->bones )[ i ] +

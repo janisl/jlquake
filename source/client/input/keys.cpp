@@ -811,18 +811,18 @@ static int Key_StringToKeynum( const char* str ) {
 		int n1 = str[ 2 ];
 		if ( String::IsDigit( n1 ) ) {
 			n1 -= '0';
-		} else if ( n1 >= 'a' && n1 <= 'f' )     {
+		} else if ( n1 >= 'a' && n1 <= 'f' ) {
 			n1 = n1 - 'a' + 10;
-		} else   {
+		} else {
 			n1 = 0;
 		}
 
 		int n2 = str[ 3 ];
 		if ( String::IsDigit( n2 ) ) {
 			n2 -= '0';
-		} else if ( n2 >= 'a' && n2 <= 'f' )     {
+		} else if ( n2 >= 'a' && n2 <= 'f' ) {
 			n2 = n2 - 'a' + 10;
-		} else   {
+		} else {
 			n2 = 0;
 		}
 
@@ -861,11 +861,11 @@ const char* Key_KeynumToString( int keynum, bool translate ) {
 	if ( translate && GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
 		if ( cl_language->integer - 1 == LANGUAGE_FRENCH ) {
 			kn = keynames_f;	//use french
-		} else if ( cl_language->integer - 1 == LANGUAGE_GERMAN )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_GERMAN ) {
 			kn = keynames_d;	//use german
-		} else if ( cl_language->integer - 1 == LANGUAGE_ITALIAN )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_ITALIAN ) {
 			kn = keynames_i;	//use italian
-		} else if ( cl_language->integer - 1 == LANGUAGE_SPANISH )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_SPANISH ) {
 			kn = keynames_s;	//use spanish
 		}
 	}
@@ -938,7 +938,7 @@ void Key_GetKeysForBinding( const char* binding, int* key1, int* key2 ) {
 		if ( !String::ICmp( keys[ i ].binding, binding ) ) {
 			if ( *key1 == -1 ) {
 				*key1 = i;
-			} else   {
+			} else {
 				*key2 = i;
 				return;
 			}
@@ -996,7 +996,7 @@ static void Key_Bind_f() {
 	if ( c == 2 ) {
 		if ( keys[ b ].binding ) {
 			common->Printf( "\"%s\" = \"%s\"\n", Cmd_Argv( 1 ), keys[ b ].binding );
-		} else   {
+		} else {
 			common->Printf( "\"%s\" is not bound\n", Cmd_Argv( 1 ) );
 		}
 		return;
@@ -1109,7 +1109,7 @@ static void CL_AddKeyDownCommands( int key, unsigned time ) {
 					char cmd[ 1024 ];
 					String::Sprintf( cmd, sizeof ( cmd ), "%s %i %i\n", button, key, time );
 					Cbuf_AddText( cmd );
-				} else   {
+				} else {
 					// down-only command
 					Cbuf_AddText( button );
 					Cbuf_AddText( "\n" );
@@ -1124,7 +1124,7 @@ static void CL_AddKeyDownCommands( int key, unsigned time ) {
 				break;
 			}
 		}
-	} else   {
+	} else {
 		// down-only command
 		Cbuf_AddText( kb );
 		Cbuf_AddText( "\n" );
@@ -1150,7 +1150,7 @@ static void CL_AddKeyUpCommands( int key, unsigned time ) {
 				String::Sprintf( cmd, sizeof ( cmd ), "-%s %i %i\n", button + 1, key, time );
 				Cbuf_AddText( cmd );
 				keyevent = true;
-			} else if ( keyevent )     {
+			} else if ( keyevent ) {
 				// down-only command
 				Cbuf_AddText( button );
 				Cbuf_AddText( "\n" );
@@ -1181,7 +1181,7 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 		if ( keys[ key ].repeats == 1 ) {
 			anykeydown++;
 		}
-	} else   {
+	} else {
 		keys[ key ].repeats = 0;
 		anykeydown--;
 		if ( anykeydown < 0 ) {
@@ -1197,7 +1197,7 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 				if ( Cvar_VariableValue( "r_fullscreen" ) == 0 ) {
 					common->Printf( "Switching to fullscreen rendering\n" );
 					Cvar_Set( "r_fullscreen", "1" );
-				} else   {
+				} else {
 					common->Printf( "Switching to windowed rendering\n" );
 					Cvar_Set( "r_fullscreen", "0" );
 				}
@@ -1254,7 +1254,7 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 		// the console key should never be used as a char
 		consoleButtonWasPressed = true;
 		return;
-	} else   {
+	} else {
 		consoleButtonWasPressed = false;
 	}
 
@@ -1325,10 +1325,10 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 		if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
 			if ( in_keyCatchers & KEYCATCH_CONSOLE ) {		// get rid of the console
 				Con_ToggleConsole_f();
-			} else   {
+			} else {
 				UI_SetInGameMenu();
 			}
-		} else   {
+		} else {
 			if ( GGameType & GAME_QuakeHexen && in_keyCatchers & KEYCATCH_CONSOLE && ( !( GGameType & GAME_HexenWorld ) || cls.state == CA_ACTIVE ) ) {
 				Con_ToggleConsole_f();
 				return;
@@ -1378,7 +1378,7 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 			if ( !( GGameType & GAME_ET ) || !onlybinds || UIET_WantsBindKeys() ) {
 				UI_KeyEvent( key, down );
 			}
-		} else if ( GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME )     {
+		} else if ( GGameType & GAME_Tech3 && in_keyCatchers & KEYCATCH_CGAME ) {
 			if ( !( GGameType & GAME_ET ) || !onlybinds || CLET_WantsBindKeys() ) {
 				CLT3_KeyEvent( key, down );
 			}
@@ -1425,34 +1425,34 @@ void CL_KeyEvent( int key, bool down, unsigned time ) {
 
 		if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 			Con_MessageKeyEvent( key );
-		} else if ( in_keyCatchers & KEYCATCH_UI )     {
+		} else if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_KeyDownEvent( key );
-		} else   {
+		} else {
 			Con_KeyEvent( key );
 		}
-	} else   {
+	} else {
 		// distribute the key down event to the apropriate handler
 		if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 			if ( !onlybinds ) {
 				Con_KeyEvent( key );
 			}
-		} else if ( in_keyCatchers & KEYCATCH_UI && !bypassMenu )     {
+		} else if ( in_keyCatchers & KEYCATCH_UI && !bypassMenu ) {
 			if ( !( GGameType & GAME_ET ) || !onlybinds || UIET_WantsBindKeys() ) {
 				UI_KeyDownEvent( key );
 			}
-		} else if ( in_keyCatchers & KEYCATCH_CGAME && !bypassMenu )     {
+		} else if ( in_keyCatchers & KEYCATCH_CGAME && !bypassMenu ) {
 			if ( !( GGameType & GAME_ET ) || !onlybinds || CLET_WantsBindKeys() ) {
 				CLT3_KeyEvent( key, down );
 			}
-		} else if ( in_keyCatchers & KEYCATCH_MESSAGE )     {
+		} else if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 			if ( !onlybinds ) {
 				Con_MessageKeyEvent( key );
 			}
-		} else if ( cls.state == CA_DISCONNECTED )     {
+		} else if ( cls.state == CA_DISCONNECTED ) {
 			if ( !onlybinds ) {
 				Con_KeyEvent( key );
 			}
-		} else   {
+		} else {
 			// send the bound action
 			CL_AddKeyDownCommands( key, time );
 		}
@@ -1479,13 +1479,13 @@ void CL_CharEvent( int key ) {
 	// distribute the key down event to the apropriate handler
 	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		Con_CharEvent( key );
-	} else if ( in_keyCatchers & KEYCATCH_UI )     {
+	} else if ( in_keyCatchers & KEYCATCH_UI ) {
 		UI_CharEvent( key );
-	} else if ( GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME )     {
+	} else if ( GGameType & GAME_ET && in_keyCatchers & KEYCATCH_CGAME ) {
 		CLT3_KeyEvent( key | K_CHAR_FLAG, true );
-	} else if ( in_keyCatchers & KEYCATCH_MESSAGE )     {
+	} else if ( in_keyCatchers & KEYCATCH_MESSAGE ) {
 		Con_MessageCharEvent( key );
-	} else if ( cls.state == CA_DISCONNECTED )     {
+	} else if ( cls.state == CA_DISCONNECTED ) {
 		Con_CharEvent( key );
 	}
 }

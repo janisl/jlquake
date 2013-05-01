@@ -172,7 +172,7 @@ static weaponconfig_t* LoadWeaponConfig( const char* filename ) {
 			}
 			Com_Memcpy( &wc->weaponinfo[ weaponinfo.number ], &weaponinfo, sizeof ( weaponinfo_t ) );
 			wc->weaponinfo[ weaponinfo.number ].valid = true;
-		} else if ( !String::Cmp( token.string, "projectileinfo" ) )       {
+		} else if ( !String::Cmp( token.string, "projectileinfo" ) ) {
 			if ( wc->numprojectiles >= max_projectileinfo ) {
 				BotImport_Print( PRT_ERROR, "more than %d projectiles defined in %s\n", max_projectileinfo, path );
 				Mem_Free( wc );
@@ -186,7 +186,7 @@ static weaponconfig_t* LoadWeaponConfig( const char* filename ) {
 				return NULL;
 			}
 			wc->numprojectiles++;
-		} else   {
+		} else {
 			BotImport_Print( PRT_ERROR, "unknown definition %s in %s\n", token.string, path );
 			Mem_Free( wc );
 			FreeSource( source );

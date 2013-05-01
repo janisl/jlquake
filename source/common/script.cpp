@@ -117,7 +117,7 @@ static void PS_CreatePunctuationTable( script_t* script, punctuation_t* punctuat
 				newp->next = p;
 				if ( lastp ) {
 					lastp->next = newp;
-				} else   {
+				} else {
 					script->punctuationtable[ ( unsigned int )newp->p[ 0 ] ] = newp;
 				}
 				break;
@@ -128,7 +128,7 @@ static void PS_CreatePunctuationTable( script_t* script, punctuation_t* punctuat
 			newp->next = NULL;
 			if ( lastp ) {
 				lastp->next = newp;
-			} else   {
+			} else {
 				script->punctuationtable[ ( unsigned int )newp->p[ 0 ] ] = newp;
 			}
 		}
@@ -139,7 +139,7 @@ void SetScriptPunctuations( script_t* script, punctuation_t* p ) {
 	if ( p ) {
 		PS_CreatePunctuationTable( script, p );
 		script->punctuations = p;
-	} else   {
+	} else {
 		PS_CreatePunctuationTable( script, default_punctuations );
 		script->punctuations = default_punctuations;
 	}
@@ -149,7 +149,7 @@ script_t* LoadScriptFile( const char* filename ) {
 	char pathname[ MAX_QPATH ];
 	if ( String::Length( basefolder ) ) {
 		String::Sprintf( pathname, sizeof ( pathname ), "%s/%s", basefolder, filename );
-	} else   {
+	} else {
 		String::Sprintf( pathname, sizeof ( pathname ), "%s", filename );
 	}
 	fileHandle_t fp;
@@ -332,11 +332,11 @@ static bool PS_ReadEscapeCharacter( script_t* script, char* ch ) {
 			c = *script->script_p;
 			if ( c >= '0' && c <= '9' ) {
 				c = c - '0';
-			} else if ( c >= 'A' && c <= 'Z' )     {
+			} else if ( c >= 'A' && c <= 'Z' ) {
 				c = c - 'A' + 10;
-			} else if ( c >= 'a' && c <= 'z' )     {
+			} else if ( c >= 'a' && c <= 'z' ) {
 				c = c - 'a' + 10;
-			} else   {
+			} else {
 				break;
 			}
 			val = ( val << 4 ) + c;
@@ -359,7 +359,7 @@ static bool PS_ReadEscapeCharacter( script_t* script, char* ch ) {
 			c = *script->script_p;
 			if ( c >= '0' && c <= '9' ) {
 				c = c - '0';
-			} else   {
+			} else {
 				break;
 			}
 			val = val * 10 + c;
@@ -387,7 +387,7 @@ static bool PS_ReadEscapeCharacter( script_t* script, char* ch ) {
 static bool PS_ReadString( script_t* script, token_t* token, int quote ) {
 	if ( quote == '\"' ) {
 		token->type = TT_STRING;
-	} else   {
+	} else {
 		token->type = TT_LITERAL;
 	}
 
@@ -433,7 +433,7 @@ static bool PS_ReadString( script_t* script, token_t* token, int quote ) {
 			}
 			//step over the new leading double quote
 			script->script_p++;
-		} else   {
+		} else {
 			if ( *script->script_p == '\0' ) {
 				token->string[ len ] = 0;
 				ScriptError( script, "missing trailing quote" );
@@ -475,40 +475,40 @@ static void NumberValue( const char* string, int subtype, unsigned int* intvalue
 				*floatvalue = *floatvalue + ( long double )( *string - '0' ) /
 							  ( long double )dotfound;
 				dotfound *= 10;
-			} else   {
+			} else {
 				*floatvalue = *floatvalue * 10.0 + ( long double )( *string - '0' );
 			}
 			string++;
 		}
 		*intvalue = ( unsigned int )*floatvalue;
-	} else if ( subtype & TT_DECIMAL )     {
+	} else if ( subtype & TT_DECIMAL ) {
 		while ( *string ) {
 			*intvalue = *intvalue * 10 + ( *string++ - '0' );
 		}
 		*floatvalue = *intvalue;
-	} else if ( subtype & TT_HEX )     {
+	} else if ( subtype & TT_HEX ) {
 		//step over the leading 0x or 0X
 		string += 2;
 		while ( *string ) {
 			*intvalue <<= 4;
 			if ( *string >= 'a' && *string <= 'f' ) {
 				*intvalue += *string - 'a' + 10;
-			} else if ( *string >= 'A' && *string <= 'F' )     {
+			} else if ( *string >= 'A' && *string <= 'F' ) {
 				*intvalue += *string - 'A' + 10;
-			} else   {
+			} else {
 				*intvalue += *string - '0';
 			}
 			string++;
 		}
 		*floatvalue = *intvalue;
-	} else if ( subtype & TT_OCTAL )     {
+	} else if ( subtype & TT_OCTAL ) {
 		//step over the first zero
 		string += 1;
 		while ( *string ) {
 			*intvalue = ( *intvalue << 3 ) + ( *string++ - '0' );
 		}
 		*floatvalue = *intvalue;
-	} else if ( subtype & TT_BINARY )     {
+	} else if ( subtype & TT_BINARY ) {
 		//step over the leading 0b or 0B
 		string += 2;
 		while ( *string ) {
@@ -559,7 +559,7 @@ static bool PS_ReadNumber( script_t* script, token_t* token ) {
 			c = *script->script_p;
 		}
 		token->subtype |= TT_BINARY;
-	} else   {	//decimal or octal integer or floating point number
+	} else {	//decimal or octal integer or floating point number
 		bool octal = false;
 		int dot = false;
 		if ( *script->script_p == '0' ) {
@@ -569,9 +569,9 @@ static bool PS_ReadNumber( script_t* script, token_t* token ) {
 			char c = *script->script_p;
 			if ( c == '.' ) {
 				dot = true;
-			} else if ( c == '8' || c == '9' )     {
+			} else if ( c == '8' || c == '9' ) {
 				octal = false;
-			} else if ( c < '0' || c > '9' )     {
+			} else if ( c < '0' || c > '9' ) {
 				break;
 			}
 			token->string[ len++ ] = *script->script_p++;
@@ -582,7 +582,7 @@ static bool PS_ReadNumber( script_t* script, token_t* token ) {
 		}
 		if ( octal ) {
 			token->subtype |= TT_OCTAL;
-		} else   {
+		} else {
 			token->subtype |= TT_DECIMAL;
 		}
 		if ( dot ) {
@@ -818,7 +818,7 @@ bool PS_ExpectTokenType( script_t* script, int type, int subtype, token_t* token
 			ScriptError( script, "expected %s, found %s", str, token->string );
 			return false;
 		}
-	} else if ( token->type == TT_PUNCTUATION )     {
+	} else if ( token->type == TT_PUNCTUATION ) {
 		if ( subtype < 0 ) {
 			ScriptError( script, "BUG: wrong punctuation subtype" );
 			return false;

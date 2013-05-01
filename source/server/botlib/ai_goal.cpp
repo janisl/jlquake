@@ -223,7 +223,7 @@ static itemconfig_t* LoadItemConfig( const char* filename ) {
 			}
 			ii->number = ic->numiteminfo;
 			ic->numiteminfo++;
-		} else   {
+		} else {
 			SourceError( source, "unknown definition %s\n", token.string );
 			Mem_Free( ic );
 			FreeSource( source );
@@ -297,7 +297,7 @@ static void AddLevelItemToList( levelitem_t* li ) {
 static void RemoveLevelItemFromList( levelitem_t* li ) {
 	if ( li->prev ) {
 		li->prev->next = li->next;
-	} else   {
+	} else {
 		levelitems = li->next;
 	}
 	if ( li->next ) {
@@ -430,7 +430,7 @@ void BotSetAvoidGoalTime( int goalstate, int number, float avoidtime ) {
 			}
 		}
 		return;
-	} else   {
+	} else {
 		BotAddToAvoidGoals( gs, number, avoidtime );
 	}
 }
@@ -454,39 +454,39 @@ int BotGetLevelItemGoalQ3( int index, const char* name, bot_goal_q3_t* goal ) {
 				if ( li->flags & IFL_NOTSINGLE ) {
 					continue;
 				}
-			} else if ( g_gametype >= Q3GT_TEAM )     {
+			} else if ( g_gametype >= Q3GT_TEAM ) {
 				if ( li->flags & IFL_NOTTEAM ) {
 					continue;
 				}
-			} else   {
+			} else {
 				if ( li->flags & IFL_NOTFREE ) {
 					continue;
 				}
 			}
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			if ( g_gametype == Q3GT_SINGLE_PLAYER ) {
 				if ( li->flags & IFL_NOTSINGLE ) {
 					continue;
 				}
-			} else if ( g_gametype >= Q3GT_TEAM )     {
+			} else if ( g_gametype >= Q3GT_TEAM ) {
 				if ( li->flags & IFL_NOTTEAM ) {
 					continue;
 				}
-			} else   {
+			} else {
 				if ( li->flags & IFL_NOTFREE ) {
 					continue;
 				}
 			}
-		} else   {
+		} else {
 			if ( g_gametype == Q3GT_SINGLE_PLAYER ) {
 				if ( li->flags & IFL_NOTSINGLE ) {
 					continue;
 				}
-			} else if ( g_gametype >= Q3GT_TEAM )     {
+			} else if ( g_gametype >= Q3GT_TEAM ) {
 				if ( li->flags & IFL_NOTTEAM ) {
 					continue;
 				}
-			} else   {
+			} else {
 				if ( li->flags & IFL_NOTFREE ) {
 					continue;
 				}
@@ -771,7 +771,7 @@ void BotFreeGoalState( int handle ) {
 int BotSetupGoalAI( bool singleplayer ) {
 	if ( GGameType & GAME_ET ) {
 		g_singleplayer = singleplayer;
-	} else   {
+	} else {
 		//check if teamplay is on
 		g_gametype = LibVarValue( "g_gametype", "0" );
 	}
@@ -990,7 +990,7 @@ void BotInitLevelItems() {
 		if ( goalareanum ) {
 			li->goalareanum = goalareanum;
 			VectorCopy( origin, li->goalorigin );
-		} else   {
+		} else {
 			//get the item goal area and goal origin
 			li->goalareanum = AAS_BestReachableArea( origin,
 				ic->iteminfo[ i ].mins, ic->iteminfo[ i ].maxs,
@@ -1066,7 +1066,7 @@ void BotUpdateEntityItems() {
 						FreeLevelItem( li );
 						li = NULL;
 						break;
-					} else   {
+					} else {
 						if ( entinfo.origin[ 0 ] != li->origin[ 0 ] ||
 							 entinfo.origin[ 1 ] != li->origin[ 1 ] ||
 							 entinfo.origin[ 2 ] != li->origin[ 2 ] ) {
@@ -1079,7 +1079,7 @@ void BotUpdateEntityItems() {
 						break;
 					}
 				}
-			} else   {
+			} else {
 				//if the model of the level item and the entity are different
 				if ( ic->iteminfo[ li->iteminfo ].modelindex != modelindex ) {
 					continue;
@@ -1126,11 +1126,11 @@ void BotUpdateEntityItems() {
 					if ( li->flags & IFL_NOTSINGLE ) {
 						continue;
 					}
-				} else if ( g_gametype >= Q3GT_TEAM )     {
+				} else if ( g_gametype >= Q3GT_TEAM ) {
 					if ( li->flags & IFL_NOTTEAM ) {
 						continue;
 					}
-				} else   {
+				} else {
 					if ( li->flags & IFL_NOTFREE ) {
 						continue;
 					}
@@ -1275,16 +1275,16 @@ bool BotChooseLTGItem( int goalstate, const vec3_t origin, const int* inventory,
 					continue;
 				}
 			}
-		} else   {
+		} else {
 			if ( g_gametype == Q3GT_SINGLE_PLAYER ) {
 				if ( li->flags & IFL_NOTSINGLE ) {
 					continue;
 				}
-			} else if ( g_gametype >= Q3GT_TEAM )     {
+			} else if ( g_gametype >= Q3GT_TEAM ) {
 				if ( li->flags & IFL_NOTTEAM ) {
 					continue;
 				}
-			} else   {
+			} else {
 				if ( li->flags & IFL_NOTFREE ) {
 					continue;
 				}
@@ -1373,7 +1373,7 @@ bool BotChooseLTGItem( int goalstate, const vec3_t origin, const int* inventory,
 		//if it's a dropped item
 		if ( bestitem->timeout ) {
 			avoidtime = AVOID_DROPPED_TIME;
-		} else   {
+		} else {
 			avoidtime = iteminfo->respawntime;
 			if ( !avoidtime ) {
 				avoidtime = AVOID_DEFAULT_TIME;
@@ -1382,7 +1382,7 @@ bool BotChooseLTGItem( int goalstate, const vec3_t origin, const int* inventory,
 				avoidtime = AVOID_MINIMUM_TIME;
 			}
 		}
-	} else   {
+	} else {
 		avoidtime = iteminfo->respawntime * 0.5;
 		if ( avoidtime < 10 ) {
 			avoidtime = AVOID_DEFAULT_TIME;
@@ -1425,7 +1425,7 @@ static bool BotChooseNBGItem( int goalstate, const vec3_t origin, const int* inv
 	int ltg_time;
 	if ( ltg ) {
 		ltg_time = AAS_AreaTravelTimeToGoalArea( areanum, origin, ltg->areanum, travelflags );
-	} else   {
+	} else {
 		ltg_time = 99999;
 	}
 	//the item configuration
@@ -1444,16 +1444,16 @@ static bool BotChooseNBGItem( int goalstate, const vec3_t origin, const int* inv
 					continue;
 				}
 			}
-		} else   {
+		} else {
 			if ( g_gametype == Q3GT_SINGLE_PLAYER ) {
 				if ( li->flags & IFL_NOTSINGLE ) {
 					continue;
 				}
-			} else if ( g_gametype >= Q3GT_TEAM )     {
+			} else if ( g_gametype >= Q3GT_TEAM ) {
 				if ( li->flags & IFL_NOTTEAM ) {
 					continue;
 				}
-			} else   {
+			} else {
 				if ( li->flags & IFL_NOTFREE ) {
 					continue;
 				}
@@ -1550,7 +1550,7 @@ static bool BotChooseNBGItem( int goalstate, const vec3_t origin, const int* inv
 		//if it's a dropped item
 		if ( bestitem->timeout ) {
 			avoidtime = AVOID_DROPPED_TIME;
-		} else   {
+		} else {
 			avoidtime = iteminfo->respawntime;
 			if ( !avoidtime ) {
 				avoidtime = AVOID_DEFAULT_TIME;
@@ -1559,7 +1559,7 @@ static bool BotChooseNBGItem( int goalstate, const vec3_t origin, const int* inv
 				avoidtime = AVOID_MINIMUM_TIME;
 			}
 		}
-	} else   {
+	} else {
 		avoidtime = iteminfo->respawntime * 0.5;
 		if ( avoidtime < 10 ) {
 			avoidtime = AVOID_DEFAULT_TIME;

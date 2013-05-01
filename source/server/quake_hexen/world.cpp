@@ -132,7 +132,7 @@ void SVQH_LinkEdict( qhedict_t* ent, bool touch_triggers ) {
 			ent->v.absmin[ i ] = ent->GetOrigin()[ i ] - max;
 			ent->v.absmax[ i ] = ent->GetOrigin()[ i ] + max;
 		}
-	} else   {
+	} else {
 		VectorAdd( ent->GetOrigin(), ent->GetMins(), ent->v.absmin );
 		VectorAdd( ent->GetOrigin(), ent->GetMaxs(), ent->v.absmax );
 	}
@@ -146,7 +146,7 @@ void SVQH_LinkEdict( qhedict_t* ent, bool touch_triggers ) {
 		ent->v.absmin[ 1 ] -= 15;
 		ent->v.absmax[ 0 ] += 15;
 		ent->v.absmax[ 1 ] += 15;
-	} else   {
+	} else {
 		// because movement is clipped an epsilon away from an actual edge,
 		// we must fully check even when bounding boxes don't quite touch
 		ent->v.absmin[ 0 ] -= 1;
@@ -175,9 +175,9 @@ void SVQH_LinkEdict( qhedict_t* ent, bool touch_triggers ) {
 		}
 		if ( ent->v.absmin[ node->axis ] > node->dist ) {
 			node = node->children[ 0 ];
-		} else if ( ent->v.absmax[ node->axis ] < node->dist )       {
+		} else if ( ent->v.absmax[ node->axis ] < node->dist ) {
 			node = node->children[ 1 ];
-		} else   {
+		} else {
 			break;		// crosses the node
 		}
 	}
@@ -185,7 +185,7 @@ void SVQH_LinkEdict( qhedict_t* ent, bool touch_triggers ) {
 	// link it in
 	if ( ent->GetSolid() == QHSOLID_TRIGGER ) {
 		InsertLinkBefore( &ent->area, &node->trigger_edicts );
-	} else   {
+	} else {
 		InsertLinkBefore( &ent->area, &node->solid_edicts );
 	}
 
@@ -233,19 +233,19 @@ static clipHandle_t SVQH_HullForEntity( qhedict_t* ent, const vec3_t mins,
 		if ( GGameType & GAME_Hexen2 && move_ent->GetHull() ) {	// Entity is specifying which hull to use
 			int index = move_ent->GetHull() - 1;
 			hull = CM_ModelHull( model, index, clip_mins, clip_maxs );
-		} else   {	// Using the old way uses size to determine hull to use
+		} else {	// Using the old way uses size to determine hull to use
 			if ( size[ 0 ] < 3 ) {
 				hull = CM_ModelHull( model, 0, clip_mins, clip_maxs );
 			} else if ( GGameType & GAME_Hexen2 && GGameType & GAME_H2Portals &&
 						( size[ 0 ] <= 8 ) && ( ( int )( sv.qh_edicts->GetSpawnFlags() ) & 1 ) ) {	// Pentacles
 				hull = CM_ModelHull( model, 4, clip_mins, clip_maxs );
-			} else if ( GGameType & GAME_Hexen2 && size[ 0 ] <= 32 && size[ 2 ] <= 28 )         {	// Half Player
+			} else if ( GGameType & GAME_Hexen2 && size[ 0 ] <= 32 && size[ 2 ] <= 28 ) {	// Half Player
 				hull = CM_ModelHull( model, 3, clip_mins, clip_maxs );
-			} else if ( size[ 0 ] <= 32 )       {
+			} else if ( size[ 0 ] <= 32 ) {
 				hull = CM_ModelHull( model, 1, clip_mins, clip_maxs );
-			} else if ( GGameType & GAME_Hexen2 )     {	// Golem
+			} else if ( GGameType & GAME_Hexen2 ) {	// Golem
 				hull = CM_ModelHull( model, 5, clip_mins, clip_maxs );
-			} else   {
+			} else {
 				hull = CM_ModelHull( model, 2, clip_mins, clip_maxs );
 			}
 		}
@@ -260,7 +260,7 @@ static clipHandle_t SVQH_HullForEntity( qhedict_t* ent, const vec3_t mins,
 			}
 		}
 		VectorAdd( offset, ent->GetOrigin(), offset );
-	} else   {	// create a temp hull from bounding box sizes
+	} else {	// create a temp hull from bounding box sizes
 
 		VectorSubtract( ent->GetMins(), maxs, hullmins );
 		VectorSubtract( ent->GetMaxs(), mins, hullmaxs );
@@ -366,7 +366,7 @@ static void SV_MoveBounds( const vec3_t start, const vec3_t mins, const vec3_t m
 		if ( end[ i ] > start[ i ] ) {
 			boxmins[ i ] = start[ i ] + mins[ i ] - 1;
 			boxmaxs[ i ] = end[ i ] + maxs[ i ] + 1;
-		} else   {
+		} else {
 			boxmins[ i ] = end[ i ] + mins[ i ] - 1;
 			boxmaxs[ i ] = start[ i ] + maxs[ i ] + 1;
 		}
@@ -424,7 +424,7 @@ static void SV_ClipToLinks( const worldSector_t* node, qhmoveclip_t* clip ) {
 		q1trace_t trace;
 		if ( ( int )touch->GetFlags() & QHFL_MONSTER ) {
 			trace = SV_ClipMoveToEntity( touch, clip->start, clip->mins2, clip->maxs2, clip->end, touch, clip->type );
-		} else   {
+		} else {
 			trace = SV_ClipMoveToEntity( touch, clip->start, clip->mins, clip->maxs, clip->end, touch, clip->type );
 		}
 		if ( trace.allsolid || trace.startsolid ||
@@ -433,10 +433,10 @@ static void SV_ClipToLinks( const worldSector_t* node, qhmoveclip_t* clip ) {
 			if ( clip->trace.startsolid ) {
 				clip->trace = trace;
 				clip->trace.startsolid = true;
-			} else   {
+			} else {
 				clip->trace = trace;
 			}
-		} else if ( trace.startsolid )     {
+		} else if ( trace.startsolid ) {
 			clip->trace.startsolid = true;
 		}
 	}
@@ -474,7 +474,7 @@ q1trace_t SVQH_Move( const vec3_t start, const vec3_t mins, const vec3_t maxs, c
 			clip.mins2[ i ] = -15;
 			clip.maxs2[ i ] = 15;
 		}
-	} else   {
+	} else {
 		VectorCopy( mins, clip.mins2 );
 		VectorCopy( maxs, clip.maxs2 );
 	}
@@ -496,7 +496,7 @@ q1trace_t SVQH_MoveHull0( const vec3_t start, const vec3_t mins, const vec3_t ma
 		q1trace_t trace = SVQH_Move( start, mins, maxs, end, type, passedict );
 		passedict->SetHull( saveHull );
 		return trace;
-	} else   {
+	} else {
 		return SVQH_Move( start, mins, maxs, end, type, passedict );
 	}
 }

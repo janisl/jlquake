@@ -108,18 +108,18 @@ bool SNDDMA_Init() {
 		ioctl( audio_fd, SNDCTL_DSP_GETFMTS, &fmt );
 		if ( fmt & AFMT_S16_LE ) {
 			dma.samplebits = 16;
-		} else if ( fmt & AFMT_U8 )     {
+		} else if ( fmt & AFMT_U8 ) {
 			dma.samplebits = 8;
 		}
 	}
 
 	if ( s_khz->integer == 44 ) {
 		dma.speed = 44100;
-	} else if ( s_khz->integer == 22 )     {
+	} else if ( s_khz->integer == 22 ) {
 		dma.speed = 22050;
-	} else if ( s_khz->integer == 11 )     {
+	} else if ( s_khz->integer == 11 ) {
 		dma.speed = 11025;
-	} else   {
+	} else {
 		dma.speed = 0;
 	}
 
@@ -152,7 +152,7 @@ bool SNDDMA_Init() {
 	}
 	if ( tmp ) {
 		dma.channels = 2;
-	} else   {
+	} else {
 		dma.channels = 1;
 	}
 
@@ -171,7 +171,7 @@ bool SNDDMA_Init() {
 			close( audio_fd );
 			return 0;
 		}
-	} else if ( dma.samplebits == 8 )     {
+	} else if ( dma.samplebits == 8 ) {
 		tmp = AFMT_U8;
 		if ( ioctl( audio_fd, SNDCTL_DSP_SETFMT, &tmp ) < 0 ) {
 			perror( snddevice->string );
@@ -179,7 +179,7 @@ bool SNDDMA_Init() {
 			close( audio_fd );
 			return 0;
 		}
-	} else   {
+	} else {
 		perror( snddevice->string );
 		common->Printf( "%d-bit sound not supported.", dma.samplebits );
 		close( audio_fd );

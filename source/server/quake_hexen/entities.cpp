@@ -144,7 +144,7 @@ static void SVQ1_WriteEntity( qhedict_t* ent, int e, QMsg* msg ) {
 	}
 	if ( bits & Q1U_LONGENTITY ) {
 		msg->WriteShort( e );
-	} else   {
+	} else {
 		msg->WriteByte( e );
 	}
 
@@ -249,7 +249,7 @@ void SVH2_PrepareClientEntities( client_t* client, qhedict_t* clent, QMsg* msg )
 		// Reference expired in current sequence
 		client->h2_current_frame = 1;
 		client->h2_current_sequence++;
-	} else if ( client->h2_last_frame >= 1 && client->h2_last_frame <= client->h2_current_frame )     {
+	} else if ( client->h2_last_frame >= 1 && client->h2_last_frame <= client->h2_current_frame ) {
 		// Got a valid frame
 		*reference = state->frames[ client->h2_last_frame ];
 
@@ -259,7 +259,7 @@ void SVH2_PrepareClientEntities( client_t* client, qhedict_t* clent, QMsg* msg )
 				qhedict_t* ent = QH_EDICT_NUM( e );
 				if ( ent->h2_baseline.ClearCount[ client_num ] < CLEAR_LIMIT ) {
 					ent->h2_baseline.ClearCount[ client_num ]++;
-				} else if ( ent->h2_baseline.ClearCount[ client_num ] == CLEAR_LIMIT )       {
+				} else if ( ent->h2_baseline.ClearCount[ client_num ] == CLEAR_LIMIT ) {
 					ent->h2_baseline.ClearCount[ client_num ] = 3;
 					reference->states[ i ].flags &= ~ENT_CLEARED;
 				}
@@ -267,7 +267,7 @@ void SVH2_PrepareClientEntities( client_t* client, qhedict_t* clent, QMsg* msg )
 		}
 		client->h2_current_frame = 1;
 		client->h2_current_sequence++;
-	} else   {
+	} else {
 		// Normal frame advance
 		client->h2_current_frame++;
 		if ( client->h2_current_frame > H2MAX_FRAMES + 1 ) {
@@ -307,7 +307,7 @@ void SVH2_PrepareClientEntities( client_t* client, qhedict_t* clent, QMsg* msg )
 	if ( clent->GetCameraMode() ) {
 		qhedict_t* ent = PROG_TO_EDICT( clent->GetCameraMode() );
 		VectorCopy( ent->GetOrigin(), org );
-	} else   {
+	} else {
 		VectorAdd( clent->GetOrigin(), clent->GetViewOfs(), org );
 	}
 
@@ -355,7 +355,7 @@ skipA:
 				if ( !DoPlayer ) {
 					IgnoreEnt = true;
 				}
-			} else if ( flagtest & QHFL_MONSTER )     {
+			} else if ( flagtest & QHFL_MONSTER ) {
 				if ( !DoMonsters ) {
 					IgnoreEnt = true;
 				}
@@ -365,7 +365,7 @@ skipA:
 				if ( !DoMissiles ) {
 					IgnoreEnt = true;
 				}
-			} else   {
+			} else {
 				if ( !DoMisc ) {
 					IgnoreEnt = true;
 				}
@@ -388,10 +388,10 @@ skipA:
 				RemoveList[ NumToRemove ] = e;
 				NumToRemove++;
 				continue;
-			} else   {
+			} else {
 				ref_ent = &reference->states[ position ];
 			}
-		} else   {
+		} else {
 			if ( DoRemove || IgnoreEnt ) {
 				continue;
 			}
@@ -544,7 +544,7 @@ skipA:
 
 		if ( bits & H2U_LONGENTITY ) {
 			msg->WriteShort( e );
-		} else   {
+		} else {
 			msg->WriteByte( e );
 		}
 
@@ -687,7 +687,7 @@ static void SVHW_EmitMissileUpdate( QMsg* msg ) {
 		int type;
 		if ( fabs( ent->GetScale() - 0.1 ) < 0.05 ) {
 			type = 1;	//assume ice mace
-		} else   {
+		} else {
 			type = 2;	//assume magic missile
 
 		}
@@ -923,7 +923,7 @@ static void SVHW_WriteDelta( h2entity_state_t* from, h2entity_state_t* to, QMsg*
 		String::Cpy( NewName, PR_GetString( ent->GetModel() ) );
 		if ( client->h2_playerclass <= 0 || client->h2_playerclass > MAX_PLAYER_CLASS ) {
 			NewName[ String::Length( NewName ) - 5 ] = '1';
-		} else   {
+		} else {
 			NewName[ String::Length( NewName ) - 5 ] = client->h2_playerclass + 48;
 		}
 		temp_index = SVQH_ModelIndex( NewName );
@@ -984,7 +984,7 @@ static void SVHW_WriteDelta( h2entity_state_t* from, h2entity_state_t* to, QMsg*
 	if ( bits & HWU_MODEL ) {
 		if ( bits & HWU_MODEL16 ) {
 			msg->WriteShort( temp_index );
-		} else   {
+		} else {
 			msg->WriteByte( temp_index );
 		}
 	}
@@ -1044,7 +1044,7 @@ static void SVQW_EmitPacketEntities( client_t* client, qwpacket_entities_t* to, 
 
 		msg->WriteByte( qwsvc_deltapacketentities );
 		msg->WriteByte( client->qh_delta_sequence );
-	} else   {
+	} else {
 		oldmax = 0;	// no delta update
 		from = NULL;
 
@@ -1096,7 +1096,7 @@ static void SVHW_EmitPacketEntities( client_t* client, hwpacket_entities_t* to, 
 
 		msg->WriteByte( hwsvc_deltapacketentities );
 		msg->WriteByte( client->qh_delta_sequence );
-	} else   {
+	} else {
 		oldmax = 0;	// no delta update
 		from = NULL;
 
@@ -1190,7 +1190,7 @@ static void SVQW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 
 		if ( cl->qh_spectator ) {	// only sent origin and velocity to spectators
 			pflags &= QWPF_VELOCITY1ND | QWPF_VELOCITY2 | QWPF_VELOCITY3;
-		} else if ( ent == clent )     {// don't send a lot of data on personal entity
+		} else if ( ent == clent ) {// don't send a lot of data on personal entity
 			pflags &= ~( QWPF_MSEC | QWPF_COMMAND );
 			if ( ent->GetWeaponFrame() ) {
 				pflags |= QWPF_WEAPONFRAME;
@@ -1336,7 +1336,7 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 			if ( ( int )ent->GetEffects() & H2EF_NODRAW ) {
 				if ( hw_dmMode->value == HWDM_SIEGE && clent->GetPlayerClass() == CLASS_DWARF ) {
 					invis_level = false;
-				} else   {
+				} else {
 					invis_level = true;	//still can hear
 				}
 			}
@@ -1348,7 +1348,7 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 #endif
 			{
 				invis_level = 2;//no vis or weaponsound
-			} else   {
+			} else {
 				// ignore if not touching a PV leaf
 				int i;
 				for ( i = 0; i < ent->num_leafs; i++ ) {
@@ -1381,7 +1381,7 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 		if ( !cl->skipsend && ent != clent ) {	//don't count self
 			visclient[ numvc ] = j;
 			numvc++;
-		} else   {	//Self, or Wasn't sent last time, must send this frame
+		} else {	//Self, or Wasn't sent last time, must send this frame
 			cl->skipsend = false;
 			forcevisclient[ forcevc ] = j;
 			forcevc++;
@@ -1449,9 +1449,9 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 		//priority 1 - if behind, cull out
 		if ( forcevisclient[ l ] == j && l <= forcevc ) {
 			l++;
-		} else if ( visclient[ k ] == j && k <= numvc )       {
+		} else if ( visclient[ k ] == j && k <= numvc ) {
 			k++;//clent is always forced
-		} else   {
+		} else {
 			continue;	//not in PVS or forced
 
 		}
@@ -1474,7 +1474,7 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 			 ent->v.modelindex != svhw_playermodel[ 4 ] &&	//succ
 			 ent->v.modelindex != svhw_playermodel[ 5 ] ) {	//dwarf
 			pflags |= HWPF_MODEL;
-		} else   {
+		} else {
 			playermodel = true;
 		}
 
@@ -1509,7 +1509,7 @@ static void SVHW_WritePlayersToClient( client_t* client, qhedict_t* clent, byte*
 
 		if ( cl->qh_spectator ) {	// only sent origin and velocity to spectators
 			pflags &= HWPF_VELOCITY1 | HWPF_VELOCITY2 | HWPF_VELOCITY3;
-		} else if ( ent == clent )     {// don't send a lot of data on personal entity
+		} else if ( ent == clent ) {// don't send a lot of data on personal entity
 			pflags &= ~( HWPF_MSEC | HWPF_COMMAND );
 			if ( ent->GetWeaponFrame() ) {
 				pflags |= HWPF_WEAPONFRAME;
@@ -1768,7 +1768,7 @@ void SVHW_WriteInventory( client_t* host_client, qhedict_t* ent, QMsg* msg ) {
 	if ( host_client->h2_send_all_v ) {
 		sc1 = sc2 = 0xffffffff;
 		host_client->h2_send_all_v = false;
-	} else   {
+	} else {
 		sc1 = sc2 = 0;
 
 		if ( ent->GetHealth() != host_client->h2_old_v.health ) {

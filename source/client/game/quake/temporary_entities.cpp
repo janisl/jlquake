@@ -213,13 +213,13 @@ static void CLQ1_ParseKnightSpike( QMsg& message ) {
 static void SpikeSound( vec3_t pos ) {
 	if ( rand() % 5 ) {
 		S_StartSound( pos, -1, 0, clq1_sfx_tink1, 1, 1 );
-	} else   {
+	} else {
 		int rnd = rand() & 3;
 		if ( rnd == 1 ) {
 			S_StartSound( pos, -1, 0, clq1_sfx_ric1, 1, 1 );
-		} else if ( rnd == 2 )     {
+		} else if ( rnd == 2 ) {
 			S_StartSound( pos, -1, 0, clq1_sfx_ric2, 1, 1 );
-		} else   {
+		} else {
 			S_StartSound( pos, -1, 0, clq1_sfx_ric3, 1, 1 );
 		}
 	}

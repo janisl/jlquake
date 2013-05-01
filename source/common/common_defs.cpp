@@ -378,18 +378,18 @@ void Com_WriteConfiguration() {
 
 	if ( GGameType & GAME_Quake3 ) {
 		Com_WriteConfigToFile( "q3config.cfg" );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		Com_WriteConfigToFile( "wolfconfig.cfg" );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		Com_WriteConfigToFile( "wolfconfig_mp.cfg" );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
 		if ( comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
 			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, ETCONFIG_NAME ) );
-		} else   {
+		} else {
 			Com_WriteConfigToFile( ETCONFIG_NAME );
 		}
-	} else   {
+	} else {
 		Com_WriteConfigToFile( "config.cfg" );
 	}
 
@@ -418,7 +418,7 @@ void Com_SetRecommended( bool vid_restart ) {
 		Cvar_Get( "com_recommended", "-1", CVAR_ARCHIVE );
 		Cbuf_AddText( "exec preset_high.cfg\n" );
 		Cvar_Set( "com_recommended", "0" );
-	} else   {
+	} else {
 		Cbuf_AddText( "exec highVidhighCPU.cfg\n" );
 	}
 
@@ -489,7 +489,7 @@ void ComQH_HostShutdown() {
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) ) {
 		SVQH_ShutdownNetwork();
 		NETQH_Shutdown();
-	} else   {
+	} else {
 		NET_Shutdown();
 	}
 	Com_Shutdown();
@@ -506,11 +506,11 @@ void Com_Quit_f() {
 			SV_Shutdown( "server shutdown\n" );
 			NET_Shutdown();
 			Com_Shutdown();
-		} else if ( GGameType & GAME_QuakeHexen )     {
+		} else if ( GGameType & GAME_QuakeHexen ) {
 			CL_Disconnect( true );
 			SV_Shutdown( "" );
 			ComQH_HostShutdown();
-		} else   {
+		} else {
 			SV_Shutdown( "Server quit\n" );
 			CL_Shutdown();
 			Com_Shutdown();

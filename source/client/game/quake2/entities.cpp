@@ -50,7 +50,7 @@ static int CLQ2_ParseEntityBits( QMsg& message, unsigned* bits ) {
 	int number;
 	if ( total & Q2U_NUMBER16 ) {
 		number = message.ReadShort();
-	} else   {
+	} else {
 		number = message.ReadByte();
 	}
 
@@ -89,25 +89,25 @@ static void CLQ2_ParseDelta( QMsg& message, q2entity_state_t* from, q2entity_sta
 
 	if ( ( bits & Q2U_SKIN8 ) && ( bits & Q2U_SKIN16 ) ) {		//used for laser colors
 		to->skinnum = message.ReadLong();
-	} else if ( bits & Q2U_SKIN8 )     {
+	} else if ( bits & Q2U_SKIN8 ) {
 		to->skinnum = message.ReadByte();
-	} else if ( bits & Q2U_SKIN16 )     {
+	} else if ( bits & Q2U_SKIN16 ) {
 		to->skinnum = message.ReadShort();
 	}
 
 	if ( ( bits & ( Q2U_EFFECTS8 | Q2U_EFFECTS16 ) ) == ( Q2U_EFFECTS8 | Q2U_EFFECTS16 ) ) {
 		to->effects = message.ReadLong();
-	} else if ( bits & Q2U_EFFECTS8 )     {
+	} else if ( bits & Q2U_EFFECTS8 ) {
 		to->effects = message.ReadByte();
-	} else if ( bits & Q2U_EFFECTS16 )     {
+	} else if ( bits & Q2U_EFFECTS16 ) {
 		to->effects = message.ReadShort();
 	}
 
 	if ( ( bits & ( Q2U_RENDERFX8 | Q2U_RENDERFX16 ) ) == ( Q2U_RENDERFX8 | Q2U_RENDERFX16 ) ) {
 		to->renderfx = message.ReadLong();
-	} else if ( bits & Q2U_RENDERFX8 )     {
+	} else if ( bits & Q2U_RENDERFX8 ) {
 		to->renderfx = message.ReadByte();
-	} else if ( bits & Q2U_RENDERFX16 )     {
+	} else if ( bits & Q2U_RENDERFX16 ) {
 		to->renderfx = message.ReadShort();
 	}
 
@@ -141,7 +141,7 @@ static void CLQ2_ParseDelta( QMsg& message, q2entity_state_t* from, q2entity_sta
 
 	if ( bits & Q2U_EVENT ) {
 		to->event = message.ReadByte();
-	} else   {
+	} else {
 		to->event = 0;
 	}
 
@@ -166,7 +166,7 @@ static void CLQ2_ParsePlayerstate( QMsg& message, q2frame_t* oldframe, q2frame_t
 	// clear to old value before delta parsing
 	if ( oldframe ) {
 		*state = oldframe->playerstate;
-	} else   {
+	} else {
 		Com_Memset( state, 0, sizeof ( *state ) );
 	}
 
@@ -304,11 +304,11 @@ static void CLQ2_DeltaEntity( QMsg& message, q2frame_t* frame, int newnum, q2ent
 		if ( state->event == Q2EV_OTHER_TELEPORT ) {
 			VectorCopy( state->origin, ent->prev.origin );
 			VectorCopy( state->origin, ent->lerp_origin );
-		} else   {
+		} else {
 			VectorCopy( state->old_origin, ent->prev.origin );
 			VectorCopy( state->old_origin, ent->lerp_origin );
 		}
-	} else   {	// shuffle the last state to previous
+	} else {	// shuffle the last state to previous
 		ent->prev = ent->current;
 	}
 
@@ -328,10 +328,10 @@ static void CLQ2_ParsePacketEntities( QMsg& message, q2frame_t* oldframe, q2fram
 	q2entity_state_t* oldstate;
 	if ( !oldframe ) {
 		oldnum = 99999;
-	} else   {
+	} else {
 		if ( oldindex >= oldframe->num_entities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &clq2_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES_Q2 - 1 ) ];
 			oldnum = oldstate->number;
 		}
@@ -362,7 +362,7 @@ static void CLQ2_ParsePacketEntities( QMsg& message, q2frame_t* oldframe, q2fram
 
 			if ( oldindex >= oldframe->num_entities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &clq2_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES_Q2 - 1 ) ];
 				oldnum = oldstate->number;
 			}
@@ -380,7 +380,7 @@ static void CLQ2_ParsePacketEntities( QMsg& message, q2frame_t* oldframe, q2fram
 
 			if ( oldindex >= oldframe->num_entities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &clq2_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES_Q2 - 1 ) ];
 				oldnum = oldstate->number;
 			}
@@ -397,7 +397,7 @@ static void CLQ2_ParsePacketEntities( QMsg& message, q2frame_t* oldframe, q2fram
 
 			if ( oldindex >= oldframe->num_entities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &clq2_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES_Q2 - 1 ) ];
 				oldnum = oldstate->number;
 			}
@@ -426,7 +426,7 @@ static void CLQ2_ParsePacketEntities( QMsg& message, q2frame_t* oldframe, q2fram
 
 		if ( oldindex >= oldframe->num_entities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &clq2_parse_entities[ ( oldframe->parse_entities + oldindex ) & ( MAX_PARSE_ENTITIES_Q2 - 1 ) ];
 			oldnum = oldstate->number;
 		}
@@ -474,7 +474,7 @@ void CLQ2_ParseFrame( QMsg& message ) {
 		cl.q2_frame.valid = true;		// uncompressed frame
 		old = NULL;
 		cls.q2_demowaiting = false;	// we can start recording now
-	} else   {
+	} else {
 		old = &cl.q2_frames[ cl.q2_frame.deltaframe & UPDATE_MASK_Q2 ];
 		if ( !old->valid ) {// should never happen
 			common->Printf( "Delta from invalid frame (not supposed to happen!).\n" );
@@ -482,9 +482,9 @@ void CLQ2_ParseFrame( QMsg& message ) {
 		if ( old->serverframe != cl.q2_frame.deltaframe ) {	// The frame that the server did the delta from
 															// is too old, so we can't reconstruct it properly.
 			common->Printf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parse_entities > MAX_PARSE_ENTITIES_Q2 - 128 )     {
+		} else if ( cl.parseEntitiesNum - old->parse_entities > MAX_PARSE_ENTITIES_Q2 - 128 ) {
 			common->Printf( "Delta parse_entities too old.\n" );
-		} else   {
+		} else {
 			cl.q2_frame.valid = true;	// valid delta parse
 		}
 	}
@@ -492,7 +492,7 @@ void CLQ2_ParseFrame( QMsg& message ) {
 	// clamp time
 	if ( cl.serverTime > cl.q2_frame.servertime ) {
 		cl.serverTime = cl.q2_frame.servertime;
-	} else if ( cl.serverTime < cl.q2_frame.servertime - 100 )     {
+	} else if ( cl.serverTime < cl.q2_frame.servertime - 100 ) {
 		cl.serverTime = cl.q2_frame.servertime - 100;
 	}
 
@@ -586,13 +586,13 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 		// set frame
 		if ( effects & Q2EF_ANIM01 ) {
 			ent.frame = autoanim & 1;
-		} else if ( effects & Q2EF_ANIM23 )     {
+		} else if ( effects & Q2EF_ANIM23 ) {
 			ent.frame = 2 + ( autoanim & 1 );
-		} else if ( effects & Q2EF_ANIM_ALL )     {
+		} else if ( effects & Q2EF_ANIM_ALL ) {
 			ent.frame = autoanim;
-		} else if ( effects & Q2EF_ANIM_ALLFAST )     {
+		} else if ( effects & Q2EF_ANIM_ALLFAST ) {
 			ent.frame = cl.serverTime / 100;
-		} else   {
+		} else {
 			ent.frame = s1->frame;
 		}
 
@@ -630,7 +630,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 																// do the animation properly
 			VectorCopy( cent->current.origin, ent.origin );
 			VectorCopy( cent->current.old_origin, ent.oldorigin );
-		} else   {	// interpolate origin
+		} else {	// interpolate origin
 			for ( int i = 0; i < 3; i++ ) {
 				ent.origin[ i ] = ent.oldorigin[ i ] = cent->prev.origin[ i ] + cl.q2_lerpfrac *
 													   ( cent->current.origin[ i ] - cent->prev.origin[ i ] );
@@ -646,7 +646,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 			ent.shaderRGBA[ 3 ] = 76;
 			ent.skinNum = ( s1->skinnum >> ( ( rand() % 4 ) * 8 ) ) & 0xff;
 			ent.hModel = 0;
-		} else   {
+		} else {
 			// set skin
 			if ( s1->modelindex == 255 ) {	// use custom player skin
 				ent.skinNum = 0;
@@ -664,17 +664,17 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 					if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/male", 12 ) ) {
 						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/male/disguise.pcx" ) );
 						ent.hModel = R_RegisterModel( "players/male/tris.md2" );
-					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/female", 14 ) )         {
+					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/female", 14 ) ) {
 						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/female/disguise.pcx" ) );
 						ent.hModel = R_RegisterModel( "players/female/tris.md2" );
-					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/cyborg", 14 ) )         {
+					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/cyborg", 14 ) ) {
 						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/cyborg/disguise.pcx" ) );
 						ent.hModel = R_RegisterModel( "players/cyborg/tris.md2" );
 					}
 				}
 //PGM
 //============
-			} else   {
+			} else {
 				ent.skinNum = s1->skinnum;
 				ent.hModel = cl.model_draw[ s1->modelindex ];
 			}
@@ -689,7 +689,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 		if ( ( effects & Q2EF_COLOR_SHELL ) ) {
 			// renderfx go on color shell entity
 			ent.renderfx = 0;
-		} else   {
+		} else {
 			ent.renderfx = renderfx;
 		}
 
@@ -713,7 +713,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 				VectorMA( ent.origin, 64, forward, start );
 				R_AddLightToScene( start, 100, 1, 0, 0 );
 			}
-		} else   {	// interpolate angles
+		} else {	// interpolate angles
 			for ( int i = 0; i < 3; i++ ) {
 				float a1 = cent->current.angles[ i ];
 				float a2 = cent->prev.angles[ i ];
@@ -728,11 +728,11 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 
 			if ( effects & Q2EF_FLAG1 ) {
 				R_AddLightToScene( ent.origin, 225, 1.0, 0.1, 0.1 );
-			} else if ( effects & Q2EF_FLAG2 )     {
+			} else if ( effects & Q2EF_FLAG2 ) {
 				R_AddLightToScene( ent.origin, 225, 0.1, 0.1, 1.0 );
-			} else if ( effects & Q2EF_TAGTRAIL )     {					//PGM
+			} else if ( effects & Q2EF_TAGTRAIL ) {					//PGM
 				R_AddLightToScene( ent.origin, 225, 1.0, 1.0, 0.0 );	//PGM
-			} else if ( effects & Q2EF_TRACKERTRAIL )     {				//PGM
+			} else if ( effects & Q2EF_TRACKERTRAIL ) {				//PGM
 				R_AddLightToScene( ent.origin, 225, -1.0, -1.0, -1.0 );		//PGM
 
 			}
@@ -760,7 +760,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 			// PMM - *sigh*  yet more EF overloading
 			if ( effects & Q2EF_TRACKERTRAIL ) {
 				ent.shaderRGBA[ 3 ] = 153;
-			} else   {
+			} else {
 				ent.shaderRGBA[ 3 ] = 76;
 			}
 		}
@@ -780,7 +780,7 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 				ent.shaderRGBA[ 0 ] = 255;
 				ent.shaderRGBA[ 1 ] = 255;
 				ent.shaderRGBA[ 2 ] = 255;
-			} else if ( renderfx_old & ( Q2RF_SHELL_RED | Q2RF_SHELL_BLUE | Q2RF_SHELL_DOUBLE ) )       {
+			} else if ( renderfx_old & ( Q2RF_SHELL_RED | Q2RF_SHELL_BLUE | Q2RF_SHELL_DOUBLE ) ) {
 				ent.shaderRGBA[ 0 ] = 0;
 				ent.shaderRGBA[ 1 ] = 0;
 				ent.shaderRGBA[ 2 ] = 0;
@@ -790,18 +790,18 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 					if ( renderfx_old & ( Q2RF_SHELL_BLUE | Q2RF_SHELL_DOUBLE ) ) {
 						ent.shaderRGBA[ 2 ] = 255;
 					}
-				} else if ( renderfx_old & Q2RF_SHELL_BLUE )     {
+				} else if ( renderfx_old & Q2RF_SHELL_BLUE ) {
 					if ( renderfx_old & Q2RF_SHELL_DOUBLE ) {
 						ent.shaderRGBA[ 1 ] = 255;
 						ent.shaderRGBA[ 2 ] = 255;
-					} else   {
+					} else {
 						ent.shaderRGBA[ 2 ] = 255;
 					}
-				} else if ( renderfx_old & Q2RF_SHELL_DOUBLE )     {
+				} else if ( renderfx_old & Q2RF_SHELL_DOUBLE ) {
 					ent.shaderRGBA[ 0 ] = 230;
 					ent.shaderRGBA[ 1 ] = 178;
 				}
-			} else if ( renderfx_old & ( Q2RF_SHELL_HALF_DAM | Q2RF_SHELL_GREEN ) )       {
+			} else if ( renderfx_old & ( Q2RF_SHELL_HALF_DAM | Q2RF_SHELL_GREEN ) ) {
 				ent.shaderRGBA[ 0 ] = 0;
 				ent.shaderRGBA[ 1 ] = 0;
 				ent.shaderRGBA[ 2 ] = 0;
@@ -894,31 +894,31 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 				if ( effects & Q2EF_TRACKER ) {	// lame... problematic?
 					CLQ2_BlasterTrail2( cent->lerp_origin, ent.origin );
 					R_AddLightToScene( ent.origin, 200, 0, 1, 0 );
-				} else   {
+				} else {
 					CLQ2_BlasterTrail( cent->lerp_origin, ent.origin );
 					R_AddLightToScene( ent.origin, 200, 1, 1, 0 );
 				}
 //PGM
-			} else if ( effects & Q2EF_HYPERBLASTER )     {
+			} else if ( effects & Q2EF_HYPERBLASTER ) {
 				if ( effects & Q2EF_TRACKER ) {						// PGM	overloaded for blaster2.
 					R_AddLightToScene( ent.origin, 200, 0, 1, 0 );			// PGM
-				} else   {											// PGM
+				} else {											// PGM
 					R_AddLightToScene( ent.origin, 200, 1, 1, 0 );
 				}
-			} else if ( effects & Q2EF_GIB )     {
+			} else if ( effects & Q2EF_GIB ) {
 				CLQ2_DiminishingTrail( cent->lerp_origin, ent.origin, cent, effects );
-			} else if ( effects & Q2EF_GRENADE )     {
+			} else if ( effects & Q2EF_GRENADE ) {
 				CLQ2_DiminishingTrail( cent->lerp_origin, ent.origin, cent, effects );
-			} else if ( effects & Q2EF_FLIES )     {
+			} else if ( effects & Q2EF_FLIES ) {
 				CLQ2_FlyEffect( cent, ent.origin );
-			} else if ( effects & Q2EF_BFG )     {
+			} else if ( effects & Q2EF_BFG ) {
 				static int bfg_lightramp[ 6 ] = {300, 400, 600, 300, 150, 75};
 
 				int i;
 				if ( effects & Q2EF_ANIM_ALLFAST ) {
 					CLQ2_BfgParticles( ent.origin );
 					i = 200;
-				} else   {
+				} else {
 					i = bfg_lightramp[ s1->frame ];
 				}
 				R_AddLightToScene( ent.origin, i, 0, 1, 0 );
@@ -929,10 +929,10 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 				CLQ2_TrapParticles( ent.origin );
 				int i = ( rand() % 100 ) + 100;
 				R_AddLightToScene( ent.origin, i, 1, 0.8, 0.1 );
-			} else if ( effects & Q2EF_FLAG1 )     {
+			} else if ( effects & Q2EF_FLAG1 ) {
 				CLQ2_FlagTrail( cent->lerp_origin, ent.origin, 242 );
 				R_AddLightToScene( ent.origin, 225, 1, 0.1, 0.1 );
-			} else if ( effects & Q2EF_FLAG2 )     {
+			} else if ( effects & Q2EF_FLAG2 ) {
 				CLQ2_FlagTrail( cent->lerp_origin, ent.origin, 115 );
 				R_AddLightToScene( ent.origin, 225, 0.1, 0.1, 1 );
 			}
@@ -941,17 +941,17 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 			else if ( effects & Q2EF_TAGTRAIL ) {
 				CLQ2_TagTrail( cent->lerp_origin, ent.origin, 220 );
 				R_AddLightToScene( ent.origin, 225, 1.0, 1.0, 0.0 );
-			} else if ( effects & Q2EF_TRACKERTRAIL )     {
+			} else if ( effects & Q2EF_TRACKERTRAIL ) {
 				if ( effects & Q2EF_TRACKER ) {
 					float intensity;
 
 					intensity = 50 + ( 500 * ( sin( cl.serverTime / 500.0 ) + 1.0 ) );
 					R_AddLightToScene( ent.origin, intensity, -1.0, -1.0, -1.0 );
-				} else   {
+				} else {
 					CLQ2_Tracker_Shell( cent->lerp_origin );
 					R_AddLightToScene( ent.origin, 155, -1.0, -1.0, -1.0 );
 				}
-			} else if ( effects & Q2EF_TRACKER )     {
+			} else if ( effects & Q2EF_TRACKER ) {
 				CLQ2_TrackerTrail( cent->lerp_origin, ent.origin, 0 );
 				R_AddLightToScene( ent.origin, 200, -1, -1, -1 );
 			}

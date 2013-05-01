@@ -47,7 +47,7 @@ void SVET_TempBanNetAddress( netadr_t address, int length ) {
 			svs.et_tempBanAddresses[ i ].adr = address;
 			svs.et_tempBanAddresses[ i ].endtime = svs.q3_time + ( length * 1000 );
 			return;
-		} else   {
+		} else {
 			if ( oldest == -1 || oldesttime > svs.et_tempBanAddresses[ i ].endtime ) {
 				oldesttime = svs.et_tempBanAddresses[ i ].endtime;
 				oldest = i;
@@ -162,7 +162,7 @@ static void SVT3_Kick_f() {
 				SVT3_DropClient( cl, GGameType & GAME_WolfMP ? "player kicked" : "was kicked" );		// JPW NERVE to match front menu message
 				cl->q3_lastPacketTime = svs.q3_time;	// in case there is a funny zombie
 			}
-		} else if ( !String::ICmp( Cmd_Argv( 1 ), "allbots" ) )         {
+		} else if ( !String::ICmp( Cmd_Argv( 1 ), "allbots" ) ) {
 			for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -233,9 +233,9 @@ static void SVT3_Status_f() {
 
 		if ( cl->state == CS_CONNECTED ) {
 			common->Printf( "CNCT " );
-		} else if ( cl->state == CS_ZOMBIE )     {
+		} else if ( cl->state == CS_ZOMBIE ) {
 			common->Printf( "ZMBI " );
-		} else   {
+		} else {
 			int ping = cl->ping < 9999 ? cl->ping : 9999;
 			common->Printf( "%4i ", ping );
 		}
@@ -363,7 +363,7 @@ static bool SVT3_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, in
 	if ( new_gs == GS_RESET ) {
 		if ( GGameType & GAME_WolfMP && String::Atoi( Cvar_VariableString( "g_noTeamSwitching" ) ) ) {
 			new_gs = GS_WAITING_FOR_PLAYERS;
-		} else   {
+		} else {
 			new_gs = GS_WARMUP;
 		}
 	}
@@ -423,13 +423,13 @@ static void SVT3_Map_f() {
 			const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
 			if ( GGameType & GAME_ET && comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
 				String::Sprintf( savedir, sizeof ( savedir ), "profiles/%s/save/", cl_profileStr );
-			} else   {
+			} else {
 				String::NCpyZ( savedir, "save/", sizeof ( savedir ) );
 			}
 
 			if ( !( strstr( map, savedir ) == map ) ) {
 				String::Sprintf( savemap, sizeof ( savemap ), "%s%s", savedir, map );
-			} else   {
+			} else {
 				String::Cpy( savemap, map );
 			}
 
@@ -476,12 +476,12 @@ static void SVT3_Map_f() {
 			}
 
 			FS_FreeFile( buffer );
-		} else   {
+		} else {
 			Cvar_Set( "savegame_loading", "0" );		// make sure it's turned off
 			// set the filename
 			Cvar_Set( "savegame_filename", "" );
 		}
-	} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) )       {
+	} else if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 		Cvar_Set( "savegame_loading", "0" );		// make sure it's turned off
 		// set the filename
 		Cvar_Set( "savegame_filename", "" );
@@ -546,14 +546,14 @@ static void SVT3_Map_f() {
 		killBots = true;
 		if ( !String::ICmp( cmd, "devmap" ) ) {
 			cheat = true;
-		} else   {
+		} else {
 			cheat = false;
 		}
-	} else   {
+	} else {
 		if ( !String::ICmp( cmd, "devmap" ) || !String::ICmp( cmd, "spdevmap" ) ) {
 			cheat = true;
 			killBots = true;
-		} else   {
+		} else {
 			cheat = false;
 			killBots = false;
 		}
@@ -576,7 +576,7 @@ static void SVT3_Map_f() {
 	// then cheats will be allowed
 	if ( cheat ) {
 		Cvar_Set( "sv_cheats", "1" );
-	} else   {
+	} else {
 		Cvar_Set( "sv_cheats", "0" );
 	}
 }
@@ -612,7 +612,7 @@ static void SVT3_MapRestart_f() {
 
 			if ( !( worldspawnflags & 1 ) ) {
 				Cvar_Set( "g_gametype", "5" );
-			} else   {
+			} else {
 				Cvar_Set( "g_gametype", "7" );
 			}
 
@@ -623,11 +623,11 @@ static void SVT3_MapRestart_f() {
 	int delay;
 	if ( Cmd_Argc() > 1 ) {
 		delay = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) ||
 			 ( GGameType & GAME_WolfSP && svt3_gametype->integer == Q3GT_SINGLE_PLAYER ) ) {// (SA) no pause by default in sp
 			delay = 0;
-		} else   {
+		} else {
 			delay = 5;
 		}
 	}
@@ -645,10 +645,10 @@ static void SVT3_MapRestart_f() {
 		gamestate_t new_gs;
 		if ( GGameType & GAME_ET && ( SVET_GameIsSinglePlayer() || SVET_GameIsCoop() ) ) {
 			new_gs = GS_PLAYING;
-		} else   {
+		} else {
 			if ( Cmd_Argc() > 2 ) {
 				new_gs = ( gamestate_t ) String::Atoi( Cmd_Argv( 2 ) );
-			} else   {
+			} else {
 				new_gs = GS_PLAYING;
 			}
 		}
@@ -682,10 +682,10 @@ static void SVT3_MapRestart_f() {
 			if ( comet_gameInfo.usesProfiles ) {
 				const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
 				String::Sprintf( savemap, sizeof ( savemap ), "profiles/%s/save/current.sav", cl_profileStr );
-			} else   {
+			} else {
 				String::NCpyZ( savemap, "save/current.sav", sizeof ( savemap ) );
 			}
-		} else   {
+		} else {
 			String::NCpyZ( savemap, "save/current.svg", sizeof ( savemap ) );
 		}
 
@@ -755,7 +755,7 @@ static void SVT3_MapRestart_f() {
 				continue;	// dont carry across bots in single player
 			}
 			isBot = true;
-		} else   {
+		} else {
 			isBot = false;
 		}
 
@@ -778,11 +778,11 @@ static void SVT3_MapRestart_f() {
 
 		if ( GGameType & GAME_Quake3 ) {
 			SVQ3_ClientEnterWorld( client, &client->q3_lastUsercmd );
-		} else if ( GGameType & GAME_WolfSP )     {
+		} else if ( GGameType & GAME_WolfSP ) {
 			SVWS_ClientEnterWorld( client, &client->ws_lastUsercmd );
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			SVWM_ClientEnterWorld( client, &client->wm_lastUsercmd );
-		} else   {
+		} else {
 			SVET_ClientEnterWorld( client, &client->et_lastUsercmd );
 		}
 	}
@@ -818,7 +818,7 @@ static void SVT3_LoadGame_f() {
 	char savedir[ MAX_QPATH ];
 	if ( GGameType & GAME_ET && comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
 		String::Sprintf( savedir, sizeof ( savedir ), "profiles/%s/save/", cl_profileStr );
-	} else   {
+	} else {
 		String::NCpyZ( savedir, "save/", sizeof ( savedir ) );
 	}
 	const char* saveExtension = GGameType & GAME_ET ? "sav" : "svg";
@@ -826,7 +826,7 @@ static void SVT3_LoadGame_f() {
 	if ( GGameType & GAME_ET ) {
 		// go through a va to avoid vsnprintf call with same source and target
 		String::NCpyZ( filename, va( "%s%s", savedir, filename ), sizeof ( filename ) );
-	} else   {
+	} else {
 		if ( String::NCmp( filename, "save/", 5 ) && String::NCmp( filename, "save\\", 5 ) ) {
 			String::NCpyZ( filename, va( "save/%s", filename ), sizeof ( filename ) );
 		}
@@ -880,7 +880,7 @@ static void SVT3_LoadGame_f() {
 	// otherwise, do a slow load
 	if ( Cvar_VariableIntegerValue( "sv_cheats" ) ) {
 		Cbuf_ExecuteText( EXEC_APPEND, va( "spdevmap %s", filename ) );
-	} else   {		// no cheats
+	} else {		// no cheats
 		Cbuf_ExecuteText( EXEC_APPEND, va( "spmap %s", filename ) );
 	}
 }

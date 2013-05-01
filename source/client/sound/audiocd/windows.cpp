@@ -160,7 +160,7 @@ static void CDAudio_Play2( int track, qboolean looping ) {
 	if ( track < 1 || track > maxTrack ) {
 		if ( GGameType & GAME_QuakeHexen ) {
 			common->DPrintf( "CDAudio: Bad track number %u.\n", track );
-		} else   {
+		} else {
 			CDAudio_Stop();
 		}
 		return;
@@ -212,7 +212,7 @@ static void CDAudio_Play2( int track, qboolean looping ) {
 		if ( cdvolume == 0.0 ) {
 			CDAudio_Pause();
 		}
-	} else   {
+	} else {
 		if ( Cvar_VariableValue( "cd_nocd" ) ) {
 			CDAudio_Pause();
 		}
@@ -430,7 +430,7 @@ static void CD_f() {
 		common->Printf( "%u tracks\n", maxTrack );
 		if ( playing ) {
 			common->Printf( "Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack );
-		} else if ( wasPlaying )     {
+		} else if ( wasPlaying ) {
 			common->Printf( "Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack );
 		}
 		common->Printf( "Volume is %f\n", cdvolume );
@@ -458,7 +458,7 @@ LONG CDAudio_MessageHandler( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 				// go to the ambient track
 				if ( ( GGameType & GAME_Quake2 ) && ++loopcounter >= cd_loopcount->value ) {
 					CDAudio_Play2( cd_looptrack->value, true );
-				} else   {
+				} else {
 					CDAudio_Play2( playTrack, true );
 				}
 			}
@@ -500,18 +500,18 @@ void CDAudio_Update() {
 				Cvar_SetValue( "bgmvolume", 0.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Pause();
-			} else   {
+			} else {
 				Cvar_SetValue( "bgmvolume", 1.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Resume();
 			}
 		}
-	} else   {
+	} else {
 		if ( !!cd_nocd->value != !enabled ) {
 			if ( cd_nocd->value ) {
 				CDAudio_Stop();
 				enabled = false;
-			} else   {
+			} else {
 				enabled = true;
 				CDAudio_Resume();
 			}
@@ -535,7 +535,7 @@ int CDAudio_Init() {
 		if ( COM_CheckParm( "-nocdaudio" ) ) {
 			return -1;
 		}
-	} else   {
+	} else {
 		cd_nocd = Cvar_Get( "cd_nocd", "0", CVAR_ARCHIVE );
 		cd_loopcount = Cvar_Get( "cd_loopcount", "4", 0 );
 		cd_looptrack = Cvar_Get( "cd_looptrack", "11", 0 );
@@ -606,7 +606,7 @@ void CDAudio_Shutdown() {
 void CDAudio_Activate( qboolean active ) {
 	if ( active ) {
 		CDAudio_Resume();
-	} else   {
+	} else {
 		CDAudio_Pause();
 	}
 }

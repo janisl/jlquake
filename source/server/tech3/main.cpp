@@ -82,7 +82,7 @@ static const char* SVT3_ExpandNewlines( const char* in ) {
 		if ( *in == '\n' ) {
 			string[ l++ ] = '\\';
 			string[ l++ ] = 'n';
-		} else   {
+		} else {
 			// NERVE - SMF - HACK - strip out localization tokens before string command is displayed in syscon window
 			if ( GGameType & ( GAME_WolfMP | GAME_ET ) &&
 				 ( !String::NCmp( in, "[lon]", 5 ) || !String::NCmp( in, "[lof]", 5 ) ) ) {
@@ -260,7 +260,7 @@ static void SVT3_CalcPings() {
 		}
 		if ( !count ) {
 			cl->ping = 999;
-		} else   {
+		} else {
 			cl->ping = total / count;
 			if ( cl->ping > 999 ) {
 				cl->ping = 999;
@@ -306,7 +306,7 @@ static void SVT3_CheckTimeouts() {
 					SVT3_DropClient( cl, "timed out" );
 					cl->state = CS_FREE;	// don't bother with zombie state
 				}
-			} else   {
+			} else {
 				cl->q3_timeoutCount = 0;
 			}
 		}
@@ -500,11 +500,11 @@ static void SVT3C_Info( netadr_t from ) {
 
 	if ( GGameType & GAME_Quake3 ) {
 		Info_SetValueForKey( infostring, "protocol", va( "%i", Q3PROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		Info_SetValueForKey( infostring, "protocol", va( "%i", WSPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		Info_SetValueForKey( infostring, "protocol", va( "%i", WMPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
-	} else   {
+	} else {
 		Info_SetValueForKey( infostring, "protocol", va( "%i", ETPROTOCOL_VERSION ), MAX_INFO_STRING_Q3 );
 	}
 	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING_Q3 );
@@ -517,7 +517,7 @@ static void SVT3C_Info( netadr_t from ) {
 		va( "%i", sv_maxclients->integer - svt3_privateClients->integer ), MAX_INFO_STRING_Q3 );
 	if ( GGameType & GAME_ET ) {
 		Info_SetValueForKey( infostring, "gametype", Cvar_VariableString( "g_gametype" ), MAX_INFO_STRING_Q3 );
-	} else   {
+	} else {
 		Info_SetValueForKey( infostring, "gametype", va( "%i", svt3_gametype->integer ), MAX_INFO_STRING_Q3 );
 	}
 	Info_SetValueForKey( infostring, "pure", va( "%i", svt3_pure->integer ), MAX_INFO_STRING_Q3 );
@@ -599,7 +599,7 @@ static void SVT3C_RemoteCommand( netadr_t from, QMsg* msg ) {
 		 String::Cmp( Cmd_Argv( 1 ), svt3_rconPassword->string ) ) {
 		valid = false;
 		common->Printf( "Bad rcon from %s:\n%s\n", SOCK_AdrToString( from ), Cmd_Argv( 2 ) );
-	} else   {
+	} else {
 		valid = true;
 		common->Printf( "Rcon from %s:\n%s\n", SOCK_AdrToString( from ), Cmd_Argv( 2 ) );
 	}
@@ -614,9 +614,9 @@ static void SVT3C_RemoteCommand( netadr_t from, QMsg* msg ) {
 
 	if ( !String::Length( svt3_rconPassword->string ) ) {
 		common->Printf( "No rconpassword set on the server.\n" );
-	} else if ( !valid )     {
+	} else if ( !valid ) {
 		common->Printf( "Bad rconpassword.\n" );
-	} else   {
+	} else {
 		char remaining[ 1024 ];
 		remaining[ 0 ] = 0;
 
@@ -665,21 +665,21 @@ static void SVT3_ConnectionlessPacket( netadr_t from, QMsg* msg ) {
 
 	if ( !String::ICmp( c, "getstatus" ) ) {
 		SVT3C_Status( from );
-	} else if ( !String::ICmp( c, "getinfo" ) )       {
+	} else if ( !String::ICmp( c, "getinfo" ) ) {
 		SVT3C_Info( from );
-	} else if ( !String::ICmp( c, "getchallenge" ) )       {
+	} else if ( !String::ICmp( c, "getchallenge" ) ) {
 		SVT3_GetChallenge( from );
-	} else if ( !String::ICmp( c, "connect" ) )       {
+	} else if ( !String::ICmp( c, "connect" ) ) {
 		SVT3_DirectConnect( from );
-	} else if ( !( GGameType & GAME_ET ) && !String::ICmp( c, "ipAuthorize" ) )         {
+	} else if ( !( GGameType & GAME_ET ) && !String::ICmp( c, "ipAuthorize" ) ) {
 		SVT3_AuthorizeIpPacket( from );
-	} else if ( !String::ICmp( c, "rcon" ) )       {
+	} else if ( !String::ICmp( c, "rcon" ) ) {
 		SVT3C_RemoteCommand( from, msg );
-	} else if ( !String::ICmp( c, "disconnect" ) )       {
+	} else if ( !String::ICmp( c, "disconnect" ) ) {
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client
-	} else   {
+	} else {
 		common->DPrintf( "bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString( from ), s );
 	}
@@ -964,7 +964,7 @@ void SVT3_Frame( int msec ) {
 	int startTime;
 	if ( com_speeds->integer ) {
 		startTime = Sys_Milliseconds();
-	} else   {
+	} else {
 		startTime = 0;	// quite a compiler warning
 	}
 
@@ -1030,7 +1030,7 @@ void SVT3_Frame( int msec ) {
 			svs.et_totalFrameTime = 0;
 			svs.et_currentFrameIndex = 0;
 		}
-	} else   {
+	} else {
 		svs.et_serverLoad = -1;
 	}
 }

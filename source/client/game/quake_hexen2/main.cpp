@@ -56,7 +56,7 @@ static void CLQH_PrintEntities_f() {
 			common->Printf( "%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n",
 				R_ModelName( cl.model_draw[ ent->state.modelindex ] ),ent->state.frame, ent->state.origin[ 0 ], ent->state.origin[ 1 ], ent->state.origin[ 2 ], ent->state.angles[ 0 ], ent->state.angles[ 1 ], ent->state.angles[ 2 ] );
 		}
-	} else   {
+	} else {
 		q1entity_t* ent;
 		int i;
 
@@ -80,7 +80,7 @@ static void CLH2_Sensitivity_save_f() {
 
 	if ( String::ICmp( Cmd_Argv( 1 ),"save" ) == 0 ) {
 		save_sensitivity = cl_sensitivity->value;
-	} else if ( String::ICmp( Cmd_Argv( 1 ),"restore" ) == 0 )         {
+	} else if ( String::ICmp( Cmd_Argv( 1 ),"restore" ) == 0 ) {
 		Cvar_SetValue( "sensitivity", save_sensitivity );
 	}
 }
@@ -93,7 +93,7 @@ static void CLQH_Name_f() {
 	char* newName;
 	if ( Cmd_Argc() == 2 ) {
 		newName = Cmd_Argv( 1 );
-	} else   {
+	} else {
 		newName = Cmd_ArgsUnmodified();
 	}
 	newName[ 15 ] = 0;
@@ -128,7 +128,7 @@ static void CLQH_Color_f() {
 
 	if ( Cmd_Argc() == 2 ) {
 		top = bottom = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		top = String::Atoi( Cmd_Argv( 1 ) );
 		bottom = String::Atoi( Cmd_Argv( 2 ) );
 	}
@@ -154,7 +154,7 @@ static void CLH2_Class_f() {
 	if ( Cmd_Argc() == 1 ) {
 		if ( !( int )clh2_playerclass->value ) {
 			common->Printf( "\"playerclass\" is %d (\"unknown\")\n", ( int )clh2_playerclass->value );
-		} else   {
+		} else {
 			common->Printf( "\"playerclass\" is %d (\"%s\")\n", ( int )clh2_playerclass->value,h2_ClassNames[ ( int )clh2_playerclass->value - 1 ] );
 		}
 		return;
@@ -163,7 +163,7 @@ static void CLH2_Class_f() {
 	float newClass;
 	if ( Cmd_Argc() == 2 ) {
 		newClass = String::Atof( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		newClass = String::Atof( Cmd_ArgsUnmodified() );
 	}
 
@@ -197,7 +197,7 @@ void CLQHW_User_f() {
 				Info_Print( cl.h2_players[ i ].userinfo );
 				return;
 			}
-		} else   {
+		} else {
 			if ( !cl.q1_players[ i ].name[ 0 ] ) {
 				continue;
 			}
@@ -222,7 +222,7 @@ static void CLQHW_Users_f() {
 				common->Printf( "%6i %4i %s\n", cl.h2_players[ i ].userid, cl.h2_players[ i ].frags, cl.h2_players[ i ].name );
 				c++;
 			}
-		} else   {
+		} else {
 			if ( cl.q1_players[ i ].name[ 0 ] ) {
 				common->Printf( "%6i %4i %s\n", cl.q1_players[ i ].userid, cl.q1_players[ i ].frags, cl.q1_players[ i ].name );
 				c++;
@@ -246,7 +246,7 @@ static void CLQHW_Color_f() {
 	int top, bottom;
 	if ( Cmd_Argc() == 2 ) {
 		top = bottom = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		top = String::Atoi( Cmd_Argv( 1 ) );
 		bottom = String::Atoi( Cmd_Argv( 2 ) );
 	}
@@ -442,14 +442,14 @@ void CLQH_Init() {
 			cl_doubleeyes = Cvar_Get( "cl_doubleeyes", "1", 0 );
 
 			Cmd_AddCommand( "fly", NULL );
-		} else   {
+		} else {
 			clh2_playerclass = Cvar_Get( "_cl_playerclass", "5", CVAR_ARCHIVE );
 
 			Cmd_AddCommand( "playerclass", CLH2_Class_f );
 		}
 
 		Chase_Init();
-	} else   {
+	} else {
 		Info_SetValueForKey( cls.qh_userinfo, "name", "unnamed", MAX_INFO_STRING_QW, 64, 64, false, false );
 		Info_SetValueForKey( cls.qh_userinfo, "topcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false );
 		Info_SetValueForKey( cls.qh_userinfo, "bottomcolor", "0", MAX_INFO_STRING_QW, 64, 64, true, false );
@@ -513,7 +513,7 @@ void CLQH_Init() {
 			Cmd_AddCommand( "allskins", CLQW_SkinAllSkins_f );
 
 			Cmd_AddCommand( "pause", NULL );
-		} else   {
+		} else {
 			Info_SetValueForKey( cls.qh_userinfo, "playerclass", "0", MAX_INFO_STRING_QW, 64, 64, true, false );
 
 			clh2_playerclass = Cvar_Get( "playerclass", "0", CVAR_ARCHIVE | CVAR_USERINFO );
@@ -528,7 +528,7 @@ void CLQH_Init() {
 
 	if ( GGameType & GAME_Quake ) {
 		SbarQ1_Init();
-	} else   {
+	} else {
 		Cmd_AddCommand( "sensitivity_save", CLH2_Sensitivity_save_f );
 
 		MIDI_Init();
@@ -539,7 +539,7 @@ void CLQH_Init() {
 void CLQH_OnEndGame() {
 	if ( cls.qh_demonum != -1 ) {
 		CL_NextDemo();
-	} else   {
+	} else {
 		CL_Disconnect( true );
 	}
 }

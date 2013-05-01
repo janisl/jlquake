@@ -67,7 +67,7 @@ static node_t** get_ppnode( huff_t* huff ) {
 	node_t** tppnode;
 	if ( !huff->freelist ) {
 		return &( huff->nodePtrs[ huff->blocPtrs++ ] );
-	} else   {
+	} else {
 		tppnode = huff->freelist;
 		huff->freelist = ( node_t** )*tppnode;
 		return tppnode;
@@ -87,20 +87,20 @@ static void swap( huff_t* huff, node_t* node1, node_t* node2 ) {
 	if ( par1 ) {
 		if ( par1->left == node1 ) {
 			par1->left = node2;
-		} else   {
+		} else {
 			par1->right = node2;
 		}
-	} else   {
+	} else {
 		huff->tree = node2;
 	}
 
 	if ( par2 ) {
 		if ( par2->left == node2 ) {
 			par2->left = node1;
-		} else   {
+		} else {
 			par2->right = node1;
 		}
-	} else   {
+	} else {
 		huff->tree = node1;
 	}
 
@@ -153,14 +153,14 @@ static void increment( huff_t* huff, node_t* node ) {
 	}
 	if ( node->prev && node->prev->weight == node->weight ) {
 		*node->head = node->prev;
-	} else   {
+	} else {
 		*node->head = NULL;
 		free_ppnode( huff, node->head );
 	}
 	node->weight++;
 	if ( node->next && node->next->weight == node->weight ) {
 		node->head = node->next->head;
-	} else   {
+	} else {
 		node->head = get_ppnode( huff );
 		*node->head = node;
 	}
@@ -187,11 +187,11 @@ void Huff_addRef( huff_t* huff, byte ch ) {
 			huff->lhead->next->prev = tnode2;
 			if ( huff->lhead->next->weight == 1 ) {
 				tnode2->head = huff->lhead->next->head;
-			} else   {
+			} else {
 				tnode2->head = get_ppnode( huff );
 				*tnode2->head = tnode2;
 			}
-		} else   {
+		} else {
 			tnode2->head = get_ppnode( huff );
 			*tnode2->head = tnode2;
 		}
@@ -205,12 +205,12 @@ void Huff_addRef( huff_t* huff, byte ch ) {
 			huff->lhead->next->prev = tnode;
 			if ( huff->lhead->next->weight == 1 ) {
 				tnode->head = huff->lhead->next->head;
-			} else   {
+			} else {
 				/* this should never happen */
 				tnode->head = get_ppnode( huff );
 				*tnode->head = tnode2;
 			}
-		} else   {
+		} else {
 			/* this should never happen */
 			tnode->head = get_ppnode( huff );
 			*tnode->head = tnode;
@@ -222,10 +222,10 @@ void Huff_addRef( huff_t* huff, byte ch ) {
 		if ( huff->lhead->parent ) {
 			if ( huff->lhead->parent->left == huff->lhead ) {	/* lhead is guaranteed to by the NYT */
 				huff->lhead->parent->left = tnode2;
-			} else   {
+			} else {
 				huff->lhead->parent->right = tnode2;
 			}
-		} else   {
+		} else {
 			huff->tree = tnode2;
 		}
 
@@ -238,7 +238,7 @@ void Huff_addRef( huff_t* huff, byte ch ) {
 		huff->loc[ ch ] = tnode;
 
 		increment( huff, tnode2->parent );
-	} else   {
+	} else {
 		increment( huff, huff->loc[ ch ] );
 	}
 }
@@ -248,7 +248,7 @@ int Huff_Receive( node_t* node, int* ch, byte* fin ) {
 	while ( node && node->symbol == INTERNAL_NODE ) {
 		if ( get_bit( fin ) ) {
 			node = node->right;
-		} else   {
+		} else {
 			node = node->left;
 		}
 	}
@@ -265,7 +265,7 @@ void Huff_offsetReceive( node_t* node, int* ch, byte* fin, int* offset ) {
 	while ( node && node->symbol == INTERNAL_NODE ) {
 		if ( get_bit( fin ) ) {
 			node = node->right;
-		} else   {
+		} else {
 			node = node->left;
 		}
 	}
@@ -286,7 +286,7 @@ static void send( node_t* node, node_t* child, byte* fout ) {
 	if ( child ) {
 		if ( node->right == child ) {
 			add_bit( 1, fout );
-		} else   {
+		} else {
 			add_bit( 0, fout );
 		}
 	}
@@ -300,7 +300,7 @@ void Huff_transmit( huff_t* huff, int ch, byte* fout ) {
 		for ( int i = 7; i >= 0; i-- ) {
 			add_bit( ( char )( ( ch >> i ) & 0x1 ), fout );
 		}
-	} else   {
+	} else {
 		send( huff->loc[ ch ], NULL, fout );
 	}
 }
@@ -732,7 +732,7 @@ static unsigned char Masks[ 8 ] =
 void PutBit( unsigned char* buf,int pos,int bit ) {
 	if ( bit ) {
 		buf[ pos / 8 ] |= Masks[ pos % 8 ];
-	} else   {
+	} else {
 		buf[ pos / 8 ] &= ~Masks[ pos % 8 ];
 	}
 }
@@ -740,7 +740,7 @@ void PutBit( unsigned char* buf,int pos,int bit ) {
 int GetBit( unsigned char* buf,int pos ) {
 	if ( buf[ pos / 8 ] & Masks[ pos % 8 ] ) {
 		return 1;
-	} else   {
+	} else {
 		return 0;
 	}
 }
@@ -770,7 +770,7 @@ static void BuildTree( float* freq ) {
 				min2 = min1;
 				minat1 = j;
 				min1 = work[ j ]->freq;
-			} else if ( work[ j ]->freq < min2 )       {
+			} else if ( work[ j ]->freq < min2 ) {
 				minat2 = j;
 				min2 = work[ j ]->freq;
 			}
@@ -811,7 +811,7 @@ void HuffDecode( unsigned char* in, unsigned char* out, int inlen, int* outlen )
 		do {
 			if ( GetBit( in + 1,bits ) ) {
 				tmp = tmp->one;
-			} else   {
+			} else {
 				tmp = tmp->zero;
 			}
 			bits++;

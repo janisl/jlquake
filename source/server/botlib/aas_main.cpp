@@ -145,7 +145,7 @@ static void AAS_ContinueInit( float time ) {
 		//save the AAS file
 		if ( AAS_WriteAASFile( aasworld->filename ) ) {
 			BotImport_Print( PRT_MESSAGE, "%s written succesfully\n", aasworld->filename );
-		} else   {
+		} else {
 			BotImport_Print( PRT_ERROR, "couldn't write %s\n", aasworld->filename );
 		}
 	}
@@ -234,7 +234,7 @@ int AAS_LoadMap( const char* mapname ) {
 		char this_mapname[ MAX_QPATH ];
 		if ( GGameType & ( GAME_WolfSP | GAME_WolfMP ) ) {
 			String::Sprintf( this_mapname, MAX_QPATH, "%s_b%i", mapname, i );
-		} else   {
+		} else {
 			String::NCpyZ( this_mapname, mapname, MAX_QPATH );
 		}
 

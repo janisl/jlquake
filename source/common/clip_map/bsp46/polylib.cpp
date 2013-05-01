@@ -167,9 +167,9 @@ void CM46_ChopWindingInPlace( winding_t** inout, vec3_t normal, vec_t dist, vec_
 		dists[ i ] = dot;
 		if ( dot > epsilon ) {
 			sides[ i ] = SIDE_FRONT;
-		} else if ( dot < -epsilon )     {
+		} else if ( dot < -epsilon ) {
 			sides[ i ] = SIDE_BACK;
-		} else   {
+		} else {
 			sides[ i ] = SIDE_ON;
 		}
 		counts[ sides[ i ] ]++;
@@ -218,9 +218,9 @@ void CM46_ChopWindingInPlace( winding_t** inout, vec3_t normal, vec_t dist, vec_
 			// avoid round off error when possible
 			if ( normal[ j ] == 1 ) {
 				mid[ j ] = dist;
-			} else if ( normal[ j ] == -1 )       {
+			} else if ( normal[ j ] == -1 ) {
 				mid[ j ] = -dist;
-			} else   {
+			} else {
 				mid[ j ] = p1[ j ] + dot * ( p2[ j ] - p1[ j ] );
 			}
 		}

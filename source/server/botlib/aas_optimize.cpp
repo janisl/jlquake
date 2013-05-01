@@ -53,7 +53,7 @@ static int AAS_OptimizeEdge( optimized_t* optimized, int edgenum ) {
 		//keep the edge reversed sign
 		if ( edgenum > 0 ) {
 			return optedgenum;
-		} else   {
+		} else {
 			return -optedgenum;
 		}
 	}
@@ -63,7 +63,7 @@ static int AAS_OptimizeEdge( optimized_t* optimized, int edgenum ) {
 	for ( int i = 0; i < 2; i++ ) {
 		if ( optimized->vertexoptimizeindex[ edge->v[ i ] ] ) {
 			optedge->v[ i ] = optimized->vertexoptimizeindex[ edge->v[ i ] ];
-		} else   {
+		} else {
 			VectorCopy( aasworld->vertexes[ edge->v[ i ] ], optimized->vertexes[ optimized->numvertexes ] );
 			optedge->v[ i ] = optimized->numvertexes;
 			optimized->vertexoptimizeindex[ edge->v[ i ] ] = optimized->numvertexes;
@@ -76,7 +76,7 @@ static int AAS_OptimizeEdge( optimized_t* optimized, int edgenum ) {
 	//keep the edge reversed sign
 	if ( edgenum > 0 ) {
 		return optedgenum;
-	} else   {
+	} else {
 		return -optedgenum;
 	}
 }
@@ -84,7 +84,7 @@ static int AAS_OptimizeEdge( optimized_t* optimized, int edgenum ) {
 static bool AAS_KeepFace( aas_face_t* face ) {
 	if ( !( face->faceflags & FACE_LADDER ) ) {
 		return false;
-	} else   {
+	} else {
 		return true;
 	}
 }
@@ -103,7 +103,7 @@ static int AAS_OptimizeFace( optimized_t* optimized, int facenum ) {
 		//keep the face side sign
 		if ( facenum > 0 ) {
 			return optfacenum;
-		} else   {
+		} else {
 			return -optfacenum;
 		}
 	}	//end if
@@ -128,7 +128,7 @@ static int AAS_OptimizeFace( optimized_t* optimized, int facenum ) {
 	//keep the face side sign
 	if ( facenum > 0 ) {
 		return optfacenum;
-	} else   {
+	} else {
 		return -optfacenum;
 	}
 }

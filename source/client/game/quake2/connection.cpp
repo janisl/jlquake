@@ -191,7 +191,7 @@ void CLQ2_RequestNextDownload() {
 
 				if ( ( p = strchr( cl.q2_configstrings[ Q2CS_PLAYERSKINS + i ], '\\' ) ) != NULL ) {
 					p++;
-				} else   {
+				} else {
 					p = cl.q2_configstrings[ Q2CS_PLAYERSKINS + i ];
 				}
 				String::Cpy( model, p );
@@ -202,7 +202,7 @@ void CLQ2_RequestNextDownload() {
 				if ( p ) {
 					*p++ = 0;
 					String::Cpy( skin, p );
-				} else   {
+				} else {
 					*skin = 0;
 				}
 
@@ -281,7 +281,7 @@ void CLQ2_RequestNextDownload() {
 				if ( n & 1 ) {
 					String::Sprintf( fn, sizeof ( fn ), "env/%s%s.pcx",
 						cl.q2_configstrings[ Q2CS_SKY ], env_suf[ n / 2 ] );
-				} else   {
+				} else {
 					String::Sprintf( fn, sizeof ( fn ), "env/%s%s.tga",
 						cl.q2_configstrings[ Q2CS_SKY ], env_suf[ n / 2 ] );
 				}
@@ -381,7 +381,7 @@ void CLQ2_SendCmd() {
 	// got was, so the next message can be delta compressed
 	if ( cl_nodelta->value || !cl.q2_frame.valid || cls.q2_demowaiting ) {
 		buf.WriteLong( -1 );	// no compression
-	} else   {
+	} else {
 		buf.WriteLong( cl.q2_frame.serverframe );
 	}
 
@@ -536,7 +536,7 @@ void CLQ2_Connect_f() {
 
 	if ( ComQ2_ServerState() ) {// if running a local server, kill it and reissue
 		SV_Shutdown( "Server quit\n" );
-	} else   {
+	} else {
 		CL_Disconnect( true );
 	}
 
@@ -571,7 +571,7 @@ void CLQ2_Reconnect_f() {
 		if ( cls.state >= CA_CONNECTED ) {
 			CL_Disconnect( true );
 			cls.q2_connect_time = cls.realtime - 1500;
-		} else   {
+		} else {
 			cls.q2_connect_time = -99999;	// fire immediately
 
 		}
@@ -720,7 +720,7 @@ void CLQ2_ReadPackets() {
 			CL_Disconnect( true );
 			return;
 		}
-	} else   {
+	} else {
 		cl.timeoutcount = 0;
 	}
 }

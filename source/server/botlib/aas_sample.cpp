@@ -51,9 +51,9 @@ void AAS_PresenceTypeBoundingBox( int presencetype, vec3_t mins, vec3_t maxs ) {
 	int index;
 	if ( presencetype == PRESENCE_NORMAL ) {
 		index = 0;
-	} else if ( presencetype == PRESENCE_CROUCH )     {
+	} else if ( presencetype == PRESENCE_CROUCH ) {
 		index = 1;
-	} else   {
+	} else {
 		BotImport_Print( PRT_FATAL, "AAS_PresenceTypeBoundingBox: unknown presence type\n" );
 		index = 1;
 	}
@@ -74,7 +74,7 @@ void AAS_InitAASLinkHeap() {
 		}
 		aasworld->linkheapsize = max_aaslinks;
 		aasworld->linkheap = ( aas_link_t* )Mem_ClearedAlloc( max_aaslinks * sizeof ( aas_link_t ) );
-	} else   {
+	} else {
 		// just clear the memory
 		Com_Memset( aasworld->linkheap, 0, aasworld->linkheapsize * sizeof ( aas_link_t ) );
 	}
@@ -160,7 +160,7 @@ int AAS_PointAreaNum( const vec3_t point ) {
 		vec_t dist = DotProduct( point, plane->normal ) - plane->dist;
 		if ( dist > 0 ) {
 			nodenum = node->children[ 0 ];
-		} else   {
+		} else {
 			nodenum = node->children[ 1 ];
 		}
 	}
@@ -317,12 +317,12 @@ int AAS_TraceAreas( const vec3_t start, const vec3_t end, int* areas, vec3_t* po
 			float frac;
 			if ( front < 0 ) {
 				frac = ( front ) / ( front - back );
-			} else   {
+			} else {
 				frac = ( front ) / ( front - back );
 			}
 			if ( frac < 0 ) {
 				frac = 0;
-			} else if ( frac > 1 )     {
+			} else if ( frac > 1 ) {
 				frac = 1;
 			}
 
@@ -398,7 +398,7 @@ static int AAS_BoxOnPlaneSide2( const vec3_t absmins, const vec3_t absmaxs, cons
 		if ( p->normal[ i ] < 0 ) {
 			corners[ 0 ][ i ] = absmins[ i ];
 			corners[ 1 ][ i ] = absmaxs[ i ];
-		} else   {
+		} else {
 			corners[ 1 ][ i ] = absmins[ i ];
 			corners[ 0 ][ i ] = absmaxs[ i ];
 		}
@@ -425,7 +425,7 @@ void AAS_UnlinkFromAreas( aas_link_t* areas ) {
 		//remove the entity from the linked list of this area
 		if ( link->prev_ent ) {
 			link->prev_ent->next_ent = link->next_ent;
-		} else   {
+		} else {
 			aasworld->arealinkedentities[ link->areanum ] = link->next_ent;
 		}
 		if ( link->next_ent ) {
@@ -582,7 +582,7 @@ static int AAS_BBoxAreasCheckCache( const vec3_t absmins, const vec3_t absmaxs, 
 		for ( i = 0; i < maxareas; i++ )
 			areas[ i ] = ( int )cache->areas[ i ];
 		return maxareas;
-	} else   {
+	} else {
 		Com_Memcpy( areas, cache->areas, sizeof ( int ) * cache->numAreas );
 		return cache->numAreas;
 	}
@@ -603,7 +603,7 @@ static void AAS_BBoxAreasAddToCache( const vec3_t absmins, const vec3_t absmaxs,
 
 		if ( !weakestLink ) {
 			weakestLink = cache;
-		} else   {
+		} else {
 			if ( cache->numUsed < weakestLink->numUsed ) {
 				weakestLink = cache;
 			}
@@ -789,7 +789,7 @@ aas_trace_t AAS_TraceClientBBox( const vec3_t start, const vec3_t end, int prese
 					trace.startsolid = true;
 					trace.fraction = 0.0;
 					VectorClear( v1 );
-				} else   {
+				} else {
 					trace.startsolid = false;
 					VectorSubtract( end, start, v1 );
 					VectorSubtract( tstack_p->start, start, v2 );
@@ -806,7 +806,7 @@ aas_trace_t AAS_TraceClientBBox( const vec3_t start, const vec3_t end, int prese
 					trace.planenum ^= 1;
 				}
 				return trace;
-			} else   {
+			} else {
 				if ( passent >= 0 ) {
 					if ( AAS_AreaEntityCollision( -nodenum, tstack_p->start,
 							 tstack_p->end, presencetype, passent, &trace ) ) {
@@ -835,7 +835,7 @@ aas_trace_t AAS_TraceClientBBox( const vec3_t start, const vec3_t end, int prese
 				trace.startsolid = true;
 				trace.fraction = 0.0;
 				VectorClear( v1 );
-			} else   {
+			} else {
 				trace.startsolid = false;
 				VectorSubtract( end, start, v1 );
 				vec3_t v2;
@@ -903,12 +903,12 @@ aas_trace_t AAS_TraceClientBBox( const vec3_t start, const vec3_t end, int prese
 			float frac;
 			if ( front < 0 ) {
 				frac = ( front + TRACEPLANE_EPSILON ) / ( front - back );
-			} else   {
+			} else {
 				frac = ( front - TRACEPLANE_EPSILON ) / ( front - back );
 			}
 			if ( frac < 0 ) {
 				frac = 0.001f;
-			} else if ( frac > 1 )     {
+			} else if ( frac > 1 ) {
 				frac = 0.999f;
 			}
 

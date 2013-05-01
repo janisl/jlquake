@@ -191,7 +191,7 @@ void* VM_ArgPtr( qintptr intValue ) {
 
 	if ( currentVM->entryPoint ) {
 		return ( void* )( currentVM->dataBase + intValue );
-	} else   {
+	} else {
 		return ( void* )( currentVM->dataBase + ( intValue & currentVM->dataMask ) );
 	}
 }
@@ -208,7 +208,7 @@ void* VM_ExplicitArgPtr( vm_t* vm, qintptr intValue ) {
 
 	if ( vm->entryPoint ) {
 		return ( void* )( vm->dataBase + intValue );
-	} else   {
+	} else {
 		return ( void* )( vm->dataBase + ( intValue & vm->dataMask ) );
 	}
 }
@@ -241,7 +241,7 @@ static void* VM_LoadDll( const char* name, qintptr( **entryPoint ) ( int, ... ),
 	char fname[ MAX_OSPATH ];
 	if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 		String::NCpyZ( fname, Sys_GetMPDllName( name ), sizeof ( fname ) );
-	} else   {
+	} else {
 		String::NCpyZ( fname, Sys_GetDllName( name ), sizeof ( fname ) );
 	}
 
@@ -464,7 +464,7 @@ vm_t* VM_Create( const char* module, qintptr ( * systemCalls )( qintptr* ),
 	if ( interpret >= VMI_COMPILED ) {
 		vm->compiled = true;
 		VM_Compile( vm, header );
-	} else   {
+	} else {
 		vm->compiled = false;
 		VM_PrepareInterpreter( vm, header );
 	}
@@ -637,7 +637,7 @@ qintptr VM_Call( vm_t* vm, int callnum, ... ) {
 			args[ 4 ],  args[ 5 ], args[ 6 ], args[ 7 ],
 			args[ 8 ],  args[ 9 ], args[ 10 ], args[ 11 ],
 			args[ 12 ], args[ 13 ], args[ 14 ], args[ 15 ] );
-	} else   {
+	} else {
 #if id386
 		int* args = &callnum;
 #else
@@ -654,7 +654,7 @@ qintptr VM_Call( vm_t* vm, int callnum, ... ) {
 
 		if ( vm->compiled ) {
 			r = VM_CallCompiled( vm, args );
-		} else   {
+		} else {
 			r = VM_CallInterpreted( vm, args );
 		}
 	}
@@ -726,7 +726,7 @@ static void VM_VmInfo_f() {
 		}
 		if ( vm->compiled ) {
 			common->Printf( "compiled on load\n" );
-		} else   {
+		} else {
 			common->Printf( "interpreted\n" );
 		}
 		common->Printf( "    code length : %7i\n", vm->codeLength );

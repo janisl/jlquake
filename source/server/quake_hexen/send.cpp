@@ -86,7 +86,7 @@ void SVQH_Multicast( const vec3_t origin, int to ) {
 		VectorCopy( client->qh_edict->GetOrigin(), adjust_origin );
 		if ( GGameType & GAME_HexenWorld ) {
 			adjust_origin[ 2 ] += 16;
-		} else   {
+		} else {
 			if ( to == MULTICAST_PHS_R || to == MULTICAST_PHS ) {
 				vec3_t delta;
 				VectorSubtract( origin, adjust_origin, delta );
@@ -110,7 +110,7 @@ inrange:
 		if ( reliable ) {
 			SVQH_ClientReliableCheckBlock( client, sv.multicast.cursize );
 			SVQH_ClientReliableWrite_SZ( client, sv.multicast._data, sv.multicast.cursize );
-		} else   {
+		} else {
 			client->datagram.WriteData( sv.multicast._data, sv.multicast.cursize );
 		}
 	}
@@ -135,7 +135,7 @@ void SVHW_MulticastSpecific( unsigned clients, bool reliable ) {
 
 			if ( reliable ) {
 				client->netchan.message.WriteData( sv.multicast._data, sv.multicast.cursize );
-			} else   {
+			} else {
 				client->datagram.WriteData( sv.multicast._data, sv.multicast.cursize );
 			}
 		}
@@ -156,14 +156,14 @@ void SVH2_StopSound( qhedict_t* entity, int channel ) {
 			for ( int i = 0; i < 3; i++ ) {
 				origin[ i ] = entity->GetOrigin()[ i ] + 0.5 * ( entity->GetMins()[ i ] + entity->GetMaxs()[ i ] );
 			}
-		} else   {
+		} else {
 			VectorCopy( entity->GetOrigin(), origin );
 		}
 
 		sv.multicast.WriteByte( h2svc_stopsound );
 		sv.multicast.WriteShort( channel );
 		SVQH_Multicast( origin, MULTICAST_ALL_R );
-	} else   {
+	} else {
 		if ( sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 4 ) {
 			return;
 		}
@@ -225,7 +225,7 @@ void SVQH_StartSound( qhedict_t* entity, int channel, const char* sample, int vo
 			}
 			use_phs = false;
 			channel &= 7;
-		} else   {
+		} else {
 			use_phs = true;
 		}
 
@@ -243,7 +243,7 @@ void SVQH_StartSound( qhedict_t* entity, int channel, const char* sample, int vo
 			for ( int i = 0; i < 3; i++ ) {
 				origin[ i ] = entity->GetOrigin()[ i ] + 0.5 * ( entity->GetMins()[ i ] + entity->GetMaxs()[ i ] );
 			}
-		} else   {
+		} else {
 			VectorCopy( entity->GetOrigin(), origin );
 		}
 
@@ -262,10 +262,10 @@ void SVQH_StartSound( qhedict_t* entity, int channel, const char* sample, int vo
 
 		if ( use_phs ) {
 			SVQH_Multicast( origin, reliable ? MULTICAST_PHS_R : MULTICAST_PHS );
-		} else   {
+		} else {
 			SVQH_Multicast( origin, reliable ? MULTICAST_ALL_R : MULTICAST_ALL );
 		}
-	} else   {
+	} else {
 		if ( sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 16 ) {
 			return;
 		}
@@ -312,7 +312,7 @@ void SVH2_UpdateSoundPos( qhedict_t* entity, int channel ) {
 			for ( int i = 0; i < 3; i++ ) {	//FIXME: This may not work- should be using (absmin + absmax)*0.5?
 				origin[ i ] = entity->GetOrigin()[ i ] + 0.5 * ( entity->GetMins()[ i ] + entity->GetMaxs()[ i ] );
 			}
-		} else   {
+		} else {
 			VectorCopy( entity->GetOrigin(), origin );
 		}
 
@@ -322,7 +322,7 @@ void SVH2_UpdateSoundPos( qhedict_t* entity, int channel ) {
 			sv.multicast.WriteCoord( entity->GetOrigin()[ i ] + 0.5 * ( entity->GetMins()[ i ] + entity->GetMaxs()[ i ] ) );
 		}
 		SVQH_Multicast( origin, MULTICAST_PHS );
-	} else   {
+	} else {
 		if ( sv.qh_datagram.cursize > MAX_DATAGRAM_QH - 4 ) {
 			return;
 		}
@@ -340,7 +340,7 @@ void SVQH_PrintToClient( client_t* cl, int level, char* string ) {
 		SVQH_ClientReliableWrite_Begin( cl, GGameType & GAME_HexenWorld ? h2svc_print : q1svc_print, String::Length( string ) + 3 );
 		SVQH_ClientReliableWrite_Byte( cl, level );
 		SVQH_ClientReliableWrite_String( cl, string );
-	} else   {
+	} else {
 		cl->qh_message.WriteByte( GGameType & GAME_Hexen2 ? h2svc_print : q1svc_print );
 		cl->qh_message.WriteString2( string );
 	}
@@ -399,7 +399,7 @@ void SVQH_SendClientCommand( client_t* cl, const char* fmt, ... ) {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		SVQH_ClientReliableWrite_Begin( cl, GGameType & GAME_Hexen2 ? h2svc_stufftext : q1svc_stufftext, String::Length( string ) + 2 );
 		SVQH_ClientReliableWrite_String( cl, string );
-	} else   {
+	} else {
 		cl->qh_message.WriteByte( GGameType & GAME_Hexen2 ? h2svc_stufftext : q1svc_stufftext );
 		cl->qh_message.WriteString2( string );
 	}
@@ -436,7 +436,7 @@ void SVQH_StartParticle( const vec3_t org, const vec3_t dir, int color, int coun
 		v = dir[ i ] * 16;
 		if ( v > 127 ) {
 			v = 127;
-		} else if ( v < -128 )     {
+		} else if ( v < -128 ) {
 			v = -128;
 		}
 		message.WriteChar( v );
@@ -557,7 +557,7 @@ static void SVQ1_WriteClientdataToMessage( qhedict_t* ent, QMsg* msg ) {
 	int items;
 	if ( val ) {
 		items = ( int )ent->GetItems() | ( ( int )val->_float << 23 );
-	} else   {
+	} else {
 		items = ( int )ent->GetItems() | ( ( int )*pr_globalVars.serverflags << 28 );
 	}
 
@@ -634,7 +634,7 @@ static void SVQ1_WriteClientdataToMessage( qhedict_t* ent, QMsg* msg ) {
 
 	if ( q1_standard_quake ) {
 		msg->WriteByte( ent->GetWeapon() );
-	} else   {
+	} else {
 		for ( int i = 0; i < 32; i++ ) {
 			if ( ( ( int )ent->GetWeapon() ) & ( 1 << i ) ) {
 				msg->WriteByte( i );
@@ -652,7 +652,7 @@ static void SVH2_WriteClientdataToMessage( client_t* client, qhedict_t* ent, QMs
 			   Q1SU_VELOCITY1 | ( Q1SU_VELOCITY1 << 1 ) | ( Q1SU_VELOCITY1 << 2 ) |
 			   Q1SU_PUNCH1 | ( Q1SU_PUNCH1 << 1 ) | ( Q1SU_PUNCH1 << 2 ) | Q1SU_WEAPONFRAME |
 			   Q1SU_ARMOR | Q1SU_WEAPON;
-	} else   {
+	} else {
 		if ( ent->GetViewOfs()[ 2 ] != client->h2_old_v.view_ofs[ 2 ] ) {
 			bits |= Q1SU_VIEWHEIGHT;
 		}
@@ -771,7 +771,7 @@ static void SVH2_WriteClientdataToMessage( client_t* client, qhedict_t* ent, QMs
 	if ( client->h2_send_all_v ) {
 		sc1 = sc2 = 0xffffffff;
 		client->h2_send_all_v = false;
-	} else   {
+	} else {
 		sc1 = sc2 = 0;
 
 		if ( ent->GetHealth() != client->h2_old_v.health ) {
@@ -1407,7 +1407,7 @@ static void SVQHW_UpdateClientStats( client_t* client ) {
 				SVQH_ClientReliableWrite_Begin( client, GGameType & GAME_HexenWorld ? h2svc_updatestat : q1svc_updatestat, 3 );
 				SVQH_ClientReliableWrite_Byte( client, i );
 				SVQH_ClientReliableWrite_Byte( client, stats[ i ] );
-			} else   {
+			} else {
 				SVQH_ClientReliableWrite_Begin( client, GGameType & GAME_HexenWorld ? hwsvc_updatestatlong : qwsvc_updatestatlong, 6 );
 				SVQH_ClientReliableWrite_Byte( client, i );
 				SVQH_ClientReliableWrite_Long( client, stats[ i ] );
@@ -1429,7 +1429,7 @@ static bool SVQH_SendClientDatagram( client_t* client ) {
 
 	if ( GGameType & GAME_Hexen2 ) {
 		SVH2_PrepareClientEntities( client, client->qh_edict, &msg );
-	} else   {
+	} else {
 		SVQ1_WriteEntitiesToClient( client->qh_edict, &msg );
 	}
 
@@ -1469,7 +1469,7 @@ static bool SVQHW_SendClientDatagram( client_t* client ) {
 	// possibly a nails update
 	if ( GGameType & GAME_HexenWorld ) {
 		SVHW_WriteEntitiesToClient( client, &msg );
-	} else   {
+	} else {
 		SVQW_WriteEntitiesToClient( client, &msg );
 	}
 
@@ -1477,7 +1477,7 @@ static bool SVQHW_SendClientDatagram( client_t* client ) {
 	// for this client out to the message
 	if ( client->datagram.overflowed ) {
 		common->Printf( "WARNING: datagram overflowed for %s\n", client->name );
-	} else   {
+	} else {
 		msg.WriteData( client->datagram._data, client->datagram.cursize );
 	}
 	client->datagram.Clear();
@@ -1620,7 +1620,7 @@ static void SVQHW_UpdateToReliableMessages() {
 						client->netchan.message.WriteByte( *pr_globalVars.defLosses );
 						client->netchan.message.WriteByte( *pr_globalVars.attLosses );
 					}
-				} else   {
+				} else {
 					SVQH_ClientReliableWrite_Begin( client, q1svc_updatefrags, 4 );
 					SVQH_ClientReliableWrite_Byte( client, i );
 					SVQH_ClientReliableWrite_Short( client, host_client->qh_edict->GetFrags() );
@@ -1720,7 +1720,7 @@ void SVQH_SendClientMessages() {
 			if ( !SVQH_SendClientDatagram( host_client ) ) {
 				continue;
 			}
-		} else   {
+		} else {
 			// the player isn't totally in the game yet
 			// send small keepalive messages if too much time has passed
 			// send a full message when the next signon stage has been requested
@@ -1750,7 +1750,7 @@ void SVQH_SendClientMessages() {
 
 			if ( host_client->qh_dropasap ) {
 				SVQH_DropClient( host_client, false );		// went to another level
-			} else   {
+			} else {
 				if ( NET_SendMessage( &host_client->netchan, &host_client->qh_message ) == -1 ) {
 					SVQH_DropClient( host_client, true );	// if the message couldn't send, kick off
 				}
@@ -1830,7 +1830,7 @@ void SVQHW_SendClientMessages() {
 
 		if ( c->state == CS_ACTIVE ) {
 			SVQHW_SendClientDatagram( c );
-		} else   {
+		} else {
 			Netchan_Transmit( &c->netchan, 0, NULL );		// just update reliable
 
 		}

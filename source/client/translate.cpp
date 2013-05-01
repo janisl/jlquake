@@ -88,7 +88,7 @@ static void CL_SaveTransTable( const char* fileName, bool newOnly ) {
 	const char* buf;
 	if ( String::Length( cl.wm_translationVersion ) ) {
 		buf = va( "#version\t\t\"%s\"\n", cl.wm_translationVersion );
-	} else   {
+	} else {
 		buf = va( "#version\t\t\"1.0 01/01/01\"\n" );
 	}
 
@@ -114,7 +114,7 @@ static void CL_SaveTransTable( const char* fileName, bool newOnly ) {
 						continue;
 					}
 					transnum++;
-				} else   {
+				} else {
 					if ( !j ) {
 						continue;
 					}
@@ -180,7 +180,7 @@ static trans_t* LookupTrans( const char* original, const char* translated[ MAX_L
 
 	if ( prev ) {
 		prev->next = newt;
-	} else   {
+	} else {
 		transTable[ hash ] = newt;
 	}
 
@@ -396,7 +396,7 @@ static void CL_LoadTransTable( const char* fileName ) {
 
 		common->Printf( S_COLOR_YELLOW "WARNING: Problem loading %s on line %i\n", fileName, line );
 		cl.wm_corruptedTranslationFile = true;
-	} else   {
+	} else {
 		common->Printf( "Loaded %i translation strings from %s\n", count, fileName );
 	}
 
@@ -527,7 +527,7 @@ void CL_TranslateString( const char* string, char* destBuffer ) {
 			destBuffer[ len2 ] = '\n';
 			destBuffer[ len2 + 1 ] = '\0';
 		}
-	} else   {
+	} else {
 		int offset = 0;
 
 		if ( cl_debugTranslation->integer >= 1 ) {

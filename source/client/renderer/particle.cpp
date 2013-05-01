@@ -62,7 +62,7 @@ static void R_DrawParticle( const particle_t* p, const vec3_t up, const vec3_t r
 
 	if ( scale < 20 ) {
 		scale = p->size;
-	} else   {
+	} else {
 		scale = p->size + scale * 0.004;
 	}
 
@@ -189,7 +189,7 @@ void R_DrawParticles(void*) {
 	}
 	if ( ( GGameType & GAME_Quake2 ) && qglPointParameterfEXT ) {
 		R_DrawParticlePoints();
-	} else   {
+	} else {
 		R_DrawParticleTriangles();
 	}
 }

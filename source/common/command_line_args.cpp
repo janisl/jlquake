@@ -51,7 +51,7 @@ void COM_InitArgv( int argc, char** argv ) {
 	for ( int i = 0; i < argc; i++ ) {
 		if ( !argv[ i ] ) {	// || String::Length(argv[i]) >= MAX_TOKEN_CHARS)
 			com_argv[ i ] = "";
-		} else   {
+		} else {
 			com_argv[ i ] = argv[ i ];
 		}
 	}

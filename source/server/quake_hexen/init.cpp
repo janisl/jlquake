@@ -95,12 +95,12 @@ static void SVQH_CreateBaseline() {
 			if ( entnum > 0 && entnum <= ( GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients ) ) {
 				svent->q1_baseline.colormap = entnum;
 				svent->q1_baseline.modelindex = SVQH_ModelIndex( "progs/player.mdl" );
-			} else   {
+			} else {
 				svent->q1_baseline.colormap = 0;
 				svent->q1_baseline.modelindex =
 					SVQH_ModelIndex( PR_GetString( svent->GetModel() ) );
 			}
-		} else   {
+		} else {
 			VectorCopy( svent->GetOrigin(), svent->h2_baseline.origin );
 			VectorCopy( svent->GetAngles(), svent->h2_baseline.angles );
 			svent->h2_baseline.frame = svent->GetFrame();
@@ -111,7 +111,7 @@ static void SVQH_CreateBaseline() {
 			if ( entnum > 0 && entnum <= ( GGameType & GAME_HexenWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients ) ) {
 				svent->h2_baseline.colormap = entnum;
 				svent->h2_baseline.modelindex = GGameType & GAME_HexenWorld ? SVQH_ModelIndex( "models/paladin.mdl" ) : 0;
-			} else   {
+			} else {
 				svent->h2_baseline.colormap = 0;
 				svent->h2_baseline.modelindex =
 					SVQH_ModelIndex( PR_GetString( svent->GetModel() ) );
@@ -144,7 +144,7 @@ static void SVQH_CreateBaseline() {
 				sv.qh_signon.WriteCoord( svent->q1_baseline.origin[ i ] );
 				sv.qh_signon.WriteAngle( svent->q1_baseline.angles[ i ] );
 			}
-		} else   {
+		} else {
 			sv.qh_signon.WriteByte( h2svc_spawnbaseline );
 			sv.qh_signon.WriteShort( entnum );
 
@@ -291,7 +291,7 @@ void SVQH_SpawnServer( const char* server, const char* startspot ) {
 		}
 
 		Cvar_SetValue( "skill", ( float )svqh_current_skill );
-	} else   {
+	} else {
 		SVQH_SaveSpawnparms();
 
 		svs.spawncount++;		// any partially connected client will be
@@ -424,7 +424,7 @@ void SVQH_SpawnServer( const char* server, const char* startspot ) {
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) ) {
 		if ( svqh_coop->value ) {
 			*pr_globalVars.coop = svqh_coop->value;
-		} else   {
+		} else {
 			*pr_globalVars.deathmatch = svqh_deathmatch->value;
 		}
 	}
@@ -500,7 +500,7 @@ void SVQH_SpawnServer( const char* server, const char* startspot ) {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		SVQH_RunPhysicsForTime( svs.realtime * 0.001 );
 		SVQH_RunPhysicsForTime( svs.realtime * 0.001 );
-	} else   {
+	} else {
 		SVQH_RunPhysicsAndUpdateTime( 0.1, svs.realtime * 0.001 );
 		SVQH_RunPhysicsAndUpdateTime( 0.1, svs.realtime * 0.001 );
 	}

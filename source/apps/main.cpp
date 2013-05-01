@@ -116,9 +116,9 @@ static int Com_ModifyMsec( int msec ) {
 	//
 	if ( com_fixedtime->integer ) {
 		msec = com_fixedtime->integer;
-	} else if ( com_timescale->value )     {
+	} else if ( com_timescale->value ) {
 		msec *= com_timescale->value;
-	} else if ( GGameType & GAME_Quake3 && comq3_cameraMode->integer )     {
+	} else if ( GGameType & GAME_Quake3 && comq3_cameraMode->integer ) {
 		//JL timescale will be 0 in this case.
 		msec *= com_timescale->value;
 	}
@@ -137,11 +137,11 @@ static int Com_ModifyMsec( int msec ) {
 			common->Printf( "Hitch warning: %i msec frame time\n", msec );
 		}
 		clampTime = 5000;
-	} else if ( GGameType & GAME_Tech3 ? !com_sv_running->integer : !SV_IsServerActive() )     {
+	} else if ( GGameType & GAME_Tech3 ? !com_sv_running->integer : !SV_IsServerActive() ) {
 		// clients of remote servers do not want to clamp time, because
 		// it would skew their view of the server's time temporarily
 		clampTime = 5000;
-	} else   {
+	} else {
 		// for local single player gaming
 		// we may want to clamp the time to prevent players from
 		// flying off edges when something hitches.
@@ -190,7 +190,7 @@ void Com_Frame() {
 	int minMsec;
 	if ( !com_dedicated->integer && com_maxfps->integer > 0 && !CL_IsTimeDemo() ) {
 		minMsec = 1000 / com_maxfps->integer;
-	} else   {
+	} else {
 		minMsec = 1;
 	}
 	int msec;
@@ -237,7 +237,7 @@ void Com_Frame() {
 		if ( !com_dedicated->integer ) {
 			CL_Init();
 			Sys_ShowConsole( com_viewlog->integer, false );
-		} else   {
+		} else {
 			CL_Shutdown();
 			Sys_ShowConsole( 1, true );
 		}
@@ -282,17 +282,17 @@ void Com_Frame() {
 		static bool watchWarn = false;
 		if ( watchdogTime == 0 ) {
 			watchdogTime = Sys_Milliseconds();
-		} else   {
+		} else {
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 ) {
 				common->Printf( "WARNING: watchdog will trigger in 4 seconds\n" );
 				watchWarn = true;
-			} else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )     {
+			} else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 ) {
 				common->Printf( "Idle Server with no map - triggering watchdog\n" );
 				watchdogTime = 0;
 				watchWarn = false;
 				if ( com_watchdog_cmd->string[ 0 ] == '\0' ) {
 					Cbuf_AddText( "quit\n" );
-				} else   {
+				} else {
 					Cbuf_AddText( va( "%s\n", com_watchdog_cmd->string ) );
 				}
 			}
@@ -311,7 +311,7 @@ void Com_Frame() {
 			int pass3 = time3 - time_after_ref;
 			common->Printf( "%3i tot %3i server %3i gfx %3i snd\n",
 				pass1 + pass2 + pass3, pass1, pass2, pass3 );
-		} else if ( GGameType & GAME_Quake2 )     {
+		} else if ( GGameType & GAME_Quake2 ) {
 			int all, sv, gm, cl, rf;
 
 			all = timeAfter - timeBeforeServer;
@@ -323,7 +323,7 @@ void Com_Frame() {
 			cl -= rf;
 			common->Printf( "all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
 				all, sv, gm, cl, rf );
-		} else   {
+		} else {
 			int all = timeAfter - timeBeforeServer;
 			int sv = timeBeforeEvents - timeBeforeServer;
 			int sev = timeBeforeServer - timeBeforeFirstEvents;
@@ -356,7 +356,7 @@ void Com_Frame() {
 static void Com_Error_f() {
 	if ( Cmd_Argc() > 1 ) {
 		common->Error( "Testing drop error" );
-	} else   {
+	} else {
 		common->FatalError( "Testing fatal error" );
 	}
 }
@@ -398,43 +398,43 @@ static void ComET_GetGameInfo() {
 	while ( ( token = String::Parse3( &buf ) ) != NULL && token[ 0 ] ) {
 		if ( !String::ICmp( token, "spEnabled" ) ) {
 			comet_gameInfo.spEnabled = true;
-		} else if ( !String::ICmp( token, "spGameTypes" ) )       {
+		} else if ( !String::ICmp( token, "spGameTypes" ) ) {
 			while ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.spGameTypes |= ( 1 << String::Atoi( token ) );
 			}
-		} else if ( !String::ICmp( token, "defaultSPGameType" ) )       {
+		} else if ( !String::ICmp( token, "defaultSPGameType" ) ) {
 			if ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.defaultSPGameType = String::Atoi( token );
-			} else   {
+			} else {
 				FS_FreeFile( f );
 				common->FatalError( "ComET_GetGameInfo: bad syntax." );
 			}
-		} else if ( !String::ICmp( token, "coopGameTypes" ) )       {
+		} else if ( !String::ICmp( token, "coopGameTypes" ) ) {
 			while ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.coopGameTypes |= ( 1 << String::Atoi( token ) );
 			}
-		} else if ( !String::ICmp( token, "defaultCoopGameType" ) )       {
+		} else if ( !String::ICmp( token, "defaultCoopGameType" ) ) {
 			if ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.defaultCoopGameType = String::Atoi( token );
-			} else   {
+			} else {
 				FS_FreeFile( f );
 				common->FatalError( "ComET_GetGameInfo: bad syntax." );
 			}
-		} else if ( !String::ICmp( token, "defaultGameType" ) )       {
+		} else if ( !String::ICmp( token, "defaultGameType" ) ) {
 			if ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.defaultGameType = String::Atoi( token );
-			} else   {
+			} else {
 				FS_FreeFile( f );
 				common->FatalError( "ComET_GetGameInfo: bad syntax." );
 			}
-		} else if ( !String::ICmp( token, "usesProfiles" ) )       {
+		} else if ( !String::ICmp( token, "usesProfiles" ) ) {
 			if ( ( token = String::ParseExt( &buf, false ) ) != NULL && token[ 0 ] ) {
 				comet_gameInfo.usesProfiles = String::Atoi( token );
-			} else   {
+			} else {
 				FS_FreeFile( f );
 				common->FatalError( "ComET_GetGameInfo: bad syntax." );
 			}
-		} else   {
+		} else {
 			FS_FreeFile( f );
 			common->FatalError( "ComET_GetGameInfo: bad syntax." );
 		}
@@ -546,11 +546,11 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 		if ( !safeMode ) {
 			if ( GGameType & GAME_Quake3 ) {
 				Cbuf_AddText( "exec q3config.cfg\n" );
-			} else if ( GGameType & GAME_WolfSP )     {
+			} else if ( GGameType & GAME_WolfSP ) {
 				Cbuf_AddText( "exec wolfconfig.cfg\n" );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				Cbuf_AddText( "exec wolfconfig_mp.cfg\n" );
-			} else if ( GGameType & GAME_ET )     {
+			} else if ( GGameType & GAME_ET ) {
 				if ( comet_gameInfo.usesProfiles ) {
 					const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
 					if ( !cl_profileStr[ 0 ] ) {
@@ -591,7 +591,7 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 						// exec the config
 						Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, ETCONFIG_NAME ) );
 					}
-				} else   {
+				} else {
 					Cbuf_AddText( va( "exec %s\n", ETCONFIG_NAME ) );
 				}
 			}
@@ -616,11 +616,11 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 #else
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) ) {
 		com_dedicated = Cvar_Get( "dedicated", "0", CVAR_ROM );
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		com_dedicated = Cvar_Get( "dedicated", "0", CVAR_LATCH2 );
-	} else if ( COM_CheckParm( "-dedicated" ) )       {
+	} else if ( COM_CheckParm( "-dedicated" ) ) {
 		com_dedicated = Cvar_Get( "dedicated", "1", CVAR_ROM );
-	} else   {
+	} else {
 		com_dedicated = Cvar_Get( "dedicated", "0", CVAR_ROM );
 	}
 #endif
@@ -695,7 +695,7 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 			Cvar_Set( "cl_warncmd", "1" );
 
 			Cbuf_InsertText( "exec server.cfg\n" );
-		} else   {
+		} else {
 			Cbuf_InsertText( GGameType & GAME_Hexen2 ? "exec hexen.rc\n" : "exec quake.rc\n" );
 			Cbuf_AddText( "cl_warncmd 1\n" );
 			Cbuf_Execute();
@@ -762,11 +762,11 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 			// if the user didn't give any commands, run default action
 			if ( !com_dedicated->value ) {
 				Cbuf_AddText( "d1\n" );
-			} else   {
+			} else {
 				Cbuf_AddText( "dedicated_start\n" );
 			}
 			Cbuf_Execute();
-		} else   {
+		} else {
 			// the user asked for something explicit
 			// so drop the loading plaque
 			SCR_EndLoadingPlaque();
@@ -793,14 +793,14 @@ void Com_Init( int argc, char* argv[], char* commandLine ) {
 				//----(SA)	force this to get played every time (but leave cvar for override)
 				Cbuf_AddText( "cinematic wolfintro.RoQ 3\n" );
 			}
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			Cbuf_AddText( "cinematic gmlogo.RoQ\n" );
 			Cvar* com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
 			if ( !com_introPlayed->integer ) {
 				Cvar_Set( com_introPlayed->name, "1" );
 				Cvar_Set( "nextmap", "cinematic wolfintro.RoQ" );
 			}
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			Cbuf_AddText( "cinematic etintro.roq\n" );
 		}
 	}

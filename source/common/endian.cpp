@@ -134,7 +134,7 @@ void Com_InitByteOrder() {
 		LittleLong = LongNoSwap;
 		BigFloat = FloatSwap;
 		LittleFloat = FloatNoSwap;
-	} else   {
+	} else {
 		GBigEndian = true;
 		BigShort = ShortNoSwap;
 		LittleShort = ShortSwap;

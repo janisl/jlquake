@@ -122,7 +122,7 @@ static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 		if ( backEnd.currentEntity->e.hModel ) {
 			// world surfaces dont have an axis
 			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
-		} else   {
+		} else {
 			VectorCopy( backEnd.currentEntity->e.fireRiseDir, worldUp );
 		}
 		// don't go so far if sideways, since they must be moving
@@ -160,7 +160,7 @@ static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 			ds->deformationWave.frequency += 999;
 		}
 		ds->deformationWave.frequency *= -1;
-	} else if ( ds->deformationWave.frequency == 0 )     {
+	} else if ( ds->deformationWave.frequency == 0 ) {
 		float scale = EvalWaveForm( &ds->deformationWave );
 
 		for ( int i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 ) {
@@ -171,7 +171,7 @@ static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 			xyz[ 1 ] += offset[ 1 ];
 			xyz[ 2 ] += offset[ 2 ];
 		}
-	} else   {
+	} else {
 		float* table = TableForFunc( ds->deformationWave.func );
 
 		for ( int i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 ) {
@@ -315,7 +315,7 @@ static void AutospriteDeform() {
 	if ( backEnd.currentEntity != &tr.worldEntity ) {
 		GlobalVectorToLocal( backEnd.viewParms.orient.axis[ 1 ], leftDir );
 		GlobalVectorToLocal( backEnd.viewParms.orient.axis[ 2 ], upDir );
-	} else   {
+	} else {
 		VectorCopy( backEnd.viewParms.orient.axis[ 1 ], leftDir );
 		VectorCopy( backEnd.viewParms.orient.axis[ 2 ], upDir );
 	}
@@ -346,7 +346,7 @@ static void AutospriteDeform() {
 			float axisLength = VectorLength( backEnd.currentEntity->e.axis[ 0 ] );
 			if ( !axisLength ) {
 				axisLength = 0;
-			} else   {
+			} else {
 				axisLength = 1.0f / axisLength;
 			}
 			VectorScale( left, axisLength, left );
@@ -369,7 +369,7 @@ static void Autosprite2Deform() {
 	vec3_t forward;
 	if ( backEnd.currentEntity != &tr.worldEntity ) {
 		GlobalVectorToLocal( backEnd.viewParms.orient.axis[ 0 ], forward );
-	} else   {
+	} else {
 		VectorCopy( backEnd.viewParms.orient.axis[ 0 ], forward );
 	}
 
@@ -399,7 +399,7 @@ static void Autosprite2Deform() {
 				lengths[ 1 ] = lengths[ 0 ];
 				nums[ 0 ] = j;
 				lengths[ 0 ] = l;
-			} else if ( l < lengths[ 1 ] )       {
+			} else if ( l < lengths[ 1 ] ) {
 				nums[ 1 ] = j;
 				lengths[ 1 ] = l;
 			}
@@ -444,7 +444,7 @@ static void Autosprite2Deform() {
 			if ( k == 5 ) {
 				VectorMA( mid[ j ], l, minor, v1 );
 				VectorMA( mid[ j ], -l, minor, v2 );
-			} else   {
+			} else {
 				VectorMA( mid[ j ], -l, minor, v1 );
 				VectorMA( mid[ j ], l, minor, v2 );
 			}
@@ -535,9 +535,9 @@ static void RB_CalcDiffuseColorET( unsigned char* colors ) {
 
 		if ( dp <= 0 ) {
 			*colorsInt = ent->entityLightInt[ 0 ];
-		} else if ( dp >= ENTITY_LIGHT_STEPS )     {
+		} else if ( dp >= ENTITY_LIGHT_STEPS ) {
 			*colorsInt = ent->entityLightInt[ ENTITY_LIGHT_STEPS - 1 ];
-		} else   {
+		} else {
 			*colorsInt = ent->entityLightInt[ dp ];
 		}
 	}
@@ -648,13 +648,13 @@ static void RB_CalcWaveColor( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
 		glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( tess.shaderTime + wf->phase ) * wf->frequency ) * wf->amplitude;
-	} else   {
+	} else {
 		glow = EvalWaveForm( wf ) * tr.identityLight;
 	}
 
 	if ( glow < 0 ) {
 		glow = 0;
-	} else if ( glow > 1 )     {
+	} else if ( glow > 1 ) {
 		glow = 1;
 	}
 
@@ -728,7 +728,7 @@ static void RB_CalcWaveAlpha( const waveForm_t* wf, byte* dstColors ) {
 	float glow;
 	if ( wf->func == GF_NOISE ) {
 		glow = wf->base + R_NoiseGet4f( 0, 0, 0, ( tess.shaderTime + wf->phase ) * wf->frequency ) * wf->amplitude;
-	} else   {
+	} else {
 		glow = EvalWaveFormClamped( wf );
 	}
 
@@ -771,7 +771,7 @@ static void RB_CalcSpecularAlpha( byte* alphas ) {
 		int b;
 		if ( l < 0 ) {
 			b = 0;
-		} else   {
+		} else {
 			l = l * l;
 			l = l * l;
 			b = l * 255;
@@ -829,7 +829,7 @@ static void RB_CalcModulateColorsByFogET( unsigned char* colors ) {
 			colors[ 0 ] = 0;
 			colors[ 1 ] = 0;
 			colors[ 2 ] = 0;
-		} else   {
+		} else {
 			colors[ 0 ] *= f;
 			colors[ 1 ] *= f;
 			colors[ 2 ] *= f;
@@ -876,7 +876,7 @@ static void RB_CalcModulateAlphasByFogET( unsigned char* colors ) {
 		float f = 1.0f - ( texCoords[ i ][ 0 ] * texCoords[ i ][ 1 ] );
 		if ( f <= 0.0f ) {
 			colors[ 3 ] = 0;
-		} else   {
+		} else {
 			colors[ 3 ] *= f;
 		}
 	}
@@ -922,7 +922,7 @@ static void RB_CalcModulateRGBAsByFogET( unsigned char* colors ) {
 			colors[ 1 ] = 0;
 			colors[ 2 ] = 0;
 			colors[ 3 ] = 0;
-		} else   {
+		} else {
 			colors[ 0 ] *= f;
 			colors[ 1 ] *= f;
 			colors[ 2 ] *= f;
@@ -987,7 +987,7 @@ void ComputeColors( shaderStage_t* pStage ) {
 	case CGEN_VERTEX:
 		if ( tr.identityLight == 1 ) {
 			Com_Memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof ( tess.vertexColors[ 0 ] ) );
-		} else   {
+		} else {
 			for ( int i = 0; i < tess.numVertexes; i++ ) {
 				tess.svars.colors[ i ][ 0 ] = tess.vertexColors[ i ][ 0 ] * tr.identityLight;
 				tess.svars.colors[ i ][ 1 ] = tess.vertexColors[ i ][ 1 ] * tr.identityLight;
@@ -1004,7 +1004,7 @@ void ComputeColors( shaderStage_t* pStage ) {
 				tess.svars.colors[ i ][ 1 ] = 255 - tess.vertexColors[ i ][ 1 ];
 				tess.svars.colors[ i ][ 2 ] = 255 - tess.vertexColors[ i ][ 2 ];
 			}
-		} else   {
+		} else {
 			for ( int i = 0; i < tess.numVertexes; i++ ) {
 				tess.svars.colors[ i ][ 0 ] = ( 255 - tess.vertexColors[ i ][ 0 ] ) * tr.identityLight;
 				tess.svars.colors[ i ][ 1 ] = ( 255 - tess.vertexColors[ i ][ 1 ] ) * tr.identityLight;
@@ -1094,7 +1094,7 @@ void ComputeColors( shaderStage_t* pStage ) {
 
 		if ( backEnd.currentEntity->e.hModel ) {		// world surfaces dont have an axis
 			VectorRotate( backEnd.currentEntity->e.fireRiseDir, backEnd.currentEntity->e.axis, worldUp );
-		} else   {
+		} else {
 			VectorCopy( backEnd.currentEntity->e.fireRiseDir, worldUp );
 		}
 
@@ -1118,7 +1118,7 @@ void ComputeColors( shaderStage_t* pStage ) {
 				alpha += ( 2.0 * ( float )backEnd.currentEntity->e.shaderRGBA[ 3 ] ) * ( 1.0 - ( dot + 1.0 ) / 2.0 );
 				if ( alpha > 255.0 ) {
 					alpha = 255.0;
-				} else if ( alpha < 0.0 )     {
+				} else if ( alpha < 0.0 ) {
 					alpha = 0.0;
 				}
 				tess.svars.colors[ i ][ 3 ] = ( byte )( alpha );
@@ -1129,12 +1129,12 @@ void ComputeColors( shaderStage_t* pStage ) {
 				if ( dot > lowest ) {
 					if ( dot < lowest + range / 2 ) {
 						alpha = ( ( float )pStage->constantColor[ 3 ] * ( ( dot - lowest ) / ( range / 2 ) ) );
-					} else   {
+					} else {
 						alpha = ( ( float )pStage->constantColor[ 3 ] * ( 1.0 - ( ( dot - lowest - range / 2 ) / ( range / 2 ) ) ) );
 					}
 					if ( alpha > 255.0 ) {
 						alpha = 255.0;
-					} else if ( alpha < 0.0 )     {
+					} else if ( alpha < 0.0 ) {
 						alpha = 0.0;
 					}
 
@@ -1144,10 +1144,10 @@ void ComputeColors( shaderStage_t* pStage ) {
 					}
 
 					tess.svars.colors[ i ][ 3 ] = ( byte )( alpha );
-				} else   {
+				} else {
 					tess.svars.colors[ i ][ 3 ] = 0;
 				}
-			} else   {
+			} else {
 				tess.svars.colors[ i ][ 3 ] = 0;
 			}
 		}
@@ -1179,9 +1179,9 @@ void ComputeColors( shaderStage_t* pStage ) {
 			byte alpha;
 			if ( len < 0 ) {
 				alpha = 0;
-			} else if ( len > 1 )     {
+			} else if ( len > 1 ) {
 				alpha = 0xff;
-			} else   {
+			} else {
 				alpha = len * 0xff;
 			}
 
@@ -1271,7 +1271,7 @@ static void RB_CalcFogTexCoordsET( float* st ) {
 			fogDepthVector[ 3 ] *= fog->shader->fogParms.tcScale;
 
 			eyeT = DotProduct( viewOrigin, fogDepthVector ) + fogDepthVector[ 3 ];
-		} else   {
+		} else {
 			eyeT = 1;	// non-surface fog always has eye inside
 			// Gordon: rarrrrr, stop stupid msvc debug thing
 			fogDepthVector[ 0 ] = 0;
@@ -1349,7 +1349,7 @@ void RB_CalcFogTexCoords( float* st ) {
 		fogDepthVector[ 3 ] = -fog->surface[ 3 ] + DotProduct( backEnd.orient.origin, fog->surface );
 
 		eyeT = DotProduct( backEnd.orient.viewOrigin, fogDepthVector ) + fogDepthVector[ 3 ];
-	} else   {
+	} else {
 		eyeT = 1;	// non-surface fog always has eye inside
 
 		//JL Don't leave memory uninitialised.
@@ -1365,7 +1365,7 @@ void RB_CalcFogTexCoords( float* st ) {
 	bool eyeOutside;
 	if ( eyeT < 0 ) {
 		eyeOutside = true;
-	} else   {
+	} else {
 		eyeOutside = false;
 	}
 
@@ -1382,13 +1382,13 @@ void RB_CalcFogTexCoords( float* st ) {
 		if ( eyeOutside ) {
 			if ( t < 1.0 ) {
 				t = 1.0 / 32;	// point is outside, so no fogging
-			} else   {
+			} else {
 				t = 1.0 / 32 + 30.0 / 32 * t / ( t - eyeT );	// cut the distance at the fog plane
 			}
-		} else   {
+		} else {
 			if ( t < 0 ) {
 				t = 1.0 / 32;	// point is outside, so no fogging
-			} else   {
+			} else {
 				t = 31.0 / 32;
 			}
 		}

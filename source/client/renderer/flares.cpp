@@ -265,7 +265,7 @@ static void RB_TestFlare( flare_t* f ) {
 			f->fadeTime = backEnd.refdef.time - 1;
 		}
 		fade = ( ( backEnd.refdef.time - f->fadeTime ) / 1000.0f ) * r_flareFade->value;
-	} else   {
+	} else {
 		if ( f->visible ) {
 			f->visible = false;
 			f->fadeTime = backEnd.refdef.time - 1;
@@ -304,7 +304,7 @@ static void RB_RenderFlare( flare_t* f ) {
 
 	if ( f->flags & 2 && tr.spotFlareShader ) {		// spotlight flare
 		RB_BeginSurface( tr.spotFlareShader, f->fogNum );
-	} else   {
+	} else {
 		RB_BeginSurface( tr.flareShader, f->fogNum );
 	}
 
@@ -398,7 +398,7 @@ void RB_RenderFlares() {
 			RB_TestFlare( f );
 			if ( f->drawIntensity ) {
 				draw = true;
-			} else   {
+			} else {
 				// this flare has completely faded out, so remove it from the chain
 				*prev = f->next;
 				f->next = r_inactiveFlares;

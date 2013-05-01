@@ -55,7 +55,7 @@ void CLT3_Record( const char* demoName, const char* name ) {
 	if ( GGameType & GAME_Quake3 ) {
 		if ( Cvar_VariableValue( "ui_recordSPDemo" ) ) {
 			clc.q3_spDemoRecording = true;
-		} else   {
+		} else {
 			clc.q3_spDemoRecording = false;
 		}
 	}
@@ -104,7 +104,7 @@ void CLT3_Record( const char* demoName, const char* name ) {
 			buf.WriteByte( q3svc_baseline );
 			MSGQ3_WriteDeltaEntity( &buf, &nullstate, ent, true );
 		}
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		// configstrings
 		for ( i = 0; i < MAX_CONFIGSTRINGS_WS; i++ ) {
 			if ( !cl.ws_gameState.stringOffsets[ i ] ) {
@@ -126,7 +126,7 @@ void CLT3_Record( const char* demoName, const char* name ) {
 			buf.WriteByte( q3svc_baseline );
 			MSGWS_WriteDeltaEntity( &buf, &nullstate, ent, true );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// configstrings
 		for ( i = 0; i < MAX_CONFIGSTRINGS_WM; i++ ) {
 			if ( !cl.wm_gameState.stringOffsets[ i ] ) {
@@ -148,7 +148,7 @@ void CLT3_Record( const char* demoName, const char* name ) {
 			buf.WriteByte( q3svc_baseline );
 			MSGWM_WriteDeltaEntity( &buf, &nullstate, ent, true );
 		}
-	} else   {
+	} else {
 		// configstrings
 		for ( i = 0; i < MAX_CONFIGSTRINGS_ET; i++ ) {
 			if ( !cl.et_gameState.stringOffsets[ i ] ) {
@@ -276,7 +276,7 @@ void CLT3_Record_f() {
 		const char* s = Cmd_Argv( 1 );
 		String::NCpyZ( demoName, s, sizeof ( demoName ) );
 		String::Sprintf( name, sizeof ( name ), "demos/%s.dm_%d", demoName, protocolVersion );
-	} else   {
+	} else {
 		// scan for a free demo name
 		for ( int number = 0; number <= 9999; number++ ) {
 			CLT3_DemoFilename( number, demoName );
@@ -374,7 +374,7 @@ static void CLQ3_WalkDemoExt( const char* arg, char* name, int* demofile ) {
 		if ( *demofile ) {
 			common->Printf( "Demo file: %s\n", name );
 			break;
-		} else   {
+		} else {
 			common->Printf( "Not found: %s\n", name );
 		}
 		i++;
@@ -411,30 +411,30 @@ void CLT3_PlayDemo_f() {
 			if ( clq3_demo_protocols[ i ] ) {
 				String::Sprintf( name, sizeof ( name ), "demos/%s", arg );
 				FS_FOpenFileRead( name, &clc.demofile, true );
-			} else   {
+			} else {
 				common->Printf( "Protocol %d not supported for demos\n", protocol );
 				char retry[ MAX_OSPATH ];
 				String::NCpyZ( retry, arg, sizeof ( retry ) );
 				retry[ String::Length( retry ) - 6 ] = 0;
 				CLQ3_WalkDemoExt( retry, name, &clc.demofile );
 			}
-		} else if ( GGameType & GAME_WolfSP )     {
+		} else if ( GGameType & GAME_WolfSP ) {
 			if ( protocol == WSPROTOCOL_VERSION ) {
 				String::Sprintf( name, sizeof ( name ), "demos/%s", arg );
 				FS_FOpenFileRead( name, &clc.demofile, true );
-			} else   {
+			} else {
 				common->Printf( "Protocol %d not supported for demos\n", protocol );
 				return;
 			}
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			if ( protocol == WMPROTOCOL_VERSION ) {
 				String::Sprintf( name, sizeof ( name ), "demos/%s", arg );
 				FS_FOpenFileRead( name, &clc.demofile, true );
-			} else   {
+			} else {
 				common->Printf( "Protocol %d not supported for demos\n", protocol );
 				return;
 			}
-		} else   {
+		} else {
 			int prot_ver = ETPROTOCOL_VERSION - 1;
 			while ( prot_ver <= ETPROTOCOL_VERSION && !clc.demofile ) {
 				if ( prot_ver == protocol ) {
@@ -444,15 +444,15 @@ void CLT3_PlayDemo_f() {
 				prot_ver++;
 			}
 		}
-	} else if ( GGameType & GAME_Quake3 )     {
+	} else if ( GGameType & GAME_Quake3 ) {
 		CLQ3_WalkDemoExt( arg, name, &clc.demofile );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		String::Sprintf( name, sizeof ( name ), "demos/%s.dm_%d", arg, WSPROTOCOL_VERSION );
 		FS_FOpenFileRead( name, &clc.demofile, true );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		String::Sprintf( name, sizeof ( name ), "demos/%s.dm_%d", arg, WMPROTOCOL_VERSION );
 		FS_FOpenFileRead( name, &clc.demofile, true );
-	} else   {
+	} else {
 		int prot_ver = ETPROTOCOL_VERSION - 1;
 		while ( prot_ver <= ETPROTOCOL_VERSION && !clc.demofile ) {
 			String::Sprintf( name, sizeof ( name ), "demos/%s.dm_%d", arg, prot_ver );

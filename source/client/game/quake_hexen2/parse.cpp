@@ -51,14 +51,14 @@ void CLQH_ParseStartSoundPacket( QMsg& message, int overflowMask ) {
 	int volume;
 	if ( field_mask & QHSND_VOLUME ) {
 		volume = message.ReadByte();
-	} else   {
+	} else {
 		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
 	}
 
 	float attenuation;
 	if ( field_mask & QHSND_ATTENUATION ) {
 		attenuation = message.ReadByte() / 64.0;
-	} else   {
+	} else {
 		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
@@ -87,14 +87,14 @@ void CLQHW_ParseStartSoundPacket( QMsg& message, float attenuationScale ) {
 	int volume;
 	if ( channel & QHWSND_VOLUME ) {
 		volume = message.ReadByte();
-	} else   {
+	} else {
 		volume = QHDEFAULT_SOUND_PACKET_VOLUME;
 	}
 
 	float attenuation;
 	if ( channel & QHWSND_ATTENUATION ) {
 		attenuation = message.ReadByte() / attenuationScale;
-	} else   {
+	} else {
 		attenuation = QHDEFAULT_SOUND_PACKET_ATTENUATION;
 	}
 
@@ -123,7 +123,7 @@ void CLQH_ParseSetPause( QMsg& message ) {
 
 	if ( cl.qh_paused ) {
 		CDAudio_Pause();
-	} else   {
+	} else {
 		CDAudio_Resume();
 	}
 }

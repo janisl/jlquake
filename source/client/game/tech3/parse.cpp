@@ -106,13 +106,13 @@ void CLT3_SystemInfoChanged() {
 				CLET_PurgeCache();
 			}
 			cl_connectedToPureServer = true;
-		} else   {
+		} else {
 			if ( cl_connectedToPureServer && cls.state <= CA_CONNECTED ) {
 				CLET_PurgeCache();
 			}
 			cl_connectedToPureServer = false;
 		}
-	} else   {
+	} else {
 		cl_connectedToPureServer = Cvar_VariableValue( "sv_pure" );
 	}
 }
@@ -166,7 +166,7 @@ static bool CLWM_IsEntVisible( wmentityState_t* ent ) {
 	float view_height;
 	if ( ent->animMovetype ) {
 		view_height = 16;
-	} else   {
+	} else {
 		view_height = 40;
 	}
 
@@ -206,7 +206,7 @@ static bool CLWM_IsEntVisible( wmentityState_t* ent ) {
 	VectorAdd( end, right2, temp );
 	if ( ent->animMovetype ) {
 		temp[ 2 ] += 28;
-	} else   {
+	} else {
 		temp[ 2 ] += 52;
 	}
 	CM_BoxTraceQ3( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false );
@@ -228,7 +228,7 @@ static bool CLWM_IsEntVisible( wmentityState_t* ent ) {
 	VectorAdd( end, right, temp );
 	if ( ent->animMovetype ) {
 		temp[ 2 ] += 16;
-	} else   {
+	} else {
 		temp[ 2 ] += 36;
 	}
 	CM_BoxTraceQ3( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false );
@@ -271,7 +271,7 @@ static bool CLET_IsEntVisible( etentityState_t* ent ) {
 	float view_height;
 	if ( ent->animMovetype ) {
 		view_height = 16;
-	} else   {
+	} else {
 		view_height = 40;
 	}
 
@@ -311,7 +311,7 @@ static bool CLET_IsEntVisible( etentityState_t* ent ) {
 	VectorAdd( end, right2, temp );
 	if ( ent->animMovetype ) {
 		temp[ 2 ] += 28;
-	} else   {
+	} else {
 		temp[ 2 ] += 52;
 	}
 	CM_BoxTraceQ3( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false );
@@ -333,7 +333,7 @@ static bool CLET_IsEntVisible( etentityState_t* ent ) {
 	VectorAdd( end, right, temp );
 	if ( ent->animMovetype ) {
 		temp[ 2 ] += 16;
-	} else   {
+	} else {
 		temp[ 2 ] += 36;
 	}
 	CM_BoxTraceQ3( &tr, start, temp, NULL, NULL, 0, BSP46CONTENTS_SOLID, false );
@@ -354,7 +354,7 @@ static void CLQ3_DeltaEntity( QMsg* msg, q3clSnapshot_t* frame, int newnum, q3en
 
 	if ( unchanged ) {
 		*state = *old;
-	} else   {
+	} else {
 		MSGQ3_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
@@ -375,7 +375,7 @@ static void CLWS_DeltaEntity( QMsg* msg, wsclSnapshot_t* frame, int newnum, wsen
 
 	if ( unchanged ) {
 		*state = *old;
-	} else   {
+	} else {
 		MSGWS_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
@@ -396,7 +396,7 @@ static void CLWM_DeltaEntity( QMsg* msg, wmclSnapshot_t* frame, int newnum, wmen
 
 	if ( unchanged ) {
 		*state = *old;
-	} else   {
+	} else {
 		MSGWM_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
@@ -410,7 +410,7 @@ static void CLWM_DeltaEntity( QMsg* msg, wmclSnapshot_t* frame, int newnum, wmen
 			if ( CLWM_IsEntVisible( state ) ) {
 				entLastVisible[ state->number ] = frame->serverTime;
 				state->eFlags &= ~WMEF_NODRAW;
-			} else   {
+			} else {
 				if ( entLastVisible[ state->number ] < ( frame->serverTime - 600 ) ) {
 					state->eFlags |= WMEF_NODRAW;
 				}
@@ -432,7 +432,7 @@ static void CLET_DeltaEntity( QMsg* msg, etclSnapshot_t* frame, int newnum, eten
 
 	if ( unchanged ) {
 		*state = *old;
-	} else   {
+	} else {
 		MSGET_ReadDeltaEntity( msg, old, state, newnum );
 	}
 
@@ -446,7 +446,7 @@ static void CLET_DeltaEntity( QMsg* msg, etclSnapshot_t* frame, int newnum, eten
 			if ( CLET_IsEntVisible( state ) ) {
 				entLastVisible[ state->number ] = frame->serverTime;
 				state->eFlags &= ~ETEF_NODRAW;
-			} else   {
+			} else {
 				if ( entLastVisible[ state->number ] < ( frame->serverTime - 600 ) ) {
 					state->eFlags |= ETEF_NODRAW;
 				}
@@ -468,10 +468,10 @@ static void CLQ3_ParsePacketEntities( QMsg* msg, q3clSnapshot_t* oldframe, q3clS
 	int oldnum;
 	if ( !oldframe ) {
 		oldnum = 99999;
-	} else   {
+	} else {
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.q3_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -501,7 +501,7 @@ static void CLQ3_ParsePacketEntities( QMsg* msg, q3clSnapshot_t* oldframe, q3clS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.q3_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -518,7 +518,7 @@ static void CLQ3_ParsePacketEntities( QMsg* msg, q3clSnapshot_t* oldframe, q3clS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.q3_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -549,7 +549,7 @@ static void CLQ3_ParsePacketEntities( QMsg* msg, q3clSnapshot_t* oldframe, q3clS
 
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.q3_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -567,10 +567,10 @@ static void CLWS_ParsePacketEntities( QMsg* msg, wsclSnapshot_t* oldframe, wsclS
 	int oldnum;
 	if ( !oldframe ) {
 		oldnum = 99999;
-	} else   {
+	} else {
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.ws_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -600,7 +600,7 @@ static void CLWS_ParsePacketEntities( QMsg* msg, wsclSnapshot_t* oldframe, wsclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.ws_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -617,7 +617,7 @@ static void CLWS_ParsePacketEntities( QMsg* msg, wsclSnapshot_t* oldframe, wsclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.ws_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -648,7 +648,7 @@ static void CLWS_ParsePacketEntities( QMsg* msg, wsclSnapshot_t* oldframe, wsclS
 
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.ws_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -666,10 +666,10 @@ static void CLWM_ParsePacketEntities( QMsg* msg, wmclSnapshot_t* oldframe, wmclS
 	int oldnum;
 	if ( !oldframe ) {
 		oldnum = 99999;
-	} else   {
+	} else {
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.wm_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -699,7 +699,7 @@ static void CLWM_ParsePacketEntities( QMsg* msg, wmclSnapshot_t* oldframe, wmclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.wm_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -716,7 +716,7 @@ static void CLWM_ParsePacketEntities( QMsg* msg, wmclSnapshot_t* oldframe, wmclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.wm_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -747,7 +747,7 @@ static void CLWM_ParsePacketEntities( QMsg* msg, wmclSnapshot_t* oldframe, wmclS
 
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.wm_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -769,10 +769,10 @@ static void CLET_ParsePacketEntities( QMsg* msg, etclSnapshot_t* oldframe, etclS
 	int oldnum;
 	if ( !oldframe ) {
 		oldnum = 99999;
-	} else   {
+	} else {
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.et_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -802,7 +802,7 @@ static void CLET_ParsePacketEntities( QMsg* msg, etclSnapshot_t* oldframe, etclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.et_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -819,7 +819,7 @@ static void CLET_ParsePacketEntities( QMsg* msg, etclSnapshot_t* oldframe, etclS
 
 			if ( oldindex >= oldframe->numEntities ) {
 				oldnum = 99999;
-			} else   {
+			} else {
 				oldstate = &cl.et_parseEntities[
 					( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 				oldnum = oldstate->number;
@@ -850,7 +850,7 @@ static void CLET_ParsePacketEntities( QMsg* msg, etclSnapshot_t* oldframe, etclS
 
 		if ( oldindex >= oldframe->numEntities ) {
 			oldnum = 99999;
-		} else   {
+		} else {
 			oldstate = &cl.et_parseEntities[
 				( oldframe->parseEntitiesNum + oldindex ) & ( MAX_PARSE_ENTITIES_Q3 - 1 ) ];
 			oldnum = oldstate->number;
@@ -892,7 +892,7 @@ static void CLQ3_ParseSnapshot( QMsg* msg ) {
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
 		newSnap.deltaNum = -1;
-	} else   {
+	} else {
 		newSnap.deltaNum = newSnap.messageNum - deltaNum;
 	}
 	newSnap.snapFlags = msg->ReadByte();
@@ -905,18 +905,18 @@ static void CLQ3_ParseSnapshot( QMsg* msg ) {
 		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
 		clc.q3_demowaiting = false;	// we can start recording now
-	} else   {
+	} else {
 		old = &cl.q3_snapshots[ newSnap.deltaNum & PACKET_MASK_Q3 ];
 		if ( !old->valid ) {
 			// should never happen
 			common->Printf( "Delta from invalid frame (not supposed to happen!).\n" );
-		} else if ( old->messageNum != newSnap.deltaNum )     {
+		} else if ( old->messageNum != newSnap.deltaNum ) {
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			common->Printf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 )     {
+		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 ) {
 			common->Printf( "Delta parseEntitiesNum too old.\n" );
-		} else   {
+		} else {
 			newSnap.valid = true;	// valid delta parse
 		}
 	}
@@ -929,7 +929,7 @@ static void CLQ3_ParseSnapshot( QMsg* msg ) {
 	SHOWNET( *msg, "playerstate" );
 	if ( old ) {
 		MSGQ3_ReadDeltaPlayerstate( msg, &old->ps, &newSnap.ps );
-	} else   {
+	} else {
 		MSGQ3_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
 	}
 
@@ -1008,7 +1008,7 @@ static void CLWS_ParseSnapshot( QMsg* msg ) {
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
 		newSnap.deltaNum = -1;
-	} else   {
+	} else {
 		newSnap.deltaNum = newSnap.messageNum - deltaNum;
 	}
 	newSnap.snapFlags = msg->ReadByte();
@@ -1021,18 +1021,18 @@ static void CLWS_ParseSnapshot( QMsg* msg ) {
 		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
 		clc.q3_demowaiting = false;	// we can start recording now
-	} else   {
+	} else {
 		old = &cl.ws_snapshots[ newSnap.deltaNum & PACKET_MASK_Q3 ];
 		if ( !old->valid ) {
 			// should never happen
 			common->Printf( "Delta from invalid frame (not supposed to happen!).\n" );
-		} else if ( old->messageNum != newSnap.deltaNum )     {
+		} else if ( old->messageNum != newSnap.deltaNum ) {
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			common->Printf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 )     {
+		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 ) {
 			common->Printf( "Delta parseEntitiesNum too old.\n" );
-		} else   {
+		} else {
 			newSnap.valid = true;	// valid delta parse
 		}
 	}
@@ -1045,7 +1045,7 @@ static void CLWS_ParseSnapshot( QMsg* msg ) {
 	SHOWNET( *msg, "playerstate" );
 	if ( old ) {
 		MSGWS_ReadDeltaPlayerstate( msg, &old->ps, &newSnap.ps );
-	} else   {
+	} else {
 		MSGWS_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
 	}
 
@@ -1124,7 +1124,7 @@ static void CLWM_ParseSnapshot( QMsg* msg ) {
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
 		newSnap.deltaNum = -1;
-	} else   {
+	} else {
 		newSnap.deltaNum = newSnap.messageNum - deltaNum;
 	}
 	newSnap.snapFlags = msg->ReadByte();
@@ -1137,18 +1137,18 @@ static void CLWM_ParseSnapshot( QMsg* msg ) {
 		newSnap.valid = true;		// uncompressed frame
 		old = NULL;
 		clc.q3_demowaiting = false;	// we can start recording now
-	} else   {
+	} else {
 		old = &cl.wm_snapshots[ newSnap.deltaNum & PACKET_MASK_Q3 ];
 		if ( !old->valid ) {
 			// should never happen
 			common->Printf( "Delta from invalid frame (not supposed to happen!).\n" );
-		} else if ( old->messageNum != newSnap.deltaNum )     {
+		} else if ( old->messageNum != newSnap.deltaNum ) {
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			common->DPrintf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 )     {
+		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 ) {
 			common->DPrintf( "Delta parseEntitiesNum too old.\n" );
-		} else   {
+		} else {
 			newSnap.valid = true;	// valid delta parse
 		}
 	}
@@ -1167,7 +1167,7 @@ static void CLWM_ParseSnapshot( QMsg* msg ) {
 	SHOWNET( *msg, "playerstate" );
 	if ( old ) {
 		MSGWM_ReadDeltaPlayerstate( msg, &old->ps, &newSnap.ps );
-	} else   {
+	} else {
 		MSGWM_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
 	}
 
@@ -1246,7 +1246,7 @@ static void CLET_ParseSnapshot( QMsg* msg ) {
 	deltaNum = msg->ReadByte();
 	if ( !deltaNum ) {
 		newSnap.deltaNum = -1;
-	} else   {
+	} else {
 		newSnap.deltaNum = newSnap.messageNum - deltaNum;
 	}
 	newSnap.snapFlags = msg->ReadByte();
@@ -1263,7 +1263,7 @@ static void CLET_ParseSnapshot( QMsg* msg ) {
 //			if(clet_autorecord->integer) {
 //				Cvar_Set( "g_synchronousClients", "0" );
 //			}
-		} else   {
+		} else {
 			if ( clet_autorecord->integer /*&& Cvar_VariableValue( "g_synchronousClients")*/ ) {
 				char mapname[ MAX_QPATH ];
 				char* period;
@@ -1296,18 +1296,18 @@ static void CLET_ParseSnapshot( QMsg* msg ) {
 				CLT3_Record( demoName, name );
 			}
 		}
-	} else   {
+	} else {
 		old = &cl.et_snapshots[ newSnap.deltaNum & PACKET_MASK_Q3 ];
 		if ( !old->valid ) {
 			// should never happen
 			common->Printf( "Delta from invalid frame (not supposed to happen!).\n" );
-		} else if ( old->messageNum != newSnap.deltaNum )     {
+		} else if ( old->messageNum != newSnap.deltaNum ) {
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
 			common->DPrintf( "Delta frame too old.\n" );
-		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 )     {
+		} else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES_Q3 - 128 ) {
 			common->DPrintf( "Delta parseEntitiesNum too old.\n" );
-		} else   {
+		} else {
 			newSnap.valid = true;	// valid delta parse
 		}
 	}
@@ -1326,7 +1326,7 @@ static void CLET_ParseSnapshot( QMsg* msg ) {
 	SHOWNET( *msg, "playerstate" );
 	if ( old ) {
 		MSGET_ReadDeltaPlayerstate( msg, &old->ps, &newSnap.ps );
-	} else   {
+	} else {
 		MSGET_ReadDeltaPlayerstate( msg, NULL, &newSnap.ps );
 	}
 
@@ -1389,11 +1389,11 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 	// parse all the configstrings and baselines
 	if ( GGameType & GAME_Quake3 ) {
 		cl.q3_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		cl.ws_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		cl.wm_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
-	} else   {
+	} else {
 		cl.et_gameState.dataCount = 1;	// leave a 0 at the beginning for uninitialized configstrings
 	}
 	while ( 1 ) {
@@ -1423,7 +1423,7 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 				cl.q3_gameState.stringOffsets[ i ] = cl.q3_gameState.dataCount;
 				Com_Memcpy( cl.q3_gameState.stringData + cl.q3_gameState.dataCount, s, len + 1 );
 				cl.q3_gameState.dataCount += len + 1;
-			} else if ( GGameType & GAME_WolfSP )     {
+			} else if ( GGameType & GAME_WolfSP ) {
 				if ( len + 1 + cl.ws_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
 					common->Error( "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 				}
@@ -1432,7 +1432,7 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 				cl.ws_gameState.stringOffsets[ i ] = cl.ws_gameState.dataCount;
 				Com_Memcpy( cl.ws_gameState.stringData + cl.ws_gameState.dataCount, s, len + 1 );
 				cl.ws_gameState.dataCount += len + 1;
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				if ( len + 1 + cl.wm_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
 					common->Error( "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 				}
@@ -1441,7 +1441,7 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 				cl.wm_gameState.stringOffsets[ i ] = cl.wm_gameState.dataCount;
 				Com_Memcpy( cl.wm_gameState.stringData + cl.wm_gameState.dataCount, s, len + 1 );
 				cl.wm_gameState.dataCount += len + 1;
-			} else   {
+			} else {
 				if ( len + 1 + cl.et_gameState.dataCount > MAX_GAMESTATE_CHARS_Q3 ) {
 					common->Error( "MAX_GAMESTATE_CHARS_Q3 exceeded" );
 				}
@@ -1451,7 +1451,7 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 				Com_Memcpy( cl.et_gameState.stringData + cl.et_gameState.dataCount, s, len + 1 );
 				cl.et_gameState.dataCount += len + 1;
 			}
-		} else if ( cmd == q3svc_baseline )     {
+		} else if ( cmd == q3svc_baseline ) {
 			int newnum = msg->ReadBits( GENTITYNUM_BITS_Q3 );
 			if ( newnum < 0 || newnum >= MAX_GENTITIES_Q3 ) {
 				common->Error( "Baseline number out of range: %i", newnum );
@@ -1460,20 +1460,20 @@ static void CLT3_ParseGamestate( QMsg* msg ) {
 				q3entityState_t nullstate = {};
 				q3entityState_t* es = &cl.q3_entityBaselines[ newnum ];
 				MSGQ3_ReadDeltaEntity( msg, &nullstate, es, newnum );
-			} else if ( GGameType & GAME_WolfSP )     {
+			} else if ( GGameType & GAME_WolfSP ) {
 				wsentityState_t nullstate = {};
 				wsentityState_t* es = &cl.ws_entityBaselines[ newnum ];
 				MSGWS_ReadDeltaEntity( msg, &nullstate, es, newnum );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				wmentityState_t nullstate = {};
 				wmentityState_t* es = &cl.wm_entityBaselines[ newnum ];
 				MSGWM_ReadDeltaEntity( msg, &nullstate, es, newnum );
-			} else   {
+			} else {
 				etentityState_t nullstate = {};
 				etentityState_t* es = &cl.et_entityBaselines[ newnum ];
 				MSGET_ReadDeltaEntity( msg, &nullstate, es, newnum );
 			}
-		} else   {
+		} else {
 			common->Error( "CLT3_ParseGamestate: bad command byte" );
 		}
 	}
@@ -1557,7 +1557,7 @@ static void CLT3_ParseDownload( QMsg* msg ) {
 				cls.et_bWWWDlDisconnected = true;
 			}
 			return;
-		} else   {
+		} else {
 			// server keeps sending that message till we ack it, eat and ignore
 			//msg->ReadLong();
 			msg->ReadString();
@@ -1630,13 +1630,13 @@ static void CLT3_ParseDownload( QMsg* msg ) {
 			// rename the file
 			if ( GGameType & GAME_ET ) {
 				FS_SV_Rename( cls.et_downloadTempName, cls.et_downloadName );
-			} else   {
+			} else {
 				FS_SV_Rename( clc.downloadTempName, clc.downloadName );
 			}
 		}
 		if ( GGameType & GAME_ET ) {
 			*cls.et_downloadTempName = *cls.et_downloadName = 0;
-		} else   {
+		} else {
 			*clc.downloadTempName = *clc.downloadName = 0;
 		}
 		Cvar_Set( "cl_downloadName", "" );
@@ -1668,7 +1668,7 @@ static void CLET_ParseBinaryMessage( QMsg* msg ) {
 void CLT3_ParseServerMessage( QMsg* msg ) {
 	if ( cl_shownet->integer == 1 ) {
 		common->Printf( "%i ",msg->cursize );
-	} else if ( cl_shownet->integer >= 2 )     {
+	} else if ( cl_shownet->integer >= 2 ) {
 		common->Printf( "------------------\n" );
 	}
 
@@ -1700,7 +1700,7 @@ void CLT3_ParseServerMessage( QMsg* msg ) {
 		if ( cl_shownet->integer >= 2 ) {
 			if ( !svct3_strings[ cmd ] ) {
 				common->Printf( "%3i:BAD CMD %i\n", msg->readcount - 1, cmd );
-			} else   {
+			} else {
 				SHOWNET( *msg, svct3_strings[ cmd ] );
 			}
 		}
@@ -1721,11 +1721,11 @@ void CLT3_ParseServerMessage( QMsg* msg ) {
 		case q3svc_snapshot:
 			if ( GGameType & GAME_WolfSP ) {
 				CLWS_ParseSnapshot( msg );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				CLWM_ParseSnapshot( msg );
-			} else if ( GGameType & GAME_ET )     {
+			} else if ( GGameType & GAME_ET ) {
 				CLET_ParseSnapshot( msg );
-			} else   {
+			} else {
 				CLQ3_ParseSnapshot( msg );
 			}
 			break;

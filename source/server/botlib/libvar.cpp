@@ -28,7 +28,7 @@ static float LibVarStringValue( const char* string ) {
 		if ( *string < '0' || *string > '9' ) {
 			if ( dotfound || *string != '.' ) {
 				return 0;
-			} else   {
+			} else {
 				dotfound = 10;
 				string++;
 			}
@@ -36,7 +36,7 @@ static float LibVarStringValue( const char* string ) {
 		if ( dotfound ) {
 			value = value + ( float )( *string - '0' ) / ( float )dotfound;
 			dotfound *= 10;
-		} else   {
+		} else {
 			value = value * 10.0 + ( float )( *string - '0' );
 		}
 		string++;
@@ -83,7 +83,7 @@ const char* LibVarGetString( const char* var_name ) {
 	libvar_t* v = LibVarGet( var_name );
 	if ( v ) {
 		return v->string;
-	} else   {
+	} else {
 		return "";
 	}
 }
@@ -92,7 +92,7 @@ float LibVarGetValue( const char* var_name ) {
 	libvar_t* v = LibVarGet( var_name );
 	if ( v ) {
 		return v->value;
-	} else   {
+	} else {
 		return 0;
 	}
 }
@@ -127,7 +127,7 @@ void LibVarSet( const char* var_name, const char* value ) {
 	libvar_t* v = LibVarGet( var_name );
 	if ( v ) {
 		Mem_Free( v->string );
-	} else   {
+	} else {
 		v = LibVarAlloc( var_name );
 	}
 	//variable string

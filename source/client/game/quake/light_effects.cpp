@@ -48,7 +48,7 @@ void CLQ1_BrightLight( int key, vec3_t origin ) {
 		dl->color[ 0 ] = 0.2;
 		dl->color[ 1 ] = 0.1;
 		dl->color[ 2 ] = 0.05;
-	} else   {
+	} else {
 		dl->die = cl.serverTime + 1;
 	}
 }
@@ -63,20 +63,20 @@ void CLQ1_DimLight( int key, vec3_t origin, int type ) {
 			dl->color[ 0 ] = 0.2;
 			dl->color[ 1 ] = 0.1;
 			dl->color[ 2 ] = 0.05;
-		} else if ( type == 1 )     {
+		} else if ( type == 1 ) {
 			dl->color[ 0 ] = 0.05;
 			dl->color[ 1 ] = 0.05;
 			dl->color[ 2 ] = 0.3;
-		} else if ( type == 2 )     {
+		} else if ( type == 2 ) {
 			dl->color[ 0 ] = 0.5;
 			dl->color[ 1 ] = 0.05;
 			dl->color[ 2 ] = 0.05;
-		} else if ( type == 3 )     {
+		} else if ( type == 3 ) {
 			dl->color[ 0 ] = 0.5;
 			dl->color[ 1 ] = 0.05;
 			dl->color[ 2 ] = 0.4;
 		}
-	} else   {
+	} else {
 		dl->die = cl.serverTime + 10;
 	}
 }
@@ -87,7 +87,7 @@ void CLQ1_RocketLight( int key, vec3_t origin ) {
 	dl->radius = 200;
 	if ( GGameType & GAME_QuakeWorld ) {
 		dl->die = cl.serverTime + 100;
-	} else   {
+	} else {
 		dl->die = cl.serverTime + 10;
 	}
 }

@@ -58,7 +58,7 @@ static void SVQ3_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 	int from_num_entities;
 	if ( !from ) {
 		from_num_entities = 0;
-	} else   {
+	} else {
 		from_num_entities = from->num_entities;
 	}
 
@@ -70,7 +70,7 @@ static void SVQ3_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int newnum;
 		if ( newindex >= to->num_entities ) {
 			newnum = 9999;
-		} else   {
+		} else {
 			newent = &svs.q3_snapshotEntities[ ( to->first_entity + newindex ) % svs.q3_numSnapshotEntities ];
 			newnum = newent->number;
 		}
@@ -78,7 +78,7 @@ static void SVQ3_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int oldnum;
 		if ( oldindex >= from_num_entities ) {
 			oldnum = 9999;
-		} else   {
+		} else {
 			oldent = &svs.q3_snapshotEntities[ ( from->first_entity + oldindex ) % svs.q3_numSnapshotEntities ];
 			oldnum = oldent->number;
 		}
@@ -117,7 +117,7 @@ static void SVWS_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 	int from_num_entities;
 	if ( !from ) {
 		from_num_entities = 0;
-	} else   {
+	} else {
 		from_num_entities = from->num_entities;
 	}
 
@@ -129,7 +129,7 @@ static void SVWS_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int newnum;
 		if ( newindex >= to->num_entities ) {
 			newnum = 9999;
-		} else   {
+		} else {
 			newent = &svs.ws_snapshotEntities[ ( to->first_entity + newindex ) % svs.q3_numSnapshotEntities ];
 			newnum = newent->number;
 		}
@@ -137,7 +137,7 @@ static void SVWS_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int oldnum;
 		if ( oldindex >= from_num_entities ) {
 			oldnum = 9999;
-		} else   {
+		} else {
 			oldent = &svs.ws_snapshotEntities[ ( from->first_entity + oldindex ) % svs.q3_numSnapshotEntities ];
 			oldnum = oldent->number;
 		}
@@ -176,7 +176,7 @@ static void SVWM_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 	int from_num_entities;
 	if ( !from ) {
 		from_num_entities = 0;
-	} else   {
+	} else {
 		from_num_entities = from->num_entities;
 	}
 
@@ -188,7 +188,7 @@ static void SVWM_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int newnum;
 		if ( newindex >= to->num_entities ) {
 			newnum = 9999;
-		} else   {
+		} else {
 			newent = &svs.wm_snapshotEntities[ ( to->first_entity + newindex ) % svs.q3_numSnapshotEntities ];
 			newnum = newent->number;
 		}
@@ -196,7 +196,7 @@ static void SVWM_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int oldnum;
 		if ( oldindex >= from_num_entities ) {
 			oldnum = 9999;
-		} else   {
+		} else {
 			oldent = &svs.wm_snapshotEntities[ ( from->first_entity + oldindex ) % svs.q3_numSnapshotEntities ];
 			oldnum = oldent->number;
 		}
@@ -235,7 +235,7 @@ static void SVET_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 	int from_num_entities;
 	if ( !from ) {
 		from_num_entities = 0;
-	} else   {
+	} else {
 		from_num_entities = from->num_entities;
 	}
 
@@ -247,7 +247,7 @@ static void SVET_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int newnum;
 		if ( newindex >= to->num_entities ) {
 			newnum = 9999;
-		} else   {
+		} else {
 			newent = &svs.et_snapshotEntities[ ( to->first_entity + newindex ) % svs.q3_numSnapshotEntities ];
 			newnum = newent->number;
 		}
@@ -255,7 +255,7 @@ static void SVET_EmitPacketEntities( q3clientSnapshot_t* from, q3clientSnapshot_
 		int oldnum;
 		if ( oldindex >= from_num_entities ) {
 			oldnum = 9999;
-		} else   {
+		} else {
 			oldent = &svs.et_snapshotEntities[ ( from->first_entity + oldindex ) % svs.q3_numSnapshotEntities ];
 			oldnum = oldent->number;
 		}
@@ -308,7 +308,7 @@ static void SVT3_WriteSnapshotToClient( client_t* client, QMsg* msg ) {
 		common->DPrintf( "%s: Delta request from out of date packet.\n", client->name );
 		oldframe = NULL;
 		lastframe = 0;
-	} else   {
+	} else {
 		// we have a valid snapshot to delta from
 		oldframe = &client->q3_frames[ client->q3_deltaMessage & PACKET_MASK_Q3 ];
 		lastframe = client->netchan.outgoingSequence - client->q3_deltaMessage;
@@ -352,37 +352,37 @@ static void SVT3_WriteSnapshotToClient( client_t* client, QMsg* msg ) {
 		// delta encode the playerstate
 		if ( oldframe ) {
 			MSGWS_WriteDeltaPlayerstate( msg, &oldframe->ws_ps, &frame->ws_ps );
-		} else   {
+		} else {
 			MSGWS_WriteDeltaPlayerstate( msg, NULL, &frame->ws_ps );
 		}
 
 		// delta encode the entities
 		SVWS_EmitPacketEntities( oldframe, frame, msg );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// delta encode the playerstate
 		if ( oldframe ) {
 			MSGWM_WriteDeltaPlayerstate( msg, &oldframe->wm_ps, &frame->wm_ps );
-		} else   {
+		} else {
 			MSGWM_WriteDeltaPlayerstate( msg, NULL, &frame->wm_ps );
 		}
 
 		// delta encode the entities
 		SVWM_EmitPacketEntities( oldframe, frame, msg );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		// delta encode the playerstate
 		if ( oldframe ) {
 			MSGET_WriteDeltaPlayerstate( msg, &oldframe->et_ps, &frame->et_ps );
-		} else   {
+		} else {
 			MSGET_WriteDeltaPlayerstate( msg, NULL, &frame->et_ps );
 		}
 
 		// delta encode the entities
 		SVET_EmitPacketEntities( oldframe, frame, msg );
-	} else   {
+	} else {
 		// delta encode the playerstate
 		if ( oldframe ) {
 			MSGQ3_WriteDeltaPlayerstate( msg, &oldframe->q3_ps, &frame->q3_ps );
-		} else   {
+		} else {
 			MSGQ3_WriteDeltaPlayerstate( msg, NULL, &frame->q3_ps );
 		}
 
@@ -578,7 +578,7 @@ static void SVT3_AddEntitiesVisibleFromPoint( int clientNum, const vec3_t origin
 				if ( l == svEnt->lastCluster ) {
 					goto notVisible;	// not visible
 				}
-			} else   {
+			} else {
 				goto notVisible;
 			}
 		}
@@ -597,7 +597,7 @@ static void SVT3_AddEntitiesVisibleFromPoint( int clientNum, const vec3_t origin
 			SVT3_AddEntToSnapshot( clientNum, master, ment, eNums );
 			// master needs to be added, but not this dummy ent
 			goto notVisible;
-		} else if ( ent->GetSvFlags() & WOLFSVF_VISDUMMY_MULTIPLE )     {
+		} else if ( ent->GetSvFlags() & WOLFSVF_VISDUMMY_MULTIPLE ) {
 			{
 				for ( int h = 0; h < sv.q3_num_entities; h++ ) {
 					idEntity3* ment = SVT3_EntityNum( h );
@@ -658,7 +658,7 @@ notVisible:
 			if ( ent->GetEventTime() == svs.q3_time ) {
 				ent->SetEFlagNoDraw();		// don't draw, just process event
 				SVT3_AddEntToSnapshot( clientNum, svEnt, ent, eNums );
-			} else if ( ent->GetEType() == Q3ET_PLAYER )     {
+			} else if ( ent->GetEType() == Q3ET_PLAYER ) {
 				// keep players around if they are alive and active (so sounds dont get messed up)
 				if ( !ent->GetEFlagDead() ) {
 					ent->SetEFlagNoDraw();		// don't draw, just process events and sounds
@@ -699,15 +699,15 @@ static void SVT3_BuildClientSnapshot( client_t* client ) {
 		// grab the current wsplayerState_t
 		wsplayerState_t* gps = SVWS_GameClientNum( client - svs.clients );
 		frame->ws_ps = *gps;
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// grab the current wmplayerState_t
 		wmplayerState_t* gps = SVWM_GameClientNum( client - svs.clients );
 		frame->wm_ps = *gps;
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		// grab the current etplayerState_t
 		etplayerState_t* gps = SVET_GameClientNum( client - svs.clients );
 		frame->et_ps = *gps;
-	} else   {
+	} else {
 		// grab the current q3playerState_t
 		q3playerState_t* gps = SVQ3_GameClientNum( client - svs.clients );
 		frame->q3_ps = *gps;
@@ -727,7 +727,7 @@ static void SVT3_BuildClientSnapshot( client_t* client ) {
 	vec3_t org;
 	if ( clent->GetSvFlagSelfPortalExclusive() ) {
 		VectorCopy( clent->GetOrigin2(), org );
-	} else   {
+	} else {
 		VectorCopy( ps->GetOrigin(), org );
 	}
 	org[ 2 ] += ps->GetViewHeight();
@@ -767,15 +767,15 @@ static void SVT3_BuildClientSnapshot( client_t* client ) {
 			wssharedEntity_t* ent = SVWS_GentityNum( entityNumbers.snapshotEntities[ i ] );
 			wsentityState_t* state = &svs.ws_snapshotEntities[ svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities ];
 			*state = ent->s;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			wmsharedEntity_t* ent = SVWM_GentityNum( entityNumbers.snapshotEntities[ i ] );
 			wmentityState_t* state = &svs.wm_snapshotEntities[ svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities ];
 			*state = ent->s;
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			etsharedEntity_t* ent = SVET_GentityNum( entityNumbers.snapshotEntities[ i ] );
 			etentityState_t* state = &svs.et_snapshotEntities[ svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities ];
 			*state = ent->s;
-		} else   {
+		} else {
 			q3sharedEntity_t* ent = SVQ3_GentityNum( entityNumbers.snapshotEntities[ i ] );
 			q3entityState_t* state = &svs.q3_snapshotEntities[ svs.q3_nextSnapshotEntities % svs.q3_numSnapshotEntities ];
 			*state = ent->s;
@@ -809,7 +809,7 @@ static int SVT3_RateMsec( client_t* client, int messageSize ) {
 	int maxRate;
 	if ( !*client->downloadName || !( GGameType & ( GAME_WolfMP | GAME_ET ) ) ) {
 		maxRate = svt3_maxRate->integer;
-	} else   {
+	} else {
 		maxRate = svt3_dl_maxRate->integer;
 	}
 	if ( maxRate ) {
@@ -849,7 +849,7 @@ void SVT3_SendMessageToClient( QMsg* msg, client_t* client ) {
 		// never send more packets than this, no matter what the rate is at
 		rateMsec = client->q3_snapshotMsec;
 		client->q3_rateDelayed = false;
-	} else   {
+	} else {
 		client->q3_rateDelayed = true;
 	}
 

@@ -205,7 +205,7 @@ static void AddSkyPolygon( int nump, vec3_t vecs ) {
 		} else {
 			axis = 0;
 		}
-	} else if ( av[ 1 ] > av[ 2 ] && av[ 1 ] > av[ 0 ] )             {
+	} else if ( av[ 1 ] > av[ 2 ] && av[ 1 ] > av[ 0 ] ) {
 		if ( v[ 1 ] < 0 ) {
 			axis = 3;
 		} else {
@@ -282,7 +282,7 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage ) {
 		if ( d > ON_EPSILON ) {
 			front = true;
 			sides[ i ] = SIDE_FRONT;
-		} else if ( d < -ON_EPSILON )     {
+		} else if ( d < -ON_EPSILON ) {
 			back = true;
 			sides[ i ] = SIDE_BACK;
 		} else {
@@ -408,12 +408,12 @@ static void MakeSkyVec( float s, float t, int axis, float outSt[ 2 ], vec3_t out
 
 	if ( s < sky_min ) {
 		s = sky_min;
-	} else if ( s > sky_max )     {
+	} else if ( s > sky_max ) {
 		s = sky_max;
 	}
 	if ( t < sky_min ) {
 		t = sky_min;
-	} else if ( t > sky_max )     {
+	} else if ( t > sky_max ) {
 		t = sky_max;
 	}
 
@@ -542,23 +542,23 @@ static void DrawSkyBox( shader_t* shader ) {
 
 		if ( sky_mins_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_mins_subd[ 1 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 1 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
 		if ( sky_maxs_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_maxs_subd[ 1 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 1 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
@@ -598,23 +598,23 @@ static void DrawSkyBoxInner( shader_t* shader ) {
 
 		if ( sky_mins_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_mins_subd[ 1 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 1 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
 		if ( sky_maxs_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_maxs_subd[ 1 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 1 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
@@ -778,23 +778,23 @@ static void FillCloudBox( const shader_t* shader, int stage ) {
 
 		if ( sky_mins_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_mins_subd[ 1 ] < MIN_T ) {
 			sky_mins_subd[ 1 ] = MIN_T;
-		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_mins_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_mins_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
 		if ( sky_maxs_subd[ 0 ] < -HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = -HALF_SKY_SUBDIVISIONS;
-		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 0 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 0 ] = HALF_SKY_SUBDIVISIONS;
 		}
 		if ( sky_maxs_subd[ 1 ] < MIN_T ) {
 			sky_maxs_subd[ 1 ] = MIN_T;
-		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS )       {
+		} else if ( sky_maxs_subd[ 1 ] > HALF_SKY_SUBDIVISIONS ) {
 			sky_maxs_subd[ 1 ] = HALF_SKY_SUBDIVISIONS;
 		}
 
@@ -863,7 +863,7 @@ void RB_StageIteratorSky() {
 		if ( !backEnd.viewParms.glFog.drawsky ) {
 			return;
 		}
-	} else if ( glfogNum > FOG_NONE )     {
+	} else if ( glfogNum > FOG_NONE ) {
 		if ( !glfogsettings[ FOG_CURRENT ].drawsky ) {
 			return;
 		}

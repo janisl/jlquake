@@ -79,18 +79,18 @@ static void PFQW_infokey() {
 			 !*value ) {
 			value = Info_ValueForKey( qhw_localinfo, key );
 		}
-	} else if ( e1 <= MAX_CLIENTS_QHW )     {
+	} else if ( e1 <= MAX_CLIENTS_QHW ) {
 		if ( !String::Cmp( key, "ip" ) ) {
 			String::Cpy( ov, SOCK_BaseAdrToString( svs.clients[ e1 - 1 ].netchan.remoteAddress ) );
 			value = ov;
-		} else if ( !String::Cmp( key, "ping" ) )       {
+		} else if ( !String::Cmp( key, "ping" ) ) {
 			int ping = SVQH_CalcPing( &svs.clients[ e1 - 1 ] );
 			sprintf( ov, "%d", ping );
 			value = ov;
-		} else   {
+		} else {
 			value = Info_ValueForKey( svs.clients[ e1 - 1 ].userinfo, key );
 		}
-	} else   {
+	} else {
 		value = "";
 	}
 

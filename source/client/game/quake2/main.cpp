@@ -137,11 +137,11 @@ void CLQ2_PrepRefresh() {
 					sizeof ( clq2_weaponmodels[ clq2_num_weaponmodels ] ) - 1 );
 				clq2_num_weaponmodels++;
 			}
-		} else   {
+		} else {
 			cl.model_draw[ i ] = R_RegisterModel( cl.q2_configstrings[ Q2CS_MODELS + i ] );
 			if ( name[ 0 ] == '*' ) {
 				cl.model_clip[ i ] = CM_InlineModel( String::Atoi( cl.q2_configstrings[ Q2CS_MODELS + i ] + 1 ) );
-			} else   {
+			} else {
 				cl.model_clip[ i ] = 0;
 			}
 		}
@@ -208,9 +208,9 @@ void CLQ2_FixUpGender() {
 		}
 		if ( String::ICmp( sk, "male" ) == 0 || String::ICmp( sk, "cyborg" ) == 0 ) {
 			Cvar_SetLatched( "gender", "male" );
-		} else if ( String::ICmp( sk, "female" ) == 0 || String::ICmp( sk, "crackhor" ) == 0 )         {
+		} else if ( String::ICmp( sk, "female" ) == 0 || String::ICmp( sk, "crackhor" ) == 0 ) {
 			Cvar_SetLatched( "gender", "female" );
-		} else   {
+		} else {
 			Cvar_SetLatched( "gender", "none" );
 		}
 		clq2_gender->modified = false;

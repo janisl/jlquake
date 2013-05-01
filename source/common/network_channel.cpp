@@ -89,7 +89,7 @@ void Netchan_Init( int port ) {
 	showdrop = Cvar_Get( "showdrop", "0", CVAR_TEMP );
 	if ( GGameType & GAME_Tech3 ) {
 		qport = Cvar_Get( "net_qport", va( "%i", port ), CVAR_INIT );
-	} else   {
+	} else {
 		qport = Cvar_Get( "qport", va( "%i", port ), CVAR_INIT );
 	}
 }
@@ -224,7 +224,7 @@ static void NET_DoSendPacket( netsrc_t sock, int length, const void* data, const
 		int outlen;
 		HuffEncode( ( unsigned char* )data, huffbuff, length, &outlen );
 		SOCK_Send( ip_sockets[ sock ], huffbuff, outlen, to );
-	} else   {
+	} else {
 		int ret = SOCK_Send( ip_sockets[ sock ], data, length, to );
 		if ( GGameType & GAME_Quake2 && ret == SOCKSEND_ERROR ) {
 			if ( !com_dedicated->value ) {	// let dedicated servers continue after errors
@@ -306,7 +306,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void* data, const netadr_t
 
 			if ( *delaybuf_head ) {
 				( *delaybuf_tail )->next = buf;
-			} else   {
+			} else {
 				*delaybuf_head = buf;
 			}
 			*delaybuf_tail = buf;
@@ -471,7 +471,7 @@ void Netchan_Transmit( netchan_t* chan, int length, const byte* data ) {
 
 	if ( GGameType & GAME_Tech3 ) {
 		send.WriteLong( chan->outgoingSequence );
-	} else   {
+	} else {
 		unsigned w1 = ( chan->outgoingSequence & ~( 1 << 31 ) ) | ( send_reliable << 31 );
 		unsigned w2 = ( chan->incomingSequence & ~( 1 << 31 ) ) | ( chan->incomingReliableSequence << 31 );
 
@@ -495,7 +495,7 @@ void Netchan_Transmit( netchan_t* chan, int length, const byte* data ) {
 	// add the unreliable part if space is available
 	if ( send.maxsize - send.cursize >= length ) {
 		send.WriteData( data, length );
-	} else   {
+	} else {
 		common->Printf( "Netchan_Transmit: dumped unreliable\n" );
 	}
 
@@ -511,7 +511,7 @@ void Netchan_Transmit( netchan_t* chan, int length, const byte* data ) {
 				chan->outgoingReliableSequence,
 				chan->incomingSequence,
 				chan->incomingReliableSequence );
-		} else   {
+		} else {
 			common->Printf( "%s send %4i : s=%i ack=%i rack=%i\n",
 				netsrcString[ chan->sock ],
 				send.cursize,
@@ -548,7 +548,7 @@ bool Netchan_Process( netchan_t* chan, QMsg* msg ) {
 		if ( sequence & FRAGMENT_BIT ) {
 			fragmented = true;
 		}
-	} else   {
+	} else {
 		sequence_ack = msg->ReadLong();
 
 		reliable_message = ( unsigned )sequence >> 31;
@@ -568,7 +568,7 @@ bool Netchan_Process( netchan_t* chan, QMsg* msg ) {
 	if ( fragmented ) {
 		fragmentStart = msg->ReadShort();
 		fragmentLength = msg->ReadShort();
-	} else   {
+	} else {
 		fragmentStart = 0;		// stop warning message
 		fragmentLength = 0;
 	}
@@ -581,13 +581,13 @@ bool Netchan_Process( netchan_t* chan, QMsg* msg ) {
 				chan->incomingReliableSequence ^ 1,
 				sequence_ack,
 				reliable_ack );
-		} else if ( fragmented )     {
+		} else if ( fragmented ) {
 			common->Printf( "%s recv %4i : s=%i fragment=%i,%i\n",
 				netsrcString[ chan->sock ],
 				msg->cursize,
 				sequence,
 				fragmentStart, fragmentLength );
-		} else   {
+		} else {
 			common->Printf( "%s recv %4i : s=%i ack=%i rack=%i\n",
 				netsrcString[ chan->sock ],
 				msg->cursize,
@@ -848,7 +848,7 @@ void NET_Config( bool enableNetworking ) {
 	if ( enableNetworking == networkingEnabled ) {
 		stop = enableNetworking;
 		start = enableNetworking;
-	} else   {
+	} else {
 		start = enableNetworking;
 		stop = !enableNetworking;
 		networkingEnabled = enableNetworking;
@@ -863,7 +863,7 @@ void NET_Config( bool enableNetworking ) {
 					ip_sockets[ i ] = 0;
 				}
 			}
-		} else   {
+		} else {
 			if ( ip_sockets[ 0 ] ) {
 				SOCK_Close( ip_sockets[ 0 ] );
 				ip_sockets[ 0 ] = 0;
@@ -876,7 +876,7 @@ void NET_Config( bool enableNetworking ) {
 	if ( start ) {
 		if ( GGameType & GAME_Quake2 ) {
 			NETQ2_OpenIP();
-		} else   {
+		} else {
 			NETT3_OpenIP();
 		}
 	}
@@ -904,7 +904,7 @@ void NETQ23_Init() {
 void NET_Shutdown() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		SOCK_Close( ip_sockets[ 0 ] );
-	} else   {
+	} else {
 		NET_Config( false );
 	}
 	SOCK_Shutdown();

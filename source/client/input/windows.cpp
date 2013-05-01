@@ -281,11 +281,11 @@ static int MapKey( int key ) {
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) {
 		if ( cl_language->integer - 1 == LANGUAGE_FRENCH ) {
 			result = s_scantokey_french[ modified ];
-		} else if ( cl_language->integer - 1 == LANGUAGE_GERMAN )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_GERMAN ) {
 			result = s_scantokey_german[ modified ];
-		} else if ( cl_language->integer - 1 == LANGUAGE_ITALIAN )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_ITALIAN ) {
 			result = s_scantokey_italian[ modified ];
-		} else if ( cl_language->integer - 1 == LANGUAGE_SPANISH )     {
+		} else if ( cl_language->integer - 1 == LANGUAGE_SPANISH ) {
 			result = s_scantokey_spanish[ modified ];
 		}
 	}
@@ -315,7 +315,7 @@ static int MapKey( int key ) {
 		default:
 			return result;
 		}
-	} else   {
+	} else {
 		switch ( result ) {
 		case K_PAUSE:
 			return K_KP_NUMLOCK;
@@ -422,7 +422,7 @@ bool IN_HandleInputMessage( UINT uMsg, WPARAM wParam, LPARAM lParam ) {
 					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, true, 0, NULL );
 					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, false, 0, NULL );
 				}
-			} else   {
+			} else {
 				for ( int i = 0; i < -zDelta; i++ ) {
 					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, true, 0, NULL );
 					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, false, 0, NULL );
@@ -703,7 +703,7 @@ static void IN_DIMouse( int* mx, int* my ) {
 		case DIMOFS_BUTTON0:
 			if ( od.dwData & 0x80 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE1, true, 0, NULL );
-			} else   {
+			} else {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE1, false, 0, NULL );
 			}
 			break;
@@ -711,7 +711,7 @@ static void IN_DIMouse( int* mx, int* my ) {
 		case DIMOFS_BUTTON1:
 			if ( od.dwData & 0x80 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE2, true, 0, NULL );
-			} else   {
+			} else {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE2, false, 0, NULL );
 			}
 			break;
@@ -719,7 +719,7 @@ static void IN_DIMouse( int* mx, int* my ) {
 		case DIMOFS_BUTTON2:
 			if ( od.dwData & 0x80 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE3, true, 0, NULL );
-			} else   {
+			} else {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE3, false, 0, NULL );
 			}
 			break;
@@ -727,7 +727,7 @@ static void IN_DIMouse( int* mx, int* my ) {
 		case DIMOFS_BUTTON3:
 			if ( od.dwData & 0x80 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE4, true, 0, NULL );
-			} else   {
+			} else {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MOUSE4, false, 0, NULL );
 			}
 			break;
@@ -736,7 +736,7 @@ static void IN_DIMouse( int* mx, int* my ) {
 			if ( ( int )od.dwData < 0 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MWHEELDOWN, true, 0, NULL );
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MWHEELDOWN, false, 0, NULL );
-			} else if ( ( int )od.dwData > 0 )       {
+			} else if ( ( int )od.dwData > 0 ) {
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MWHEELUP, true, 0, NULL );
 				Sys_QueEvent( od.dwTimeStamp, SE_KEY, K_MWHEELUP, false, 0, NULL );
 			}
@@ -779,7 +779,7 @@ static void IN_StartupMouse() {
 
 	if ( in_mouse->integer == -1 ) {
 		common->Printf( "Skipping check for DirectInput\n" );
-	} else   {
+	} else {
 		if ( !GMainWindow ) {
 			common->Printf( "No window for DirectInput mouse init, delaying\n" );
 			mouse_startupDelayed = true;
@@ -853,7 +853,7 @@ static void IN_MouseMove() {
 	int mx, my;
 	if ( g_pMouse ) {
 		IN_DIMouse( &mx, &my );
-	} else   {
+	} else {
 		IN_Win32Mouse( &mx, &my );
 	}
 
@@ -930,7 +930,7 @@ static void IN_StartupJoystick() {
 	common->Printf( "Caps: 0x%x\n", joy_jc.wCaps );
 	if ( joy_jc.wCaps & JOYCAPS_HASPOV ) {
 		common->Printf( "HASPOV\n" );
-	} else   {
+	} else {
 		common->Printf( "no POV\n" );
 	}
 
@@ -1036,7 +1036,7 @@ static void IN_JoyMove() {
 
 		if ( fAxisValue < -joy_threshold->value ) {
 			povstate |= ( 1 << ( i * 2 ) );
-		} else if ( fAxisValue > joy_threshold->value )     {
+		} else if ( fAxisValue > joy_threshold->value ) {
 			povstate |= ( 1 << ( i * 2 + 1 ) );
 		}
 	}
@@ -1146,7 +1146,7 @@ static void CALLBACK MidiInProc( HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance,
 			if ( ( ( message & 0x0f ) + 1 ) == in_midichannel->integer ) {
 				MIDI_NoteOn( ( dwParam1 & 0xff00 ) >> 8, ( dwParam1 & 0xff0000 ) >> 16 );
 			}
-		} else if ( ( message & 0xf0 ) == 0x80 )       {
+		} else if ( ( message & 0xf0 ) == 0x80 ) {
 			if ( ( ( message & 0x0f ) + 1 ) == in_midichannel->integer ) {
 				MIDI_NoteOff( ( dwParam1 & 0xff00 ) >> 8 );
 			}
@@ -1178,7 +1178,7 @@ static void MidiInfo_f() {
 	for ( int i = 0; i < midi_numDevices; i++ ) {
 		if ( i == Cvar_VariableValue( "in_mididevice" ) ) {
 			common->Printf( "***" );
-		} else   {
+		} else {
 			common->Printf( "..." );
 		}
 		common->Printf( "device %2d:       %s\n", i, midi_caps[ i ].szPname );

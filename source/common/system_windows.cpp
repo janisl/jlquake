@@ -109,7 +109,7 @@ static void Sys_ListFilteredFiles( const char* basedir, const char* subdirs, con
 
 	if ( String::Length( subdirs ) ) {
 		String::Sprintf( search, sizeof ( search ), "%s\\%s\\*", basedir, subdirs );
-	} else   {
+	} else {
 		String::Sprintf( search, sizeof ( search ), "%s\\*", basedir );
 	}
 
@@ -123,7 +123,7 @@ static void Sys_ListFilteredFiles( const char* basedir, const char* subdirs, con
 			if ( String::ICmp( findinfo.name, "." ) && String::ICmp( findinfo.name, ".." ) ) {
 				if ( String::Length( subdirs ) ) {
 					String::Sprintf( newsubdirs, sizeof ( newsubdirs ), "%s\\%s", subdirs, findinfo.name );
-				} else   {
+				} else {
 					String::Sprintf( newsubdirs, sizeof ( newsubdirs ), "%s", findinfo.name );
 				}
 				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
@@ -201,7 +201,7 @@ char** Sys_ListFiles( const char* directory, const char* extension, const char* 
 	if ( extension[ 0 ] == '/' && extension[ 1 ] == 0 ) {
 		extension = "";
 		flag = 0;
-	} else   {
+	} else {
 		flag = _A_SUBDIR;
 	}
 
@@ -625,21 +625,21 @@ static void SysT3_InitCpu() {
 			common->FatalError( "Unknown cpu type %d\n", cpuid );
 			break;
 		}
-	} else   {
+	} else {
 		common->Printf( "...forcing CPU type to " );
 		if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) ) {
 			cpuid = CPUID_GENERIC;
-		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )         {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) ) {
 			cpuid = CPUID_INTEL_PENTIUM;
-		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )         {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) ) {
 			cpuid = CPUID_INTEL_MMX;
-		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )         {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) ) {
 			cpuid = CPUID_AMD_3DNOW;
-		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )         {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) ) {
 			cpuid = CPUID_INTEL_KATMAI;
-		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )         {
+		} else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) ) {
 			cpuid = CPUID_AXP;
-		} else   {
+		} else {
 			common->Printf( "WARNING: unknown sys_cpustring '%s'\n", Cvar_VariableString( "sys_cpustring" ) );
 			cpuid = CPUID_GENERIC;
 		}

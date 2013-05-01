@@ -223,7 +223,7 @@ void QClipMapNonMap::LoadAliasModel( const void* buffer ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		QMdlBoundsLoader BoundsLoader;
 		BoundsLoader.LoadAliasModel( this, buffer );
-	} else   {
+	} else {
 		ModelMins[ 0 ] = ModelMins[ 1 ] = ModelMins[ 2 ] = -16;
 		ModelMaxs[ 0 ] = ModelMaxs[ 1 ] = ModelMaxs[ 2 ] = 16;
 	}
@@ -233,7 +233,7 @@ void QClipMapNonMap::LoadAliasModelNew( const void* buffer ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		QMdlBoundsLoader BoundsLoader;
 		BoundsLoader.LoadAliasModelNew( this, buffer );
-	} else   {
+	} else {
 		ModelMins[ 0 ] = ModelMins[ 1 ] = ModelMins[ 2 ] = -16;
 		ModelMaxs[ 0 ] = ModelMaxs[ 1 ] = ModelMaxs[ 2 ] = 16;
 	}
@@ -272,7 +272,7 @@ void QMdlBoundsLoader::LoadAliasModel( QClipMapNonMap* mod, const void* buffer )
 		mdl_frametype_t frametype = ( mdl_frametype_t )LittleLong( pframetype->type );
 		if ( frametype == ALIAS_SINGLE ) {
 			pframetype = ( dmdl_frametype_t* )LoadAliasFrame( pframetype + 1 );
-		} else   {
+		} else {
 			pframetype = ( dmdl_frametype_t* )LoadAliasGroup( pframetype + 1 );
 		}
 	}
@@ -320,7 +320,7 @@ void QMdlBoundsLoader::LoadAliasModelNew( QClipMapNonMap* mod, const void* buffe
 		mdl_frametype_t frametype = ( mdl_frametype_t )LittleLong( pframetype->type );
 		if ( frametype == ALIAS_SINGLE ) {
 			pframetype = ( dmdl_frametype_t* )LoadAliasFrame( pframetype + 1 );
-		} else   {
+		} else {
 			pframetype = ( dmdl_frametype_t* )LoadAliasGroup( pframetype + 1 );
 		}
 	}

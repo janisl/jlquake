@@ -82,7 +82,7 @@ static bool ReadNumber( source_t* source, const fielddef_t* fd, void* p ) {
 	//store the value
 	if ( ( fd->type & FT_TYPE ) == FT_INT ) {
 		*( int* )p = ( int )intval;
-	} else if ( ( fd->type & FT_TYPE ) == FT_FLOAT )       {
+	} else if ( ( fd->type & FT_TYPE ) == FT_FLOAT ) {
 		*( float* )p = ( float )intval;
 	}
 	return true;
@@ -125,7 +125,7 @@ bool ReadStructure( source_t* source, const structdef_t* def, char* structure ) 
 			if ( !PC_ExpectTokenString( source, "{" ) ) {
 				return false;
 			}
-		} else   {
+		} else {
 			num = 1;
 		}
 		void* p = ( void* )( structure + fd->offset );

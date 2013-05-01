@@ -53,15 +53,15 @@ void CLT3_InitCGame() {
 		if ( cl_connectedToPureServer != 0 ) {
 			// if sv_pure is set we only allow qvms to be loaded
 			interpret = VMI_COMPILED;
-		} else   {
+		} else {
 			interpret = ( vmInterpret_t )( int )Cvar_VariableValue( "vm_cgame" );
 		}
 		cgvm = VM_Create( "cgame", CLQ3_CgameSystemCalls, interpret );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		cgvm = VM_Create( "cgame", CLWS_CgameSystemCalls, VMI_NATIVE );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		cgvm = VM_Create( "cgame", CLWM_CgameSystemCalls, VMI_NATIVE );
-	} else   {
+	} else {
 		cgvm = VM_Create( "cgame", CLET_CgameSystemCalls, VMI_NATIVE );
 	}
 	if ( !cgvm ) {
@@ -75,7 +75,7 @@ void CLT3_InitCGame() {
 	if ( GGameType & GAME_ET ) {
 		//bani - added clc.demoplaying, since some mods need this at init time, and drawactiveframe is too late for them
 		VM_Call( cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum, clc.demoplaying );
-	} else   {
+	} else {
 		VM_Call( cgvm, CG_INIT, clc.q3_serverMessageSequence, clc.q3_lastExecutedServerCommand, clc.q3_clientNum );
 	}
 
@@ -213,7 +213,7 @@ static void CLT3_ConfigstringModified() {
 			const char* dup;
 			if ( i == index ) {
 				dup = s;
-			} else   {
+			} else {
 				dup = oldGs.stringData + oldGs.stringOffsets[ i ];
 			}
 			if ( !dup[ 0 ] ) {
@@ -236,7 +236,7 @@ static void CLT3_ConfigstringModified() {
 			// parse serverId and other cvars
 			CLT3_SystemInfoChanged();
 		}
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		if ( index < 0 || index >= MAX_CONFIGSTRINGS_WS ) {
 			common->Error( "configstring > MAX_CONFIGSTRINGS_WS" );
 		}
@@ -258,7 +258,7 @@ static void CLT3_ConfigstringModified() {
 			const char* dup;
 			if ( i == index ) {
 				dup = s;
-			} else   {
+			} else {
 				dup = oldGs.stringData + oldGs.stringOffsets[ i ];
 			}
 			if ( !dup[ 0 ] ) {
@@ -281,7 +281,7 @@ static void CLT3_ConfigstringModified() {
 			// parse serverId and other cvars
 			CLT3_SystemInfoChanged();
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		if ( index < 0 || index >= MAX_CONFIGSTRINGS_WM ) {
 			common->Error( "configstring > MAX_CONFIGSTRINGS_WM" );
 		}
@@ -303,7 +303,7 @@ static void CLT3_ConfigstringModified() {
 			const char* dup;
 			if ( i == index ) {
 				dup = s;
-			} else   {
+			} else {
 				dup = oldGs.stringData + oldGs.stringOffsets[ i ];
 			}
 			if ( !dup[ 0 ] ) {
@@ -326,7 +326,7 @@ static void CLT3_ConfigstringModified() {
 			// parse serverId and other cvars
 			CLT3_SystemInfoChanged();
 		}
-	} else   {
+	} else {
 		if ( index < 0 || index >= MAX_CONFIGSTRINGS_ET ) {
 			common->Error( "configstring > MAX_CONFIGSTRINGS_ET" );
 		}
@@ -348,7 +348,7 @@ static void CLT3_ConfigstringModified() {
 			const char* dup;
 			if ( i == index ) {
 				dup = s;
-			} else   {
+			} else {
 				dup = oldGs.stringData + oldGs.stringOffsets[ i ];
 			}
 			if ( !dup[ 0 ] ) {
@@ -411,7 +411,7 @@ rescan:
 		// allow server to indicate why they were disconnected
 		if ( argc >= 2 ) {
 			common->ServerDisconnected( "Server Disconnected - %s", Cmd_Argv( 1 ) );
-		} else   {
+		} else {
 			common->ServerDisconnected( "Server disconnected\n" );
 		}
 	}
@@ -545,7 +545,7 @@ static void CLT3_AdjustTimeDelta() {
 	int resetTime;
 	if ( com_sv_running->integer ) {
 		resetTime = 100;
-	} else   {
+	} else {
 		resetTime = RESET_TIME;
 	}
 
@@ -560,26 +560,26 @@ static void CLT3_AdjustTimeDelta() {
 		if ( GGameType & GAME_WolfSP ) {
 			cl.q3_oldServerTime = cl.ws_snap.serverTime;	// FIXME: is this a problem for cgame?
 			cl.serverTime = cl.ws_snap.serverTime;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			cl.q3_oldServerTime = cl.wm_snap.serverTime;	// FIXME: is this a problem for cgame?
 			cl.serverTime = cl.wm_snap.serverTime;
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			cl.q3_oldServerTime = cl.et_snap.serverTime;	// FIXME: is this a problem for cgame?
 			cl.serverTime = cl.et_snap.serverTime;
-		} else   {
+		} else {
 			cl.q3_oldServerTime = cl.q3_snap.serverTime;	// FIXME: is this a problem for cgame?
 			cl.serverTime = cl.q3_snap.serverTime;
 		}
 		if ( clt3_showTimeDelta->integer ) {
 			common->Printf( "<RESET> " );
 		}
-	} else if ( deltaDelta > 100 )     {
+	} else if ( deltaDelta > 100 ) {
 		// fast adjust, cut the difference in half
 		if ( clt3_showTimeDelta->integer ) {
 			common->Printf( "<FAST> " );
 		}
 		cl.q3_serverTimeDelta = ( cl.q3_serverTimeDelta + newDelta ) >> 1;
-	} else   {
+	} else {
 		// slow drift adjust, only move 1 or 2 msec
 
 		// if any of the frames between this and the previous snapshot
@@ -589,7 +589,7 @@ static void CLT3_AdjustTimeDelta() {
 			if ( cl.q3_extrapolatedSnapshot ) {
 				cl.q3_extrapolatedSnapshot = false;
 				cl.q3_serverTimeDelta -= 2;
-			} else   {
+			} else {
 				// otherwise, move our sense of time forward to minimize total latency
 				cl.q3_serverTimeDelta++;
 			}
@@ -614,7 +614,7 @@ static void CLT3_FirstSnapshot() {
 		cl.q3_oldServerTime = cl.ws_snap.serverTime;
 
 		clc.q3_timeDemoBaseTime = cl.ws_snap.serverTime;
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		// ignore snapshots that don't have entities
 		if ( cl.wm_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE ) {
 			return;
@@ -626,7 +626,7 @@ static void CLT3_FirstSnapshot() {
 		cl.q3_oldServerTime = cl.wm_snap.serverTime;
 
 		clc.q3_timeDemoBaseTime = cl.wm_snap.serverTime;
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		// ignore snapshots that don't have entities
 		if ( cl.et_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE ) {
 			return;
@@ -638,7 +638,7 @@ static void CLT3_FirstSnapshot() {
 		cl.q3_oldServerTime = cl.et_snap.serverTime;
 
 		clc.q3_timeDemoBaseTime = cl.et_snap.serverTime;
-	} else   {
+	} else {
 		// ignore snapshots that don't have entities
 		if ( cl.q3_snap.snapFlags & Q3SNAPFLAG_NOT_ACTIVE ) {
 			return;
@@ -692,15 +692,15 @@ void CLT3_SetCGameTime() {
 		if ( !cl.ws_snap.valid ) {
 			common->Error( "CLT3_SetCGameTime: !cl.snap.valid" );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		if ( !cl.wm_snap.valid ) {
 			common->Error( "CLT3_SetCGameTime: !cl.snap.valid" );
 		}
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		if ( !cl.et_snap.valid ) {
 			common->Error( "CLT3_SetCGameTime: !cl.snap.valid" );
 		}
-	} else   {
+	} else {
 		if ( !cl.q3_snap.valid ) {
 			common->Error( "CLT3_SetCGameTime: !cl.snap.valid" );
 		}
@@ -718,34 +718,34 @@ void CLT3_SetCGameTime() {
 			if ( !String::ICmp( cls.servername, "localhost" ) ) {
 				// do nothing?
 				CLT3_FirstSnapshot();
-			} else   {
+			} else {
 				common->Error( "cl.ws_snap.serverTime < cl.oldFrameServerTime" );
 			}
 		}
 		cl.q3_oldFrameServerTime = cl.ws_snap.serverTime;
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		if ( cl.wm_snap.serverTime < cl.q3_oldFrameServerTime ) {
 			// Ridah, if this is a localhost, then we are probably loading a savegame
 			if ( !String::ICmp( cls.servername, "localhost" ) ) {
 				// do nothing?
 				CLT3_FirstSnapshot();
-			} else   {
+			} else {
 				common->Error( "cl.wm_snap.serverTime < cl.oldFrameServerTime" );
 			}
 		}
 		cl.q3_oldFrameServerTime = cl.wm_snap.serverTime;
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		if ( cl.et_snap.serverTime < cl.q3_oldFrameServerTime ) {
 			// Ridah, if this is a localhost, then we are probably loading a savegame
 			if ( !String::ICmp( cls.servername, "localhost" ) ) {
 				// do nothing?
 				CLT3_FirstSnapshot();
-			} else   {
+			} else {
 				common->Error( "cl.et_snap.serverTime < cl.oldFrameServerTime" );
 			}
 		}
 		cl.q3_oldFrameServerTime = cl.et_snap.serverTime;
-	} else   {
+	} else {
 		if ( cl.q3_snap.serverTime < cl.q3_oldFrameServerTime ) {
 			common->Error( "cl.snap.serverTime < cl.oldFrameServerTime" );
 		}
@@ -757,7 +757,7 @@ void CLT3_SetCGameTime() {
 	if ( clc.demoplaying && clt3_freezeDemo->integer ) {
 		// cl_freezeDemo is used to lock a demo in place for single frame advances
 
-	} else   {
+	} else {
 		// cl_timeNudge is a user adjustable cvar that allows more
 		// or less latency to be added in the interest of better
 		// smoothness or better responsiveness.
@@ -766,7 +766,7 @@ void CLT3_SetCGameTime() {
 		tn = clt3_timeNudge->integer;
 		if ( tn < -30 ) {
 			tn = -30;
-		} else if ( tn > 30 )     {
+		} else if ( tn > 30 ) {
 			tn = 30;
 		}
 
@@ -785,15 +785,15 @@ void CLT3_SetCGameTime() {
 			if ( cls.realtime + cl.q3_serverTimeDelta >= cl.ws_snap.serverTime - 5 ) {
 				cl.q3_extrapolatedSnapshot = true;
 			}
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			if ( cls.realtime + cl.q3_serverTimeDelta >= cl.wm_snap.serverTime - 5 ) {
 				cl.q3_extrapolatedSnapshot = true;
 			}
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			if ( cls.realtime + cl.q3_serverTimeDelta >= cl.et_snap.serverTime - 5 ) {
 				cl.q3_extrapolatedSnapshot = true;
 			}
-		} else   {
+		} else {
 			if ( cls.realtime + cl.q3_serverTimeDelta >= cl.q3_snap.serverTime - 5 ) {
 				cl.q3_extrapolatedSnapshot = true;
 			}

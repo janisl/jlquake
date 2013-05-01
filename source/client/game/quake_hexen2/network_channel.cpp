@@ -143,7 +143,7 @@ static void Datagram_SearchForHosts( bool xmit ) {
 				if ( i < 15 && hostcache[ n ].name[ i - 1 ] > '8' ) {
 					hostcache[ n ].name[ i ] = '0';
 					hostcache[ n ].name[ i + 1 ] = 0;
-				} else   {
+				} else {
 					hostcache[ n ].name[ i - 1 ]++;
 				}
 				i = -1;
@@ -198,7 +198,7 @@ static void PrintSlist() {
 	for ( n = slistLastShown; n < hostCacheCount; n++ ) {
 		if ( hostcache[ n ].maxusers ) {
 			common->Printf( "%-15.15s %-15.15s %2u/%2u\n", hostcache[ n ].name, hostcache[ n ].map, hostcache[ n ].users, hostcache[ n ].maxusers );
-		} else   {
+		} else {
 			common->Printf( "%-15.15s %-15.15s\n", hostcache[ n ].name, hostcache[ n ].map );
 		}
 	}
@@ -208,7 +208,7 @@ static void PrintSlist() {
 static void PrintSlistTrailer() {
 	if ( hostCacheCount ) {
 		common->Printf( "== end list ==\n\n" );
-	} else   {
+	} else {
 		common->Printf( GGameType & GAME_Hexen2 ? "No Hexen II servers found.\n\n" : "No Quake servers found.\n\n" );
 	}
 }
@@ -381,7 +381,7 @@ static bool Datagram_Connect( const char* host, netchan_t* chan ) {
 	if ( ret == CCREP_ACCEPT ) {
 		chan->remoteAddress = sendaddr;
 		SOCK_SetPort( &chan->remoteAddress, net_message.ReadLong() );
-	} else   {
+	} else {
 		const char* reason = "Bad Response";
 		common->Printf( "%s\n", reason );
 		String::Cpy( m_return_reason, reason );

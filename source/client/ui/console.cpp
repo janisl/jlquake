@@ -461,7 +461,7 @@ static void Con_DrawInput( int lines ) {
 			if ( cls.state != CA_DISCONNECTED ) {
 				return;
 			}
-		} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) )       {
+		} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld | GAME_Quake2 ) ) {
 			if ( cls.state == CA_ACTIVE ) {
 				return;
 			}
@@ -660,7 +660,7 @@ void Con_DrawConsole() {
 			Con_DrawSolidConsole( 1.0 );
 			return;
 		}
-	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) )       {
+	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		if ( cls.state != CA_ACTIVE ) {
 			Con_DrawSolidConsole( 1.0 );
 			return;
@@ -778,7 +778,7 @@ void Con_KeyEvent( int key ) {
 			if ( GGameType & GAME_Tech3 ) {
 				// other text will be chat messages
 				Cbuf_AddText( "cmd say " );
-			} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) )       {
+			} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 				if ( !CheckForCommand() ) {
 					// convert to a chat message
 					Cbuf_AddText( "say " );
@@ -930,7 +930,7 @@ void Con_RunConsole() {
 		 ( cls.state != CA_ACTIVE || clc.qh_signon != SIGNONS ) ) {
 		con.finalFrac = 1;		// full screen
 		con.displayFrac = 1;
-	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) && cls.state != CA_ACTIVE )       {
+	} else if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) && cls.state != CA_ACTIVE ) {
 		con.finalFrac = 1;		// full screen
 		con.displayFrac = 1;
 	} else if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
@@ -999,7 +999,7 @@ void Con_ToggleConsole_f() {
 		if ( keys[ K_CTRL ].down ) {
 			// short console
 			con.desiredFrac = ( 5.0 * SMALLCHAR_HEIGHT ) / cls.glconfig.vidHeight;
-		} else if ( keys[ K_ALT ].down )       {
+		} else if ( keys[ K_ALT ].down ) {
 			// full console
 			con.desiredFrac = 1.0;
 		} else {

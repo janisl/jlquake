@@ -206,7 +206,7 @@ template<class type> inline void idList<type>::Condense() {
 	if ( list ) {
 		if ( num ) {
 			Resize( num );
-		} else   {
+		} else {
 			Clear();
 		}
 	}
@@ -382,7 +382,7 @@ template<class type> inline int idList<type>::Insert( type const& obj, int index
 
 	if ( index < 0 ) {
 		index = 0;
-	} else if ( index > num )     {
+	} else if ( index > num ) {
 		index = num;
 	}
 	for ( int i = num; i > index; --i ) {
@@ -538,7 +538,7 @@ template<class type> inline void idList<type>::DeleteContents( bool clear ) {
 
 	if ( clear ) {
 		Clear();
-	} else   {
+	} else {
 		memset( list, 0, size * sizeof ( type ) );
 	}
 }

@@ -56,7 +56,7 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 		int frame;
 		if ( *ptr == '-' ) {
 			frame = STAT_MINUS;
-		} else   {
+		} else {
 			frame = *ptr - '0';
 		}
 
@@ -81,7 +81,7 @@ static void SCRQ2_DrawHUDString( const char* string, int x, int y, int centerwid
 
 		if ( centerwidth ) {
 			x = margin + ( centerwidth - width * 8 ) / 2;
-		} else   {
+		} else {
 			x = margin;
 		}
 		UI_DrawString( x, y, line, _xor );
@@ -246,9 +246,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			int value = cl.q2_frame.playerstate.stats[ Q2STAT_HEALTH ];
 			if ( value > 25 ) {
 				color = 0;	// green
-			} else if ( value > 0 )     {
+			} else if ( value > 0 ) {
 				color = ( cl.q2_frame.serverframe >> 2 ) & 1;			// flash
-			} else   {
+			} else {
 				color = 1;
 			}
 
@@ -267,9 +267,9 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			int value = cl.q2_frame.playerstate.stats[ Q2STAT_AMMO ];
 			if ( value > 5 ) {
 				color = 0;	// green
-			} else if ( value >= 0 )     {
+			} else if ( value >= 0 ) {
 				color = ( cl.q2_frame.serverframe >> 2 ) & 1;			// flash
-			} else   {
+			} else {
 				continue;	// negative number = don't show
 			}
 

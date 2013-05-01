@@ -155,7 +155,7 @@ static void SVQ2_SpawnServer( const char* server, const char* spawnpoint, server
 	if ( Cvar_VariableValue( "deathmatch" ) ) {
 		sprintf( sv.q2_configstrings[ Q2CS_AIRACCEL ], "%g", svq2_airaccelerate->value );
 		pmq2_airaccelerate = svq2_airaccelerate->value;
-	} else   {
+	} else {
 		String::Cpy( sv.q2_configstrings[ Q2CS_AIRACCEL ], "0" );
 		pmq2_airaccelerate = 0;
 	}
@@ -181,7 +181,7 @@ static void SVQ2_SpawnServer( const char* server, const char* spawnpoint, server
 	int checksum;
 	if ( serverstate != SS_GAME ) {
 		CM_LoadMap( "", false, &checksum );		// no real map
-	} else   {
+	} else {
 		String::Sprintf( sv.q2_configstrings[ Q2CS_MODELS + 1 ],sizeof ( sv.q2_configstrings[ Q2CS_MODELS + 1 ] ),
 			"maps/%s.bsp", server );
 		CM_LoadMap( sv.q2_configstrings[ Q2CS_MODELS + 1 ], false, &checksum );
@@ -242,7 +242,7 @@ void SVQ2_InitGame() {
 	if ( svs.initialized ) {
 		// cause any connected clients to reconnect
 		SVQ2_Shutdown( "Server restarted\n", true );
-	} else   {
+	} else {
 		// make sure the client is down
 		CLQ2_Drop();
 		SCRQ2_BeginLoadingPlaque( false );
@@ -270,14 +270,14 @@ void SVQ2_InitGame() {
 	if ( Cvar_VariableValue( "deathmatch" ) ) {
 		if ( sv_maxclients->value <= 1 ) {
 			Cvar_Set( "maxclients", "8" );
-		} else if ( sv_maxclients->value > MAX_CLIENTS_Q2 )     {
+		} else if ( sv_maxclients->value > MAX_CLIENTS_Q2 ) {
 			Cvar_Set( "maxclients", va( "%i", MAX_CLIENTS_Q2 ) );
 		}
-	} else if ( Cvar_VariableValue( "coop" ) )       {
+	} else if ( Cvar_VariableValue( "coop" ) ) {
 		if ( sv_maxclients->value <= 1 || sv_maxclients->value > 4 ) {
 			Cvar_Set( "maxclients", "4" );
 		}
-	} else   {	// non-deathmatch, non-coop is one player
+	} else {	// non-deathmatch, non-coop is one player
 		Cvar_Set( "maxclients", "1" );
 	}
 
@@ -333,7 +333,7 @@ void SVQ2_Map( bool attractloop, const char* levelstring, bool loadgame ) {
 	if ( ch ) {
 		*ch = 0;
 		Cvar_SetLatched( "nextserver", va( "gamemap \"%s\"", ch + 1 ) );
-	} else   {
+	} else {
 		Cvar_SetLatched( "nextserver", "" );
 	}
 
@@ -347,7 +347,7 @@ void SVQ2_Map( bool attractloop, const char* levelstring, bool loadgame ) {
 	if ( ch ) {
 		*ch = 0;
 		String::Cpy( spawnpoint, ch + 1 );
-	} else   {
+	} else {
 		spawnpoint[ 0 ] = 0;
 	}
 
@@ -361,15 +361,15 @@ void SVQ2_Map( bool attractloop, const char* levelstring, bool loadgame ) {
 		SCRQ2_BeginLoadingPlaque( false );				// for local system
 		SVQ2_BroadcastCommand( "changing\n" );
 		SVQ2_SpawnServer( level, spawnpoint, SS_CINEMATIC, attractloop, loadgame );
-	} else if ( l > 4 && !String::Cmp( level + l - 4, ".dm2" ) )       {
+	} else if ( l > 4 && !String::Cmp( level + l - 4, ".dm2" ) ) {
 		SCRQ2_BeginLoadingPlaque( false );				// for local system
 		SVQ2_BroadcastCommand( "changing\n" );
 		SVQ2_SpawnServer( level, spawnpoint, SS_DEMO, attractloop, loadgame );
-	} else if ( l > 4 && !String::Cmp( level + l - 4, ".pcx" ) )       {
+	} else if ( l > 4 && !String::Cmp( level + l - 4, ".pcx" ) ) {
 		SCRQ2_BeginLoadingPlaque( false );				// for local system
 		SVQ2_BroadcastCommand( "changing\n" );
 		SVQ2_SpawnServer( level, spawnpoint, SS_PIC, attractloop, loadgame );
-	} else   {
+	} else {
 		SCRQ2_BeginLoadingPlaque( false );				// for local system
 		SVQ2_BroadcastCommand( "changing\n" );
 		SVQ2_SendClientMessages();

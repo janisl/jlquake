@@ -98,10 +98,10 @@ void R_LoadPCX( const char* filename, byte** pic, byte** palette, int* width, in
 	if ( GGameType & GAME_Tech3 ) {
 		MaxWidth = 1024;
 		MaxHeight = 1024;
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		MaxWidth = 640;
 		MaxHeight = 480;
-	} else   {
+	} else {
 		MaxWidth = 320;
 		MaxHeight = 1024;
 	}
@@ -142,7 +142,7 @@ void R_LoadPCX( const char* filename, byte** pic, byte** palette, int* width, in
 			if ( ( dataByte & 0xC0 ) == 0xC0 ) {
 				runLength = dataByte & 0x3F;
 				dataByte = *raw++;
-			} else   {
+			} else {
 				runLength = 1;
 			}
 
@@ -190,7 +190,7 @@ void R_LoadPCX32( const char* filename, byte** pic, int* width, int* height, int
 			pic32[ 3 ] = 255;
 			pic32 += 4;
 		}
-	} else   {
+	} else {
 		//	In Quake 2 palette from PCX file is ignored.
 		*pic = R_ConvertImage8To32( pic8, *width, *height, Mode );
 	}
@@ -234,7 +234,7 @@ void R_SavePCXMem( idList<byte>& buffer, byte* data, int width, int height, byte
 		for ( int j = 0; j < width; j++ ) {
 			if ( ( *data & 0xc0 ) != 0xc0 ) {
 				*pack++ = *data++;
-			} else   {
+			} else {
 				*pack++ = 0xc1;
 				*pack++ = *data++;
 			}

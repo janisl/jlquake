@@ -39,10 +39,10 @@ int SVT3_BotAllocateClient( int clientNum ) {
 		cl = &svs.clients[ clientNum ];
 		if ( cl->state != CS_FREE ) {
 			return -1;
-		} else   {
+		} else {
 			i = clientNum;
 		}
-	} else   {
+	} else {
 		// find a client slot
 		for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ ) {
 			// Wolfenstein, never use the first slot, otherwise if a bot connects before the first client on a listen server, game won't start
@@ -63,11 +63,11 @@ int SVT3_BotAllocateClient( int clientNum ) {
 	cl->q3_entity = SVT3_EntityNum( i );
 	if ( GGameType & GAME_WolfSP ) {
 		cl->ws_gentity = SVWS_GentityNum( i );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		cl->wm_gentity = SVWM_GentityNum( i );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		cl->et_gentity = SVET_GentityNum( i );
-	} else   {
+	} else {
 		cl->q3_gentity = SVQ3_GentityNum( i );
 	}
 	cl->q3_entity->SetNumber( i );
@@ -107,7 +107,7 @@ int SVT3_BotLibSetup() {
 		// RF, set AAS routing max per frame
 		if ( SVET_GameIsSinglePlayer() ) {
 			bot_frameroutingupdates = Cvar_Get( "bot_frameroutingupdates", "9999999", 0 );
-		} else   {
+		} else {
 			// more restrictive in multiplayer
 			bot_frameroutingupdates = Cvar_Get( "bot_frameroutingupdates", "1000", 0 );
 		}
@@ -115,7 +115,7 @@ int SVT3_BotLibSetup() {
 
 		// added single player
 		return BotLibSetup( ( SVET_GameIsSinglePlayer() || SVET_GameIsCoop() ) );
-	} else   {
+	} else {
 		return BotLibSetup( false );
 	}
 }
@@ -123,7 +123,7 @@ int SVT3_BotLibSetup() {
 void SVT3_BotInitCvars() {
 	if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 		Cvar_Get( "bot_enable", "0", 0 );					//enable the bot
-	} else   {
+	} else {
 		Cvar_Get( "bot_enable", "1", 0 );					//enable the bot
 	}
 	Cvar_Get( "bot_developer", "0", CVAR_CHEAT );			//bot developer mode
@@ -135,7 +135,7 @@ void SVT3_BotInitCvars() {
 		Cvar_Get( "bot_nochat", "1", 0 );					//disable chats
 		Cvar_Get( "bot_rocketjump", "0", 0 );				//enable rocket jumping
 		Cvar_Get( "bot_norcd", "0", 0 );					//enable creation of RCD file
-	} else   {
+	} else {
 		Cvar_Get( "bot_thinktime", "100", CVAR_CHEAT );		//msec the bots thinks
 		Cvar_Get( "bot_nochat", "0", 0 );					//disable chats
 		Cvar_Get( "bot_rocketjump", "1", 0 );				//enable rocket jumping
@@ -232,11 +232,11 @@ void SVT3_BotFrame( int time ) {
 	}
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_BotFrame( time );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_BotFrame( time );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_BotFrame( time );
-	} else   {
+	} else {
 		SVQ3_BotFrame( time );
 	}
 }

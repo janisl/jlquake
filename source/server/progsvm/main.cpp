@@ -76,10 +76,10 @@ const char* ED_NewString( const char* string ) {
 			i++;
 			if ( string[ i ] == 'n' ) {
 				*new_p++ = '\n';
-			} else   {
+			} else {
 				*new_p++ = '\\';
 			}
-		} else   {
+		} else {
 			*new_p++ = string[ i ];
 		}
 	}
@@ -240,7 +240,7 @@ const char* PR_GlobalString( int ofs ) {
 	if ( !def ) {
 		//	"" is to shut up trigraph warnings
 		sprintf( line,"%i(??" "?)", ofs );
-	} else   {
+	} else {
 		const char* s = PR_ValueString( ( etype_t )def->type, ( eval_t* )val );
 		sprintf( line,"%i(%s)%s", ofs, PR_GetString( def->s_name ), s );
 	}
@@ -261,7 +261,7 @@ const char* PR_GlobalStringNoContents( int ofs ) {
 	if ( !def ) {
 		//	"" is to shut up trigraph warnings
 		sprintf( line,"%i(??" "?)", ofs );
-	} else   {
+	} else {
 		sprintf( line,"%i(%s)", ofs, PR_GetString( def->s_name ) );
 	}
 
@@ -618,7 +618,7 @@ static void GetHexen2ProgsName( char* finalprogname ) {
 		if ( !String::ICmp( token, sv.name ) ) {
 			token = String::Parse2( &p );
 			String::Cpy( finalprogname, token );
-		} else   {
+		} else {
 			token = String::Parse2( &p );
 		}
 	}
@@ -629,7 +629,7 @@ void PR_LoadProgs() {
 		if ( GGameType & GAME_HexenWorld ) {
 			PRHW_InitBuiltins();
 			PR_LoadProgsFile( "hwprogs.dat", HWPROGHEADER_CRC );
-		} else   {
+		} else {
 			PRH2_InitBuiltins();
 			char finalprogname[ MAX_OSPATH ];
 			GetHexen2ProgsName( finalprogname );
@@ -641,11 +641,11 @@ void PR_LoadProgs() {
 				*pr_globalVars.cl_playerclass = Cvar_VariableValue( "_cl_playerclass" );
 			}
 		}
-	} else   {
+	} else {
 		if ( GGameType & GAME_QuakeWorld ) {
 			PRQW_InitBuiltins();
 			PR_LoadProgsFile( "qwprogs.dat", QWPROGHEADER_CRC );
-		} else   {
+		} else {
 			PRQ1_InitBuiltins();
 			PR_LoadProgsFile( "progs.dat", Q1PROGHEADER_CRC );
 		}

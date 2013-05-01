@@ -717,7 +717,7 @@ static void SVH2_SendEffect( QMsg* sb, int index ) {
 	bool DoTest;
 	if ( sb == &sv.qh_reliable_datagram && sv_ce_scale->value > 0 ) {
 		DoTest = true;
-	} else   {
+	} else {
 		DoTest = false;
 	}
 
@@ -728,7 +728,7 @@ static void SVH2_SendEffect( QMsg* sb, int index ) {
 	int count;
 	if ( !DoTest ) {
 		count = 1;
-	} else   {
+	} else {
 		count = svs.qh_maxclients;
 		TestDistance = ( float )TestDistance * sv_ce_scale->value;
 		TestDistance *= TestDistance;
@@ -749,7 +749,7 @@ static void SVH2_SendEffect( QMsg* sb, int index ) {
 				if ( sv_ce_max_size->value > 0 && sb->cursize > sv_ce_max_size->value ) {
 					continue;
 				}
-			} else   {
+			} else {
 				continue;
 			}
 		}
@@ -762,7 +762,7 @@ void SVHW_SendEffect( QMsg* sb, int index ) {
 	bool DoTest;
 	if ( ( GGameType & GAME_HexenWorld || sb == &sv.qh_reliable_datagram ) && sv_ce_scale->value > 0 ) {
 		DoTest = true;
-	} else   {
+	} else {
 		DoTest = false;
 	}
 
@@ -774,10 +774,10 @@ void SVHW_SendEffect( QMsg* sb, int index ) {
 	if ( sb ) {
 		sb->WriteData( sv.multicast._data, sv.multicast.cursize );
 		sv.multicast.Clear();
-	} else   {
+	} else {
 		if ( DoTest ) {
 			SVQH_Multicast( TestO, MULTICAST_PVS_R );
-		} else   {
+		} else {
 			SVQH_Multicast( TestO, MULTICAST_ALL_R );
 		}
 		sv.h2_Effects[ index ].client_list = clients_multicast;
@@ -964,7 +964,7 @@ static void SVHW_ParseEffectXBowShoot( int index ) {
 	sv.h2_Effects[ index ].Xbow.turnedbolts = 0;
 	if ( sv.h2_Effects[ index ].Xbow.bolts == 3 ) {
 		sv.h2_Effects[ index ].Xbow.activebolts = 7;
-	} else   {
+	} else {
 		sv.h2_Effects[ index ].Xbow.activebolts = 31;
 	}
 	sv.h2_Effects[ index ].expire_time = sv.qh_time + 15000;
@@ -1209,7 +1209,7 @@ void SVH2_ParseEffect( QMsg* sb ) {
 	if ( GGameType & GAME_HexenWorld ) {
 		SVHW_ParseEffectDetails( index );
 		SVHW_SendEffect( sb,index );
-	} else   {
+	} else {
 		SVH2_ParseEffectDetails( index );
 		SVH2_SendEffect( sb,index );
 	}

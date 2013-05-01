@@ -47,13 +47,13 @@ static void Action_Draw( menuaction_s* a ) {
 	if ( a->generic.flags & QMF_LEFT_JUSTIFY ) {
 		if ( a->generic.flags & QMF_GRAYED ) {
 			Menu_DrawStringDark( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
-		} else   {
+		} else {
 			UI_DrawString( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
 		}
-	} else   {
+	} else {
 		if ( a->generic.flags & QMF_GRAYED ) {
 			Menu_DrawStringR2LDark( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
-		} else   {
+		} else {
 			Menu_DrawStringR2L( a->generic.x + a->generic.parent->x + LCOLUMN_OFFSET, a->generic.y + a->generic.parent->y, a->generic.name );
 		}
 	}
@@ -112,7 +112,7 @@ static void Slider_DoSlide( menuslider_s* s, int dir ) {
 
 	if ( s->curvalue > s->maxvalue ) {
 		s->curvalue = s->maxvalue;
-	} else if ( s->curvalue < s->minvalue )     {
+	} else if ( s->curvalue < s->minvalue ) {
 		s->curvalue = s->minvalue;
 	}
 
@@ -150,7 +150,7 @@ static void SpinControl_DoSlide( menulist_s* s, int dir ) {
 
 	if ( s->curvalue < 0 ) {
 		s->curvalue = 0;
-	} else if ( s->itemnames[ s->curvalue ] == 0 )       {
+	} else if ( s->itemnames[ s->curvalue ] == 0 ) {
 		s->curvalue--;
 	}
 
@@ -169,7 +169,7 @@ static void SpinControl_Draw( menulist_s* s ) {
 	}
 	if ( !strchr( s->itemnames[ s->curvalue ], '\n' ) ) {
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, s->itemnames[ s->curvalue ] );
-	} else   {
+	} else {
 		String::Cpy( buffer, s->itemnames[ s->curvalue ] );
 		*strchr( buffer, '\n' ) = 0;
 		UI_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
@@ -230,7 +230,7 @@ void Menu_AdjustCursor( menuframework_s* m, int dir ) {
 				m->cursor = 0;
 			}
 		}
-	} else   {
+	} else {
 		while ( 1 ) {
 			citem = ( menucommon_s* )Menu_ItemAtCursor( m );
 			if ( citem ) {
@@ -263,7 +263,7 @@ static void Menu_DrawStatusBar( const char* string ) {
 
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 4 );
 		UI_DrawString( col * 8, VID_HEIGHT - 8, string );
-	} else   {
+	} else {
 		UI_FillPal( 0, VID_HEIGHT - 8, VID_WIDTH, 8, 0 );
 	}
 }
@@ -299,12 +299,12 @@ void Menu_Draw( menuframework_s* menu ) {
 
 	if ( item && item->cursordraw ) {
 		item->cursordraw( item );
-	} else if ( menu->cursordraw )     {
+	} else if ( menu->cursordraw ) {
 		menu->cursordraw( menu );
-	} else if ( item && item->type != MTYPE_FIELD )     {
+	} else if ( item && item->type != MTYPE_FIELD ) {
 		if ( item->flags & QMF_LEFT_JUSTIFY ) {
 			UI_DrawChar( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int )( Sys_Milliseconds() / 250 ) & 1 ) );
-		} else   {
+		} else {
 			UI_DrawChar( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int )( Sys_Milliseconds() / 250 ) & 1 ) );
 		}
 	}
@@ -312,12 +312,12 @@ void Menu_Draw( menuframework_s* menu ) {
 	if ( item ) {
 		if ( item->statusbarfunc ) {
 			item->statusbarfunc( ( void* )item );
-		} else if ( item->statusbar )     {
+		} else if ( item->statusbar ) {
 			Menu_DrawStatusBar( item->statusbar );
-		} else   {
+		} else {
 			Menu_DrawStatusBar( menu->statusbar );
 		}
-	} else   {
+	} else {
 		Menu_DrawStatusBar( menu->statusbar );
 	}
 }

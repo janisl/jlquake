@@ -166,7 +166,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 	// Get video mode list
 	if ( !XF86VidModeQueryVersion( dpy, &vidmode_MajorVersion, &vidmode_MinorVersion ) ) {
 		vidmode_ext = false;
-	} else   {
+	} else {
 		common->Printf( "Using XFree86-VidModeExtension Version %d.%d\n", vidmode_MajorVersion, vidmode_MinorVersion );
 		vidmode_ext = true;
 	}
@@ -179,7 +179,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			// unable to query, probalby not supported
 			common->Printf( "Failed to detect XF86DGA Mouse\n" );
 			Cvar_Set( "in_dgamouse", "0" );
-		} else   {
+		} else {
 			common->Printf( "XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion );
 		}
 	}
@@ -225,11 +225,11 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 
 				common->Printf( "XFree86-VidModeExtension Activated at %dx%d\n",
 					actualWidth, actualHeight );
-			} else   {
+			} else {
 				fullscreen = 0;
 				common->Printf( "XFree86-VidModeExtension: No acceptable modes found\n" );
 			}
-		} else   {
+		} else {
 			common->Printf( "XFree86-VidModeExtension:  Ignored on non-fullscreen\n" );
 		}
 	}
@@ -257,14 +257,14 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			case 1:
 				if ( depthbits == 24 ) {
 					depthbits = 16;
-				} else if ( depthbits == 16 )     {
+				} else if ( depthbits == 16 ) {
 					depthbits = 8;
 				}
 				break;
 			case 3:
 				if ( stencilbits == 24 ) {
 					stencilbits = 16;
-				} else if ( stencilbits == 16 )     {
+				} else if ( stencilbits == 16 ) {
 					stencilbits = 8;
 				}
 				break;
@@ -286,7 +286,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			// reduce depthbits
 			if ( tdepthbits == 24 ) {
 				tdepthbits = 16;
-			} else if ( tdepthbits == 16 )     {
+			} else if ( tdepthbits == 16 ) {
 				tdepthbits = 8;
 			}
 		}
@@ -295,9 +295,9 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			// reduce stencilbits
 			if ( tstencilbits == 24 ) {
 				tstencilbits = 16;
-			} else if ( tstencilbits == 16 )     {
+			} else if ( tstencilbits == 16 ) {
 				tstencilbits = 8;
-			} else   {
+			} else {
 				tstencilbits = 0;
 			}
 		}
@@ -328,7 +328,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			attrib[ ATTR_RED_IDX ] = 8;
 			attrib[ ATTR_GREEN_IDX ] = 8;
 			attrib[ ATTR_BLUE_IDX ] = 8;
-		} else   {
+		} else {
 			// must be 16 bit
 			attrib[ ATTR_RED_IDX ] = 4;
 			attrib[ ATTR_GREEN_IDX ] = 4;
@@ -371,7 +371,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 		attr.override_redirect = True;
 		attr.backing_store = NotUseful;
 		attr.save_under = False;
-	} else   {
+	} else {
 		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 	}
 
@@ -422,7 +422,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 		if ( vidmode_MajorVersion < GAMMA_MINMAJOR ||
 			 ( vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR ) ) {
 			common->Printf( "XF86 Gamma extension not supported in this version\n" );
-		} else   {
+		} else {
 			XF86VidModeGetGamma( dpy, scrnum, &vidmode_InitialGamma );
 			common->Printf( "XF86 Gamma extension initialized\n" );
 			glConfig.deviceSupportsGamma = true;
@@ -442,7 +442,7 @@ rserr_t GLimp_SetMode( int mode, int colorbits, bool fullscreen ) {
 			common->Printf( "***********************************************************\n" );
 			GLimp_Shutdown();
 			return RSERR_INVALID_MODE;
-		} else   {
+		} else {
 			common->Printf( "...using software Mesa (r_allowSoftwareGL==1).\n" );
 		}
 	}

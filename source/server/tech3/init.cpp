@@ -149,9 +149,9 @@ static void SVT3_SendConfigStringToClients( int index ) {
 					const char* cmd;
 					if ( sent == 0 ) {
 						cmd = "bcs0";
-					} else if ( remaining < maxChunkSize )     {
+					} else if ( remaining < maxChunkSize ) {
 						cmd = "bcs2";
-					} else   {
+					} else {
 						cmd = "bcs1";
 					}
 					char buf[ MAX_STRING_CHARS ];
@@ -162,7 +162,7 @@ static void SVT3_SendConfigStringToClients( int index ) {
 					sent += ( maxChunkSize - 1 );
 					remaining -= ( maxChunkSize - 1 );
 				}
-			} else   {
+			} else {
 				// standard cs, just send it
 				SVT3_SendServerCommand( client, "cs %i \"%s\"\n", index, val );
 			}
@@ -192,7 +192,7 @@ void SVT3_SetConfigstring( int index, const char* val ) {
 
 	if ( GGameType & GAME_ET ) {
 		sv.et_configstringsmodified[ index ] = true;
-	} else   {
+	} else {
 		SVT3_SendConfigStringToClients( index );
 	}
 }
@@ -287,13 +287,13 @@ static void SVT3_CreateBaseline() {
 		if ( GGameType & GAME_WolfSP ) {
 			wssharedEntity_t* svent = SVWS_GentityNum( entnum );
 			sv.q3_svEntities[ entnum ].ws_baseline = svent->s;
-		} else if ( GGameType & GAME_WolfMP )     {
+		} else if ( GGameType & GAME_WolfMP ) {
 			wmsharedEntity_t* svent = SVWM_GentityNum( entnum );
 			sv.q3_svEntities[ entnum ].wm_baseline = svent->s;
-		} else if ( GGameType & GAME_ET )     {
+		} else if ( GGameType & GAME_ET ) {
 			etsharedEntity_t* svent = SVET_GentityNum( entnum );
 			sv.q3_svEntities[ entnum ].et_baseline = svent->s;
-		} else   {
+		} else {
 			q3sharedEntity_t* svent = SVQ3_GentityNum( entnum );
 			sv.q3_svEntities[ entnum ].q3_baseline = svent->s;
 		}
@@ -398,7 +398,7 @@ static void SVT3_Startup() {
 	svs.clients = ( client_t* )Mem_ClearedAlloc( sizeof ( client_t ) * sv_maxclients->integer );
 	if ( com_dedicated->integer ) {
 		svs.q3_numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
-	} else   {
+	} else {
 		// we don't need nearly as many when playing locally
 		svs.q3_numSnapshotEntities = sv_maxclients->integer * 4 * 64;
 	}
@@ -444,7 +444,7 @@ static void SVT3_ChangeMaxClients() {
 	for ( i = 0; i < count; i++ ) {
 		if ( svs.clients[ i ].state >= CS_CONNECTED ) {
 			oldClients[ i ] = svs.clients[ i ];
-		} else   {
+		} else {
 			Com_Memset( &oldClients[ i ], 0, sizeof ( client_t ) );
 		}
 	}
@@ -469,7 +469,7 @@ static void SVT3_ChangeMaxClients() {
 	// allocate new snapshot entities
 	if ( com_dedicated->integer ) {
 		svs.q3_numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP_Q3 * 64;
-	} else   {
+	} else {
 		// we don't need nearly as many when playing locally
 		svs.q3_numSnapshotEntities = sv_maxclients->integer * 4 * 64;
 	}
@@ -481,7 +481,7 @@ static void SVT3_ChangeMaxClients() {
 				// must be an AI slot
 				SVWS_InitReliableCommandsForClient( &svs.clients[ i ], 0 );
 			}
-		} else   {
+		} else {
 			for ( i = oldMaxClients; i < sv_maxclients->integer; i++ ) {
 				SVWS_InitReliableCommandsForClient( &svs.clients[ i ], MAX_RELIABLE_COMMANDS_WOLF );
 			}
@@ -547,7 +547,7 @@ static void SVT3_TouchCGameDLL() {
 	FS_FOpenFileRead_Filtered( filename, &f, false, FS_EXCLUDE_DIR );
 	if ( f ) {
 		FS_FCloseFile( f );
-	} else if ( GGameType & GAME_ET && svt3_pure->integer )     {	// ydnar: so we can work the damn game
+	} else if ( GGameType & GAME_ET && svt3_pure->integer ) {	// ydnar: so we can work the damn game
 		common->Error( "Failed to locate cgame DLL for pure server mode" );
 	}
 }
@@ -636,7 +636,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 	// init client structures and svs.q3_numSnapshotEntities
 	if ( !Cvar_VariableValue( "sv_running" ) ) {
 		SVT3_Startup();
-	} else   {
+	} else {
 		// check for maxclients change
 		if ( sv_maxclients->modified ) {
 			SVT3_ChangeMaxClients();
@@ -668,7 +668,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 
 		// allocate the snapshot entities on the hunk
 		svs.q3_snapshotEntities = ( q3entityState_t* )Mem_ClearedAlloc( sizeof ( q3entityState_t ) * svs.q3_numSnapshotEntities );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		for ( int i = 0; i < MAX_GENTITIES_Q3; i++ ) {
 			sv.q3_entities[ i ] = new idWolfSPEntity();
 		}
@@ -678,7 +678,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 
 		// allocate the snapshot entities on the hunk
 		svs.ws_snapshotEntities = ( wsentityState_t* )Mem_ClearedAlloc( sizeof ( wsentityState_t ) * svs.q3_numSnapshotEntities );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		for ( int i = 0; i < MAX_GENTITIES_Q3; i++ ) {
 			sv.q3_entities[ i ] = new idWolfMPEntity();
 		}
@@ -688,7 +688,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 
 		// allocate the snapshot entities on the hunk
 		svs.wm_snapshotEntities = ( wmentityState_t* )Mem_ClearedAlloc( sizeof ( wmentityState_t ) * svs.q3_numSnapshotEntities );
-	} else   {
+	} else {
 		for ( int i = 0; i < MAX_GENTITIES_Q3; i++ ) {
 			sv.q3_entities[ i ] = new idETEntity();
 		}
@@ -777,7 +777,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 					continue;
 				}
 				isBot = true;
-			} else   {
+			} else {
 				isBot = false;
 			}
 
@@ -787,23 +787,23 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 				// this generally shouldn't happen, because the client
 				// was connected before the level change
 				SVT3_DropClient( &svs.clients[ i ], denied );
-			} else   {
+			} else {
 				if ( !isBot ) {
 					// when we get the next packet from a connected client,
 					// the new gamestate will be sent
 					svs.clients[ i ].state = CS_CONNECTED;
-				} else   {
+				} else {
 					client_t* client = &svs.clients[ i ];
 					client->state = CS_ACTIVE;
 					idEntity3* ent = SVT3_EntityNum( i );
 					ent->SetNumber( i );
 					if ( GGameType & GAME_Quake3 ) {
 						client->q3_gentity = SVQ3_GentityNum( i );
-					} else if ( GGameType & GAME_WolfSP )     {
+					} else if ( GGameType & GAME_WolfSP ) {
 						client->ws_gentity = SVWS_GentityNum( i );
-					} else if ( GGameType & GAME_WolfMP )     {
+					} else if ( GGameType & GAME_WolfMP ) {
 						client->wm_gentity = SVWM_GentityNum( i );
-					} else   {
+					} else {
 						client->et_gentity = SVET_GentityNum( i );
 					}
 					client->q3_entity = ent;
@@ -838,7 +838,7 @@ void SVT3_SpawnServer( const char* server, bool killBots ) {
 		if ( GGameType & ( GAME_Quake3 | GAME_WolfSP ) && com_dedicated->integer ) {
 			SVT3_TouchCGame();
 		}
-	} else   {
+	} else {
 		Cvar_Set( "sv_paks", "" );
 		Cvar_Set( "sv_pakNames", "" );
 	}
@@ -939,7 +939,7 @@ void SVT3_Init() {
 	if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 		Cvar_Get( "dmflags", "0", 0 );
 		Cvar_Get( "fraglimit", "0", 0 );
-	} else   {
+	} else {
 		Cvar_Get( "dmflags", "0", CVAR_SERVERINFO );
 		Cvar_Get( "fraglimit", "20", CVAR_SERVERINFO );
 	}
@@ -947,9 +947,9 @@ void SVT3_Init() {
 	if ( GGameType & GAME_WolfMP ) {
 		// DHM - Nerve :: default to WMGT_WOLF
 		svt3_gametype = Cvar_Get( "g_gametype", "5", CVAR_SERVERINFO | CVAR_LATCH2 );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		svt3_gametype = Cvar_Get( "g_gametype", va( "%i", comet_gameInfo.defaultGameType ), CVAR_SERVERINFO | CVAR_LATCH2 );
-	} else   {
+	} else {
 		svt3_gametype = Cvar_Get( "g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH2 );
 	}
 	if ( GGameType & GAME_WolfSP ) {
@@ -961,25 +961,25 @@ void SVT3_Init() {
 	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
 	if ( GGameType & GAME_Quake3 ) {
 		Cvar_Get( "protocol", va( "%i", Q3PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ROM );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		Cvar_Get( "protocol", va( "%i", WSPROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ROM );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		Cvar_Get( "protocol", va( "%i", WMPROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ROM );
-	} else   {
+	} else {
 		Cvar_Get( "protocol", va( "%i", ETPROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ROM );
 	}
 	svt3_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	svt3_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	if ( GGameType & GAME_WolfMP ) {
 		sv_hostname = Cvar_Get( "sv_hostname", "WolfHost", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		sv_hostname = Cvar_Get( "sv_hostname", "ETHost", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	} else   {
+	} else {
 		sv_hostname = Cvar_Get( "sv_hostname", "noname", CVAR_SERVERINFO | CVAR_ARCHIVE );
 	}
 	if ( GGameType & ( GAME_WolfMP | GAME_ET ) ) {
 		sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH2 );					// NERVE - SMF - changed to 20 from 8
-	} else   {
+	} else {
 		sv_maxclients = Cvar_Get( "sv_maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH2 );
 	}
 
@@ -1005,7 +1005,7 @@ void SVT3_Init() {
 	if ( GGameType & GAME_WolfSP ) {
 		Cvar_Get( "sv_cheats", "0", CVAR_SYSTEMINFO | CVAR_ROM );
 		svt3_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO );
-	} else   {
+	} else {
 		Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 		svt3_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
 	}
@@ -1021,9 +1021,9 @@ void SVT3_Init() {
 	svt3_fps = Cvar_Get( "sv_fps", "20", CVAR_TEMP );
 	if ( GGameType & GAME_Quake3 ) {
 		svt3_timeout = Cvar_Get( "sv_timeout", "200", CVAR_TEMP );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		svt3_timeout = Cvar_Get( "sv_timeout", "120", CVAR_TEMP );
-	} else   {
+	} else {
 		svt3_timeout = Cvar_Get( "sv_timeout", "240", CVAR_TEMP );
 	}
 	svt3_zombietime = Cvar_Get( "sv_zombietime", "2", CVAR_TEMP );
@@ -1031,18 +1031,18 @@ void SVT3_Init() {
 
 	if ( GGameType & GAME_Quake3 ) {
 		svt3_allowDownload = Cvar_Get( "sv_allowDownload", "0", CVAR_SERVERINFO );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		svt3_allowDownload = Cvar_Get( "sv_allowDownload", "1", 0 );
-	} else   {
+	} else {
 		svt3_allowDownload = Cvar_Get( "sv_allowDownload", "1", CVAR_ARCHIVE );
 	}
 	if ( GGameType & GAME_Quake3 ) {
 		svt3_master[ 0 ] = Cvar_Get( "sv_master1", Q3MASTER_SERVER_NAME, 0 );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		svt3_master[ 0 ] = Cvar_Get( "sv_master1", WSMASTER_SERVER_NAME, 0 );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		svt3_master[ 0 ] = Cvar_Get( "sv_master1", WMMASTER_SERVER_NAME, 0 );			// NERVE - SMF - wolfMP master server
-	} else   {
+	} else {
 		svt3_master[ 0 ] = Cvar_Get( "sv_master1", ETMASTER_SERVER_NAME, 0 );
 	}
 	svt3_master[ 1 ] = Cvar_Get( "sv_master2", "", CVAR_ARCHIVE );

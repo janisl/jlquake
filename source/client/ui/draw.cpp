@@ -200,7 +200,7 @@ void UI_DrawChar( int x, int y, int num ) {
 
 		}
 		UI_DrawCharBase( x, y, num, 8, 8, char_texture, 32, 16 );
-	} else   {
+	} else {
 		num &= 255;
 
 		if ( ( num & 127 ) == 32 ) {
@@ -218,7 +218,7 @@ void UI_DrawString( int x, int y, const char* str, int mask ) {
 		if ( Q_IsColorString( str ) ) {
 			if ( *( str + 1 ) == COLOR_NULL ) {
 				Vector4Set( color, 1, 1, 1, 1 );
-			} else   {
+			} else {
 				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
@@ -235,11 +235,11 @@ void UI_DrawString( int x, int y, const char* str, int mask ) {
 static void UI_SmallCharacter( int x, int y, int num ) {
 	if ( num < 32 ) {
 		num = 0;
-	} else if ( num >= 'a' && num <= 'z' )     {
+	} else if ( num >= 'a' && num <= 'z' ) {
 		num -= 64;
-	} else if ( num > '_' )     {
+	} else if ( num > '_' ) {
 		num = 0;
-	} else   {
+	} else {
 		num -= 32;
 	}
 
@@ -258,7 +258,7 @@ void UI_DrawSmallString( int x, int y, const char* str ) {
 		if ( Q_IsColorString( str ) ) {
 			if ( *( str + 1 ) == COLOR_NULL ) {
 				Vector4Set( color, 1, 1, 1, 1 );
-			} else   {
+			} else {
 				Com_Memcpy( color, g_color_table[ ColorIndex( *( str + 1 ) ) ], sizeof ( color ) );
 			}
 			str += 2;
@@ -364,7 +364,7 @@ void SCR_DrawStringExt( int x, int y, float size, const char* string, float* set
 			if ( !forceColor ) {
 				if ( *( s + 1 ) == COLOR_NULL ) {
 					Com_Memcpy( color, setColor, sizeof ( color ) );
-				} else   {
+				} else {
 					Com_Memcpy( color, g_color_table[ ColorIndex( *( s + 1 ) ) ], sizeof ( color ) );
 					color[ 3 ] = setColor[ 3 ];
 				}
@@ -398,7 +398,7 @@ static void SCR_DrawSmallStringExt( int x, int y, const char* string, float* set
 				vec4_t color;
 				if ( *( s + 1 ) == COLOR_NULL ) {
 					Com_Memcpy( color, setColor, sizeof ( color ) );
-				} else   {
+				} else {
 					Com_Memcpy( color, g_color_table[ ColorIndex( *( s + 1 ) ) ], sizeof ( color ) );
 					color[ 3 ] = setColor[ 3 ];
 				}

@@ -100,7 +100,7 @@ void QClipMap29::LoadMap( const char* AName, const idList<quint8>& Buffer ) {
 
 	if ( GGameType & GAME_Hexen2 ) {
 		LoadSubmodelsH2( mod_base, &header.lumps[ BSP29LUMP_MODELS ] );
-	} else   {
+	} else {
 		LoadSubmodelsQ1( mod_base, &header.lumps[ BSP29LUMP_MODELS ] );
 	}
 
@@ -232,7 +232,7 @@ void QClipMap29::LoadLeafs( const quint8* base, const bsp29_lump_t* l ) {
 		p = LittleLong( in->visofs );
 		if ( p == -1 ) {
 			out->compressed_vis = NULL;
-		} else   {
+		} else {
 			out->compressed_vis = visdata + p;
 		}
 
@@ -286,7 +286,7 @@ void QClipMap29::MakeHull0() {
 			if ( in->children[ j ] < 0 ) {
 				cleaf_t* child = leafs + ( -1 - in->children[ j ] );
 				out->children[ j ] = child->contents;
-			} else   {
+			} else {
 				out->children[ j ] = numclipnodes + in->children[ j ];
 			}
 		}
@@ -335,7 +335,7 @@ void QClipMap29::MakeHulls() {
 			hull->clip_maxs[ 0 ] = 40;
 			hull->clip_maxs[ 1 ] = 40;
 			hull->clip_maxs[ 2 ] = 42;
-		} else   {
+		} else {
 			hull->clip_mins[ 0 ] = -8;
 			hull->clip_mins[ 1 ] = -8;
 			hull->clip_mins[ 2 ] = -8;
@@ -351,7 +351,7 @@ void QClipMap29::MakeHulls() {
 		hull->clip_maxs[ 0 ] = 48;
 		hull->clip_maxs[ 1 ] = 48;
 		hull->clip_maxs[ 2 ] = 50;
-	} else   {
+	} else {
 		hull = &hullsshared[ 2 ];
 		hull->clip_mins[ 0 ] = -32;
 		hull->clip_mins[ 1 ] = -32;

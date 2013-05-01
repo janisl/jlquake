@@ -81,7 +81,7 @@ h2entity_state_t* CLH2_FindState( int entityNumber ) {
 	if ( entityNumber >= 1 && entityNumber <= MAX_CLIENTS_QHW ) {
 		if ( entityNumber == cl.viewentity ) {
 			VectorCopy( cl.qh_simorg, pretend_player.origin );
-		} else   {
+		} else {
 			VectorCopy( cl.hw_frames[ clc.netchan.incomingSequence & UPDATE_MASK_HW ].playerstate[ entityNumber - 1 ].origin, pretend_player.origin );
 		}
 		return &pretend_player;
@@ -115,13 +115,13 @@ static void CLH2_ParseSpikeCommon( QMsg& message, int count ) {
 	CLH2_RunParticleEffect( pos, vec3_origin, count );
 	if ( rand() % 5 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_tink1, 1, 1 );
-	} else   {
+	} else {
 		int rnd = rand() & 3;
 		if ( rnd == 1 ) {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric1, 1, 1 );
-		} else if ( rnd == 2 )     {
+		} else if ( rnd == 2 ) {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric2, 1, 1 );
-		} else   {
+		} else {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric3, 1, 1 );
 		}
 	}
@@ -206,9 +206,9 @@ static void CLHW_ParseBoneRic( QMsg& message ) {
 	int rnd = rand() % 100;
 	if ( rnd > 95 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric1, 1, 1 );
-	} else if ( rnd > 91 )     {
+	} else if ( rnd > 91 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric2, 1, 1 );
-	} else if ( rnd > 87 )     {
+	} else if ( rnd > 87 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_ric3, 1, 1 );
 	}
 }
@@ -274,7 +274,7 @@ static void CLHW_ParseLightningHammer( QMsg& message ) {
 	if ( state ) {
 		if ( rand() & 1 ) {
 			S_StartSound( state->origin, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning1, 1, 1 );
-		} else   {
+		} else {
 			S_StartSound( state->origin, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning2, 1, 1 );
 		}
 
@@ -305,7 +305,7 @@ static void CLHW_ParseSwordExplosion( QMsg& message ) {
 	if ( state ) {
 		if ( rand() & 1 ) {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning1, 1, 1 );
-		} else   {
+		} else {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning2, 1, 1 );
 		}
 
@@ -357,7 +357,7 @@ static void CLHW_ParseCubeBeam( QMsg& message ) {
 		vec3_t source;
 		if ( state ) {
 			VectorCopy( state->origin, source );
-		} else   {	//don't know where the damn cube is--prolly won't see beam anyway then, so put it all at the target
+		} else {	//don't know where the damn cube is--prolly won't see beam anyway then, so put it all at the target
 			VectorCopy( state2->origin, source );
 			source[ 2 ] += 10;
 		}
@@ -366,7 +366,7 @@ static void CLHW_ParseCubeBeam( QMsg& message ) {
 		if ( state2 ) {
 			VectorCopy( state2->origin, dest );		//in case they're both valid, copy me again
 			dest[ 2 ] += 30;
-		} else   {	//don't know where the damn victim is--prolly won't see beam anyway then, so put it all at the cube
+		} else {	//don't know where the damn victim is--prolly won't see beam anyway then, so put it all at the cube
 			VectorCopy( source, dest );
 			dest[ 2 ] += 10;
 		}
@@ -386,7 +386,7 @@ static void CLHW_ParseLightningExplode( QMsg& message ) {
 
 	if ( rand() & 1 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning1, 1, 1 );
-	} else   {
+	} else {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_lightning2, 1, 1 );
 	}
 

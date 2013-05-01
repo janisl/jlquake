@@ -98,12 +98,12 @@ static void PR_PrintStatement( const dstatement_t* s ) {
 
 	if ( s->op == OP_IF || s->op == OP_IFNOT ) {
 		common->Printf( "%sbranch %i", PR_GlobalString( s->a ), s->b );
-	} else if ( s->op == OP_GOTO )     {
+	} else if ( s->op == OP_GOTO ) {
 		common->Printf( "branch %i", s->a );
-	} else if ( ( unsigned )( s->op - OP_STORE_F ) < 6 )         {
+	} else if ( ( unsigned )( s->op - OP_STORE_F ) < 6 ) {
 		common->Printf( "%s", PR_GlobalString( s->a ) );
 		common->Printf( "%s", PR_GlobalStringNoContents( s->b ) );
-	} else   {
+	} else {
 		if ( s->a ) {
 			common->Printf( "%s", PR_GlobalString( s->a ) );
 		}
@@ -128,7 +128,7 @@ static void PR_StackTrace() {
 		dfunction_t* f = pr_stack[ i ].f;
 		if ( !f ) {
 			common->Printf( "<NO FUNCTION>\n" );
-		} else   {
+		} else {
 			common->Printf( "%12s : %s\n", PR_GetString( f->s_file ), PR_GetString( f->s_name ) );
 		}
 	}
@@ -750,7 +750,7 @@ void PR_ExecuteProgram( func_t fnum ) {
 			if ( a->_float < b->_float ) {
 				val = a->_float + ( rand() * ( 1.0 / RAND_MAX )
 									* ( b->_float - a->_float ) );
-			} else   {
+			} else {
 				val = b->_float + ( rand() * ( 1.0 / RAND_MAX )
 									* ( a->_float - b->_float ) );
 			}
@@ -783,7 +783,7 @@ void PR_ExecuteProgram( func_t fnum ) {
 				if ( a->vector[ i ] < b->vector[ i ] ) {
 					val = a->vector[ i ] + ( rand() * ( 1.0 / RAND_MAX )
 											 * ( b->vector[ i ] - a->vector[ i ] ) );
-				} else   {
+				} else {
 					val = b->vector[ i ] + ( rand() * ( 1.0 / RAND_MAX )
 											 * ( a->vector[ i ] - b->vector[ i ] ) );
 				}
@@ -851,14 +851,14 @@ void PR_Profile_f() {
 		const char* s = Cmd_Argv( i );
 		if ( String::ToLower( *s ) == 'h' ) {	// Sort by HC source file
 			byHC = true;
-		} else if ( String::ToLower( *s ) == 's' )       {	// Save to file
+		} else if ( String::ToLower( *s ) == 's' ) {	// Save to file
 			if ( i + 1 < Cmd_Argc() && !String::IsDigit( *Cmd_Argv( i + 1 ) ) ) {
 				i++;
 				sprintf( saveName, "%s", Cmd_Argv( i ) );
-			} else   {
+			} else {
 				String::Cpy( saveName, "profile.txt" );
 			}
-		} else if ( String::IsDigit( *s ) )       {	// Specify function count
+		} else if ( String::IsDigit( *s ) ) {	// Specify function count
 			funcCount = String::Atoi( Cmd_Argv( i ) );
 			if ( funcCount < 1 ) {
 				funcCount = 1;
@@ -899,7 +899,7 @@ void PR_Profile_f() {
 						FS_Printf( saveFile, "%05.2f %s\n",
 							( ( float )bestFunc->profile / ( float )total ) * 100.0,
 							PR_GetString( bestFunc->s_name ) );
-					} else   {
+					} else {
 						common->Printf( "%05.2f %s\n",
 							( ( float )bestFunc->profile / ( float )total ) * 100.0,
 							PR_GetString( bestFunc->s_name ) );
@@ -934,7 +934,7 @@ void PR_Profile_f() {
 		if ( tally && currentFile != MAX_QINT32 ) {
 			if ( *saveName ) {
 				FS_Printf( saveFile, "\"%s\"\n", PR_GetString( currentFile ) );
-			} else   {
+			} else {
 				common->Printf( "\"%s\"\n", PR_GetString( currentFile ) );
 			}
 			int j = 0;
@@ -956,7 +956,7 @@ void PR_Profile_f() {
 								( ( float )bestFunc->profile
 								  / ( float )total ) * 100.0,
 								PR_GetString( bestFunc->s_name ) );
-						} else   {
+						} else {
 							common->Printf( "   %05.2f %s\n",
 								( ( float )bestFunc->profile
 								  / ( float )total ) * 100.0,

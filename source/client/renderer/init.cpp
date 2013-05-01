@@ -259,7 +259,7 @@ static void AssertCvarRange( Cvar* cv, float minVal, float maxVal, bool shouldBe
 	if ( cv->value < minVal ) {
 		common->Printf( S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
 		Cvar_Set( cv->name, va( "%f", minVal ) );
-	} else if ( cv->value > maxVal )     {
+	} else if ( cv->value > maxVal ) {
 		common->Printf( S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
 		Cvar_Set( cv->name, va( "%f", maxVal ) );
 	}
@@ -303,12 +303,12 @@ static void GfxInfo_f() {
 	common->Printf( "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[ r_fullscreen->integer == 1 ] );
 	if ( glConfig.displayFrequency ) {
 		common->Printf( "%d\n", glConfig.displayFrequency );
-	} else   {
+	} else {
 		common->Printf( "N/A\n" );
 	}
 	if ( glConfig.deviceSupportsGamma ) {
 		common->Printf( "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
-	} else   {
+	} else {
 		common->Printf( "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
 	}
 
@@ -319,17 +319,17 @@ static void GfxInfo_f() {
 	if ( primitives == 0 ) {
 		if ( qglLockArraysEXT ) {
 			primitives = 2;
-		} else   {
+		} else {
 			primitives = 1;
 		}
 	}
 	if ( primitives == -1 ) {
 		common->Printf( "none\n" );
-	} else if ( primitives == 2 )     {
+	} else if ( primitives == 2 ) {
 		common->Printf( "single glDrawElements\n" );
-	} else if ( primitives == 1 )     {
+	} else if ( primitives == 1 ) {
 		common->Printf( "multiple glArrayElement\n" );
-	} else if ( primitives == 3 )     {
+	} else if ( primitives == 3 ) {
 		common->Printf( "multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n" );
 	}
 
@@ -447,7 +447,7 @@ static void R_Register() {
 	r_modulate = Cvar_Get( "r_modulate", "1", CVAR_ARCHIVE );
 	if ( GGameType & GAME_Tech3 ) {
 		r_shadows = Cvar_Get( "cg_shadows", "1", 0 );
-	} else   {
+	} else {
 		r_shadows = Cvar_Get( "r_shadows", "0", CVAR_ARCHIVE );
 	}
 	r_lodbias = Cvar_Get( "r_lodbias", "0", CVAR_ARCHIVE );
@@ -655,7 +655,7 @@ static void InitOpenGLSubsystem() {
 	//	Load palette used by 8-bit graphics files.
 	if ( GGameType & GAME_QuakeHexen ) {
 		R_InitQ1Palette();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		R_InitQ2Palette();
 	}
 }
@@ -760,7 +760,7 @@ static void InitOpenGL() {
 
 		// print info
 		GfxInfo_f();
-	} else   {
+	} else {
 		// init command buffers and SMP
 		R_InitCommandBuffers();
 	}
@@ -782,10 +782,10 @@ static void R_InitFunctionTables() {
 		if ( i < FUNCTABLE_SIZE / 2 ) {
 			if ( i < FUNCTABLE_SIZE / 4 ) {
 				tr.triangleTable[ i ] = ( float )i / ( FUNCTABLE_SIZE / 4 );
-			} else   {
+			} else {
 				tr.triangleTable[ i ] = 1.0f - tr.triangleTable[ i - FUNCTABLE_SIZE / 4 ];
 			}
-		} else   {
+		} else {
 			tr.triangleTable[ i ] = -tr.triangleTable[ i - FUNCTABLE_SIZE / 2 ];
 		}
 	}

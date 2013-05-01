@@ -59,7 +59,7 @@ void R_ToggleSmpFrame() {
 		// use the other buffers next frame, because another CPU
 		// may still be rendering into the current ones
 		tr.smpFrame ^= 1;
-	} else   {
+	} else {
 		tr.smpFrame = 0;
 	}
 
@@ -195,9 +195,9 @@ void R_AddLightToScene( const vec3_t org, float intensity, float r, float g, flo
 
 	if ( overdraw == 10 ) {		// sorry, hijacking 10 for a quick hack (SA)
 		dl->shader = R_GetShaderByHandle( R_RegisterShader( "negdlightshader" ) );
-	} else if ( overdraw == 11 )     {	// 11 is flames
+	} else if ( overdraw == 11 ) {	// 11 is flames
 		dl->shader = R_GetShaderByHandle( R_RegisterShader( "flamedlightshader" ) );
-	} else   {
+	} else {
 		dl->overdraw = overdraw;
 	}
 }
@@ -294,7 +294,7 @@ void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts,
 		// see if it is in a fog volume
 		else if ( tr.world->numfogs == 1 ) {
 			fogIndex = 0;
-		} else   {
+		} else {
 			// find which fog volume the poly is in
 			vec3_t bounds[ 2 ];
 			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 0 ] );
@@ -398,13 +398,13 @@ static void R_SetLightLevel() {
 	if ( shadelight[ 0 ] > shadelight[ 1 ] ) {
 		if ( shadelight[ 0 ] > shadelight[ 2 ] ) {
 			r_lightlevel->value = 150 * shadelight[ 0 ];
-		} else   {
+		} else {
 			r_lightlevel->value = 150 * shadelight[ 2 ];
 		}
-	} else   {
+	} else {
 		if ( shadelight[ 1 ] > shadelight[ 2 ] ) {
 			r_lightlevel->value = 150 * shadelight[ 1 ];
-		} else   {
+		} else {
 			r_lightlevel->value = 150 * shadelight[ 2 ];
 		}
 	}
@@ -451,7 +451,7 @@ void R_RenderScene( const refdef_t* fd ) {
 
 	if ( fd->rdflags & RDF_DRAWSKYBOX ) {
 		drawskyboxportal = 1;
-	} else   {
+	} else {
 		drawskyboxportal = 0;
 	}
 
@@ -548,7 +548,7 @@ void R_RenderScene( const refdef_t* fd ) {
 
 	if ( GGameType & GAME_QuakeHexen ) {
 		R_PushDlightsQ1();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		R_PushDlightsQ2();
 	}
 
@@ -596,7 +596,7 @@ void R_SetGlobalFog( bool restore, int duration, float r, float g, float b, floa
 
 			tr.world->globalFogTransStartTime = tr.refdef.time;
 			tr.world->globalFogTransEndTime = tr.refdef.time + duration;
-		} else   {
+		} else {
 			VectorCopy( tr.world->globalOriginalFog, tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color );
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.colorInt = ColorBytes4( tr.world->globalOriginalFog[ 0 ] * tr.identityLight,
 				tr.world->globalOriginalFog[ 1 ] * tr.identityLight,
@@ -604,7 +604,7 @@ void R_SetGlobalFog( bool restore, int duration, float r, float g, float b, floa
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque = tr.world->globalOriginalFog[ 3 ];
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.tcScale = 1.0f / ( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque );
 		}
-	} else   {
+	} else {
 		if ( duration > 0 ) {
 			VectorCopy( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, tr.world->globalTransStartFog );
 			tr.world->globalTransStartFog[ 3 ] = tr.world->fogs[ tr.world->globalFog ].shader->fogParms.depthForOpaque;
@@ -614,7 +614,7 @@ void R_SetGlobalFog( bool restore, int duration, float r, float g, float b, floa
 
 			tr.world->globalFogTransStartTime = tr.refdef.time;
 			tr.world->globalFogTransEndTime = tr.refdef.time + duration;
-		} else   {
+		} else {
 			VectorSet( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color, r, g, b );
 			tr.world->fogs[ tr.world->globalFog ].shader->fogParms.colorInt = ColorBytes4( r * tr.identityLight,
 				g * tr.identityLight,

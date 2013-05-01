@@ -354,7 +354,7 @@ static bool EmitMovEBXEDI( vm_t* vm, int andit ) {
 		EmitString( "BB" );				// mov	ebx, 0x12345678
 		if ( andit ) {
 			Emit4( lastConst & andit );
-		} else   {
+		} else {
 			Emit4( lastConst );
 		}
 		return true;
@@ -557,7 +557,7 @@ void VM_Compile( vm_t* vm, vmHeader_t* header ) {
 					if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL ) {
 						EmitString( "FF 83" );		// inc dword ptr [ebx + 0x12345678]
 						Emit4( ( int )vm->dataBase );
-					} else   {
+					} else {
 						EmitString( "8B 83" );		// mov	eax, dword ptr [ebx + 0x12345678]
 						Emit4( ( int )vm->dataBase );
 						EmitString( "05" );			// add eax, const
@@ -565,7 +565,7 @@ void VM_Compile( vm_t* vm, vmHeader_t* header ) {
 						if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL ) {
 							EmitString( "89 83" );			// mov dword ptr [ebx+0x12345678], eax
 							Emit4( ( int )vm->dataBase );
-						} else   {
+						} else {
 							EmitCommand( LAST_COMMAND_SUB_DI_4 );		// sub edi, 4
 							EmitString( "8B 1F" );			// mov	ebx, dword ptr [edi]
 							EmitString( "89 83" );			// mov dword ptr [ebx+0x12345678], eax
@@ -592,13 +592,13 @@ void VM_Compile( vm_t* vm, vmHeader_t* header ) {
 					if ( v == 1 && oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL ) {
 						EmitString( "FF 8B" );		// dec dword ptr [ebx + 0x12345678]
 						Emit4( ( int )vm->dataBase );
-					} else   {
+					} else {
 						EmitString( "2D" );			// sub eax, const
 						Emit4( v );
 						if ( oc0 == oc1 && pop0 == OP_LOCAL && pop1 == OP_LOCAL ) {
 							EmitString( "89 83" );			// mov dword ptr [ebx+0x12345678], eax
 							Emit4( ( int )vm->dataBase );
-						} else   {
+						} else {
 							EmitCommand( LAST_COMMAND_SUB_DI_4 );		// sub edi, 4
 							EmitString( "8B 1F" );			// mov	ebx, dword ptr [edi]
 							EmitString( "89 83" );			// mov dword ptr [ebx+0x12345678], eax

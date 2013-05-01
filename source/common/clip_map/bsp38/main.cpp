@@ -308,7 +308,7 @@ void QClipMap38::InitBoxHull() {
 		c->children[ side ] = -1 - emptyleaf;
 		if ( i != 5 ) {
 			c->children[ side ^ 1 ] = numnodes + i + 1;
-		} else   {
+		} else {
 			c->children[ side ^ 1 ] = -1 - numleafs;
 		}
 

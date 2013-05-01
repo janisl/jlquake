@@ -283,7 +283,7 @@ static void CLH2_ParseClientdata( QMsg& message ) {
 
 	if ( bits & Q1SU_IDEALPITCH ) {
 		cl.qh_idealpitch = message.ReadChar();
-	} else   {
+	} else {
 	}
 
 	if ( bits & H2SU_IDEALROLL ) {
@@ -328,11 +328,11 @@ static void CLHW_ParseClientdata() {
 
 	if ( latency < 0 || latency > 1.0 ) {
 		//common->Printf ("Odd latency: %5.2f\n", latency);
-	} else   {
+	} else {
 		// drift the average latency towards the observed latency
 		if ( latency < cls.qh_latency ) {
 			cls.qh_latency = latency;
-		} else   {
+		} else {
 			cls.qh_latency += 0.001;	// drift up, so correction are needed
 		}
 	}
@@ -360,7 +360,7 @@ static void CLH2_ParsePrint( QMsg& message ) {
 	}
 	if ( txt[ 0 ] == 1 || txt[ 0 ] == 2 ) {
 		common->Printf( S_COLOR_RED "%s" S_COLOR_WHITE, txt + 1 );
-	} else   {
+	} else {
 		common->Printf( "%s", txt );
 	}
 }
@@ -372,7 +372,7 @@ static void CLHW_ParsePrint( QMsg& message ) {
 	if ( i == PRINT_CHAT ) {
 		S_StartLocalSound( "misc/talk.wav" );
 		common->Printf( S_COLOR_RED "%s" S_COLOR_WHITE, txt );
-	} else if ( i >= PRINT_SOUND )     {
+	} else if ( i >= PRINT_SOUND ) {
 		if ( !clhw_talksounds->value ) {
 			return;
 		}
@@ -380,7 +380,7 @@ static void CLHW_ParsePrint( QMsg& message ) {
 		sprintf( temp, "taunt/taunt%.3d.wav", i - PRINT_SOUND + 1 );
 		S_StartLocalSound( temp );
 		common->Printf( S_COLOR_RED "%s" S_COLOR_WHITE, txt );
-	} else   {
+	} else {
 		common->Printf( "%s", txt );
 	}
 }
@@ -397,12 +397,12 @@ static void CLH2_ParseSetAngleInterpolate( QMsg& message ) {
 			//standardize both old and new angles to +-180
 			if ( compangles[ j ][ i ] >= 360 ) {
 				compangles[ j ][ i ] -= 360 * ( ( int )( compangles[ j ][ i ] / 360 ) );
-			} else if ( compangles[ j ][ i ] <= 360 )         {
+			} else if ( compangles[ j ][ i ] <= 360 ) {
 				compangles[ j ][ i ] += 360 * ( 1 + ( int )( -compangles[ j ][ i ] / 360 ) );
 			}
 			if ( compangles[ j ][ i ] > 180 ) {
 				compangles[ j ][ i ] = -360 + compangles[ j ][ i ];
-			} else if ( compangles[ j ][ i ] < -180 )         {
+			} else if ( compangles[ j ][ i ] < -180 ) {
 				compangles[ j ][ i ] = 360 + compangles[ j ][ i ];
 			}
 		}
@@ -411,7 +411,7 @@ static void CLH2_ParseSetAngleInterpolate( QMsg& message ) {
 		//cap delta to <=180,>=-180
 		if ( deltaangle > 180 ) {
 			deltaangle += -360;
-		} else if ( deltaangle < -180 )     {
+		} else if ( deltaangle < -180 ) {
 			deltaangle += 360;
 		}
 		//add the delta
@@ -419,12 +419,12 @@ static void CLH2_ParseSetAngleInterpolate( QMsg& message ) {
 		//cap newangles to +-180
 		if ( cl.viewangles[ i ] >= 360 ) {
 			cl.viewangles[ i ] -= 360 * ( ( int )( cl.viewangles[ i ] / 360 ) );
-		} else if ( cl.viewangles[ i ] <= 360 )       {
+		} else if ( cl.viewangles[ i ] <= 360 ) {
 			cl.viewangles[ i ] += 360 * ( 1 + ( int )( -cl.viewangles[ i ] / 360 ) );
 		}
 		if ( cl.viewangles[ i ] > 180 ) {
 			cl.viewangles[ i ] += -360;
-		} else if ( cl.viewangles[ i ] < -180 )       {
+		} else if ( cl.viewangles[ i ] < -180 ) {
 			cl.viewangles[ i ] += 360;
 		}
 	}
@@ -597,7 +597,7 @@ static void CLH2_ParseParticleEffect( QMsg& message ) {
 
 	if ( count == 255 ) {
 		CLH2_ParticleExplosion( org );
-	} else   {
+	} else {
 		CLH2_RunParticleEffect( org, dir, count );
 	}
 }
@@ -747,10 +747,10 @@ static void CLH2_ParseCDTrack( QMsg& message ) {
 	if ( String::ICmp( bgmtype->string,"cd" ) == 0 ) {
 		if ( ( clc.demoplaying || clc.demorecording ) && ( cls.qh_forcetrack != -1 ) ) {
 			CDAudio_Play( ( byte )cls.qh_forcetrack, true );
-		} else   {
+		} else {
 			CDAudio_Play( cdtrack, true );
 		}
-	} else   {
+	} else {
 		CDAudio_Stop();
 	}
 }
@@ -760,7 +760,7 @@ static void CLH2_ParseMidiName( QMsg& message ) {
 	String::Cpy( midi_name, message.ReadString2() );
 	if ( String::ICmp( bgmtype->string, "midi" ) == 0 ) {
 		MIDI_Play( midi_name );
-	} else   {
+	} else {
 		MIDI_Stop();
 	}
 }
@@ -799,7 +799,7 @@ static void CLHW_UpdateUserinfo( QMsg& message ) {
 	player->bottomColour = String::Atoi( Info_ValueForKey( player->userinfo, "bottomcolor" ) );
 	if ( Info_ValueForKey( player->userinfo, "*spectator" )[ 0 ] ) {
 		player->spectator = true;
-	} else   {
+	} else {
 		player->spectator = false;
 	}
 
@@ -943,7 +943,7 @@ static void CLHW_ParseDownload( QMsg& message ) {
 		clc.downloadPercent = percent;
 
 		CL_AddReliableCommand( "nextdl" );
-	} else   {
+	} else {
 		FS_FCloseFile( clc.download );
 
 		// rename the temp file to it's final name
@@ -1066,7 +1066,7 @@ static void CLH2_ParsePlaque( QMsg& message ) {
 
 	if ( index > 0 && index <= prh2_string_count ) {
 		clh2_plaquemessage = &prh2_global_strings[ prh2_string_index[ index - 1 ] ];
-	} else   {
+	} else {
 		clh2_plaquemessage = "";
 	}
 }
@@ -1082,7 +1082,7 @@ static void CLHW_IndexedPrint( QMsg& message ) {
 	if ( index > 0 && index <= prh2_string_count ) {
 		if ( i == PRINT_CHAT ) {
 			common->Printf( S_COLOR_RED "%s" S_COLOR_WHITE, &prh2_global_strings[ prh2_string_index[ index - 1 ] ] );
-		} else   {
+		} else {
 			common->Printf( "%s",&prh2_global_strings[ prh2_string_index[ index - 1 ] ] );
 		}
 	}
@@ -1099,7 +1099,7 @@ static void CLHW_NamePrint( QMsg& message ) {
 	if ( index >= 0 && index < MAX_CLIENTS_QHW ) {
 		if ( i == PRINT_CHAT ) {
 			common->Printf( S_COLOR_RED "%s" S_COLOR_WHITE, cl.h2_players[ index ].name );
-		} else   {
+		} else {
 			common->Printf( "%s", cl.h2_players[ index ].name );
 		}
 	}
@@ -1735,7 +1735,7 @@ static void CLHW_ParseServerData( QMsg& message ) {
 		movevars.friction           = message.ReadFloat();
 		movevars.waterfriction      = message.ReadFloat();
 		movevars.entgravity         = message.ReadFloat();
-	} else   {
+	} else {
 		movevars.gravity            = 800;
 		movevars.stopspeed          = 100;
 		movevars.maxspeed           = 320;
@@ -1767,7 +1767,7 @@ void CLH2_ParseServerMessage( QMsg& message ) {
 	if ( cl_shownet->value == 1 ) {
 		common->Printf( "Time: %2.2f Pck: %i ", cls.realtime - lasttime, message.cursize );
 		lasttime = cls.realtime;
-	} else if ( cl_shownet->value == 2 )     {
+	} else if ( cl_shownet->value == 2 ) {
 		common->Printf( "------------------\n" );
 	}
 
@@ -1973,7 +1973,7 @@ void CLHW_ParseServerMessage( QMsg& message ) {
 
 	if ( cl_shownet->value == 1 ) {
 		common->Printf( "%i ",message.cursize );
-	} else if ( cl_shownet->value == 2 )     {
+	} else if ( cl_shownet->value == 2 ) {
 		common->Printf( "------------------\n" );
 	}
 

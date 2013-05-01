@@ -163,13 +163,13 @@ static void CLQ1_ParseClientdata( QMsg& message ) {
 
 	if ( bits & Q1SU_VIEWHEIGHT ) {
 		cl.qh_viewheight = message.ReadChar();
-	} else   {
+	} else {
 		cl.qh_viewheight = Q1DEFAULT_VIEWHEIGHT;
 	}
 
 	if ( bits & Q1SU_IDEALPITCH ) {
 		cl.qh_idealpitch = message.ReadChar();
-	} else   {
+	} else {
 		cl.qh_idealpitch = 0;
 	}
 
@@ -177,12 +177,12 @@ static void CLQ1_ParseClientdata( QMsg& message ) {
 	for ( int i = 0; i < 3; i++ ) {
 		if ( bits & ( Q1SU_PUNCH1 << i ) ) {
 			cl.qh_punchangles[ i ] = message.ReadChar();
-		} else   {
+		} else {
 			cl.qh_punchangles[ i ] = 0;
 		}
 		if ( bits & ( Q1SU_VELOCITY1 << i ) ) {
 			cl.qh_mvelocity[ 0 ][ i ] = message.ReadChar() * 16;
-		} else   {
+		} else {
 			cl.qh_mvelocity[ 0 ][ i ] = 0;
 		}
 	}
@@ -204,13 +204,13 @@ static void CLQ1_ParseClientdata( QMsg& message ) {
 
 	if ( bits & Q1SU_WEAPONFRAME ) {
 		cl.qh_stats[ Q1STAT_WEAPONFRAME ] = message.ReadByte();
-	} else   {
+	} else {
 		cl.qh_stats[ Q1STAT_WEAPONFRAME ] = 0;
 	}
 
 	if ( bits & Q1SU_ARMOR ) {
 		i = message.ReadByte();
-	} else   {
+	} else {
 		i = 0;
 	}
 	if ( cl.qh_stats[ Q1STAT_ARMOR ] != i ) {
@@ -219,7 +219,7 @@ static void CLQ1_ParseClientdata( QMsg& message ) {
 
 	if ( bits & Q1SU_WEAPON ) {
 		i = message.ReadByte();
-	} else   {
+	} else {
 		i = 0;
 	}
 	if ( cl.qh_stats[ Q1STAT_WEAPON ] != i ) {
@@ -249,7 +249,7 @@ static void CLQ1_ParseClientdata( QMsg& message ) {
 		if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] != i ) {
 			cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] = i;
 		}
-	} else   {
+	} else {
 		if ( cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] != ( 1 << i ) ) {
 			cl.qh_stats[ Q1STAT_ACTIVEWEAPON ] = ( 1 << i );
 		}
@@ -269,11 +269,11 @@ static void CLQW_ParseClientdata() {
 
 	if ( latency < 0 || latency > 1.0 ) {
 		//common->Printf ("Odd latency: %5.2f\n", latency);
-	} else   {
+	} else {
 		// drift the average latency towards the observed latency
 		if ( latency < cls.qh_latency ) {
 			cls.qh_latency = latency;
-		} else   {
+		} else {
 			cls.qh_latency += 0.001;	// drift up, so correction are needed
 		}
 	}
@@ -290,7 +290,7 @@ static void CLQW_ParseDisconnect() {
 	if ( cls.state == CA_CONNECTED ) {
 		common->Error( "Server disconnected\n"
 					   "Server version may not be compatible" );
-	} else   {
+	} else {
 		common->Error( "Server disconnected" );
 	}
 }
@@ -303,7 +303,7 @@ static void CLQ1_ParsePrint( QMsg& message ) {
 	}
 	if ( txt[ 0 ] == 1 || txt[ 0 ] == 2 ) {
 		common->Printf( S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt + 1 );
-	} else   {
+	} else {
 		common->Printf( "%s", txt );
 	}
 }
@@ -315,7 +315,7 @@ static void CLQW_ParsePrint( QMsg& message ) {
 	if ( i == PRINT_CHAT ) {
 		S_StartLocalSound( "misc/talk.wav" );
 		common->Printf( S_COLOR_ORANGE "%s" S_COLOR_WHITE, txt );
-	} else   {
+	} else {
 		common->Printf( "%s", txt );
 	}
 }
@@ -402,7 +402,7 @@ static void CLQ1_ParseParticleEffect( QMsg& message ) {
 	if ( count == 255 ) {
 		// rocket explosion
 		CLQ1_ParticleExplosion( org );
-	} else   {
+	} else {
 		CLQ1_RunParticleEffect( org, dir, colour, count );
 	}
 }
@@ -451,7 +451,7 @@ static void CLQ1_ParseCDTrack( QMsg& message ) {
 
 	if ( ( clc.demoplaying || clc.demorecording ) && ( cls.qh_forcetrack != -1 ) ) {
 		CDAudio_Play( ( byte )cls.qh_forcetrack, true );
-	} else   {
+	} else {
 		CDAudio_Play( cdtrack, true );
 	}
 }
@@ -499,7 +499,7 @@ static void CLQW_ProcessUserInfo( int slot, q1player_info_t* player ) {
 	player->bottomcolor = String::Atoi( Info_ValueForKey( player->userinfo, "bottomcolor" ) );
 	if ( Info_ValueForKey( player->userinfo, "*spectator" )[ 0 ] ) {
 		player->spectator = true;
-	} else   {
+	} else {
 		player->spectator = false;
 	}
 
@@ -729,7 +729,7 @@ static void CLQW_ParseDownload( QMsg& message ) {
 	if ( !clc.download ) {
 		if ( String::NCmp( clc.downloadTempName, "skins/", 6 ) ) {
 			clc.download = FS_FOpenFileWrite( clc.downloadTempName );
-		} else   {
+		} else {
 			char name[ 1024 ];
 			sprintf( name, "qw/%s", clc.downloadTempName );
 			clc.download = FS_SV_FOpenFileWrite( name );
@@ -752,14 +752,14 @@ static void CLQW_ParseDownload( QMsg& message ) {
 		clc.downloadPercent = percent;
 
 		CL_AddReliableCommand( "nextdl" );
-	} else   {
+	} else {
 		FS_FCloseFile( clc.download );
 
 		// rename the temp file to it's final name
 		if ( String::Cmp( clc.downloadTempName, clc.downloadName ) ) {
 			if ( String::NCmp( clc.downloadTempName,"skins/",6 ) ) {
 				FS_Rename( clc.downloadTempName, clc.downloadName );
-			} else   {
+			} else {
 				char oldn[ MAX_OSPATH ];
 				sprintf( oldn, "qw/%s", clc.downloadTempName );
 				char newn[ MAX_OSPATH ];
@@ -846,7 +846,7 @@ static void CLQW_ParseSetPause( QMsg& message ) {
 	cl.qh_paused = message.ReadByte();
 	if ( cl.qh_paused ) {
 		CDAudio_Pause();
-	} else   {
+	} else {
 		CDAudio_Resume();
 	}
 }
@@ -1037,7 +1037,7 @@ static void CLQW_ParseServerData( QMsg& message ) {
 void CLQ1_ParseServerMessage( QMsg& message ) {
 	if ( cl_shownet->value == 1 ) {
 		common->Printf( "%i ", message.cursize );
-	} else if ( cl_shownet->value == 2 )     {
+	} else if ( cl_shownet->value == 2 ) {
 		common->Printf( "------------------\n" );
 	}
 
@@ -1183,7 +1183,7 @@ void CLQW_ParseServerMessage( QMsg& message ) {
 	//
 	if ( cl_shownet->value == 1 ) {
 		common->Printf( "%i ",message.cursize );
-	} else if ( cl_shownet->value == 2 )     {
+	} else if ( cl_shownet->value == 2 ) {
 		common->Printf( "------------------\n" );
 	}
 

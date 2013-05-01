@@ -108,7 +108,7 @@ static void Mod_LoadTexinfo( bsp38_lump_t* l ) {
 		int next = LittleLong( in->nexttexinfo );
 		if ( next > 0 ) {
 			out->next = loadmodel->brush38_texinfo + next;
-		} else   {
+		} else {
 			out->next = NULL;
 		}
 		char name[ MAX_QPATH ];
@@ -145,7 +145,7 @@ static void CalcSurfaceExtents( mbrush38_surface_t* s ) {
 		mbrush38_vertex_t* v;
 		if ( e >= 0 ) {
 			v = &loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ e ].v[ 0 ] ];
-		} else   {
+		} else {
 			v = &loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ -e ].v[ 1 ] ];
 		}
 
@@ -290,7 +290,7 @@ static void GL_SubdivideSurface( mbrush38_surface_t* fa ) {
 		float* vec;
 		if ( lindex > 0 ) {
 			vec = loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ lindex ].v[ 0 ] ].position;
-		} else   {
+		} else {
 			vec = loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ -lindex ].v[ 1 ] ].position;
 		}
 		VectorCopy( vec, verts[ numverts ] );
@@ -324,7 +324,7 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 		if ( lindex > 0 ) {
 			r_pedge = &pedges[ lindex ];
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 0 ] ].position;
-		} else   {
+		} else {
 			r_pedge = &pedges[ -lindex ];
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
 		}
@@ -409,7 +409,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 		int lightofs = LittleLong( in->lightofs );
 		if ( lightofs == -1 ) {
 			out->samples = NULL;
-		} else   {
+		} else {
 			out->samples = loadmodel->brush38_lightdata + lightofs;
 		}
 
@@ -474,7 +474,7 @@ static void Mod_LoadNodes( bsp38_lump_t* l ) {
 			p = LittleLong( in->children[ j ] );
 			if ( p >= 0 ) {
 				out->children[ j ] = loadmodel->brush38_nodes + p;
-			} else   {
+			} else {
 				out->children[ j ] = ( mbrush38_node_t* )( loadmodel->brush38_leafs + ( -1 - p ) );
 			}
 		}
@@ -648,7 +648,7 @@ void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
 		mbrush38_model_t* bm = &mod->brush38_submodels[ i ];
 		if ( i == 0 ) {
 			starmod = loadmodel;
-		} else   {
+		} else {
 			starmod = R_AllocModel();
 
 			int saved_index = starmod->index;
@@ -756,7 +756,7 @@ mbrush38_leaf_t* Mod_PointInLeafQ2( vec3_t p, model_t* model ) {
 		float d = DotProduct( p, plane->normal ) - plane->dist;
 		if ( d > 0 ) {
 			node = node->children[ 0 ];
-		} else   {
+		} else {
 			node = node->children[ 1 ];
 		}
 	}

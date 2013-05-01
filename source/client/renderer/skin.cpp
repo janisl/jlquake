@@ -61,7 +61,7 @@ static const char* CommaParse( char** data_p ) {
 			if ( *data ) {
 				data += 2;
 			}
-		} else   {
+		} else {
 			break;
 		}
 	}
@@ -401,7 +401,7 @@ qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap
 				}
 				shd = R_FindShader( surf->shader->name, LIGHTMAP_NONE, mip );
 				shd->stages[ 0 ]->rgbGen = CGEN_LIGHTING_DIFFUSE;	// (SA) new
-			} else   {
+			} else {
 				shd = surf->shader;
 			}
 

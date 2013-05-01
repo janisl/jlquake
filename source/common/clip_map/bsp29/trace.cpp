@@ -67,10 +67,10 @@ bool QClipMap29::RecursiveHullCheck( chull_t* hull, int num, float p1f,
 			trace->allsolid = false;
 			if ( num == BSP29CONTENTS_EMPTY ) {
 				trace->inopen = true;
-			} else   {
+			} else {
 				trace->inwater = true;
 			}
-		} else   {
+		} else {
 			trace->startsolid = true;
 		}
 		return true;			// empty
@@ -90,7 +90,7 @@ bool QClipMap29::RecursiveHullCheck( chull_t* hull, int num, float p1f,
 	if ( plane->type < 3 ) {
 		t1 = p1[ plane->type ] - plane->dist;
 		t2 = p2[ plane->type ] - plane->dist;
-	} else   {
+	} else {
 		t1 = DotProduct( plane->normal, p1 ) - plane->dist;
 		t2 = DotProduct( plane->normal, p2 ) - plane->dist;
 	}
@@ -106,7 +106,7 @@ bool QClipMap29::RecursiveHullCheck( chull_t* hull, int num, float p1f,
 	float frac;
 	if ( t1 < 0 ) {
 		frac = ( t1 + DIST_EPSILON ) / ( t1 - t2 );
-	} else   {
+	} else {
 		frac = ( t1 - DIST_EPSILON ) / ( t1 - t2 );
 	}
 	if ( frac < 0 ) {
@@ -152,7 +152,7 @@ bool QClipMap29::RecursiveHullCheck( chull_t* hull, int num, float p1f,
 	if ( !side ) {
 		VectorCopy( plane->normal, trace->plane.normal );
 		trace->plane.dist = plane->dist;
-	} else   {
+	} else {
 		VectorSubtract( vec3_origin, plane->normal, trace->plane.normal );
 		trace->plane.dist = -plane->dist;
 	}

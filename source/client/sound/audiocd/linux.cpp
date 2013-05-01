@@ -204,7 +204,7 @@ void CDAudio_Play( int track, qboolean looping ) {
 		if ( cdvolume == 0.0 ) {
 			CDAudio_Pause();
 		}
-	} else   {
+	} else {
 		if ( cd_volume->value == 0.0 ) {
 			CDAudio_Pause();
 		}
@@ -391,7 +391,7 @@ void CD_f() {
 		common->Printf( "%u tracks\n", maxTrack );
 		if ( playing ) {
 			common->Printf( "Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack );
-		} else if ( wasPlaying )     {
+		} else if ( wasPlaying ) {
 			common->Printf( "Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack );
 		}
 		common->Printf( "Volume is %f\n", cdvolume );
@@ -419,19 +419,19 @@ void CDAudio_Update() {
 				Cvar_SetValue( "bgmvolume", 0.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Pause();
-			} else   {
+			} else {
 				Cvar_SetValue( "bgmvolume", 1.0 );
 				cdvolume = bgmvolume->value;
 				CDAudio_Resume();
 			}
 		}
-	} else   {
+	} else {
 		if ( cd_volume && cd_volume->value != cdvolume ) {
 			if ( cdvolume ) {
 				Cvar_SetValueLatched( "cd_volume", 0.0 );
 				cdvolume = cd_volume->value;
 				CDAudio_Pause();
-			} else   {
+			} else {
 				Cvar_SetValueLatched( "cd_volume", 1.0 );
 				cdvolume = cd_volume->value;
 				CDAudio_Resume();
@@ -482,7 +482,7 @@ int CDAudio_Init() {
 			cdfile = -1;
 			return -1;
 		}
-	} else   {
+	} else {
 		Cvar* cv = Cvar_Get( "nocdaudio", "0", CVAR_INIT );
 		if ( cv->value ) {
 			return -1;
@@ -548,7 +548,7 @@ void CDAudio_Shutdown() {
 void CDAudio_Activate( qboolean active ) {
 	if ( active ) {
 		CDAudio_Resume();
-	} else   {
+	} else {
 		CDAudio_Pause();
 	}
 }

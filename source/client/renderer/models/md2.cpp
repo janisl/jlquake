@@ -254,7 +254,7 @@ static void R_Md2SetupEntityLighting( trRefEntity_t* ent ) {
 	// get lighting information
 	//
 	vec3_t md2_shadelight;
-	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT )     {
+	if ( ent->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 		for ( int i = 0; i < 3; i++ ) {
 			md2_shadelight[ i ] = ent->e.absoluteLight * 255;
 		}

@@ -136,7 +136,7 @@ static void PM_StepSlideMove_() {
 
 		if ( i != numplanes ) {
 			// go along this plane
-		} else   {
+		} else {
 			// go along the crease
 			if ( numplanes != 2 ) {
 				VectorCopy( vec3_origin, pml.velocity );
@@ -299,26 +299,26 @@ static void PM_AddCurrents( vec3_t wishvel ) {
 	if ( pml.ladder && fabs( pml.velocity[ 2 ] ) <= 200 ) {
 		if ( ( pm->viewangles[ PITCH ] <= -15 ) && ( pm->cmd.forwardmove > 0 ) ) {
 			wishvel[ 2 ] = 200;
-		} else if ( ( pm->viewangles[ PITCH ] >= 15 ) && ( pm->cmd.forwardmove > 0 ) )           {
+		} else if ( ( pm->viewangles[ PITCH ] >= 15 ) && ( pm->cmd.forwardmove > 0 ) ) {
 			wishvel[ 2 ] = -200;
-		} else if ( pm->cmd.upmove > 0 )     {
+		} else if ( pm->cmd.upmove > 0 ) {
 			wishvel[ 2 ] = 200;
-		} else if ( pm->cmd.upmove < 0 )     {
+		} else if ( pm->cmd.upmove < 0 ) {
 			wishvel[ 2 ] = -200;
-		} else   {
+		} else {
 			wishvel[ 2 ] = 0;
 		}
 
 		// limit horizontal speed when on a ladder
 		if ( wishvel[ 0 ] < -25 ) {
 			wishvel[ 0 ] = -25;
-		} else if ( wishvel[ 0 ] > 25 )       {
+		} else if ( wishvel[ 0 ] > 25 ) {
 			wishvel[ 0 ] = 25;
 		}
 
 		if ( wishvel[ 1 ] < -25 ) {
 			wishvel[ 1 ] = -25;
-		} else if ( wishvel[ 1 ] > 25 )       {
+		} else if ( wishvel[ 1 ] > 25 ) {
 			wishvel[ 1 ] = 25;
 		}
 	}
@@ -398,7 +398,7 @@ static void PM_WaterMove() {
 
 	if ( !pm->cmd.forwardmove && !pm->cmd.sidemove && !pm->cmd.upmove ) {
 		wishvel[ 2 ] -= 60;			// drift towards bottom
-	} else   {
+	} else {
 		wishvel[ 2 ] += pm->cmd.upmove;
 	}
 
@@ -453,7 +453,7 @@ static void PM_AirMove() {
 				if ( pml.velocity[ 2 ] < 0 ) {
 					pml.velocity[ 2 ]  = 0;
 				}
-			} else   {
+			} else {
 				pml.velocity[ 2 ] += pm->s.gravity * pml.frametime;
 				if ( pml.velocity[ 2 ] > 0 ) {
 					pml.velocity[ 2 ]  = 0;
@@ -461,7 +461,7 @@ static void PM_AirMove() {
 			}
 		}
 		PM_StepSlideMove();
-	} else if ( pm->groundentity )     {
+	} else if ( pm->groundentity ) {
 		// walking on ground
 		pml.velocity[ 2 ] = 0;	//!!! this is before the accel
 		PM_Accelerate( wishdir, wishspeed, pm_accelerate );
@@ -469,7 +469,7 @@ static void PM_AirMove() {
 		//	fix for negative trigger_gravity fields
 		if ( pm->s.gravity > 0 ) {
 			pml.velocity[ 2 ] = 0;
-		} else   {
+		} else {
 			pml.velocity[ 2 ] -= pm->s.gravity * pml.frametime;
 		}
 
@@ -477,10 +477,10 @@ static void PM_AirMove() {
 			return;
 		}
 		PM_StepSlideMove();
-	} else   {	// not on ground, so little effect on velocity
+	} else {	// not on ground, so little effect on velocity
 		if ( pmq2_airaccelerate ) {
 			PM_AirAccelerate( wishdir, wishspeed, pm_accelerate );
-		} else   {
+		} else {
 			PM_Accelerate( wishdir, wishspeed, 1 );
 		}
 		// add gravity
@@ -501,7 +501,7 @@ static void PM_CatagorizePosition() {
 	if ( pml.velocity[ 2 ] > 180 ) {//!!ZOID changed from 100 to 180 (ramp accel)
 		pm->s.pm_flags &= ~Q2PMF_ON_GROUND;
 		pm->groundentity = NULL;
-	} else   {
+	} else {
 		q2trace_t trace = pm->trace( pml.origin, pm->mins, pm->maxs, point );
 		pml.groundplane = trace.plane;
 		pml.groundsurface = trace.surface;
@@ -510,7 +510,7 @@ static void PM_CatagorizePosition() {
 		if ( !trace.ent || ( trace.plane.normal[ 2 ] < 0.7 && !trace.startsolid ) ) {
 			pm->groundentity = NULL;
 			pm->s.pm_flags &= ~Q2PMF_ON_GROUND;
-		} else   {
+		} else {
 			pm->groundentity = trace.ent;
 
 			// hitting solid ground will end a waterjump
@@ -528,7 +528,7 @@ static void PM_CatagorizePosition() {
 					// don't allow another jump for a little while
 					if ( pml.velocity[ 2 ] < -400 ) {
 						pm->s.pm_time = 25;
-					} else   {
+					} else {
 						pm->s.pm_time = 18;
 					}
 				}
@@ -600,9 +600,9 @@ static void PM_CheckJump() {
 
 		if ( pm->watertype == BSP38CONTENTS_WATER ) {
 			pml.velocity[ 2 ] = 100;
-		} else if ( pm->watertype == BSP38CONTENTS_SLIME )     {
+		} else if ( pm->watertype == BSP38CONTENTS_SLIME ) {
 			pml.velocity[ 2 ] = 80;
-		} else   {
+		} else {
 			pml.velocity[ 2 ] = 50;
 		}
 		return;
@@ -676,7 +676,7 @@ static void PM_FlyMove( bool doclip ) {
 	float speed = VectorLength( pml.velocity );
 	if ( speed < 1 ) {
 		VectorCopy( vec3_origin, pml.velocity );
-	} else   {
+	} else {
 		float drop = 0;
 
 		float friction = pm_friction * 1.5;	// extra friction
@@ -741,7 +741,7 @@ static void PM_FlyMove( bool doclip ) {
 		q2trace_t trace = pm->trace( pml.origin, pm->mins, pm->maxs, end );
 
 		VectorCopy( trace.endpos, pml.origin );
-	} else   {
+	} else {
 		// move
 		VectorMA( pml.origin, pml.frametime, pml.velocity, pml.origin );
 	}
@@ -766,10 +766,10 @@ static void PM_CheckDuck() {
 
 	if ( pm->s.pm_type == Q2PM_DEAD ) {
 		pm->s.pm_flags |= Q2PMF_DUCKED;
-	} else if ( pm->cmd.upmove < 0 && ( pm->s.pm_flags & Q2PMF_ON_GROUND ) )       {
+	} else if ( pm->cmd.upmove < 0 && ( pm->s.pm_flags & Q2PMF_ON_GROUND ) ) {
 		// duck
 		pm->s.pm_flags |= Q2PMF_DUCKED;
-	} else   {
+	} else {
 		// stand up if possible
 		if ( pm->s.pm_flags & Q2PMF_DUCKED ) {
 			// try to stand up
@@ -784,7 +784,7 @@ static void PM_CheckDuck() {
 	if ( pm->s.pm_flags & Q2PMF_DUCKED ) {
 		pm->maxs[ 2 ] = 4;
 		pm->viewheight = -2;
-	} else   {
+	} else {
 		pm->maxs[ 2 ] = 32;
 		pm->viewheight = 22;
 	}
@@ -801,7 +801,7 @@ static void PM_DeadMove() {
 	forward -= 20;
 	if ( forward <= 0 ) {
 		VectorClear( pml.velocity );
-	} else   {
+	} else {
 		VectorNormalize( pml.velocity );
 		VectorScale( pml.velocity, forward, pml.velocity );
 	}
@@ -836,7 +836,7 @@ static void PM_SnapPosition() {
 	for ( int i = 0; i < 3; i++ ) {
 		if ( pml.origin[ i ] >= 0 ) {
 			sign[ i ] = 1;
-		} else   {
+		} else {
 			sign[ i ] = -1;
 		}
 		pm->s.origin[ i ] = ( int )( pml.origin[ i ] * 8 );
@@ -897,7 +897,7 @@ static void PM_ClampAngles() {
 		pm->viewangles[ YAW ] = SHORT2ANGLE( pm->cmd.angles[ YAW ] + pm->s.delta_angles[ YAW ] );
 		pm->viewangles[ PITCH ] = 0;
 		pm->viewangles[ ROLL ] = 0;
-	} else   {
+	} else {
 		// circularly clamp the angles with deltas
 		for ( int i = 0; i < 3; i++ ) {
 			short temp = pm->cmd.angles[ i ] + pm->s.delta_angles[ i ];
@@ -907,7 +907,7 @@ static void PM_ClampAngles() {
 		// don't let the player look up or down more than 90 degrees
 		if ( pm->viewangles[ PITCH ] > 89 && pm->viewangles[ PITCH ] < 180 ) {
 			pm->viewangles[ PITCH ] = 89;
-		} else if ( pm->viewangles[ PITCH ] < 271 && pm->viewangles[ PITCH ] >= 180 )         {
+		} else if ( pm->viewangles[ PITCH ] < 271 && pm->viewangles[ PITCH ] >= 180 ) {
 			pm->viewangles[ PITCH ] = 271;
 		}
 	}
@@ -986,14 +986,14 @@ void PMQ2_Pmove( q2pmove_t* pmove ) {
 		if ( msec >= pm->s.pm_time ) {
 			pm->s.pm_flags &= ~( Q2PMF_TIME_WATERJUMP | Q2PMF_TIME_LAND | Q2PMF_TIME_TELEPORT );
 			pm->s.pm_time = 0;
-		} else   {
+		} else {
 			pm->s.pm_time -= msec;
 		}
 	}
 
 	if ( pm->s.pm_flags & Q2PMF_TIME_TELEPORT ) {
 		// teleport pause stays exactly in place
-	} else if ( pm->s.pm_flags & Q2PMF_TIME_WATERJUMP )     {
+	} else if ( pm->s.pm_flags & Q2PMF_TIME_WATERJUMP ) {
 		// waterjump has no control, but falls
 		pml.velocity[ 2 ] -= pm->s.gravity * pml.frametime;
 		if ( pml.velocity[ 2 ] < 0 ) {
@@ -1003,14 +1003,14 @@ void PMQ2_Pmove( q2pmove_t* pmove ) {
 		}
 
 		PM_StepSlideMove();
-	} else   {
+	} else {
 		PM_CheckJump();
 
 		PM_Friction();
 
 		if ( pm->waterlevel >= 2 ) {
 			PM_WaterMove();
-		} else   {
+		} else {
 			vec3_t angles;
 			VectorCopy( pm->viewangles, angles );
 			if ( angles[ PITCH ] > 180 ) {

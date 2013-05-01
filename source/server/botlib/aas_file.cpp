@@ -372,7 +372,7 @@ int AAS_LoadAASFile( const char* filename ) {
 	length = LittleLong( header.lumps[ AASLUMP_AREASETTINGS ].filelen );
 	if ( header.version == AASVERSION4 || header.version == AASVERSION5 ) {
 		aasworld->areasettings = AAS_LoadAreaSettings5Lump( fp, offset, length, &lastoffset );
-	} else   {
+	} else {
 		aasworld->areasettings = ( aas_areasettings_t* )AAS_LoadAASLump( fp, offset, length, &lastoffset, sizeof ( aas_areasettings_t ) );
 	}
 	aasworld->numareasettings = length / sizeof ( aas5_areasettings_t );
@@ -528,7 +528,7 @@ bool AAS_WriteAASFile( const char* filename ) {
 		if ( !AAS_WriteAreaSettings5Lump( fp, &header ) ) {
 			return false;
 		}
-	} else   {
+	} else {
 		if ( !AAS_WriteAASLump( fp, &header, AASLUMP_AREASETTINGS, aasworld->areasettings,
 				 aasworld->numareasettings * sizeof ( aas8_areasettings_t ) ) ) {
 			return false;

@@ -233,25 +233,25 @@ static const char* PrimToString( GLenum mode ) {
 
 	if ( mode == GL_TRIANGLES ) {
 		return "GL_TRIANGLES";
-	} else if ( mode == GL_TRIANGLE_STRIP )     {
+	} else if ( mode == GL_TRIANGLE_STRIP ) {
 		return "GL_TRIANGLE_STRIP";
-	} else if ( mode == GL_TRIANGLE_FAN )     {
+	} else if ( mode == GL_TRIANGLE_FAN ) {
 		return "GL_TRIANGLE_FAN";
-	} else if ( mode == GL_QUADS )     {
+	} else if ( mode == GL_QUADS ) {
 		return "GL_QUADS";
-	} else if ( mode == GL_QUAD_STRIP )     {
+	} else if ( mode == GL_QUAD_STRIP ) {
 		return "GL_QUAD_STRIP";
-	} else if ( mode == GL_POLYGON )     {
+	} else if ( mode == GL_POLYGON ) {
 		return "GL_POLYGON";
-	} else if ( mode == GL_POINTS )     {
+	} else if ( mode == GL_POINTS ) {
 		return "GL_POINTS";
-	} else if ( mode == GL_LINES )     {
+	} else if ( mode == GL_LINES ) {
 		return "GL_LINES";
-	} else if ( mode == GL_LINE_STRIP )     {
+	} else if ( mode == GL_LINE_STRIP ) {
 		return "GL_LINE_STRIP";
-	} else if ( mode == GL_LINE_LOOP )     {
+	} else if ( mode == GL_LINE_LOOP ) {
 		return "GL_LINE_LOOP";
-	} else   {
+	} else {
 		sprintf( prim, "0x%x", mode );
 	}
 
@@ -594,19 +594,19 @@ void QGL_Init() {
 		if ( r_ext_compressed_textures->integer ) {
 			glConfig.textureCompression = TC_EXT_COMP_S3TC;
 			common->Printf( "...using GL_EXT_texture_compression_s3tc\n" );
-		} else   {
+		} else {
 			glConfig.textureCompression = TC_NONE;
 			common->Printf( "...ignoring GL_EXT_texture_compression_s3tc\n" );
 		}
-	} else if ( CheckExtension( "GL_S3_s3tc" ) )       {
+	} else if ( CheckExtension( "GL_S3_s3tc" ) ) {
 		if ( r_ext_compressed_textures->integer ) {
 			glConfig.textureCompression = TC_S3TC;
 			common->Printf( "...using GL_S3_s3tc\n" );
-		} else   {
+		} else {
 			glConfig.textureCompression = TC_NONE;
 			common->Printf( "...ignoring GL_S3_s3tc\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_S3_s3tc not found\n" );
 	}
 
@@ -622,17 +622,17 @@ void QGL_Init() {
 
 				if ( glConfig.maxActiveTextures > 1 ) {
 					common->Printf( "...using GL_ARB_multitexture\n" );
-				} else   {
+				} else {
 					qglMultiTexCoord2fARB = NULL;
 					qglActiveTextureARB = NULL;
 					qglClientActiveTextureARB = NULL;
 					common->Printf( "...not using GL_ARB_multitexture, < 2 texture units\n" );
 				}
 			}
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_ARB_multitexture\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_ARB_multitexture not found\n" );
 	}
 
@@ -642,11 +642,11 @@ void QGL_Init() {
 		if ( r_ext_texture_env_add->integer ) {
 			glConfig.textureEnvAddAvailable = true;
 			common->Printf( "...using GL_EXT_texture_env_add\n" );
-		} else   {
+		} else {
 			glConfig.textureEnvAddAvailable = false;
 			common->Printf( "...ignoring GL_EXT_texture_env_add\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_EXT_texture_env_add not found\n" );
 	}
 
@@ -658,13 +658,13 @@ void QGL_Init() {
 			if ( qwglSwapIntervalEXT ) {
 				common->Printf( "...using WGL_EXT_swap_control\n" );
 				r_swapInterval->modified = true;	// force a set next frame
-			} else   {
+			} else {
 				common->Printf( "...WGL_EXT_swap_control not found\n" );
 			}
-		} else   {
+		} else {
 			common->Printf( "...ignoring WGL_EXT_swap_control\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...WGL_EXT_swap_control not found\n" );
 	}
 #else
@@ -672,7 +672,7 @@ void QGL_Init() {
 	if ( CheckSystemExtension( "GLX_SGI_swap_control" ) ) {
 		qglXSwapIntervalSGI = ( int ( * )( int interval ) )GLimp_GetProcAddress( "glXSwapIntervalSGI" );
 		common->Printf( "...using GLX_SGI_swap_control\n" );
-	} else   {
+	} else {
 		common->Printf( "... GLX_SGI_swap_control not found\n" );
 	}
 #endif
@@ -686,10 +686,10 @@ void QGL_Init() {
 			if ( !qglLockArraysEXT || !qglUnlockArraysEXT ) {
 				common->FatalError( "bad getprocaddress" );
 			}
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_EXT_compiled_vertex_array\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_EXT_compiled_vertex_array not found\n" );
 	}
 
@@ -701,10 +701,10 @@ void QGL_Init() {
 			if ( !qglPointParameterfEXT || !qglPointParameterfvEXT ) {
 				common->FatalError( "bad getprocaddress" );
 			}
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_EXT_point_parameters\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_EXT_point_parameters not found\n" );
 	}
 
@@ -715,10 +715,10 @@ void QGL_Init() {
 		if ( r_ext_NV_fog_dist->integer ) {
 			glConfig.NVFogAvailable = true;
 			common->Printf( "...using GL_NV_fog_distance\n" );
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_NV_fog_distance\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_NV_fog_distance not found\n" );
 	}
 
@@ -727,10 +727,10 @@ void QGL_Init() {
 		if ( r_ext_texture_filter_anisotropic->integer ) {
 			glConfig.anisotropicAvailable = true;
 			common->Printf( "...using GL_EXT_texture_filter_anisotropic\n" );
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_EXT_texture_filter_anisotropic\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "... GL_EXT_texture_filter_anisotropic not found\n" );
 	}
 
@@ -745,10 +745,10 @@ void QGL_Init() {
 			if ( !qglPNTrianglesiATI || !qglPNTrianglesfATI ) {
 				common->FatalError( "bad getprocaddress 0" );
 			}
-		} else   {
+		} else {
 			common->Printf( "...ignoring GL_ATI_pn_triangles\n" );
 		}
-	} else   {
+	} else {
 		common->Printf( "...GL_ATI_pn_triangles not found\n" );
 	}
 
@@ -876,7 +876,7 @@ void QGL_EnableLogging( bool enable ) {
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
-	} else   {
+	} else {
 		if ( log_fp ) {
 			QGL_Log( "*** CLOSING LOG ***\n" );
 			FS_FCloseFile( log_fp );

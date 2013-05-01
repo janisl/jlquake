@@ -64,12 +64,12 @@ static void ComH2_LoadGlobalStrings() {
 				prh2_string_index[ count ] = start;
 				start = i + 1;
 				count++;
-			} else   {
+			} else {
 				start++;
 			}
 
 			prh2_global_strings[ i ] = 0;
-		} else if ( GGameType & GAME_HexenWorld )     {
+		} else if ( GGameType & GAME_HexenWorld ) {
 			//for indexed prints, translate '^' to a newline
 			if ( prh2_global_strings[ i ] == '^' ) {
 				prh2_global_strings[ i ] = '\n';
@@ -112,7 +112,7 @@ static void ComH2_LoadInfoStrings() {
 				prh2_info_string_index[ count ] = start;
 				start = i + 1;
 				count++;
-			} else   {
+			} else {
 				start++;
 			}
 

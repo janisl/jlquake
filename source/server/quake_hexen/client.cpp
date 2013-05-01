@@ -107,13 +107,13 @@ void SVQHW_DropClient( client_t* drop ) {
 			// this will set the body to a dead frame, among other things
 			*pr_globalVars.self = EDICT_TO_PROG( drop->qh_edict );
 			PR_ExecuteProgram( *pr_globalVars.ClientDisconnect );
-		} else if ( qhw_SpectatorDisconnect )     {
+		} else if ( qhw_SpectatorDisconnect ) {
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
 			*pr_globalVars.self = EDICT_TO_PROG( drop->qh_edict );
 			PR_ExecuteProgram( qhw_SpectatorDisconnect );
 		}
-	} else if ( GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE )     {
+	} else if ( GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE ) {
 		if ( String::ICmp( PR_GetString( drop->qh_edict->GetPuzzleInv1() ),"" ) ) {
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind
@@ -125,7 +125,7 @@ void SVQHW_DropClient( client_t* drop ) {
 
 	if ( drop->qh_spectator ) {
 		common->Printf( "Spectator %s removed\n",drop->name );
-	} else   {
+	} else {
 		common->Printf( "Client %s removed\n",drop->name );
 	}
 
@@ -240,7 +240,7 @@ static void SVQH_Spawn_f( client_t* host_client ) {
 	if ( sv.loadgame ) {// loaded games are fully inited allready
 						// if this is the last client to be connected, unpause
 		sv.qh_paused = false;
-	} else   {
+	} else {
 		// set up the edict
 		qhedict_t* ent = host_client->qh_edict;
 		if ( GGameType & GAME_Hexen2 ) {
@@ -406,11 +406,11 @@ static void SVQHW_New_f( client_t* client ) {
 	if ( GGameType & GAME_HexenWorld ) {
 		if ( sv.qh_edicts->GetMessage() > 0 && sv.qh_edicts->GetMessage() <= prh2_string_count ) {
 			client->netchan.message.WriteString2( &prh2_global_strings[ prh2_string_index[ ( int )sv.qh_edicts->GetMessage() - 1 ] ] );
-		} else   {
+		} else {
 			//Use netname on map if there is one, so they don't have to edit strings.txt
 			client->netchan.message.WriteString2( PR_GetString( sv.qh_edicts->GetNetName() ) );
 		}
-	} else   {
+	} else {
 		client->netchan.message.WriteString2( PR_GetString( sv.qh_edicts->GetMessage() ) );
 	}
 
@@ -433,7 +433,7 @@ static void SVQHW_New_f( client_t* client ) {
 
 		client->netchan.message.WriteByte( hwsvc_midi_name );
 		client->netchan.message.WriteString2( sv.h2_midi_name );
-	} else   {
+	} else {
 		client->netchan.message.WriteByte( q1svc_cdtrack );
 		client->netchan.message.WriteByte( sv.qh_edicts->GetSounds() );
 	}
@@ -479,7 +479,7 @@ static void SVQW_Modellist_f( client_t* client ) {
 	// next msg
 	if ( *s ) {
 		client->netchan.message.WriteByte( n );
-	} else   {
+	} else {
 		client->netchan.message.WriteByte( 0 );
 	}
 }
@@ -541,7 +541,7 @@ static void SVQW_Soundlist_f( client_t* client ) {
 	// next msg
 	if ( *s ) {
 		client->netchan.message.WriteByte( n );
-	} else   {
+	} else {
 		client->netchan.message.WriteByte( 0 );
 	}
 }
@@ -622,11 +622,11 @@ static void SVQHW_PreSpawn_f( client_t* client ) {
 		if ( GGameType & GAME_HexenWorld ) {
 			client->netchan.message.WriteByte( h2svc_stufftext );
 			client->netchan.message.WriteString2( va( "cmd spawn %i\n",svs.spawncount ) );
-		} else   {
+		} else {
 			client->netchan.message.WriteByte( q1svc_stufftext );
 			client->netchan.message.WriteString2( va( "cmd spawn %i 0\n",svs.spawncount ) );
 		}
-	} else   {	// need to prespawn more
+	} else {	// need to prespawn more
 		client->netchan.message.WriteByte( GGameType & GAME_HexenWorld ? h2svc_stufftext : q1svc_stufftext );
 		client->netchan.message.WriteString2(
 			va( "cmd prespawn %i %i\n", svs.spawncount, buf ) );
@@ -686,7 +686,7 @@ static void SVQHW_Spawn_f( client_t* host_client ) {
 	ent->SetColorMap( QH_NUM_FOR_EDICT( ent ) );
 	if ( GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE ) {
 		ent->SetTeam( ent->GetSiegeTeam() );	// FIXME
-	} else   {
+	} else {
 		ent->SetTeam( 0 );		// FIXME
 	}
 	ent->SetNetName( PR_SetString( host_client->name ) );
@@ -794,7 +794,7 @@ static void SVQHW_Begin_f( client_t* client ) {
 			*pr_globalVars.self = EDICT_TO_PROG( client->qh_edict );
 			PR_ExecuteProgram( qhw_SpectatorConnect );
 		}
-	} else   {
+	} else {
 		// copy spawn parms out of the client_t
 		for ( int i = 0; i < NUM_SPAWN_PARMS; i++ ) {
 			pr_globalVars.parm1[ i ] = client->qh_spawn_parms[ i ];
@@ -1034,9 +1034,9 @@ static void SVQHW_Say( client_t* host_client, bool team ) {
 
 	if ( host_client->qh_spectator && ( !svqhw_spectalk->value || team ) ) {
 		sprintf( text, "[SPEC] %s: ", host_client->name );
-	} else if ( team )     {
+	} else if ( team ) {
 		sprintf( text, "(%s): ", host_client->name );
-	} else   {
+	} else {
 		sprintf( text, "%s: ", host_client->name );
 	}
 
@@ -1057,7 +1057,7 @@ static void SVQHW_Say( client_t* host_client, bool team ) {
 			if ( qhw_fp_msg[ 0 ] ) {
 				SVQH_ClientPrintf( host_client, PRINT_CHAT,
 					"FloodProt: %s\n", qhw_fp_msg );
-			} else   {
+			} else {
 				SVQH_ClientPrintf( host_client, PRINT_CHAT,
 					"FloodProt: You can't talk for %d seconds.\n", qhw_fp_secondsdead );
 			}
@@ -1082,7 +1082,7 @@ static void SVQHW_Say( client_t* host_client, bool team ) {
 		speaknum = atol( &p[ 1 ] );
 		if ( speaknum <= 0 || speaknum > 255 - PRINT_SOUND ) {
 			speaknum = -1;
-		} else   {
+		} else {
 			text[ String::Length( text ) - 2 ] = 0;
 			String::Cat( text, sizeof ( text )," speaks!\n" );
 		}
@@ -1111,7 +1111,7 @@ static void SVQHW_Say( client_t* host_client, bool team ) {
 				if ( !client->qh_spectator ) {
 					continue;
 				}
-			} else   {
+			} else {
 				t2 = Info_ValueForKey( client->userinfo, "team" );
 				if ( GGameType & GAME_HexenWorld && hw_dmMode->value == HWDM_SIEGE ) {
 					if ( ( host_client->qh_edict->GetSkin() == 102 && client->qh_edict->GetSkin() != 102 ) || ( client->qh_edict->GetSkin() == 102 && host_client->qh_edict->GetSkin() != 102 ) ) {
@@ -1121,14 +1121,14 @@ static void SVQHW_Say( client_t* host_client, bool team ) {
 					if ( client->hw_siege_team != host_client->hw_siege_team ) {
 						continue;	// on different teams
 					}
-				} else if ( String::Cmp( t1, t2 ) || client->qh_spectator )       {
+				} else if ( String::Cmp( t1, t2 ) || client->qh_spectator ) {
 					continue;	// on different teams
 				}
 			}
 		}
 		if ( speaknum == -1 ) {
 			SVQH_ClientPrintf( client, PRINT_CHAT, "%s", text );
-		} else   {
+		} else {
 			SVQH_ClientPrintf( client, PRINT_SOUND + speaknum - 1, "%s", text );
 		}
 	}
@@ -1152,7 +1152,7 @@ static void SVQH_God_f( client_t* client ) {
 	client->qh_edict->SetFlags( ( int )client->qh_edict->GetFlags() ^ QHFL_GODMODE );
 	if ( !( ( int )client->qh_edict->GetFlags() & QHFL_GODMODE ) ) {
 		SVQH_ClientPrintf( client, 0, "godmode OFF\n" );
-	} else   {
+	} else {
 		SVQH_ClientPrintf( client, 0, "godmode ON\n" );
 	}
 }
@@ -1165,7 +1165,7 @@ static void SVQH_Notarget_f( client_t* client ) {
 	client->qh_edict->SetFlags( ( int )client->qh_edict->GetFlags() ^ QHFL_NOTARGET );
 	if ( !( ( int )client->qh_edict->GetFlags() & QHFL_NOTARGET ) ) {
 		SVQH_ClientPrintf( client, 0, "notarget OFF\n" );
-	} else   {
+	} else {
 		SVQH_ClientPrintf( client, 0, "notarget ON\n" );
 	}
 }
@@ -1179,7 +1179,7 @@ static void SVQH_Noclip_f( client_t* client ) {
 	if ( client->qh_edict->GetMoveType() != QHMOVETYPE_NOCLIP ) {
 		client->qh_edict->SetMoveType( QHMOVETYPE_NOCLIP );
 		SVQH_ClientPrintf( client, 0, "noclip ON\n" );
-	} else   {
+	} else {
 		client->qh_edict->SetMoveType( QHMOVETYPE_WALK );
 		SVQH_ClientPrintf( client, 0, "noclip OFF\n" );
 	}
@@ -1194,7 +1194,7 @@ static void SVQ1_Fly_f( client_t* client ) {
 	if ( client->qh_edict->GetMoveType() != QHMOVETYPE_FLY ) {
 		client->qh_edict->SetMoveType( QHMOVETYPE_FLY );
 		SVQH_ClientPrintf( client, 0, "flymode ON\n" );
-	} else   {
+	} else {
 		client->qh_edict->SetMoveType( QHMOVETYPE_WALK );
 		SVQH_ClientPrintf( client, 0, "flymode OFF\n" );
 	}
@@ -1225,17 +1225,17 @@ static void SVQ1_Give_f( client_t* host_client ) {
 			if ( t[ 0 ] == '6' ) {
 				if ( t[ 1 ] == 'a' ) {
 					sv_player->SetItems( ( int )sv_player->GetItems() | Q1HIT_PROXIMITY_GUN );
-				} else   {
+				} else {
 					sv_player->SetItems( ( int )sv_player->GetItems() | Q1IT_GRENADE_LAUNCHER );
 				}
-			} else if ( t[ 0 ] == '9' )       {
+			} else if ( t[ 0 ] == '9' ) {
 				sv_player->SetItems( ( int )sv_player->GetItems() | Q1HIT_LASER_CANNON );
-			} else if ( t[ 0 ] == '0' )       {
+			} else if ( t[ 0 ] == '0' ) {
 				sv_player->SetItems( ( int )sv_player->GetItems() | Q1HIT_MJOLNIR );
-			} else if ( t[ 0 ] >= '2' )       {
+			} else if ( t[ 0 ] >= '2' ) {
 				sv_player->SetItems( ( int )sv_player->GetItems() | ( Q1IT_SHOTGUN << ( t[ 0 ] - '2' ) ) );
 			}
-		} else   {
+		} else {
 			if ( t[ 0 ] >= '2' ) {
 				sv_player->SetItems( ( int )sv_player->GetItems() | ( Q1IT_SHOTGUN << ( t[ 0 ] - '2' ) ) );
 			}
@@ -1261,7 +1261,7 @@ static void SVQ1_Give_f( client_t* host_client ) {
 					sv_player->SetAmmoNails( v );
 				}
 			}
-		} else   {
+		} else {
 			sv_player->SetAmmoNails( v );
 		}
 		break;
@@ -1285,7 +1285,7 @@ static void SVQ1_Give_f( client_t* host_client ) {
 					sv_player->SetAmmoRockets( v );
 				}
 			}
-		} else   {
+		} else {
 			sv_player->SetAmmoRockets( v );
 		}
 		break;
@@ -1312,7 +1312,7 @@ static void SVQ1_Give_f( client_t* host_client ) {
 					sv_player->SetAmmoCells( v );
 				}
 			}
-		} else   {
+		} else {
 			sv_player->SetAmmoCells( v );
 		}
 		break;
@@ -1367,7 +1367,7 @@ static void SVQH_Name_f( client_t* client ) {
 	char* newName;
 	if ( Cmd_Argc() == 2 ) {
 		newName = Cmd_Argv( 1 );
-	} else   {
+	} else {
 		newName = Cmd_ArgsUnmodified();
 	}
 	newName[ 15 ] = 0;
@@ -1402,14 +1402,14 @@ static void SVH2_Class_f( client_t* client ) {
 	float newClass;
 	if ( Cmd_Argc() == 2 ) {
 		newClass = String::Atof( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		newClass = String::Atof( Cmd_ArgsUnmodified() );
 	}
 
 	if ( sv.loadgame || client->h2_playerclass ) {
 		if ( client->qh_edict->GetPlayerClass() ) {
 			newClass = client->qh_edict->GetPlayerClass();
-		} else if ( client->h2_playerclass )     {
+		} else if ( client->h2_playerclass ) {
 			newClass = client->h2_playerclass;
 		}
 	}
@@ -1435,7 +1435,7 @@ static void SVQH_Color_f( client_t* client ) {
 	int top, bottom;
 	if ( Cmd_Argc() == 2 ) {
 		top = bottom = String::Atoi( Cmd_Argv( 1 ) );
-	} else   {
+	} else {
 		top = String::Atoi( Cmd_Argv( 1 ) );
 		bottom = String::Atoi( Cmd_Argv( 2 ) );
 	}
@@ -1495,7 +1495,7 @@ static void SVQHW_SetInfo_f( client_t* client ) {
 		String::NCpy( client->name, Info_ValueForKey( client->userinfo, "name" ),
 			sizeof ( client->name ) - 1 );
 		client->qh_sendinfo = true;
-	} else   {
+	} else {
 		char oldval[ MAX_INFO_STRING_QW ];
 		String::Cpy( oldval, Info_ValueForKey( client->userinfo, Cmd_Argv( 1 ) ) );
 
@@ -1547,7 +1547,7 @@ void SVQH_TogglePause( const char* msg ) {
 			SVQH_ClientReliableWrite_Begin( cl, q1svc_setpause, 2 );
 			SVQH_ClientReliableWrite_Byte( cl, sv.qh_paused );
 		}
-	} else   {
+	} else {
 		sv.qh_reliable_datagram.WriteByte( GGameType & GAME_Hexen2 ? h2svc_setpause : q1svc_setpause );
 		sv.qh_reliable_datagram.WriteByte( sv.qh_paused );
 	}
@@ -1568,13 +1568,13 @@ static void SVQH_Pause_f( client_t* client ) {
 
 		if ( sv.qh_paused ) {
 			sprintf( st, "%s paused the game\n", client->name );
-		} else   {
+		} else {
 			sprintf( st, "%s unpaused the game\n", client->name );
 		}
-	} else   {
+	} else {
 		if ( sv.qh_paused ) {
 			sprintf( st, "%s paused the game\n", PR_GetString( client->qh_edict->GetNetName() ) );
-		} else   {
+		} else {
 			sprintf( st, "%s unpaused the game\n", PR_GetString( client->qh_edict->GetNetName() ) );
 		}
 	}
@@ -1605,7 +1605,7 @@ static void SVQH_Status_f( client_t* host_client ) {
 			if ( hours ) {
 				minutes -= ( hours * 60 );
 			}
-		} else   {
+		} else {
 			hours = 0;
 		}
 		SVQH_ClientPrintf( host_client, 0, "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, ( int )client->qh_edict->GetFrags(), hours, minutes, seconds );
@@ -1632,7 +1632,7 @@ static void SVQH_Kick_f( client_t* kicker ) {
 		}
 		kicked = &svs.clients[ i ];
 		byNumber = true;
-	} else   {
+	} else {
 		for ( i = 0, kicked = svs.clients; i < svs.qh_maxclients; i++, kicked++ ) {
 			if ( kicked->state < CS_CONNECTED ) {
 				continue;
@@ -1666,7 +1666,7 @@ static void SVQH_Kick_f( client_t* kicker ) {
 		}
 		if ( message ) {
 			SVQH_ClientPrintf( kicked, 0, "Kicked by %s: %s\n", who, message );
-		} else   {
+		} else {
 			SVQH_ClientPrintf( kicked, 0, "Kicked by %s\n", who );
 		}
 		SVQH_DropClient( kicked, false );
@@ -1777,7 +1777,7 @@ static void SVQHW_ShowServerinfo_f( client_t* client ) {
 		if ( l < 20 ) {
 			Com_Memset( o, ' ', 20 - l );
 			key[ 20 ] = 0;
-		} else   {
+		} else {
 			*o = 0;
 		}
 		String::Cat( outputbuf, sizeof ( outputbuf ), key );
@@ -1969,7 +1969,7 @@ static void SVQHW_AddLinksToPmove( qhedict_t* sv_player, worldSector_t* node ) {
 			pe->info = QH_NUM_FOR_EDICT( check );
 			if ( check->GetSolid() == QHSOLID_BSP ) {
 				pe->model = sv.models[ ( int )( check->v.modelindex ) ];
-			} else   {
+			} else {
 				pe->model = -1;
 				VectorCopy( check->GetMins(), pe->mins );
 				VectorCopy( check->GetMaxs(), pe->maxs );
@@ -2082,7 +2082,7 @@ static void SVQW_RunCmd( client_t* host_client, qwusercmd_t* ucmd ) {
 	if ( qh_pmove.onground != -1 ) {
 		sv_player->SetFlags( ( int )sv_player->GetFlags() | QHFL_ONGROUND );
 		sv_player->SetGroundEntity( EDICT_TO_PROG( QH_EDICT_NUM( qh_pmove.physents[ qh_pmove.onground ].info ) ) );
-	} else   {
+	} else {
 		sv_player->SetFlags( ( int )sv_player->GetFlags() & ~QHFL_ONGROUND );
 	}
 	for ( i = 0; i < 3; i++ )
@@ -2139,7 +2139,7 @@ static void SVHW_RunCmd( client_t* host_client, hwusercmd_t* ucmd ) {
 
 	if ( ucmd->buttons & 4 || sv_player->GetPlayerClass() == CLASS_DWARF ) {// crouched?
 		sv_player->SetFlags2( ( ( int )sv_player->GetFlags2() ) | H2FL2_CROUCHED );
-	} else   {
+	} else {
 		sv_player->SetFlags2( ( ( int )sv_player->GetFlags2() ) & ( ~H2FL2_CROUCHED ) );
 	}
 
@@ -2208,7 +2208,7 @@ static void SVHW_RunCmd( client_t* host_client, hwusercmd_t* ucmd ) {
 	if ( qh_pmove.onground != -1 ) {
 		sv_player->SetFlags( ( int )sv_player->GetFlags() | QHFL_ONGROUND );
 		sv_player->SetGroundEntity( EDICT_TO_PROG( QH_EDICT_NUM( qh_pmove.physents[ qh_pmove.onground ].info ) ) );
-	} else   {
+	} else {
 		sv_player->SetFlags( ( int )sv_player->GetFlags() & ~QHFL_ONGROUND );
 	}
 	for ( i = 0; i < 3; i++ )
@@ -2251,7 +2251,7 @@ static void SVQHW_PostRunCmd( client_t* client ) {
 		*pr_globalVars.self = EDICT_TO_PROG( client->qh_edict );
 		PR_ExecuteProgram( *pr_globalVars.PlayerPostThink );
 		SVQH_RunNewmis( svs.realtime * 0.001 );
-	} else if ( qhw_SpectatorThink )     {
+	} else if ( qhw_SpectatorThink ) {
 		*pr_globalVars.time = sv.qh_time * 0.001f;
 		*pr_globalVars.self = EDICT_TO_PROG( client->qh_edict );
 		PR_ExecuteProgram( qhw_SpectatorThink );
@@ -2321,7 +2321,7 @@ static void SVH2_ReadClientMove( client_t* cl, QMsg& message ) {
 
 	if ( bits & 4 ) {	// crouched?
 		cl->qh_edict->SetFlags2( ( ( int )cl->qh_edict->GetFlags2() ) | H2FL2_CROUCHED );
-	} else   {
+	} else {
 		cl->qh_edict->SetFlags2( ( ( int )cl->qh_edict->GetFlags2() ) & ( ~H2FL2_CROUCHED ) );
 	}
 
@@ -2485,7 +2485,7 @@ static void SVQW_NextUpload( client_t* client, QMsg& message ) {
 
 	if ( percent != 100 ) {
 		SVQH_SendClientCommand( client, "nextul\n" );
-	} else   {
+	} else {
 		FS_FCloseFile( client->qw_upload );
 		client->qw_upload = 0;
 
@@ -2496,7 +2496,7 @@ static void SVQW_NextUpload( client_t* client, QMsg& message ) {
 
 			if ( ( p = strchr( client->qw_uploadfn, '/' ) ) != NULL ) {
 				p++;
-			} else   {
+			} else {
 				p = client->qw_uploadfn;
 			}
 			NET_OutOfBandPrint( NS_SERVER, client->qw_snap_from, "%c%s upload completed.\nTo download, enter:\ndownload %s\n",
@@ -2613,7 +2613,7 @@ void SVQW_ExecuteClientMessage( client_t* cl, QMsg& message ) {
 	// sequence number
 	if ( cl->netchan.incomingSequence >= cl->netchan.outgoingSequence ) {
 		cl->netchan.outgoingSequence = cl->netchan.incomingSequence;
-	} else   {
+	} else {
 		cl->qh_send_message = false;	// don't reply, sequences have slipped
 
 	}
@@ -2679,7 +2679,7 @@ void SVHW_ExecuteClientMessage( client_t* cl, QMsg& message ) {
 	// sequence number
 	if ( cl->netchan.incomingSequence >= cl->netchan.outgoingSequence ) {
 		cl->netchan.outgoingSequence = cl->netchan.incomingSequence;
-	} else   {
+	} else {
 		cl->qh_send_message = false;	// don't reply, sequences have slipped
 
 	}
@@ -2752,7 +2752,7 @@ static bool SVQH_ReadClientMessage( client_t* client ) {
 			if ( !SVH2_ParseClientMessage( client, message ) ) {
 				return false;
 			}
-		} else   {
+		} else {
 			if ( !SVQ1_ParseClientMessage( client, message ) ) {
 				return false;
 			}

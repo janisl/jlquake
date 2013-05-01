@@ -94,7 +94,7 @@ void CLH2_BlobExplosion( const vec3_t origin ) {
 		if ( i & 1 ) {
 			p->type = pt_h2blob_hw;
 			p->color = 66 + rand() % 6;
-		} else   {
+		} else {
 			p->type = pt_h2blob2_hw;
 			p->color = 150 + rand() % 6;
 		}
@@ -135,7 +135,7 @@ void CLH2_RunParticleEffect2( const vec3_t origin, const vec3_t directionMin, co
 			float num = rand() / ( float )RAND_MAX;
 			if ( GGameType & GAME_HexenWorld ) {
 				p->org[ j ] = origin[ j ] + ( ( rand() & 15 ) - 8 );
-			} else   {
+			} else {
 				p->org[ j ] = origin[ j ] + ( ( rand() & 8 ) - 4 );
 			}
 			p->vel[ j ] = directionMin[ j ] + ( ( directionMax[ j ] - directionMin[ j ] ) * num );
@@ -195,7 +195,7 @@ void CLH2_SplashParticleEffect( const vec3_t origin, float radius, int colour, p
 			if ( j == 2 ) {
 				p->vel[ j ] = ( radius * num * 4 ) + radius;
 				p->org[ j ] = origin[ j ] + 3;
-			} else   {
+			} else {
 				p->vel[ j ] = ( radius * num * 2 ) - radius;
 				p->org[ j ] = origin[ j ] + ( ( rand() % 64 ) - 32 );
 			}
@@ -449,15 +449,15 @@ void CLH2_SnowEffect( const vec3_t minOrigin, const vec3_t maxOrigin, int flags,
 
 		if ( ( rand() & 0x7f ) <= 1 ) {	//have a console variable 'happy_snow' that makes all snowflakes happy snow!
 			p->count = 69;	//happy snow!
-		} else if ( flags & SFL_FLUFFY || ( flags & SFL_MIXED && ( rand() & 3 ) ) )         {
+		} else if ( flags & SFL_FLUFFY || ( flags & SFL_MIXED && ( rand() & 3 ) ) ) {
 			p->count = ( rand() & 31 ) + 10;	//From 10 to 41 scale, will be divided
-		} else   {
+		} else {
 			p->count = 10;
 		}
 
 		if ( flags & SFL_HALF_BRIGHT ) {//Start darker
 			p->color = 26 + ( rand() % 5 );
-		} else   {
+		} else {
 			p->color = 18 + ( rand() % 12 );
 		}
 
@@ -593,7 +593,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 					p->org[ j ] = start[ j ] + ( ( rand() & 3 ) - 2 );
 				}
 				len -= size;
-			} else   {
+			} else {
 				p->type = pt_h2slowgrav;
 				p->color = 134 + ( rand() & 7 );
 				for ( int j = 0; j < 3; j++ ) {
@@ -608,7 +608,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			p->type = pt_h2static;
 			if ( type == rt_tracer ) {
 				p->color = 130 + ( rand() & 6 );
-			} else   {
+			} else {
 				p->color = 230 + ( ( tracercount & 4 ) << 1 );
 			}
 
@@ -618,7 +618,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			if ( tracercount & 1 ) {
 				p->vel[ 0 ] = 30 * vec[ 1 ];
 				p->vel[ 1 ] = 30 * -vec[ 0 ];
-			} else   {
+			} else {
 				p->vel[ 0 ] = 30 * -vec[ 1 ];
 				p->vel[ 1 ] = 30 * vec[ 0 ];
 			}
@@ -628,7 +628,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			p->type = pt_h2slowgrav;
 			if ( GGameType & GAME_HexenWorld ) {
 				p->color = 138 + ( rand() & 3 );
-			} else   {
+			} else {
 				p->color = 134 + ( rand() & 7 );
 			}
 			for ( int j = 0; j < 3; j++ ) {
@@ -683,7 +683,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 				p->vel[ 0 ] = ( rand() % 20 ) - 10;
 				p->vel[ 1 ] = ( rand() % 20 ) - 10;
 				p->vel[ 2 ] = ( rand() % 20 ) - 10;
-			} else   {
+			} else {
 				p->vel[ 0 ] = ( rand() % 40 ) - 20;
 				p->vel[ 1 ] = ( rand() % 40 ) - 20;
 				p->vel[ 2 ] = ( rand() % 40 ) - 20;
@@ -918,7 +918,7 @@ void CLHW_TargetBallEffectParticles( vec3_t origin, float targetDistance ) {
 		}
 		if ( targetDistance < 60 ) {
 			p->die = cl.serverTime + ( rand() & 3 ) * 20 + ( 230 * ( 1.0 - ( 0.23 * ( targetDistance - 24.0 ) / 36.0 ) ) );
-		} else   {
+		} else {
 			p->die = cl.serverTime + ( 300 * ( ( 256.0 - targetDistance ) / 256.0 ) ) + ( rand() & 7 ) * 20;
 		}
 		p->color = 7 + ( rand() % 24 );

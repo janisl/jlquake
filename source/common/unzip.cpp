@@ -281,7 +281,7 @@ extern uLong unzlocal_SearchCentralDir( FILE* fin ) {
 		int i;
 		if ( uBackRead + BUFREADCOMMENT > uMaxBack ) {
 			uBackRead = uMaxBack;
-		} else   {
+		} else {
 			uBackRead += BUFREADCOMMENT;
 		}
 		uReadPos = uSizeFile - uBackRead;
@@ -522,7 +522,7 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 	if ( err == UNZ_OK ) {
 		if ( unzlocal_getLong( s->file,&uMagic ) != UNZ_OK ) {
 			err = UNZ_ERRNO;
-		} else if ( uMagic != 0x02014b50 )     {
+		} else if ( uMagic != 0x02014b50 ) {
 			err = UNZ_BADZIPFILE;
 		}
 	}
@@ -594,7 +594,7 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 		if ( file_info.size_filename < fileNameBufferSize ) {
 			*( szFileName + file_info.size_filename ) = '\0';
 			uSizeRead = file_info.size_filename;
-		} else   {
+		} else {
 			uSizeRead = fileNameBufferSize;
 		}
 
@@ -611,14 +611,14 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 		uLong uSizeRead;
 		if ( file_info.size_file_extra < extraFieldBufferSize ) {
 			uSizeRead = file_info.size_file_extra;
-		} else   {
+		} else {
 			uSizeRead = extraFieldBufferSize;
 		}
 
 		if ( lSeek != 0 ) {
 			if ( fseek( s->file,lSeek,SEEK_CUR ) == 0 ) {
 				lSeek = 0;
-			} else   {
+			} else {
 				err = UNZ_ERRNO;
 			}
 		}
@@ -628,7 +628,7 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 			}
 		}
 		lSeek += file_info.size_file_extra - uSizeRead;
-	} else   {
+	} else {
 		lSeek += file_info.size_file_extra;
 	}
 
@@ -638,14 +638,14 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 		if ( file_info.size_file_comment < commentBufferSize ) {
 			*( szComment + file_info.size_file_comment ) = '\0';
 			uSizeRead = file_info.size_file_comment;
-		} else   {
+		} else {
 			uSizeRead = commentBufferSize;
 		}
 
 		if ( lSeek != 0 ) {
 			if ( fseek( s->file,lSeek,SEEK_CUR ) == 0 ) {
 				lSeek = 0;
-			} else   {
+			} else {
 				err = UNZ_ERRNO;
 			}
 		}
@@ -655,7 +655,7 @@ static int unzlocal_GetCurrentFileInfoInternal( unzFile file,
 			}
 		}
 		lSeek += file_info.size_file_comment - uSizeRead;
-	} else   {
+	} else {
 		lSeek += file_info.size_file_comment;
 	}
 
@@ -856,7 +856,7 @@ static int unzlocal_CheckCurrentFileCoherencyHeader( unz_s* s, uInt* piSizeVar,
 	if ( err == UNZ_OK ) {
 		if ( unzlocal_getLong( s->file,&uMagic ) != UNZ_OK ) {
 			err = UNZ_ERRNO;
-		} else if ( uMagic != 0x04034b50 )     {
+		} else if ( uMagic != 0x04034b50 ) {
 			err = UNZ_BADZIPFILE;
 		}
 	}
@@ -873,7 +873,7 @@ static int unzlocal_CheckCurrentFileCoherencyHeader( unz_s* s, uInt* piSizeVar,
 
 	if ( unzlocal_getShort( s->file,&uData ) != UNZ_OK ) {
 		err = UNZ_ERRNO;
-	} else if ( ( err == UNZ_OK ) && ( uData != s->cur_file_info.compression_method ) )         {
+	} else if ( ( err == UNZ_OK ) && ( uData != s->cur_file_info.compression_method ) ) {
 		err = UNZ_BADZIPFILE;
 	}
 
@@ -910,7 +910,7 @@ static int unzlocal_CheckCurrentFileCoherencyHeader( unz_s* s, uInt* piSizeVar,
 
 	if ( unzlocal_getShort( s->file,&size_filename ) != UNZ_OK ) {
 		err = UNZ_ERRNO;
-	} else if ( ( err == UNZ_OK ) && ( size_filename != s->cur_file_info.size_filename ) )         {
+	} else if ( ( err == UNZ_OK ) && ( size_filename != s->cur_file_info.size_filename ) ) {
 		err = UNZ_BADZIPFILE;
 	}
 
@@ -1103,7 +1103,7 @@ extern int unzReadCurrentFile( unzFile file, void* buf, unsigned len ) {
 			if ( pfile_in_zip_read_info->stream.avail_out <
 				 pfile_in_zip_read_info->stream.avail_in ) {
 				uDoCopy = pfile_in_zip_read_info->stream.avail_out;
-			} else   {
+			} else {
 				uDoCopy = pfile_in_zip_read_info->stream.avail_in;
 			}
 
@@ -1121,7 +1121,7 @@ extern int unzReadCurrentFile( unzFile file, void* buf, unsigned len ) {
 			pfile_in_zip_read_info->stream.next_in += uDoCopy;
 			pfile_in_zip_read_info->stream.total_out += uDoCopy;
 			iRead += uDoCopy;
-		} else   {
+		} else {
 			uLong uTotalOutBefore,uTotalOutAfter;
 			uLong uOutThis;
 			int flush = Z_SYNC_FLUSH;
@@ -1202,7 +1202,7 @@ extern int unzeof( unzFile file ) {
 
 	if ( pfile_in_zip_read_info->rest_read_uncompressed == 0 ) {
 		return 1;
-	} else   {
+	} else {
 		return 0;
 	}
 }
@@ -1246,7 +1246,7 @@ extern int unzGetLocalExtrafield( unzFile file,void* buf,unsigned len ) {
 
 	if ( len > size_to_read ) {
 		read_now = ( uInt )size_to_read;
-	} else   {
+	} else {
 		read_now = ( uInt )len;
 	}
 

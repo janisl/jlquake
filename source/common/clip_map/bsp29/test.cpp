@@ -52,7 +52,7 @@ int QClipMap29::PointLeafnum( const vec3_t P ) const {
 		float d = DotProduct( P, Plane->normal ) - Plane->dist;
 		if ( d > 0 ) {
 			NodeNum = Node->children[ 0 ];
-		} else   {
+		} else {
 			NodeNum = Node->children[ 1 ];
 		}
 	}
@@ -155,12 +155,12 @@ int QClipMap29::HullPointContents( const chull_t* Hull, int NodeNum, const vec3_
 		float d;
 		if ( plane->type < 3 ) {
 			d = P[ plane->type ] - plane->dist;
-		} else   {
+		} else {
 			d = DotProduct( plane->normal, P ) - plane->dist;
 		}
 		if ( d < 0 ) {
 			NodeNum = node->children[ 1 ];
-		} else   {
+		} else {
 			NodeNum = node->children[ 0 ];
 		}
 	}

@@ -62,13 +62,13 @@ int String::GetChar( const char*& S ) {
 	if ( ( *S & 0xe0 ) == 0xc0 ) {
 		Val = *S & 0x1f;
 		Cnt = 1;
-	} else if ( ( *S & 0xf0 ) == 0xe0 )       {
+	} else if ( ( *S & 0xf0 ) == 0xe0 ) {
 		Val = *S & 0x0f;
 		Cnt = 2;
-	} else if ( ( *S & 0xf8 ) == 0xf0 )       {
+	} else if ( ( *S & 0xf8 ) == 0xf0 ) {
 		Val = *S & 0x07;
 		Cnt = 3;
-	} else   {
+	} else {
 		common->FatalError( "Not a valid UTF-8" );
 	}
 	S++;
@@ -88,16 +88,16 @@ idStr String::FromChar( int C ) {
 	if ( C < 0x80 ) {
 		Ret[ 0 ] = C;
 		Ret[ 1 ] = 0;
-	} else if ( C < 0x800 )     {
+	} else if ( C < 0x800 ) {
 		Ret[ 0 ] = 0xc0 | ( C & 0x1f );
 		Ret[ 1 ] = 0x80 | ( ( C >> 5 ) & 0x3f );
 		Ret[ 2 ] = 0;
-	} else if ( C < 0x10000 )     {
+	} else if ( C < 0x10000 ) {
 		Ret[ 0 ] = 0xe0 | ( C & 0x0f );
 		Ret[ 1 ] = 0x80 | ( ( C >> 4 ) & 0x3f );
 		Ret[ 2 ] = 0x80 | ( ( C >> 10 ) & 0x3f );
 		Ret[ 3 ] = 0;
-	} else   {
+	} else {
 		Ret[ 0 ] = 0xf0 | ( C & 0x07 );
 		Ret[ 1 ] = 0x80 | ( ( C >> 3 ) & 0x3f );
 		Ret[ 2 ] = 0x80 | ( ( C >> 9 ) & 0x3f );
@@ -174,10 +174,10 @@ int String::NICmp( const char* s1, const char* s2, size_t n ) {
 	if ( s1 == NULL ) {
 		if ( s2 == NULL ) {
 			return 0;
-		} else   {
+		} else {
 			return -1;
 		}
-	} else if ( s2 == NULL )     {
+	} else if ( s2 == NULL ) {
 		return 1;
 	}
 
@@ -350,7 +350,7 @@ int String::Atoi( const char* Str ) {
 	if ( *Str == '-' ) {
 		Sign = -1;
 		Str++;
-	} else   {
+	} else {
 		Sign = 1;
 	}
 
@@ -365,11 +365,11 @@ int String::Atoi( const char* Str ) {
 			int C = *Str++;
 			if ( C >= '0' && C <= '9' ) {
 				Val = ( Val << 4 ) + C - '0';
-			} else if ( C >= 'a' && C <= 'f' )     {
+			} else if ( C >= 'a' && C <= 'f' ) {
 				Val = ( Val << 4 ) + C - 'a' + 10;
-			} else if ( C >= 'A' && C <= 'F' )     {
+			} else if ( C >= 'A' && C <= 'F' ) {
 				Val = ( Val << 4 ) + C - 'A' + 10;
-			} else   {
+			} else {
 				return Val * Sign;
 			}
 		}
@@ -401,7 +401,7 @@ float String::Atof( const char* Str ) {
 	if ( *Str == '-' ) {
 		Sign = -1;
 		Str++;
-	} else   {
+	} else {
 		Sign = 1;
 	}
 
@@ -416,11 +416,11 @@ float String::Atof( const char* Str ) {
 			int C = *Str++;
 			if ( C >= '0' && C <= '9' ) {
 				Val = ( Val * 16 ) + C - '0';
-			} else if ( C >= 'a' && C <= 'f' )     {
+			} else if ( C >= 'a' && C <= 'f' ) {
 				Val = ( Val * 16 ) + C - 'a' + 10;
-			} else if ( C >= 'A' && C <= 'F' )     {
+			} else if ( C >= 'A' && C <= 'F' ) {
 				Val = ( Val * 16 ) + C - 'A' + 10;
-			} else   {
+			} else {
 				return Val * Sign;
 			}
 		}
@@ -639,7 +639,7 @@ void String::FileBase( const char* In, char* Out ) {
 
 	if ( S - S2 < 2 ) {
 		Out[ 0 ] = 0;
-	} else   {
+	} else {
 		S--;
 		NCpy( Out, S2 + 1, S - S2 );
 		Out[ S - S2 ] = 0;
@@ -894,7 +894,7 @@ char* String::ParseExt( const char** data_p, bool allowLineBreaks ) {
 			if ( *data ) {
 				data += 2;
 			}
-		} else   {
+		} else {
 			break;
 		}
 	}
@@ -985,13 +985,13 @@ int String::Compress( char* data_p ) {
 					datai++;
 					size++;
 					// skip double slash comments
-				} else if ( c == '/' && datai[ 1 ] == '/' )       {
+				} else if ( c == '/' && datai[ 1 ] == '/' ) {
 					while ( *datai && *datai != '\n' ) {
 						datai++;
 					}
 					ws = false;
 					// skip /* */ comments
-				} else if ( c == '/' && datai[ 1 ] == '*' )       {
+				} else if ( c == '/' && datai[ 1 ] == '*' ) {
 					if ( GGameType & GAME_ET ) {
 						datai += 2;	// Arnout: skip over '/*'
 					}
@@ -1002,7 +1002,7 @@ int String::Compress( char* data_p ) {
 						datai += 2;
 					}
 					ws = false;
-				} else   {
+				} else {
 					if ( ws ) {
 						*datao = ' ';
 						datao++;
@@ -1071,7 +1071,7 @@ int String::Compress( char* data_p ) {
 						if ( c && c != '"' ) {
 							*out++ = c;
 							in++;
-						} else   {
+						} else {
 							break;
 						}
 					}
@@ -1079,7 +1079,7 @@ int String::Compress( char* data_p ) {
 						*out++ = c;
 						in++;
 					}
-				} else   {
+				} else {
 					*out = c;
 					out++;
 					in++;
@@ -1103,7 +1103,7 @@ void String::SkipBracedSection( const char** program ) {
 		if ( token[ 1 ] == 0 ) {
 			if ( token[ 0 ] == '{' ) {
 				depth++;
-			} else if ( token[ 0 ] == '}' )       {
+			} else if ( token[ 0 ] == '}' ) {
 				depth--;
 			}
 		}
@@ -1134,7 +1134,7 @@ static const char* Com_StringContains( const char* str1, const char* str2, bool 
 				if ( str1[ j ] != str2[ j ] ) {
 					break;
 				}
-			} else   {
+			} else {
 				if ( String::ToUpper( str1[ j ] ) != String::ToUpper( str2[ j ] ) ) {
 					break;
 				}
@@ -1170,12 +1170,12 @@ bool String::Filter( const char* filter, const char* name, bool casesensitive ) 
 				}
 				name = ptr + Length( buf );
 			}
-		} else if ( *filter == '?' )     {
+		} else if ( *filter == '?' ) {
 			filter++;
 			name++;
-		} else if ( *filter == '[' && *( filter + 1 ) == '[' )       {
+		} else if ( *filter == '[' && *( filter + 1 ) == '[' ) {
 			filter++;
-		} else if ( *filter == '[' )     {
+		} else if ( *filter == '[' ) {
 			filter++;
 			found = false;
 			while ( *filter && !found ) {
@@ -1187,19 +1187,19 @@ bool String::Filter( const char* filter, const char* name, bool casesensitive ) 
 						if ( *name >= *filter && *name <= *( filter + 2 ) ) {
 							found = true;
 						}
-					} else   {
+					} else {
 						if ( ToUpper( *name ) >= ToUpper( *filter ) &&
 							 ToUpper( *name ) <= ToUpper( *( filter + 2 ) ) ) {
 							found = true;
 						}
 					}
 					filter += 3;
-				} else   {
+				} else {
 					if ( casesensitive ) {
 						if ( *filter == *name ) {
 							found = true;
 						}
-					} else   {
+					} else {
 						if ( ToUpper( *filter ) == ToUpper( *name ) ) {
 							found = true;
 						}
@@ -1218,12 +1218,12 @@ bool String::Filter( const char* filter, const char* name, bool casesensitive ) 
 			}
 			filter++;
 			name++;
-		} else   {
+		} else {
 			if ( casesensitive ) {
 				if ( *filter != *name ) {
 					return false;
 				}
-			} else   {
+			} else {
 				if ( String::ToUpper( *filter ) != String::ToUpper( *name ) ) {
 					return false;
 				}
@@ -1243,7 +1243,7 @@ bool String::FilterPath( const char* filter, const char* name, bool casesensitiv
 	for ( i = 0; i < MAX_QPATH - 1 && filter[ i ]; i++ ) {
 		if ( filter[ i ] == '\\' || filter[ i ] == ':' ) {
 			new_filter[ i ] = '/';
-		} else   {
+		} else {
 			new_filter[ i ] = filter[ i ];
 		}
 	}
@@ -1251,7 +1251,7 @@ bool String::FilterPath( const char* filter, const char* name, bool casesensitiv
 	for ( i = 0; i < MAX_QPATH - 1 && name[ i ]; i++ ) {
 		if ( name[ i ] == '\\' || name[ i ] == ':' ) {
 			new_name[ i ] = '/';
-		} else   {
+		} else {
 			new_name[ i ] = name[ i ];
 		}
 	}
@@ -1291,7 +1291,7 @@ char* String::CleanStr( char* string ) {
 	while ( ( c = *s ) != 0 ) {
 		if ( Q_IsColorString( s ) ) {
 			s++;
-		} else if ( c >= 0x20 && c <= 0x7E )     {
+		} else if ( c >= 0x20 && c <= 0x7E ) {
 			*d++ = c;
 		}
 		s++;

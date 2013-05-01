@@ -143,7 +143,7 @@ dlStatus_t DL_DownloadLoop() {
 	const char* err = NULL;
 	if ( msg->data.result != CURLE_OK ) {
 		err = curl_easy_strerror( msg->data.result );
-	} else   {
+	} else {
 		err = NULL;
 	}
 

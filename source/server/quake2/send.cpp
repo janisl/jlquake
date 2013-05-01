@@ -82,7 +82,7 @@ void SVQ2_Multicast( const vec3_t origin, q2multicast_t to ) {
 	if ( to != Q2MULTICAST_ALL_R && to != Q2MULTICAST_ALL ) {
 		int leafnum = CM_PointLeafnum( origin );
 		area1 = CM_LeafArea( leafnum );
-	} else   {
+	} else {
 		area1 = 0;
 	}
 
@@ -149,7 +149,7 @@ void SVQ2_Multicast( const vec3_t origin, q2multicast_t to ) {
 
 		if ( reliable ) {
 			client->netchan.message.WriteData( sv.multicast._data, sv.multicast.cursize );
-		} else   {
+		} else {
 			client->datagram.WriteData( sv.multicast._data, sv.multicast.cursize );
 		}
 	}
@@ -218,7 +218,7 @@ void SVQ2_StartSound( const vec3_t origin, q2edict_t* entity, int channel,
 	if ( channel & 8 ) {	// no PHS flag
 		use_phs = false;
 		channel &= 7;
-	} else   {
+	} else {
 		use_phs = true;
 	}
 
@@ -253,7 +253,7 @@ void SVQ2_StartSound( const vec3_t origin, q2edict_t* entity, int channel,
 		if ( entity->solid == Q2SOLID_BSP ) {
 			for ( i = 0; i < 3; i++ )
 				origin_v[ i ] = entity->s.origin[ i ] + 0.5 * ( entity->mins[ i ] + entity->maxs[ i ] );
-		} else   {
+		} else {
 			VectorCopy( entity->s.origin, origin_v );
 		}
 	}
@@ -289,13 +289,13 @@ void SVQ2_StartSound( const vec3_t origin, q2edict_t* entity, int channel,
 	if ( channel & Q2CHAN_RELIABLE ) {
 		if ( use_phs ) {
 			SVQ2_Multicast( origin, Q2MULTICAST_PHS_R );
-		} else   {
+		} else {
 			SVQ2_Multicast( origin, Q2MULTICAST_ALL_R );
 		}
-	} else   {
+	} else {
 		if ( use_phs ) {
 			SVQ2_Multicast( origin, Q2MULTICAST_PHS );
-		} else   {
+		} else {
 			SVQ2_Multicast( origin, Q2MULTICAST_ALL );
 		}
 	}
@@ -319,7 +319,7 @@ static bool SVQ2_SendClientDatagram( client_t* client ) {
 	// so that entity references will be current
 	if ( client->datagram.overflowed ) {
 		common->Printf( "WARNING: datagram overflowed for %s\n", client->name );
-	} else   {
+	} else {
 		msg.WriteData( client->datagram._data, client->datagram.cursize );
 	}
 	client->datagram.Clear();
@@ -383,7 +383,7 @@ void SVQ2_SendClientMessages( void ) {
 	if ( sv.state == SS_DEMO && sv.q2_demofile ) {
 		if ( sv_paused->value ) {
 			msglen = 0;
-		} else   {
+		} else {
 			// get the next message
 			int r = FS_Read( &msglen, 4, sv.q2_demofile );
 			if ( r != 4 ) {
@@ -426,14 +426,14 @@ void SVQ2_SendClientMessages( void ) {
 			 sv.state == SS_PIC ) {
 			Netchan_Transmit( &c->netchan, msglen, msgbuf );
 			c->netchan.lastSent = Sys_Milliseconds();
-		} else if ( c->state == CS_ACTIVE )     {
+		} else if ( c->state == CS_ACTIVE ) {
 			// don't overrun bandwidth
 			if ( SVQ2_RateDrop( c ) ) {
 				continue;
 			}
 
 			SVQ2_SendClientDatagram( c );
-		} else   {
+		} else {
 			// just update reliable	if needed
 			if ( c->netchan.message.cursize  || Sys_Milliseconds() - c->netchan.lastSent > 1000 ) {
 				Netchan_Transmit( &c->netchan, 0, NULL );

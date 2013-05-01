@@ -306,7 +306,7 @@ char* Sys_ConsoleInput() {
 							tty_Hide();
 							if ( history ) {
 								tty_con = *history;
-							} else   {
+							} else {
 								Field_Clear( &tty_con );
 							}
 							tty_Show();
@@ -333,7 +333,7 @@ char* Sys_ConsoleInput() {
 		write( 1, &key, 1 );
 		tty_acLength = 0;
 		return NULL;
-	} else   {
+	} else {
 		if ( !com_dedicated || !com_dedicated->value ) {
 			return NULL;
 		}
@@ -379,7 +379,7 @@ void  Sys_Print( const char* msg ) {
 	for ( quint8* p = ( quint8* )msg; *p; p++ ) {
 		if ( ( *p >= 128 || *p < 32 ) && *p != 10 && *p != 13 && *p != 9 ) {
 			fprintf( stderr, "[%02x]", *p );
-		} else   {
+		} else {
 			putc( *p, stderr );
 		}
 	}

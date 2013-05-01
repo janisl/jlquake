@@ -137,7 +137,7 @@ static void CL_Rcon_f() {
 	netadr_t to;
 	if ( cls.state >= CA_CONNECTED ) {
 		to = clc.netchan.remoteAddress;
-	} else   {
+	} else {
 		if ( !String::Length( rconAddress->string ) ) {
 			common->Printf( "You must either be connected,\n"
 							"or set the '%s' cvar\n"
@@ -182,7 +182,7 @@ void CL_Init() {
 		if ( !( GGameType & GAME_Tech3 ) ) {
 			rcon_client_password = Cvar_Get( "rcon_password", "", 0 );
 			rconAddress = Cvar_Get( "rcon_address", "", 0 );
-		} else   {
+		} else {
 			rcon_client_password = Cvar_Get( "rconPassword", "", CVAR_TEMP );
 			rconAddress = Cvar_Get( "rconAddress", "", 0 );
 		}
@@ -191,9 +191,9 @@ void CL_Init() {
 
 	if ( GGameType & GAME_QuakeHexen ) {
 		CLQH_Init();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_Init();
-	} else   {
+	} else {
 		CLT3_Init();
 	}
 
@@ -205,7 +205,7 @@ void CL_Init() {
 void CL_StartHunkUsers() {
 	if ( GGameType & GAME_Tech3 ) {
 		CLT3_StartHunkUsers();
-	} else   {
+	} else {
 		if ( cls.state == CA_UNINITIALIZED ) {
 			return;
 		}
@@ -241,13 +241,13 @@ void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate ) {
 		//	The artists made some backwards ranges. sigh.
 		if ( top < 128 ) {
 			translate[ TOP_RANGE + i ] = top + i;
-		} else   {
+		} else {
 			translate[ TOP_RANGE + i ] = top + 15 - i;
 		}
 
 		if ( bottom < 128 ) {
 			translate[ BOTTOM_RANGE + i ] = bottom + i;
-		} else   {
+		} else {
 			translate[ BOTTOM_RANGE + i ] = bottom + 15 - i;
 		}
 	}
@@ -312,7 +312,7 @@ float CLQH_LerpPoint() {
 			cl.serverTime = ( int )( cl.qh_serverTimeFloat * 1000 );
 		}
 		frac = 0;
-	} else if ( frac > 1 )     {
+	} else if ( frac > 1 ) {
 		if ( frac > 1.01 ) {
 			cl.qh_serverTimeFloat = cl.qh_mtime[ 0 ];
 			cl.serverTime = ( int )( cl.qh_serverTimeFloat * 1000 );
@@ -365,7 +365,7 @@ void CL_AddReliableCommand( const char* cmd ) {
 		clc.q3_reliableSequence++;
 		int index = clc.q3_reliableSequence & ( maxReliableCommands - 1 );
 		String::NCpyZ( clc.q3_reliableCommands[ index ], cmd, sizeof ( clc.q3_reliableCommands[ index ] ) );
-	} else   {
+	} else {
 		clc.netchan.message.WriteByte( GGameType & GAME_Quake ? q1clc_stringcmd :
 			GGameType & GAME_Hexen2 ? h2clc_stringcmd : q2clc_stringcmd );
 		clc.netchan.message.WriteString2( cmd );
@@ -402,7 +402,7 @@ void CL_ForwardCommandToServer() {
 
 	if ( Cmd_Argc() > 1 ) {
 		CL_AddReliableCommand( Cmd_Cmd() );
-	} else   {
+	} else {
 		CL_AddReliableCommand( cmd );
 	}
 }
@@ -440,9 +440,9 @@ void CL_ClearState() {
 
 	if ( GGameType & GAME_Quake ) {
 		CLQ1_ClearState();
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		CLH2_ClearState();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_ClearState();
 	}
 }
@@ -499,11 +499,11 @@ void SHOWNET( QMsg& msg, const char* s ) {
 void CL_Disconnect( bool showMainMenu ) {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		CLQHW_Disconnect();
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		CLQH_Disconnect();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_Disconnect();
-	} else   {
+	} else {
 		CLT3_Disconnect( showMainMenu );
 	}
 }
@@ -512,7 +512,7 @@ void CL_Disconnect( bool showMainMenu ) {
 void CL_NextDemo() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		CLQH_NextDemo();
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		CLT3_NextDemo();
 	}
 }
@@ -674,11 +674,11 @@ void CL_Frame( int msec ) {
 	// fetch results from server
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		CLQHW_ReadPackets();
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		if ( cls.state == CA_ACTIVE ) {
 			CLQH_ReadFromServer();
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_ReadPackets();
 	}
 
@@ -704,22 +704,22 @@ void CL_Frame( int msec ) {
 	// send intentions now
 	if ( GGameType & GAME_QuakeWorld ) {
 		CLQW_SendCmd();
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		CLHW_SendCmd();
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		CLQH_SendCmd();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_SendCmd();
-	} else   {
+	} else {
 		CLT3_SendCmd();
 	}
 
 	// resend a connection request if necessary
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		CLQHW_CheckForResend();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CLQ2_CheckForResend();
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		CLT3_CheckForResend();
 	}
 
@@ -732,7 +732,7 @@ void CL_Frame( int msec ) {
 
 		// Set up prediction for other players
 		CLQW_SetUpPlayerPrediction( true );
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		// Set up prediction for other players
 		CLHW_SetUpPlayerPrediction( false );
 
@@ -741,7 +741,7 @@ void CL_Frame( int msec ) {
 
 		// Set up prediction for other players
 		CLHW_SetUpPlayerPrediction( true );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		// predict all unacknowledged movements
 		CLQ2_PredictMovement();
 
@@ -750,7 +750,7 @@ void CL_Frame( int msec ) {
 		if ( !cl.q2_refresh_prepped && cls.state == CA_ACTIVE ) {
 			CLQ2_PrepRefresh();
 		}
-	} else if ( GGameType & GAME_Tech3 )     {
+	} else if ( GGameType & GAME_Tech3 ) {
 		// decide on the serverTime to render
 		CLT3_SetCGameTime();
 	}
@@ -790,9 +790,9 @@ void CL_Frame( int msec ) {
 	if ( cls.state == CA_ACTIVE ) {
 		if ( GGameType & GAME_QuakeWorld ) {
 			CL_UpdateParticles( 800 );
-		} else if ( GGameType & GAME_HexenWorld )     {
+		} else if ( GGameType & GAME_HexenWorld ) {
 			CL_UpdateParticles( movevars.gravity );
-		} else if ( GGameType & GAME_QuakeHexen && clc.qh_signon == SIGNONS )     {
+		} else if ( GGameType & GAME_QuakeHexen && clc.qh_signon == SIGNONS ) {
 			if ( cl.qh_serverTimeFloat != cl.qh_oldtime ) {
 				CL_UpdateParticles( Cvar_VariableValue( "sv_gravity" ) );
 			}
@@ -827,9 +827,9 @@ bool CL_WWWBadChecksum( const char* pakname ) {
 void CL_ShutdownOnSignal() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		ComQH_HostShutdown();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CL_Shutdown();
-	} else   {
+	} else {
 		GLimp_Shutdown();	// bk010104 - shouldn't this be CL_Shutdown
 	}
 }
@@ -837,9 +837,9 @@ void CL_ShutdownOnSignal() {
 void CL_ShutdownOnWindowsError() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		ComQH_HostShutdown();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		CL_Shutdown();
-	} else   {
+	} else {
 		IN_Shutdown();
 	}
 }

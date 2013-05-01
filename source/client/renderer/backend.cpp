@@ -159,13 +159,13 @@ static void RB_BeginDrawingView() {
 		if ( GGameType & ( GAME_WolfSP | GAME_WolfMP ) && r_uiFullScreen->integer ) {
 			clearBits = GL_DEPTH_BUFFER_BIT;	// (SA) always just clear depth for menus
 
-		} else if ( GGameType & GAME_ET && tr.world && tr.world->globalFog >= 0 )     {
+		} else if ( GGameType & GAME_ET && tr.world && tr.world->globalFog >= 0 ) {
 			clearBits |= GL_DEPTH_BUFFER_BIT;
 			clearBits |= GL_COLOR_BUFFER_BIT;
 			qglClearColor( tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color[ 0 ] * tr.identityLight,
 				tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color[ 1 ] * tr.identityLight,
 				tr.world->fogs[ tr.world->globalFog ].shader->fogParms.color[ 2 ] * tr.identityLight, 1.0 );
-		} else if ( skyboxportal )     {
+		} else if ( skyboxportal ) {
 			if ( backEnd.refdef.rdflags & RDF_SKYBOXPORTAL ) {
 				// portal scene, clear whatever is necessary
 				clearBits |= GL_DEPTH_BUFFER_BIT;
@@ -177,7 +177,7 @@ static void RB_BeginDrawingView() {
 					clearBits |= GL_COLOR_BUFFER_BIT;
 					if ( glfogsettings[ FOG_PORTALVIEW ].registered ) {
 						qglClearColor( glfogsettings[ FOG_PORTALVIEW ].color[ 0 ], glfogsettings[ FOG_PORTALVIEW ].color[ 1 ], glfogsettings[ FOG_PORTALVIEW ].color[ 2 ], glfogsettings[ FOG_PORTALVIEW ].color[ 3 ] );
-					} else if ( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered )       {
+					} else if ( glfogNum > FOG_NONE && glfogsettings[ FOG_CURRENT ].registered ) {
 						qglClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ], glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
 					} else {
 						qglClearColor( 0.5, 0.5, 0.5, 1.0 );
@@ -202,12 +202,12 @@ static void RB_BeginDrawingView() {
 						if ( glfogsettings[ FOG_CURRENT ].mode == GL_LINEAR ) {
 							clearBits |= GL_COLOR_BUFFER_BIT;
 						}
-					} else if ( !( r_portalsky->integer ) )       {
+					} else if ( !( r_portalsky->integer ) ) {
 						// portal skies have been manually turned off, clear bg color
 						clearBits |= GL_COLOR_BUFFER_BIT;
 					}
 					qglClearColor( glfogsettings[ FOG_CURRENT ].color[ 0 ], glfogsettings[ FOG_CURRENT ].color[ 1 ], glfogsettings[ FOG_CURRENT ].color[ 2 ], glfogsettings[ FOG_CURRENT ].color[ 3 ] );
-				} else if ( !( r_portalsky->integer ) )       {
+				} else if ( !( r_portalsky->integer ) ) {
 					// ydnar: portal skies have been manually turned off, clear bg color
 					clearBits |= GL_COLOR_BUFFER_BIT;
 					qglClearColor( 0.5, 0.5, 0.5, 1.0 );

@@ -64,7 +64,7 @@ static void SVQH_Map_f() {
 		info_mask = 0;
 		if ( !svqh_coop->value && svqh_deathmatch->value ) {
 			info_mask2 = 0x80000000;
-		} else   {
+		} else {
 			info_mask2 = 0;
 		}
 	}
@@ -101,7 +101,7 @@ static void SVQH_Changelevel_f() {
 	char* startspot;
 	if ( !( GGameType & GAME_Hexen2 ) || Cmd_Argc() == 2 ) {
 		startspot = NULL;
-	} else   {
+	} else {
 		String::Cpy( _startspot, Cmd_Argv( 2 ) );
 		startspot = _startspot;
 	}
@@ -124,7 +124,7 @@ void SVQHW_Map_f() {
 	char* startspot;
 	if ( !( GGameType & GAME_Hexen2 ) || Cmd_Argc() == 2 ) {
 		startspot = NULL;
-	} else   {
+	} else {
 		String::Cpy( _startspot, Cmd_Argv( 2 ) );
 		startspot = _startspot;
 	}
@@ -214,7 +214,7 @@ void SVH2_SaveGamestate( bool clientsOnly ) {
 		end = svs.qh_maxclients + 1;
 
 		sprintf( name, "clients.gip" );
-	} else   {
+	} else {
 		start = 1;
 		end = sv.qh_num_edicts;
 
@@ -242,7 +242,7 @@ void SVH2_SaveGamestate( bool clientsOnly ) {
 		for ( int i = 0; i < MAX_LIGHTSTYLES_Q1; i++ ) {
 			if ( sv.qh_lightstyles[ i ] ) {
 				FS_Printf( f, "%s\n", sv.qh_lightstyles[ i ] );
-			} else   {
+			} else {
 				FS_Printf( f,"m\n" );
 			}
 		}
@@ -266,7 +266,7 @@ void SVH2_SaveGamestate( bool clientsOnly ) {
 				FS_Flush( f );
 			}
 			host_client++;
-		} else   {
+		} else {
 			FS_Printf( f, "%i\n",i );
 			ED_Write( f, ent );
 			FS_Flush( f );
@@ -323,7 +323,7 @@ static int SVH2_LoadGamestate( char* level, char* startspot, int ClientsMode ) {
 
 	if ( ClientsMode == 1 ) {
 		sprintf( name, "clients.gip" );
-	} else   {
+	} else {
 		sprintf( name, "%s.gip", level );
 
 		if ( ClientsMode != 2 && ClientsMode != 3 ) {
@@ -394,7 +394,7 @@ static int SVH2_LoadGamestate( char* level, char* startspot, int ClientsMode ) {
 			start = ED_ParseGlobals( start );
 			// Need to restore this
 			*pr_globalVars.startspot = PR_SetString( sv.h2_startspot );
-		} else   {
+		} else {
 			ent = QH_EDICT_NUM( entnum );
 			Com_Memset( &ent->v, 0, progs->entityfields * 4 );
 			//ent->free = false;
@@ -426,9 +426,9 @@ static int SVH2_LoadGamestate( char* level, char* startspot, int ClientsMode ) {
 		*pr_globalVars.serverflags = svs.qh_serverflags;
 
 		SVH2_RestoreClients();
-	} else if ( ClientsMode == 2 )     {
+	} else if ( ClientsMode == 2 ) {
 		sv.qh_time = time * 1000;
-	} else if ( ClientsMode == 3 )     {
+	} else if ( ClientsMode == 3 ) {
 		sv.qh_time = time * 1000;
 
 		*pr_globalVars.serverflags = svs.qh_serverflags;
@@ -470,7 +470,7 @@ static void SVH2_Restart_f() {
 			SVQH_SpawnServer( mapname, startspot );
 			SVH2_RestoreClients();
 		}
-	} else   {
+	} else {
 		SVQH_SpawnServer( mapname, startspot );
 	}
 }
@@ -492,7 +492,7 @@ static void SVH2_Changelevel2_f() {
 	char* startspot;
 	if ( Cmd_Argc() == 2 ) {
 		startspot = NULL;
-	} else   {
+	} else {
 		String::Cpy( _startspot, Cmd_Argv( 2 ) );
 		startspot = _startspot;
 	}
@@ -569,7 +569,7 @@ static void SVQ1_Savegame_f() {
 	for ( int i = 0; i < MAX_LIGHTSTYLES_Q1; i++ ) {
 		if ( sv.qh_lightstyles[ i ] ) {
 			FS_Printf( f, "%s\n", sv.qh_lightstyles[ i ] );
-		} else   {
+		} else {
 			FS_Printf( f,"m\n" );
 		}
 	}
@@ -663,7 +663,7 @@ static void SVQ1_Loadgame_f() {
 		if ( entnum == -1 ) {
 			// parse the global vars
 			start = ED_ParseGlobals( start );
-		} else   {
+		} else {
 			// parse an edict
 			qhedict_t* ent = QH_EDICT_NUM( entnum );
 			Com_Memset( &ent->v, 0, progs->entityfields * 4 );
@@ -698,7 +698,7 @@ void SVH2_RemoveGIPFiles( const char* path ) {
 	char* netpath;
 	if ( path ) {
 		netpath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, path );
-	} else   {
+	} else {
 		netpath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, "" );
 		netpath[ String::Length( netpath ) - 1 ] = 0;
 	}
@@ -707,7 +707,7 @@ void SVH2_RemoveGIPFiles( const char* path ) {
 	for ( int i = 0; i < numSysFiles; i++ ) {
 		if ( path ) {
 			netpath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, va( "%s/%s", path, sysFiles[ i ] ) );
-		} else   {
+		} else {
 			netpath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, sysFiles[ i ] );
 		}
 		FS_Remove( netpath );
@@ -934,7 +934,7 @@ static void SVQH_ConStatus_f() {
 			if ( hours ) {
 				minutes -= ( hours * 60 );
 			}
-		} else   {
+		} else {
 			hours = 0;
 		}
 		common->Printf( "#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j + 1, client->name, ( int )client->qh_edict->GetFrags(), hours, minutes, seconds );
@@ -965,7 +965,7 @@ static void SVQHW_Status_f() {
 		common->Printf( "%2i\n", num_sec );
 		common->Printf( "deflosses        : %3i/%3i\n", static_cast<int>( floor( *pr_globalVars.defLosses ) ), f_limit );
 		common->Printf( "attlosses        : %3i/%3i\n", static_cast<int>( floor( *pr_globalVars.attLosses ) ), f_limit * 2 );
-	} else   {
+	} else {
 		common->Printf( "time             : %5.2f\n", sv.qh_time * 0.001f );
 		common->Printf( "timelimit        : %i\n", t_limit );
 		common->Printf( "fraglimit        : %i\n", f_limit );
@@ -989,7 +989,7 @@ static void SVQHW_Status_f() {
 			common->Printf( "%6i %5i", cl->qh_userid, ( int )cl->qh_edict->GetFrags() );
 			if ( cl->qh_spectator ) {
 				common->Printf( " (s)\n" );
-			} else   {
+			} else {
 				common->Printf( "\n" );
 			}
 
@@ -1007,10 +1007,10 @@ static void SVQHW_Status_f() {
 				( int )SVQH_CalcPing( cl ),
 				100.0 * cl->netchan.dropCount / cl->netchan.incomingSequence );
 		}
-	} else   {
+	} else {
 		if ( GGameType & GAME_HexenWorld ) {
 			common->Printf( "frags userid address         name            ping drop  siege\n" );
-		} else   {
+		} else {
 			common->Printf( "frags userid address         name            ping drop  qport\n" );
 		}
 		common->Printf( "----- ------ --------------- --------------- ---- ----- -----\n" );
@@ -1050,7 +1050,7 @@ static void SVQHW_Status_f() {
 
 			if ( cl->qh_spectator ) {
 				common->Printf( " (s)\n" );
-			} else if ( GGameType & GAME_HexenWorld )     {
+			} else if ( GGameType & GAME_HexenWorld ) {
 				common->Printf( " " );
 				switch ( cl->h2_playerclass ) {
 				case CLASS_PALADIN:
@@ -1088,16 +1088,16 @@ static void SVQHW_Status_f() {
 				}
 				if ( ( int )cl->h2_old_v.flags2 & 65536 ) {	//defender of crown
 					common->Printf( "D" );
-				} else   {
+				} else {
 					common->Printf( "-" );
 				}
 				if ( ( int )cl->h2_old_v.flags2 & 524288 ) {//has siege key
 					common->Printf( "K" );
-				} else   {
+				} else {
 					common->Printf( "-" );
 				}
 				common->Printf( "\n" );
-			} else   {
+			} else {
 				common->Printf( "\n" );
 			}
 		}
@@ -1147,10 +1147,10 @@ static void SVQHW_ConSay_f() {
 	if ( GGameType & GAME_HexenWorld ) {
 		if ( hw_dmMode->value == HWDM_SIEGE ) {
 			String::Cpy( text, "GOD SAYS: " );
-		} else   {
+		} else {
 			String::Cpy( text, "ServerAdmin: " );
 		}
-	} else   {
+	} else {
 		String::Cpy( text, "console: " );
 	}
 
@@ -1192,7 +1192,7 @@ static void SVQH_ConKick_f() {
 		}
 		kicked_client = &svs.clients[ i ];
 		byNumber = true;
-	} else   {
+	} else {
 		kicked_client = svs.clients;
 		for ( i = 0; i < svs.qh_maxclients; i++, kicked_client++ ) {
 			if ( kicked_client->state < CS_CONNECTED ) {
@@ -1208,7 +1208,7 @@ static void SVQH_ConKick_f() {
 		const char* who;
 		if ( com_dedicated->integer ) {
 			who = "Console";
-		} else   {
+		} else {
 			who = Cvar_VariableString( "_cl_name" );
 		}
 
@@ -1229,7 +1229,7 @@ static void SVQH_ConKick_f() {
 		}
 		if ( message ) {
 			SVQH_ClientPrintf( kicked_client, 0, "Kicked by %s: %s\n", who, message );
-		} else   {
+		} else {
 			SVQH_ClientPrintf( kicked_client, 0, "Kicked by %s\n", who );
 		}
 		SVQH_DropClient( kicked_client, false );
@@ -1384,7 +1384,7 @@ static void SVQHW_God_f() {
 	client->qh_edict->SetFlags( ( int )client->qh_edict->GetFlags() ^ QHFL_GODMODE );
 	if ( !( ( int )client->qh_edict->GetFlags() & QHFL_GODMODE ) ) {
 		SVQH_ClientPrintf( client, PRINT_HIGH, "godmode OFF\n" );
-	} else   {
+	} else {
 		SVQH_ClientPrintf( client, PRINT_HIGH, "godmode ON\n" );
 	}
 }
@@ -1403,7 +1403,7 @@ static void SVQHW_Noclip_f() {
 	if ( client->qh_edict->GetMoveType() != QHMOVETYPE_NOCLIP ) {
 		client->qh_edict->SetMoveType( QHMOVETYPE_NOCLIP );
 		SVQH_ClientPrintf( client, PRINT_HIGH, "noclip ON\n" );
-	} else   {
+	} else {
 		client->qh_edict->SetMoveType( QHMOVETYPE_WALK );
 		SVQH_ClientPrintf( client, PRINT_HIGH, "noclip OFF\n" );
 	}
@@ -1439,7 +1439,7 @@ static void SVQHW_Give_f() {
 			client->qh_edict->SetHealth( v );
 			break;
 		}
-	} else   {
+	} else {
 		switch ( t[ 0 ] ) {
 		case '2':
 		case '3':
@@ -1505,7 +1505,7 @@ static void SVQHW_Serverinfo_f() {
 
 	if ( GGameType & GAME_HexenWorld ) {
 		SVQH_BroadcastCommand( "fullserverinfo \"%s\"\n", svs.qh_info );
-	} else   {
+	} else {
 		SVQW_SendServerInfoChange( Cmd_Argv( 1 ), Cmd_Argv( 2 ) );
 	}
 }
@@ -1550,7 +1550,7 @@ static void SVQHW_Floodprot_f() {
 			common->Printf( "Current floodprot settings: \nAfter %d msgs per %d seconds, silence for %d seconds\n",
 				qhw_fp_messages, qhw_fp_persecond, qhw_fp_secondsdead );
 			return;
-		} else   {
+		} else {
 			common->Printf( "No floodprots enabled.\n" );
 		}
 	}
@@ -1584,7 +1584,7 @@ static void SVQHW_Floodprotmsg_f() {
 	if ( Cmd_Argc() == 1 ) {
 		common->Printf( "Current msg: %s\n", qhw_fp_msg );
 		return;
-	} else if ( Cmd_Argc() != 2 )     {
+	} else if ( Cmd_Argc() != 2 ) {
 		common->Printf( "Usage: floodprotmsg \"<message>\"\n" );
 		return;
 	}
@@ -1677,7 +1677,7 @@ static void SVQW_Snap( int uid ) {
 	Com_Memcpy( &cl->qw_snap_from, &rcon_from, sizeof ( rcon_from ) );
 	if ( rd_buffer ) {
 		cl->qw_remote_snap = true;
-	} else   {
+	} else {
 		cl->qw_remote_snap = false;
 	}
 
@@ -1726,7 +1726,7 @@ void SVQH_InitOperatorCommands() {
 		Cmd_AddCommand( "restart", SVQ1_Restart_f );
 		Cmd_AddCommand( "save", SVQ1_Savegame_f );
 		Cmd_AddCommand( "load", SVQ1_Loadgame_f );
-	} else   {
+	} else {
 		Cmd_AddCommand( "restart", SVH2_Restart_f );
 		Cmd_AddCommand( "changelevel2", SVH2_Changelevel2_f );
 		Cmd_AddCommand( "save", SVH2_Savegame_f );
@@ -1760,7 +1760,7 @@ void SVQHW_InitOperatorCommands() {
 	if ( GGameType & GAME_QuakeWorld ) {
 		Cmd_AddCommand( "snap", SVQW_Snap_f );
 		Cmd_AddCommand( "snapall", SVQW_SnapAll_f );
-	} else   {
+	} else {
 		Cmd_AddCommand( "smite", SVHW_Smite_f );
 	}
 }

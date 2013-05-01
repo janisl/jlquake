@@ -164,7 +164,7 @@ bool SVT3_GetEntityToken( char* buffer, int length ) {
 	String::NCpyZ( buffer, s, length );
 	if ( !sv.q3_entityParsePoint && !s[ 0 ] ) {
 		return false;
-	} else   {
+	} else {
 		return true;
 	}
 }
@@ -173,7 +173,7 @@ bool SVT3_GetEntityToken( char* buffer, int length ) {
 void SVT3_GameSendServerCommand( int clientNum, const char* text ) {
 	if ( clientNum == -1 ) {
 		SVT3_SendServerCommand( NULL, "%s", text );
-	} else   {
+	} else {
 		if ( clientNum < 0 || clientNum >= sv_maxclients->integer ) {
 			return;
 		}
@@ -235,11 +235,11 @@ static void SVT3_InitGameVM( bool restart ) {
 	// init for this gamestate
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameInit( svs.q3_time, Com_Milliseconds(), restart );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameInit( svs.q3_time, Com_Milliseconds(), restart );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameInit( svs.q3_time, Com_Milliseconds(), restart );
-	} else   {
+	} else {
 		SVQ3_GameInit( svs.q3_time, Com_Milliseconds(), restart );
 	}
 }
@@ -250,7 +250,7 @@ void SVT3_InitGameProgs() {
 		Cvar* var = Cvar_Get( "bot_enable", "1", CVAR_LATCH2 );
 		if ( var ) {
 			bot_enable = var->integer;
-		} else   {
+		} else {
 			bot_enable = 0;
 		}
 	}
@@ -261,11 +261,11 @@ void SVT3_InitGameProgs() {
 	// load the dll or bytecode
 	if ( GGameType & GAME_WolfSP ) {
 		gvm = VM_Create( "qagame", SVWS_GameSystemCalls, VMI_NATIVE );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		gvm = VM_Create( "qagame", SVWM_GameSystemCalls, VMI_NATIVE );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		gvm = VM_Create( "qagame", SVET_GameSystemCalls, VMI_NATIVE );
-	} else   {
+	} else {
 		gvm = VM_Create( "qagame", SVQ3_GameSystemCalls, ( vmInterpret_t )( int )Cvar_VariableValue( "vm_game" ) );
 	}
 	if ( !gvm ) {
@@ -282,11 +282,11 @@ void SVT3_RestartGameProgs() {
 	}
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameShutdown( true );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameShutdown( true );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameShutdown( true );
-	} else   {
+	} else {
 		SVQ3_GameShutdown( true );
 	}
 
@@ -306,11 +306,11 @@ void SVT3_ShutdownGameProgs() {
 	}
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameShutdown( false );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameShutdown( false );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameShutdown( false );
-	} else   {
+	} else {
 		SVQ3_GameShutdown( false );
 	}
 	VM_Free( gvm );
@@ -351,11 +351,11 @@ const char* SVT3_GameClientConnect( int clientNum, bool firstTime, bool isBot ) 
 void SVT3_GameClientCommand( int clientNum ) {
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameClientCommand( clientNum );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameClientCommand( clientNum );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameClientCommand( clientNum );
-	} else   {
+	} else {
 		SVQ3_GameClientCommand( clientNum );
 	}
 }
@@ -363,11 +363,11 @@ void SVT3_GameClientCommand( int clientNum ) {
 void SVT3_GameRunFrame( int time ) {
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameRunFrame( time );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameRunFrame( time );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameRunFrame( time );
-	} else   {
+	} else {
 		SVQ3_GameRunFrame( time );
 	}
 }
@@ -375,11 +375,11 @@ void SVT3_GameRunFrame( int time ) {
 void SVT3_GameClientBegin( int clientNum ) {
 	if ( GGameType & GAME_WolfSP ) {
 		SVWS_GameClientBegin( clientNum );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		SVWM_GameClientBegin( clientNum );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		SVET_GameClientBegin( clientNum );
-	} else   {
+	} else {
 		SVQ3_GameClientBegin( clientNum );
 	}
 }

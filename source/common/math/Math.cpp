@@ -73,13 +73,13 @@ int idMath::FloatToBits( float f, int exponentBits, int mantissaBits ) {
 	if ( f >= 0.0f ) {
 		if ( f >= max ) {
 			return maxBits;
-		} else if ( f <= min )     {
+		} else if ( f <= min ) {
 			return minBits;
 		}
-	} else   {
+	} else {
 		if ( f <= -max ) {
 			return ( maxBits | ( 1 << ( exponentBits + mantissaBits ) ) );
-		} else if ( f >= -min )     {
+		} else if ( f >= -min ) {
 			return ( minBits | ( 1 << ( exponentBits + mantissaBits ) ) );
 		}
 	}

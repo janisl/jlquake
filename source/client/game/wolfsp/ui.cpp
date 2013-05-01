@@ -53,23 +53,23 @@ void CLWS_InGamePopup( char* menu ) {
 		// NERVE - SMF
 		if ( menu && !String::ICmp( menu, "UIMENU_WM_PICKTEAM" ) ) {
 			UIT3_SetActiveMenu( WSUIMENU_WM_PICKTEAM );
-		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_PICKPLAYER" ) )       {
+		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_PICKPLAYER" ) ) {
 			UIT3_SetActiveMenu( WSUIMENU_WM_PICKPLAYER );
-		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_QUICKMESSAGE" ) )       {
+		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_QUICKMESSAGE" ) ) {
 			UIT3_SetActiveMenu( WSUIMENU_WM_QUICKMESSAGE );
-		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_LIMBO" ) )       {
+		} else if ( menu && !String::ICmp( menu, "UIMENU_WM_LIMBO" ) ) {
 			UIT3_SetActiveMenu( WSUIMENU_WM_LIMBO );
 		}
 		// -NERVE - SMF
 		else if ( menu && !String::ICmp( menu, "hbook1" ) ) {			//----(SA)
 			UIT3_SetActiveMenu( WSUIMENU_BOOK1 );
-		} else if ( menu && !String::ICmp( menu, "hbook2" ) )       {		//----(SA)
+		} else if ( menu && !String::ICmp( menu, "hbook2" ) ) {		//----(SA)
 			UIT3_SetActiveMenu( WSUIMENU_BOOK2 );
-		} else if ( menu && !String::ICmp( menu, "hbook3" ) )       {		//----(SA)
+		} else if ( menu && !String::ICmp( menu, "hbook3" ) ) {		//----(SA)
 			UIT3_SetActiveMenu( WSUIMENU_BOOK3 );
-		} else if ( menu && !String::ICmp( menu, "pregame" ) )       {				//----(SA) added
+		} else if ( menu && !String::ICmp( menu, "pregame" ) ) {				//----(SA) added
 			UIT3_SetActiveMenu( WSUIMENU_PREGAME );
-		} else   {
+		} else {
 			UIT3_SetActiveMenu( WSUIMENU_CLIPBOARD );
 		}
 	}
@@ -83,11 +83,11 @@ void UIWS_KeyDownEvent( int key ) {
 	if ( UIWS_GetActiveMenu() == WSUIMENU_CLIPBOARD ) {
 		// any key gets out of clipboard
 		key = K_ESCAPE;
-	} else if ( UIWS_GetActiveMenu() == WSUIMENU_PREGAME )     {
+	} else if ( UIWS_GetActiveMenu() == WSUIMENU_PREGAME ) {
 		if ( key != K_MOUSE1 ) {
 			return;	// eat all keys except mouse click
 		}
-	} else   {
+	} else {
 		// when in the notebook, check for the key bound to "notebook" and allow that as an escape key
 		const char* kb = keys[ key ].binding;
 		if ( kb ) {

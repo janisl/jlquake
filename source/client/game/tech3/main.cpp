@@ -312,7 +312,7 @@ static void CLT3_Configstrings_f() {
 			}
 			common->Printf( "%4i: %s\n", i, cl.ws_gameState.stringData + ofs );
 		}
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		for ( i = 0; i < MAX_CONFIGSTRINGS_WM; i++ ) {
 			ofs = cl.wm_gameState.stringOffsets[ i ];
 			if ( !ofs ) {
@@ -320,7 +320,7 @@ static void CLT3_Configstrings_f() {
 			}
 			common->Printf( "%4i: %s\n", i, cl.wm_gameState.stringData + ofs );
 		}
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		for ( i = 0; i < MAX_CONFIGSTRINGS_ET; i++ ) {
 			ofs = cl.et_gameState.stringOffsets[ i ];
 			if ( !ofs ) {
@@ -328,7 +328,7 @@ static void CLT3_Configstrings_f() {
 			}
 			common->Printf( "%4i: %s\n", i, cl.et_gameState.stringData + ofs );
 		}
-	} else   {
+	} else {
 		for ( i = 0; i < MAX_CONFIGSTRINGS_Q3; i++ ) {
 			ofs = cl.q3_gameState.stringOffsets[ i ];
 			if ( !ofs ) {
@@ -357,7 +357,7 @@ static void CLQ3_SetModel_f() {
 	if ( arg[ 0 ] ) {
 		Cvar_Set( "model", arg );
 		Cvar_Set( "headmodel", arg );
-	} else   {
+	} else {
 		char name[ 256 ];
 		Cvar_VariableStringBuffer( "model", name, sizeof ( name ) );
 		common->Printf( "model is set to %s\n", name );
@@ -436,7 +436,7 @@ static void CL_Cache_UsedFile_f() {
 			String::NCpyZ( item->name, itemStr, MAX_QPATH );
 			if ( cacheIndex > 9999 ) {		// hack, but yeh
 				item->hits = cacheIndex;
-			} else   {
+			} else {
 				item->hits++;
 			}
 			item->lastSetIndex = cacheIndex;
@@ -519,7 +519,7 @@ static void CLWS_ShellExecute_URL_f() {
 	bool doexit;
 	if ( Cmd_Argc() < 4 ) {
 		doexit = true;
-	} else   {
+	} else {
 		doexit = ( qboolean )( String::Atoi( Cmd_Argv( 3 ) ) );
 	}
 
@@ -560,7 +560,7 @@ static void CLET_EatMe_f() {
 static void CLT3_SetRecommended_f() {
 	if ( GGameType & GAME_WolfSP && Cmd_Argc() > 1 ) {
 		Com_SetRecommended( true );
-	} else   {
+	} else {
 		Com_SetRecommended( false );
 	}
 }
@@ -677,7 +677,7 @@ void CLT3_Init() {
 		Cvar_Get( "color1", "4", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "color2", "5", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "teamtask", "0", CVAR_USERINFO );
-	} else if ( GGameType & GAME_WolfSP )     {
+	} else if ( GGameType & GAME_WolfSP ) {
 		Cvar_Get( "name", "Player", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "rate", "3000", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "model", "bj2", CVAR_USERINFO | CVAR_ARCHIVE );		// temp until we have an skeletal american model
@@ -685,7 +685,7 @@ void CLT3_Init() {
 		Cvar_Get( "color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "cg_autoactivate", "1", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "cg_emptyswitch", "0", CVAR_USERINFO | CVAR_ARCHIVE );
-	} else if ( GGameType & GAME_WolfMP )     {
+	} else if ( GGameType & GAME_WolfMP ) {
 		Cvar_Get( "name", "WolfPlayer", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "rate", "5000", CVAR_USERINFO | CVAR_ARCHIVE );			// NERVE - SMF - changed from 3000
 		Cvar_Get( "model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -693,7 +693,7 @@ void CLT3_Init() {
 		Cvar_Get( "color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "cg_autoactivate", "1", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "cg_autoReload", "1", CVAR_ARCHIVE | CVAR_USERINFO );
-	} else   {
+	} else {
 		Cvar_Get( "name", "ETPlayer", CVAR_USERINFO | CVAR_ARCHIVE );
 		Cvar_Get( "rate", "5000", CVAR_USERINFO | CVAR_ARCHIVE );			// NERVE - SMF - changed from 3000
 		Cvar_Get( "cl_wwwDownload", "1", CVAR_USERINFO | CVAR_ARCHIVE );
@@ -725,7 +725,7 @@ void CLT3_Init() {
 	Cmd_AddCommand( "showip", CLT3_ShowIP_f );
 	if ( GGameType & GAME_Quake3 ) {
 		Cmd_AddCommand( "model", CLQ3_SetModel_f );
-	} else   {
+	} else {
 		// Ridah, startup-caching system
 		Cmd_AddCommand( "cache_startgather", CL_Cache_StartGather_f );
 		Cmd_AddCommand( "cache_usedfile", CL_Cache_UsedFile_f );

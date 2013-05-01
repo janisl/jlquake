@@ -58,13 +58,13 @@ static void R_LineGraph( int h ) {
 	if ( h == 10000 ) {
 		// yellow
 		colour = 0x00ffff;
-	} else if ( h == 9999 )     {
+	} else if ( h == 9999 ) {
 		// red
 		colour = 0x0000ff;
-	} else if ( h == 9998 )     {
+	} else if ( h == 9998 ) {
 		// blue
 		colour = 0xff0000;
-	} else   {
+	} else {
 		// white
 		colour = 0xffffff;
 	}
@@ -94,7 +94,7 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 		if ( cls.realtime - cls.disable_screen > 60000 ) {
 			cls.disable_screen = 0;
 			common->Printf( "load failed.\n" );
-		} else   {
+		} else {
 			return;
 		}
 	}
@@ -127,12 +127,12 @@ void SCRQ1_DrawScreen( stereoFrame_t stereoFrame ) {
 	if ( scr_draw_loading ) {
 		SCRQ1_DrawLoading();
 		SbarQ1_Draw();
-	} else if ( cl.qh_intermission == 1 && in_keyCatchers == 0 )     {
+	} else if ( cl.qh_intermission == 1 && in_keyCatchers == 0 ) {
 		SbarQ1_IntermissionOverlay();
-	} else if ( cl.qh_intermission == 2 && in_keyCatchers == 0 )     {
+	} else if ( cl.qh_intermission == 2 && in_keyCatchers == 0 ) {
 		SbarQ1_FinaleOverlay();
 		SCR_CheckDrawCenterString();
-	} else   {
+	} else {
 		SCR_DrawNet();
 		SCR_DrawFPS();
 		SCRQH_DrawTurtle();

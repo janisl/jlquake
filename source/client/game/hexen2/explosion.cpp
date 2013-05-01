@@ -183,7 +183,7 @@ static void BubbleThink( h2explosion_t* ex ) {
 
 			ex->data += 0.5;
 		}
-	} else   {
+	} else {
 		ex->endTime = cl.serverTime;
 	}
 }
@@ -310,7 +310,7 @@ static void MultiGrenadePieceThink( h2explosion_t* ex ) {
 
 		if ( rand() & 7 ) {
 			missile->model = R_RegisterModel( "models/bg_expld.spr" );
-		} else   {
+		} else {
 			missile->model = R_RegisterModel( "models/fl_expld.spr" );
 		}
 
@@ -361,7 +361,7 @@ static void MultiGrenadePiece2Think( h2explosion_t* ex ) {
 
 		if ( rand() & 1 ) {
 			missile->model = R_RegisterModel( "models/gen_expl.spr" );
-		} else   {
+		} else {
 			missile->model = R_RegisterModel( "models/bg_expld.spr" );
 		}
 
@@ -392,7 +392,7 @@ static void MultiGrenadeThink( h2explosion_t* ex ) {
 
 		if ( rand() & 1 ) {
 			missile->model = R_RegisterModel( "models/gen_expl.spr" );
-		} else   {
+		} else {
 			missile->model = R_RegisterModel( "models/bg_expld.spr" );
 		}
 
@@ -587,7 +587,7 @@ void CLHW_ParseBonePower2( QMsg& message ) {
 	//sound
 	if ( cnt2 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 1, clh2_sfx_bonehit, 1, 1 );
-	} else   {
+	} else {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 1, clh2_sfx_bonewal, 1, 1 );
 	}
 
@@ -655,7 +655,7 @@ static void ChunkThink( h2explosion_t* ex ) {
 				vec3_t dmax = {40, 40, 40};
 				CLH2_RunParticleEffect2( ex->origin, dmin, dmax, 136 + ( rand() % 5 ), pt_h2darken, 20 );
 			}
-		} else if ( ( int )ex->data == H2THINGTYPE_ACID )       {
+		} else if ( ( int )ex->data == H2THINGTYPE_ACID ) {
 			if ( VectorNormalize( ex->velocity ) > 100.0 ) {
 				// hit, now make a splash of acid
 				//vec3_t	dmin = {-40, -40, 10};
@@ -683,7 +683,7 @@ static void ChunkThink( h2explosion_t* ex ) {
 			if ( cl.serverTime + cls.frametime * 4 < ex->endTime ) {
 				// just crossed the threshold
 				ex->abslight = 200;
-			} else   {
+			} else {
 				ex->abslight -= 35;
 			}
 			ex->flags |= H2DRF_TRANSLUCENT | H2MLS_ABSLIGHT;
@@ -786,14 +786,14 @@ void CLHW_ParseChunk2( QMsg& message ) {
 	if ( volume < 5000 ) {
 		scale = .20;
 		cnt *= 3;	// Because so few pieces come out of a small object
-	} else if ( volume < 50000 )     {
+	} else if ( volume < 50000 ) {
 		scale = .45;
 		cnt *= 3;	// Because so few pieces come out of a small object
-	} else if ( volume < 500000 )     {
+	} else if ( volume < 500000 ) {
 		scale = .50;
-	} else if ( volume < 1000000 )     {
+	} else if ( volume < 1000000 ) {
 		scale = .75;
-	} else   {
+	} else {
 		scale = 1;
 	}
 	if ( cnt > 30 ) {
@@ -923,7 +923,7 @@ void CLHW_ParseIceHit( QMsg& message ) {
 
 			if ( cnt2 == 2 ) {
 				ex->scale = 65 + rand() % 10;
-			} else   {
+			} else {
 				ex->scale = 35 + rand() % 10;
 			}
 			ex->data = H2THINGTYPE_ICE;
@@ -940,7 +940,7 @@ void CLHW_ParseIceHit( QMsg& message ) {
 				ex->endTime += 3000;
 			}
 		}
-	} else   {
+	} else {
 		vec3_t dmin = {-10, -10, -10};
 		vec3_t dmax = {10, 10, 10};
 		CLH2_ColouredParticleExplosion( pos,14,10,10 );
@@ -956,9 +956,9 @@ void CLHW_ParseIceHit( QMsg& message ) {
 	// Add in the sound
 	if ( cnt2 == 1 ) {	// hit a wall
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_icewall, 1, 1 );
-	} else if ( cnt2 == 2 )     {
+	} else if ( cnt2 == 2 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_iceshatter, 1, 1 );
-	} else   {	// hit a person
+	} else {	// hit a person
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_iceflesh, 1, 1 );
 	}
 }
@@ -1029,7 +1029,7 @@ void CLHW_ParsePlayerDeath( QMsg& message ) {
 	case 1:
 		if ( rand() % 2 ) {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_gib1, 1, 1 );
-		} else   {
+		} else {
 			S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_gib2, 1, 1 );
 		}
 		break;
@@ -1151,7 +1151,7 @@ void CLHW_XbowImpact( const vec3_t pos, const vec3_t vel, int chType, int damage
 					ex->startTime = cl.serverTime;
 					ex->endTime = ex->startTime + 4000;
 				}
-			} else if ( rand() & 1 )     {	//whole go
+			} else if ( rand() & 1 ) {	//whole go
 				h2explosion_t* ex = CLH2_AllocExplosion();
 				ex->frameFunc = ChunkThink;
 
@@ -1237,7 +1237,7 @@ static void SwordFrameFunc( h2explosion_t* ex ) {
 	ex->scale = ( ex->endTime - cl.serverTime ) * 0.15 + 1;
 	if ( ( cl.serverTime / 50 ) % 2 ) {
 		ex->skin = 0;
-	} else   {
+	} else {
 		ex->skin = 1;
 	}
 
@@ -1397,7 +1397,7 @@ void CLHW_SunStaffExplosions( const vec3_t pos ) {
 		if ( i ) {
 			ex->model = R_RegisterModel( "models/stsunsf3.mdl" );
 			ex->scale = 200;
-		} else   {
+		} else {
 			ex->model = R_RegisterModel( "models/blast.mdl" );
 			ex->flags |= H2DRF_TRANSLUCENT;
 			ex->frameFunc = sunBallUpdate;
@@ -1669,7 +1669,7 @@ static void MeteorBlastThink( h2explosion_t* ex ) {
 		// ran out of juice
 		VectorCopy( ex->origin, oldPos );
 		hitWall = true;
-	} else   {
+	} else {
 		vec3_t tempVect;
 		VectorCopy( ex->oldorg, tempVect );
 
@@ -1731,7 +1731,7 @@ static void MeteorCrushSpawnThink( h2explosion_t* ex ) {
 	float chance;
 	if ( cls.frametime <= 50 ) {
 		chance = ( cls.frametime / 25.0 );
-	} else   {
+	} else {
 		chance = ( cls.frametime / 50.0 );
 	}
 
@@ -1859,7 +1859,7 @@ void CLHW_ParseFireWall( QMsg& message ) {
 
 			if ( PtContents == BSP29CONTENTS_EMPTY ) {
 				ex->origin[ 2 ] -= 16;
-			} else   {
+			} else {
 				ex->origin[ 2 ] += 16;
 			}
 		} while ( PtContents == BSP29CONTENTS_EMPTY );
@@ -2085,11 +2085,11 @@ void CLHW_ParseAxe( QMsg& message ) {
 static void SmokeRingFrameFunc( h2explosion_t* ex ) {
 	if ( cl.serverTime - ex->startTime < 300 ) {
 		ex->skin = 0;
-	} else if ( cl.serverTime - ex->startTime < 600 )     {
+	} else if ( cl.serverTime - ex->startTime < 600 ) {
 		ex->skin = 1;
-	} else if ( cl.serverTime - ex->startTime < 900 )     {
+	} else if ( cl.serverTime - ex->startTime < 900 ) {
 		ex->skin = 2;
-	} else   {
+	} else {
 		ex->skin = 3;
 	}
 }
@@ -2100,7 +2100,7 @@ static void updatePurify2( h2explosion_t* ex ) {
 	int numSprites;
 	if ( cls.frametime <= 50 ) {
 		numSprites = 20;
-	} else   {
+	} else {
 		numSprites = 8;
 	}
 
@@ -2162,7 +2162,7 @@ static void updateSwordShot( h2explosion_t* ex ) {
 	int testVal = cl.serverTime / 50;
 	if ( testVal % 2 ) {
 		ex->skin = 0;
-	} else   {
+	} else {
 		ex->skin = 1;
 	}
 
@@ -2426,7 +2426,7 @@ static void zapFrameFunc( h2explosion_t* ex ) {
 	ex->scale = ( ex->endTime - cl.serverTime ) / 2 + 1;
 	if ( ( cl.serverTime / 50 ) % 2 ) {
 		ex->skin = 0;
-	} else   {
+	} else {
 		ex->skin = 1;
 	}
 }
@@ -2458,7 +2458,7 @@ void CLHW_UpdatePoisonGas( const vec3_t pos, const vec3_t angles ) {
 	float smokeCount;
 	if ( cls.frametime <= 50 ) {
 		smokeCount = 32 * cls.frametime * 0.001;
-	} else   {
+	} else {
 		smokeCount = 16 * cls.frametime * 0.001;
 	}
 
@@ -2722,7 +2722,7 @@ void CLH2_UpdateExplosions() {
 		if ( ex->exflags & EXFLAG_STILL_FRAME ) {
 			// if it's a still frame, use the data field
 			f = ( int )ex->data;
-		} else   {
+		} else {
 			f = ( R_ModelNumFrames( ex->model ) - 1 ) * ( cl.serverTime - ex->startTime ) / ( ex->endTime - ex->startTime );
 		}
 
@@ -2800,7 +2800,7 @@ void CLHW_UpdateTargetBall() {
 			if ( clh2_explosions[ i ].model == iceMod ) {
 				if ( clh2_explosions[ i ].flags & H2DRF_TRANSLUCENT ) {
 					ex1 = &clh2_explosions[ i ];
-				} else   {
+				} else {
 					ex2 = &clh2_explosions[ i ];
 				}
 			}
@@ -2816,7 +2816,7 @@ void CLHW_UpdateTargetBall() {
 	if ( clh2_targetDistance < 60 ) {
 		// make it scale back down up close...
 		newScale = 172 - ( 172 * ( 1.0 - ( clh2_targetDistance - 24.0 ) / 36.0 ) );
-	} else   {
+	} else {
 		newScale = 80 + ( 120 * ( ( 256.0 - clh2_targetDistance ) / 256.0 ) );
 	}
 	if ( ex1 == NULL ) {
@@ -2844,7 +2844,7 @@ void CLHW_UpdateTargetBall() {
 	if ( clh2_targetDistance < 60 ) {
 		// make it scale back down up close...
 		newScale = 76 - ( 76 * ( 1.0 - ( clh2_targetDistance - 24.0 ) / 36.0 ) );
-	} else   {
+	} else {
 		newScale = 30 + ( 60 * ( ( 256.0 - clh2_targetDistance ) / 256.0 ) );
 	}
 	if ( ex2 == NULL ) {

@@ -39,7 +39,7 @@ static void SVT3_Netchan_Encode( client_t* client, QMsg* msg, const char* comman
 		}
 		if ( string[ index ] > 127 || string[ index ] == '%' ) {
 			key ^= '.' << ( i & 1 );
-		} else   {
+		} else {
 			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;
@@ -79,7 +79,7 @@ static void SVT3_Netchan_Decode( client_t* client, QMsg* msg ) {
 		}
 		if ( string[ index ] > 127 || string[ index ] == '%' ) {
 			key ^= '.' << ( i & 1 );
-		} else   {
+		} else {
 			key ^= string[ index ] << ( i & 1 );
 		}
 		index++;
@@ -108,10 +108,10 @@ void SVT3_Netchan_TransmitNextFragment( client_t* client ) {
 			common->DPrintf( "#462 Netchan_TransmitNextFragment: emptied queue\n" );
 			if ( GGameType & GAME_ET ) {
 				client->et_netchan_end_queue = NULL;
-			} else   {
+			} else {
 				client->q3_netchan_end_queue = &client->q3_netchan_start_queue;
 			}
-		} else   {
+		} else {
 			common->DPrintf( "#462 Netchan_TransmitNextFragment: remaining queued message\n" );
 		}
 
@@ -172,18 +172,18 @@ void SVT3_Netchan_Transmit( client_t* client, QMsg* msg ) {
 		if ( GGameType & GAME_ET ) {
 			if ( !client->q3_netchan_start_queue ) {
 				client->q3_netchan_start_queue = netbuf;
-			} else   {
+			} else {
 				client->et_netchan_end_queue->next = netbuf;
 			}
 			client->et_netchan_end_queue = netbuf;
-		} else   {
+		} else {
 			*client->q3_netchan_end_queue = netbuf;
 			client->q3_netchan_end_queue = &( *client->q3_netchan_end_queue )->next;
 		}
 
 		// emit the next fragment of the current message for now
 		Netchan_TransmitNextFragment( &client->netchan );
-	} else   {
+	} else {
 		if ( !( GGameType & GAME_WolfSP ) && ( !( GGameType & GAME_ET ) || !SVET_GameIsSinglePlayer() ) ) {
 			SVT3_Netchan_Encode( client, msg, client->q3_lastClientCommandString );
 		}

@@ -212,7 +212,7 @@ void CLWQ_WriteServerDataToDemo() {
 
 	if ( cl.qh_spectator ) {
 		buf.WriteByte( cl.playernum | 128 );
-	} else   {
+	} else {
 		buf.WriteByte( cl.playernum );
 	}
 
@@ -442,7 +442,7 @@ static bool CLQH_GetDemoMessage( QMsg& message ) {
 			if ( cls.framecount == cls.qh_td_startframe + 1 ) {
 				cls.qh_td_starttime = Sys_DoubleTime();
 			}
-		} else if (	/* cl.time > 0 && */ cl.qh_serverTimeFloat <= cl.qh_mtime[ 0 ] )       {
+		} else if (	/* cl.time > 0 && */ cl.qh_serverTimeFloat <= cl.qh_mtime[ 0 ] ) {
 			return 0;			// don't need another message yet
 		}
 	}
@@ -531,7 +531,7 @@ static bool CLQHW_GetDemoMessage( QMsg& message ) {
 	if ( cls.qh_timedemo ) {
 		if ( cls.qh_td_lastframe < 0 ) {
 			cls.qh_td_lastframe = demotime;
-		} else if ( demotime > cls.qh_td_lastframe )     {
+		} else if ( demotime > cls.qh_td_lastframe ) {
 			cls.qh_td_lastframe = demotime;
 			// rewind back to time
 			FS_Seek( clc.demofile, FS_FTell( clc.demofile ) - sizeof ( demotime ), FS_SEEK_SET );
@@ -542,19 +542,19 @@ static bool CLQHW_GetDemoMessage( QMsg& message ) {
 			cls.qh_td_startframe = cls.framecount;
 		}
 		cls.realtime = demotime * 1000;	// warp
-	} else if ( ( GGameType & GAME_HexenWorld || !cl.qh_paused ) && cls.state >= CA_LOADING )       {	// allways grab until fully connected
+	} else if ( ( GGameType & GAME_HexenWorld || !cl.qh_paused ) && cls.state >= CA_LOADING ) {	// allways grab until fully connected
 		if ( cls.realtime * 0.001 + 1.0 < demotime ) {
 			// too far back
 			cls.realtime = demotime * 1000 - 1000;
 			// rewind back to time
 			FS_Seek( clc.demofile, FS_FTell( clc.demofile ) - sizeof ( demotime ), FS_SEEK_SET );
 			return false;
-		} else if ( cls.realtime * 0.001 < demotime )     {
+		} else if ( cls.realtime * 0.001 < demotime ) {
 			// rewind back to time
 			FS_Seek( clc.demofile, FS_FTell( clc.demofile ) - sizeof ( demotime ), FS_SEEK_SET );
 			return false;		// don't need another message yet
 		}
-	} else   {
+	} else {
 		cls.realtime = demotime * 1000;	// we're warping
 
 	}
@@ -573,7 +573,7 @@ static bool CLQHW_GetDemoMessage( QMsg& message ) {
 			if ( !CLHW_ReadDemoUserCommand( demotime ) ) {
 				return false;
 			}
-		} else   {
+		} else {
 			if ( !CLQW_ReadDemoUserCommand( demotime ) ) {
 				return false;
 			}
@@ -633,7 +633,7 @@ int CLQH_GetMessage( QMsg& message ) {
 		// discard nop keepalive message
 		if ( message.cursize == 1 && message._data[ 0 ] == ( GGameType & GAME_Hexen2 ? h2svc_nop : q1svc_nop ) ) {
 			common->Printf( "<-- server to client keepalive\n" );
-		} else   {
+		} else {
 			break;
 		}
 	}
@@ -678,7 +678,7 @@ void CLQH_Stop_f() {
 		message.WriteByte( GGameType & GAME_Hexen2 ? h2svc_disconnect : q1svc_disconnect );
 		message.WriteString2( "EndOfDemo" );
 		CLQHW_WriteDemoMessage( &message );
-	} else   {
+	} else {
 		message.WriteByte( GGameType & GAME_Hexen2 ? h2svc_disconnect : q1svc_disconnect );
 		CLQH_WriteDemoMessage( &message );
 	}
@@ -712,7 +712,7 @@ void CLQH_Record_f() {
 	if ( c == 4 ) {
 		track = String::Atoi( Cmd_Argv( 3 ) );
 		common->Printf( "Forcing CD track to %i\n", cls.qh_forcetrack );
-	} else   {
+	} else {
 		track = -1;
 	}
 
@@ -841,7 +841,7 @@ void CLQH_PlayDemo_f() {
 	String::Cpy( name, Cmd_Argv( 1 ) );
 	if ( GGameType & GAME_Hexen2 && !String::ICmp( name,"t9" ) ) {
 		h2intro_playing = true;
-	} else   {
+	} else {
 		h2intro_playing = false;
 	}
 	String::DefaultExtension( name, sizeof ( name ), ".dem" );
@@ -865,7 +865,7 @@ void CLQH_PlayDemo_f() {
 	while ( c != '\n' ) {
 		if ( c == '-' ) {
 			neg = true;
-		} else   {
+		} else {
 			cls.qh_forcetrack = cls.qh_forcetrack * 10 + ( c - '0' );
 		}
 		if ( FS_Read( &c, 1, clc.demofile ) != 1 ) {
@@ -926,7 +926,7 @@ void CLQH_TimeDemo_f() {
 		if ( cls.state != CA_CONNECTING ) {
 			return;
 		}
-	} else   {
+	} else {
 		CLQH_PlayDemo_f();
 	}
 
@@ -1024,7 +1024,7 @@ void CLQH_Startdemos_f() {
 	if ( !SV_IsServerActive() && cls.qh_demonum != -1 && !clc.demoplaying ) {
 		cls.qh_demonum = 0;
 		CL_NextDemo();
-	} else   {
+	} else {
 		cls.qh_demonum = -1;
 	}
 }

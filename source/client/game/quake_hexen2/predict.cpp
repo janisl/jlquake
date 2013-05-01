@@ -208,7 +208,7 @@ void CLQW_SetUpPlayerPrediction( bool dopred ) {
 		if ( j == cl.playernum ) {
 			VectorCopy( cl.qw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_QW ].playerstate[ cl.playernum ].origin,
 				pplayer->origin );
-		} else   {
+		} else {
 			// only predict half the move to minimize overruns
 			msec = 500 * ( playertime - state->state_time );
 			if ( msec <= 0 ||
@@ -216,7 +216,7 @@ void CLQW_SetUpPlayerPrediction( bool dopred ) {
 				 !dopred ) {
 				VectorCopy( state->origin, pplayer->origin );
 				//common->DPrintf ("nopredict\n");
-			} else   {
+			} else {
 				// predict players movement
 				if ( msec > 255 ) {
 					msec = 255;
@@ -278,7 +278,7 @@ void CLHW_SetUpPlayerPrediction( bool dopred ) {
 		if ( j == cl.playernum ) {
 			VectorCopy( cl.hw_frames[ clc.netchan.outgoingSequence & UPDATE_MASK_HW ].playerstate[ cl.playernum ].origin,
 				pplayer->origin );
-		} else   {
+		} else {
 			// only predict half the move to minimize overruns
 			msec = 500 * ( playertime - state->state_time );
 			if ( msec <= 0 ||
@@ -286,7 +286,7 @@ void CLHW_SetUpPlayerPrediction( bool dopred ) {
 				 !dopred ) {
 				VectorCopy( state->origin, pplayer->origin );
 				//common->DPrintf ("nopredict\n");
-			} else   {
+			} else {
 				// predict players movement
 				if ( msec > 255 ) {
 					msec = 255;
@@ -338,7 +338,7 @@ void CLQHW_SetSolidPlayers( int playernum ) {
 		VectorCopy( pmqh_player_mins, pent->mins );
 		if ( GGameType & GAME_Hexen2 && pplayer->flags & HWPF_CROUCH ) {
 			VectorCopy( pmqh_player_maxs_crouch, pent->maxs );
-		} else   {
+		} else {
 			VectorCopy( pmqh_player_maxs, pent->maxs );
 		}
 		qh_pmove.numphysent++;
@@ -417,7 +417,7 @@ void CLQW_PredictMove() {
 	float f;
 	if ( to->senttime == from->senttime ) {
 		f = 0;
-	} else   {
+	} else {
 		f = ( cl.qh_serverTimeFloat - from->senttime ) / ( to->senttime - from->senttime );
 
 		if ( f < 0 ) {
@@ -516,7 +516,7 @@ void CLHW_PredictMove() {
 	float f;
 	if ( to->senttime == from->senttime ) {
 		f = 0;
-	} else   {
+	} else {
 		f = ( cl.qh_serverTimeFloat - from->senttime ) / ( to->senttime - from->senttime );
 
 		if ( f < 0 ) {
@@ -546,7 +546,7 @@ void CLQHW_InitPrediction() {
 	cl_nopred = Cvar_Get( "cl_nopred", "0", 0 );
 	if ( GGameType & GAME_Hexen2 ) {
 		cl_pushlatency = Cvar_Get( "pushlatency", "-50", CVAR_ARCHIVE );
-	} else   {
+	} else {
 		cl_pushlatency = Cvar_Get( "pushlatency", "-999", 0 );
 	}
 	cl_solid_players = Cvar_Get( "cl_solid_players", "1", 0 );

@@ -186,7 +186,7 @@ static define_t* PC_CopyDefine( source_t* source, define_t* define ) {
 		newtoken->next = NULL;
 		if ( lasttoken ) {
 			lasttoken->next = newtoken;
-		} else   {
+		} else {
 			newdefine->tokens = newtoken;
 		}
 		lasttoken = newtoken;
@@ -198,7 +198,7 @@ static define_t* PC_CopyDefine( source_t* source, define_t* define ) {
 		newtoken->next = NULL;
 		if ( lasttoken ) {
 			lasttoken->next = newtoken;
-		} else   {
+		} else {
 			newdefine->parms = newtoken;
 		}
 		lasttoken = newtoken;
@@ -268,10 +268,10 @@ static bool PC_Directive_undef( source_t* source ) {
 		if ( !String::Cmp( define->name, token.string ) ) {
 			if ( define->flags & DEFINE_FIXED ) {
 				SourceWarning( source, "can't undef %s", token.string );
-			} else   {
+			} else {
 				if ( lastdefine ) {
 					lastdefine->hashnext = define->hashnext;
-				} else   {
+				} else {
 					source->definehash[ hash ] = define->hashnext;
 				}
 				PC_FreeDefine( define );
@@ -377,7 +377,7 @@ static bool PC_Directive_define( source_t* source ) {
 				t->next = NULL;
 				if ( last ) {
 					last->next = t;
-				} else   {
+				} else {
 					define->parms = t;
 				}
 				last = t;
@@ -414,7 +414,7 @@ static bool PC_Directive_define( source_t* source ) {
 		t->next = NULL;
 		if ( last ) {
 			last->next = t;
-		} else   {
+		} else {
 			define->tokens = t;
 		}
 		last = t;
@@ -513,7 +513,7 @@ static void PC_ConvertPath( char* path ) {
 		if ( ( *ptr == '\\' || *ptr == '/' ) &&
 			 ( *( ptr + 1 ) == '\\' || *( ptr + 1 ) == '/' ) ) {
 			memmove( ptr, ptr + 1, String::Length( ptr ) );
-		} else   {
+		} else {
 			ptr++;
 		}	//end else
 	}
@@ -551,7 +551,7 @@ static bool PC_Directive_include( source_t* source ) {
 			String::Cat( path, sizeof ( path ), token.string );
 			script = LoadScriptFile( path );
 		}
-	} else if ( token.type == TT_PUNCTUATION && *token.string == '<' )     {
+	} else if ( token.type == TT_PUNCTUATION && *token.string == '<' ) {
 		String::Cpy( path, source->includepath );
 		while ( PC_ReadSourceToken( source, &token ) ) {
 			if ( token.linescrossed > 0 ) {
@@ -572,7 +572,7 @@ static bool PC_Directive_include( source_t* source ) {
 		}
 		PC_ConvertPath( path );
 		script = LoadScriptFile( path );
-	} else   {
+	} else {
 		SourceError( source, "#include without file name" );
 		return false;
 	}
@@ -692,7 +692,7 @@ static bool PC_ReadDefineParms( source_t* source, define_t* define, token_t** pa
 
 			if ( !String::Cmp( token.string, "(" ) ) {
 				indent++;
-			} else if ( !String::Cmp( token.string, ")" ) )       {
+			} else if ( !String::Cmp( token.string, ")" ) ) {
 				if ( --indent <= 0 ) {
 					if ( !parms[ define->numparms - 1 ] ) {
 						SourceWarning( source, "too few define parms" );
@@ -707,7 +707,7 @@ static bool PC_ReadDefineParms( source_t* source, define_t* define, token_t** pa
 				t->next = NULL;
 				if ( last ) {
 					last->next = t;
-				} else   {
+				} else {
 					parms[ numparms ] = t;
 				}
 				last = t;
@@ -776,19 +776,19 @@ static bool PC_ExpandDefine( source_t* source, token_t* deftoken, define_t* defi
 				t->next = NULL;
 				if ( last ) {
 					last->next = t;
-				} else   {
+				} else {
 					first = t;
 				}
 				last = t;
 			}
-		} else   {
+		} else {
 			token_t* t;
 			//if stringizing operator
 			if ( dt->string[ 0 ] == '#' && dt->string[ 1 ] == '\0' ) {
 				//the stringizing operator must be followed by a define parameter
 				if ( dt->next ) {
 					parmnum = PC_FindDefineParm( define, dt->next->string );
-				} else   {
+				} else {
 					parmnum = -1;
 				}
 				//
@@ -802,18 +802,18 @@ static bool PC_ExpandDefine( source_t* source, token_t* deftoken, define_t* defi
 						return false;
 					}
 					t = PC_CopyToken( &token );
-				} else   {
+				} else {
 					SourceWarning( source, "stringizing operator without define parameter" );
 					continue;
 				}
-			} else   {
+			} else {
 				t = PC_CopyToken( dt );
 			}
 			//add the token to the list
 			t->next = NULL;
 			if ( last ) {
 				last->next = t;
-			} else   {
+			} else {
 				first = t;
 			}
 			last = t;
@@ -982,7 +982,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			if ( PC_FindHashedDefine( source->definehash, t->string ) ) {
 				v->intvalue = 1;
 				v->floatvalue = 1;
-			} else   {
+			} else {
 				v->intvalue = 0;
 				v->floatvalue = 0;
 			}
@@ -991,7 +991,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			v->prev = lastvalue;
 			if ( lastvalue ) {
 				lastvalue->next = v;
-			} else   {
+			} else {
 				firstvalue = v;
 			}
 			lastvalue = v;
@@ -1019,7 +1019,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			if ( negativevalue ) {
 				v->intvalue = -( signed int )t->intvalue;
 				v->floatvalue = -t->floatvalue;
-			} else   {
+			} else {
 				v->intvalue = t->intvalue;
 				v->floatvalue = t->floatvalue;
 			}
@@ -1028,7 +1028,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			v->prev = lastvalue;
 			if ( lastvalue ) {
 				lastvalue->next = v;
-			} else   {
+			} else {
 				firstvalue = v;
 			}
 			lastvalue = v;
@@ -1048,7 +1048,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			if ( t->subtype == P_PARENTHESESOPEN ) {
 				parentheses++;
 				break;
-			} else if ( t->subtype == P_PARENTHESESCLOSE )     {
+			} else if ( t->subtype == P_PARENTHESESCLOSE ) {
 				parentheses--;
 				if ( parentheses < 0 ) {
 					SourceError( source, "too many ) in #if/#elsif" );
@@ -1140,7 +1140,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 				o->prev = lastoperator;
 				if ( lastoperator ) {
 					lastoperator->next = o;
-				} else   {
+				} else {
 					firstoperator = o;
 				}
 				lastoperator = o;
@@ -1163,7 +1163,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 		if ( !lastwasvalue ) {
 			SourceError( source, "trailing operator in #if/#elif" );
 			error = 1;
-		} else if ( parentheses )     {
+		} else if ( parentheses ) {
 			SourceError( source, "too many ( in #if/#elif" );
 			error = 1;
 		}
@@ -1267,7 +1267,7 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 				if ( !questmarkintvalue ) {
 					v1->intvalue = v2->intvalue;
 				}
-			} else   {
+			} else {
 				if ( !questmarkfloatvalue ) {
 					v1->floatvalue = v2->floatvalue;
 				}
@@ -1301,12 +1301,12 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 			//
 			if ( v->prev ) {
 				v->prev->next = v->next;
-			} else   {
+			} else {
 				firstvalue = v->next;
 			}
 			if ( v->next ) {
 				v->next->prev = v->prev;
-			} else   {
+			} else {
 				lastvalue = v->prev;
 			}
 			FreeValue( v );
@@ -1314,12 +1314,12 @@ static bool PC_EvaluateTokens( source_t* source, token_t* tokens, int* intvalue,
 		//remove the operator
 		if ( o->prev ) {
 			o->prev->next = o->next;
-		} else   {
+		} else {
 			firstoperator = o->next;
 		}
 		if ( o->next ) {
 			o->next->prev = o->prev;
-		} else   {
+		} else {
 			lastoperator = o->prev;
 		}
 		FreeOperator( o );
@@ -1378,21 +1378,21 @@ static bool PC_Evaluate( source_t* source, int* intvalue,
 				t->next = NULL;
 				if ( lasttoken ) {
 					lasttoken->next = t;
-				} else   {
+				} else {
 					firsttoken = t;
 				}
 				lasttoken = t;
-			} else if ( !String::Cmp( token.string, "defined" ) )       {
+			} else if ( !String::Cmp( token.string, "defined" ) ) {
 				defined = true;
 				token_t* t = PC_CopyToken( &token );
 				t->next = NULL;
 				if ( lasttoken ) {
 					lasttoken->next = t;
-				} else   {
+				} else {
 					firsttoken = t;
 				}
 				lasttoken = t;
-			} else   {
+			} else {
 				//then it must be a define
 				define_t* define = PC_FindHashedDefine( source->definehash, token.string );
 				if ( !define ) {
@@ -1410,11 +1410,11 @@ static bool PC_Evaluate( source_t* source, int* intvalue,
 			t->next = NULL;
 			if ( lasttoken ) {
 				lasttoken->next = t;
-			} else   {
+			} else {
 				firsttoken = t;
 			}
 			lasttoken = t;
-		} else   {	//can't evaluate the token
+		} else {	//can't evaluate the token
 			SourceError( source, "can't evaluate %s", token.string );
 			return false;
 		}
@@ -1464,21 +1464,21 @@ static bool PC_DollarEvaluate( source_t* source, int* intvalue,
 				t->next = NULL;
 				if ( lasttoken ) {
 					lasttoken->next = t;
-				} else   {
+				} else {
 					firsttoken = t;
 				}
 				lasttoken = t;
-			} else if ( !String::Cmp( token.string, "defined" ) )       {
+			} else if ( !String::Cmp( token.string, "defined" ) ) {
 				defined = true;
 				token_t* t = PC_CopyToken( &token );
 				t->next = NULL;
 				if ( lasttoken ) {
 					lasttoken->next = t;
-				} else   {
+				} else {
 					firsttoken = t;
 				}
 				lasttoken = t;
-			} else   {
+			} else {
 				//then it must be a define
 				define_t* define = PC_FindHashedDefine( source->definehash, token.string );
 				if ( !define ) {
@@ -1494,7 +1494,7 @@ static bool PC_DollarEvaluate( source_t* source, int* intvalue,
 		else if ( token.type == TT_NUMBER || token.type == TT_PUNCTUATION ) {
 			if ( *token.string == '(' ) {
 				indent++;
-			} else if ( *token.string == ')' )     {
+			} else if ( *token.string == ')' ) {
 				indent--;
 			}
 			if ( indent <= 0 ) {
@@ -1504,11 +1504,11 @@ static bool PC_DollarEvaluate( source_t* source, int* intvalue,
 			t->next = NULL;
 			if ( lasttoken ) {
 				lasttoken->next = t;
-			} else   {
+			} else {
 				firsttoken = t;
 			}
 			lasttoken = t;
-		} else   {	//can't evaluate the token
+		} else {	//can't evaluate the token
 			SourceError( source, "can't evaluate %s", token.string );
 			return false;
 		}
@@ -1787,7 +1787,7 @@ bool PC_ReadToken( source_t* source, token_t* token ) {
 						return false;
 					}
 					String::Cat( token->string, MAX_TOKEN, newtoken.string + 1 );
-				} else   {
+				} else {
 					PC_UnreadSourceToken( source, &newtoken );
 				}
 			}
@@ -1883,7 +1883,7 @@ bool PC_ExpectTokenType( source_t* source, int type, int subtype, token_t* token
 			SourceError( source, "expected %s, found %s", str, token->string );
 			return false;
 		}
-	} else if ( token->type == TT_PUNCTUATION )     {
+	} else if ( token->type == TT_PUNCTUATION ) {
 		if ( token->subtype != subtype ) {
 			SourceError( source, "found %s", token->string );
 			return false;
@@ -1896,7 +1896,7 @@ bool PC_ExpectAnyToken( source_t* source, token_t* token ) {
 	if ( !PC_ReadToken( source, token ) ) {
 		SourceError( source, "couldn't read expected token" );
 		return false;
-	} else   {
+	} else {
 		return true;
 	}
 }
@@ -2081,7 +2081,7 @@ int PC_SourceFileAndLine( int handle, char* filename, int* line ) {
 	String::Cpy( filename, sourceFiles[ handle ]->filename );
 	if ( sourceFiles[ handle ]->scriptstack ) {
 		*line = sourceFiles[ handle ]->scriptstack->line;
-	} else   {
+	} else {
 		*line = 0;
 	}
 	return true;

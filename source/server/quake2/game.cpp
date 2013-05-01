@@ -40,7 +40,7 @@ static void SVQ2_Unicast( q2edict_t* ent, qboolean reliable ) {
 
 	if ( reliable ) {
 		client->netchan.message.WriteData( sv.multicast._data, sv.multicast.cursize );
-	} else   {
+	} else {
 		client->datagram.WriteData( sv.multicast._data, sv.multicast.cursize );
 	}
 
@@ -77,7 +77,7 @@ static void SVQ2_cprintf( q2edict_t* ent, int level, const char* fmt, ... ) {
 
 	if ( ent ) {
 		SVQ2_ClientPrintf( svs.clients + ( n - 1 ), level, "%s", msg );
-	} else   {
+	} else {
 		common->Printf( "%s", msg );
 	}
 }

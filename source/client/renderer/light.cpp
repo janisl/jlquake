@@ -244,7 +244,7 @@ void R_LightPointQ2( vec3_t p, vec3_t color, trRefdef_t& refdef ) {
 
 	if ( r == -1 ) {
 		VectorCopy( vec3_origin, color );
-	} else   {
+	} else {
 		VectorCopy( pointcolor, color );
 	}
 
@@ -272,7 +272,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t* ent ) {
 		// sinking into the ground can still be lit, and so
 		// multi-part models can be lit identically
 		VectorCopy( ent->e.lightingOrigin, lightOrigin );
-	} else   {
+	} else {
 		VectorCopy( ent->e.origin, lightOrigin );
 	}
 
@@ -286,7 +286,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t* ent ) {
 		if ( pos[ i ] < 0 ) {
 			pos[ i ] = 0;
 			frac[ i ] = 0;
-		} else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 )         {
+		} else if ( pos[ i ] >= tr.world->lightGridBounds[ i ] - 1 ) {
 			pos[ i ] = tr.world->lightGridBounds[ i ] - 1;
 			frac[ i ] = 0;
 		}
@@ -316,7 +316,7 @@ static void R_SetupEntityLightingGrid( trRefEntity_t* ent ) {
 			if ( i & ( 1 << j ) ) {
 				factor *= frac[ j ];
 				data += gridStep[ j ];
-			} else   {
+			} else {
 				factor *= ( 1.0f - frac[ j ] );
 			}
 		}
@@ -385,14 +385,14 @@ static void LogLight( trRefEntity_t* ent ) {
 	int max1 = ent->ambientLight[ 0 ];
 	if ( ent->ambientLight[ 1 ] > max1 ) {
 		max1 = ent->ambientLight[ 1 ];
-	} else if ( ent->ambientLight[ 2 ] > max1 )       {
+	} else if ( ent->ambientLight[ 2 ] > max1 ) {
 		max1 = ent->ambientLight[ 2 ];
 	}
 
 	int max2 = ent->directedLight[ 0 ];
 	if ( ent->directedLight[ 1 ] > max2 ) {
 		max2 = ent->directedLight[ 1 ];
-	} else if ( ent->directedLight[ 2 ] > max2 )       {
+	} else if ( ent->directedLight[ 2 ] > max2 ) {
 		max2 = ent->directedLight[ 2 ];
 	}
 
@@ -417,7 +417,7 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 		// sinking into the ground can still be lit, and so
 		// multi-part models can be lit identically
 		VectorCopy( ent->e.lightingOrigin, lightOrigin );
-	} else   {
+	} else {
 		VectorCopy( ent->e.origin, lightOrigin );
 	}
 
@@ -426,7 +426,7 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 		 ( !( refdef->rdflags & RDF_NOWORLDMODEL ) ||
 		   ( GGameType & GAME_ET && ( refdef->rdflags & RDF_NOWORLDMODEL ) && ( ent->e.renderfx & RF_LIGHTING_ORIGIN ) ) ) ) {
 		R_SetupEntityLightingGrid( ent );
-	} else if ( GGameType & GAME_ET )     {
+	} else if ( GGameType & GAME_ET ) {
 		ent->ambientLight[ 0 ] = tr.identityLight * 64;
 		ent->ambientLight[ 1 ] = tr.identityLight * 64;
 		ent->ambientLight[ 2 ] = tr.identityLight * 96;
@@ -435,7 +435,7 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 		ent->directedLight[ 2 ] = tr.identityLight * 224;
 		VectorSet( ent->lightDir, -1, 1, 1.25 );
 		VectorNormalize( ent->lightDir );
-	} else   {
+	} else {
 		ent->ambientLight[ 0 ] = ent->ambientLight[ 1 ] =
 									 ent->ambientLight[ 2 ] = tr.identityLight * 150;
 		ent->directedLight[ 0 ] = ent->directedLight[ 1 ] =
@@ -449,7 +449,7 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 		ent->ambientLight[ 0 ] += tr.identityLight * 128 * ent->e.hilightIntensity;
 		ent->ambientLight[ 1 ] += tr.identityLight * 128 * ent->e.hilightIntensity;
 		ent->ambientLight[ 2 ] += tr.identityLight * 128 * ent->e.hilightIntensity;
-	} else if ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) || ent->e.renderfx & RF_MINLIGHT )         {
+	} else if ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) || ent->e.renderfx & RF_MINLIGHT ) {
 		// give everything a minimum light add
 		ent->ambientLight[ 0 ] += tr.identityLight * 32;
 		ent->ambientLight[ 1 ] += tr.identityLight * 32;
@@ -490,18 +490,18 @@ void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent ) {
 				d = DLIGHT_MINIMUM_RADIUS;
 			}
 			modulate = power / ( d * d );
-		} else   {
+		} else {
 			// directional dlight, origin is a directional normal
 			if ( dl->flags & REF_DIRECTED_DLIGHT ) {
 				modulate = dl->intensity * 255.0;
 				VectorCopy( dl->origin, dir );
-			} else   {
+			} else {
 				// ball dlight
 				VectorSubtract( dl->origin, lightOrigin, dir );
 				d = dl->radius - VectorNormalize( dir );
 				if ( d <= 0.0 ) {
 					modulate = 0;
-				} else   {
+				} else {
 					modulate = dl->intensity * d;
 				}
 			}
@@ -710,11 +710,11 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 
 		if ( *surf->data == SF_FACE ) {
 			( ( srfSurfaceFace_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_GRID )     {
+		} else if ( *surf->data == SF_GRID ) {
 			( ( srfGridMesh_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_TRIANGLES )     {
+		} else if ( *surf->data == SF_TRIANGLES ) {
 			( ( srfTriangles_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_FOLIAGE )     {
+		} else if ( *surf->data == SF_FOLIAGE ) {
 			( ( srfFoliage_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
 		}
 	}

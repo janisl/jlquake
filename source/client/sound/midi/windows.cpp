@@ -76,16 +76,16 @@ void MIDI_Loop_f( void ) {
 	if ( Cmd_Argc() == 2 ) {
 		if ( String::ICmp( Cmd_Argv( 1 ),"on" ) == 0 || String::ICmp( Cmd_Argv( 1 ),"1" ) == 0 ) {
 			MIDI_Loop( 1 );
-		} else if ( String::ICmp( Cmd_Argv( 1 ),"off" ) == 0 || String::ICmp( Cmd_Argv( 1 ),"0" ) == 0 )             {
+		} else if ( String::ICmp( Cmd_Argv( 1 ),"off" ) == 0 || String::ICmp( Cmd_Argv( 1 ),"0" ) == 0 ) {
 			MIDI_Loop( 0 );
-		} else if ( String::ICmp( Cmd_Argv( 1 ),"toggle" ) == 0 )         {
+		} else if ( String::ICmp( Cmd_Argv( 1 ),"toggle" ) == 0 ) {
 			MIDI_Loop( 2 );
 		}
 	}
 
 	if ( bLooped ) {
 		common->Printf( "MIDI music will be looped\n" );
-	} else   {
+	} else {
 		common->Printf( "MIDI music will not be looped\n" );
 	}
 }
@@ -97,7 +97,7 @@ void MIDI_Volume_f( void ) {
 
 /*		dwVolumePercent = atol(Cmd_Argv(1))*10;
         SetAllChannelVolumes(dwVolumePercent);*/
-	} else   {
+	} else {
 		common->Printf( "MIDI volume is %d\n", dwVolumePercent / ( 65535 / 100 ) );
 	}
 }
@@ -151,7 +151,7 @@ void MIDI_Play( char* Name ) {
 
 	if ( StreamBufferSetup( Temp ) ) {
 		common->Printf( "Couldn't load midi file %s\n",Temp );
-	} else   {
+	} else {
 		bFileOpen = TRUE;
 
 		common->Printf( "Playing midi file %s\n",Temp );
@@ -178,7 +178,7 @@ void MIDI_Pause( int mode ) {
 	if ( ( mode == 0 && bPaused ) || mode == 1 ) {
 		midiStreamRestart( hStream );
 		bPaused = false;
-	} else   {
+	} else {
 		midiStreamPause( hStream );
 		bPaused = true;
 	}
@@ -187,7 +187,7 @@ void MIDI_Pause( int mode ) {
 void MIDI_Loop( int NewValue ) {
 	if ( NewValue == 2 ) {
 		bLooped = !bLooped;
-	} else   {
+	} else {
 		bLooped = NewValue;
 	}
 }
@@ -353,7 +353,7 @@ BOOL StreamBufferSetup( char* Name ) {
 		if ( nChkErr != CONVERTERR_NOERROR ) {
 			if ( nChkErr == CONVERTERR_DONE ) {
 				bFoundEnd = TRUE;
-			} else   {
+			} else {
 				DebugPrint( "Initial conversion pass failed" );
 				ConverterCleanup();
 				return( TRUE );
@@ -413,7 +413,7 @@ void CALLBACK MidiProc( HMIDIIN hMidi,UINT uMsg,DWORD dwInstance,DWORD dwParam1,
 		if ( uCallbackStatus == STATUS_WAITINGFOREND ) {
 			if ( nEmptyBuffers < NUM_STREAM_BUFFERS ) {
 				return;
-			} else   {
+			} else {
 				uCallbackStatus = STATUS_CALLBACKDEAD;
 				MIDI_Stop();
 				SetEvent( hBufferReturnEvent );
@@ -456,7 +456,7 @@ void CALLBACK MidiProc( HMIDIIN hMidi,UINT uMsg,DWORD dwInstance,DWORD dwParam1,
 					nWaitingBuffers = NUM_STREAM_BUFFERS - 1;
 					uCallbackStatus = STATUS_WAITINGFOREND;
 					return;
-				} else   {
+				} else {
 					common->Printf( "MidiProc() conversion pass failed!" );
 					ConverterCleanup();
 					return;

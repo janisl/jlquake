@@ -92,10 +92,10 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	else if ( SCR_DrawCinematic() ) {
 		if ( in_keyCatchers & KEYCATCH_UI ) {
 			UI_DrawMenu();
-		} else if ( in_keyCatchers & KEYCATCH_CONSOLE )     {
+		} else if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 			Con_DrawConsole();
 		}
-	} else   {
+	} else {
 		// do 3D refresh drawing, and then update the screen
 		SCR_CalcVrect();
 
@@ -134,7 +134,7 @@ static void SCR_Sky_f() {
 	float rotate;
 	if ( Cmd_Argc() > 2 ) {
 		rotate = String::Atof( Cmd_Argv( 2 ) );
-	} else   {
+	} else {
 		rotate = 0;
 	}
 	vec3_t axis;
@@ -142,7 +142,7 @@ static void SCR_Sky_f() {
 		axis[ 0 ] = String::Atof( Cmd_Argv( 3 ) );
 		axis[ 1 ] = String::Atof( Cmd_Argv( 4 ) );
 		axis[ 2 ] = String::Atof( Cmd_Argv( 5 ) );
-	} else   {
+	} else {
 		axis[ 0 ] = 0;
 		axis[ 1 ] = 0;
 		axis[ 2 ] = 1;

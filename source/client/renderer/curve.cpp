@@ -50,13 +50,13 @@ static void Transpose( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SI
 					bsp46_drawVert_t temp = ctrl[ j ][ i ];
 					ctrl[ j ][ i ] = ctrl[ i ][ j ];
 					ctrl[ i ][ j ] = temp;
-				} else   {
+				} else {
 					// just copy
 					ctrl[ j ][ i ] = ctrl[ i ][ j ];
 				}
 			}
 		}
-	} else   {
+	} else {
 		for ( int i = 0; i < width; i++ ) {
 			for ( int j = i + 1; j < height; j++ ) {
 				if ( j < width ) {
@@ -64,7 +64,7 @@ static void Transpose( int width, int height, bsp46_drawVert_t ctrl[ MAX_GRID_SI
 					bsp46_drawVert_t temp = ctrl[ i ][ j ];
 					ctrl[ i ][ j ] = ctrl[ j ][ i ];
 					ctrl[ j ][ i ] = temp;
-				} else   {
+				} else {
 					// just copy
 					ctrl[ i ][ j ] = ctrl[ j ][ i ];
 				}
@@ -121,14 +121,14 @@ static void MakeMeshNormals( int width, int height, bsp46_drawVert_t ctrl[ MAX_G
 					if ( wrapWidth ) {
 						if ( x < 0 ) {
 							x = width - 1 + x;
-						} else if ( x >= width )     {
+						} else if ( x >= width ) {
 							x = 1 + x - width;
 						}
 					}
 					if ( wrapHeight ) {
 						if ( y < 0 ) {
 							y = height - 1 + y;
-						} else if ( y >= height )     {
+						} else if ( y >= height ) {
 							y = 1 + y - height;
 						}
 					}
@@ -140,7 +140,7 @@ static void MakeMeshNormals( int width, int height, bsp46_drawVert_t ctrl[ MAX_G
 					VectorSubtract( ctrl[ y ][ x ].xyz, base, temp );
 					if ( VectorNormalize2( temp, temp ) == 0 ) {
 						continue;				// degenerate edge, get more dist
-					} else   {
+					} else {
 						good[ k ] = true;
 						VectorCopy( temp, around[ k ] );
 						break;					// good edge

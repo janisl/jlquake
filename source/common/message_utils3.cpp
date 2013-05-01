@@ -740,7 +740,7 @@ void MSGQ3_WriteDeltaUsercmdKey( QMsg* msg, int key, q3usercmd_t* from, q3usercm
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );
 		msg->WriteBits( to->serverTime, 32 );
 	}
@@ -770,7 +770,7 @@ void MSGQ3_WriteDeltaUsercmdKey( QMsg* msg, int key, q3usercmd_t* from, q3usercm
 void MSGQ3_ReadDeltaUsercmdKey( QMsg* msg, int key, q3usercmd_t* from, q3usercmd_t* to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
-	} else   {
+	} else {
 		to->serverTime = msg->ReadBits( 32 );
 	}
 	if ( msg->ReadBits( 1 ) ) {
@@ -783,7 +783,7 @@ void MSGQ3_ReadDeltaUsercmdKey( QMsg* msg, int key, q3usercmd_t* from, q3usercmd
 		to->upmove = MSG_ReadDeltaKey( msg, key, from->upmove, 8 );
 		to->buttons = MSG_ReadDeltaKey( msg, key, from->buttons, 16 );
 		to->weapon = MSG_ReadDeltaKey( msg, key, from->weapon, 8 );
-	} else   {
+	} else {
 		to->angles[ 0 ] = from->angles[ 0 ];
 		to->angles[ 1 ] = from->angles[ 1 ];
 		to->angles[ 2 ] = from->angles[ 2 ];
@@ -799,7 +799,7 @@ void MSGWS_WriteDeltaUsercmdKey( QMsg* msg, int key, wsusercmd_t* from, wsusercm
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );
 		msg->WriteBits( to->serverTime, 32 );
 	}
@@ -838,7 +838,7 @@ void MSGWS_WriteDeltaUsercmdKey( QMsg* msg, int key, wsusercmd_t* from, wsusercm
 void MSGWS_ReadDeltaUsercmdKey( QMsg* msg, int key, wsusercmd_t* from, wsusercmd_t* to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
-	} else   {
+	} else {
 		to->serverTime = msg->ReadBits( 32 );
 	}
 	if ( msg->ReadBits( 1 ) ) {
@@ -856,7 +856,7 @@ void MSGWS_ReadDeltaUsercmdKey( QMsg* msg, int key, wsusercmd_t* from, wsusercmd
 		to->wolfkick = MSG_ReadDeltaKey( msg, key, from->wolfkick, 8 );
 
 		to->cld = MSG_ReadDeltaKey( msg, key, from->cld, 16 );				// NERVE - SMF - for multiplayer clientDamage
-	} else   {
+	} else {
 		to->angles[ 0 ] = from->angles[ 0 ];
 		to->angles[ 1 ] = from->angles[ 1 ];
 		to->angles[ 2 ] = from->angles[ 2 ];
@@ -877,7 +877,7 @@ void MSGWM_WriteDeltaUsercmdKey( QMsg* msg, int key, wmusercmd_t* from, wmusercm
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );
 		msg->WriteBits( to->serverTime, 32 );
 	}
@@ -917,7 +917,7 @@ void MSGWM_WriteDeltaUsercmdKey( QMsg* msg, int key, wmusercmd_t* from, wmusercm
 void MSGWM_ReadDeltaUsercmdKey( QMsg* msg, int key, wmusercmd_t* from, wmusercmd_t* to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
-	} else   {
+	} else {
 		to->serverTime = msg->ReadBits( 32 );
 	}
 	if ( msg->ReadBits( 1 ) ) {
@@ -935,7 +935,7 @@ void MSGWM_ReadDeltaUsercmdKey( QMsg* msg, int key, wmusercmd_t* from, wmusercmd
 		to->wolfkick = MSG_ReadDeltaKey( msg, key, from->wolfkick, 8 );
 		to->mpSetup = MSG_ReadDeltaKey( msg, key, from->mpSetup, 8 );						// NERVE - SMF
 		to->identClient = MSG_ReadDeltaKey( msg, key, from->identClient, 8 );				// NERVE - SMF
-	} else   {
+	} else {
 		to->angles[ 0 ] = from->angles[ 0 ];
 		to->angles[ 1 ] = from->angles[ 1 ];
 		to->angles[ 2 ] = from->angles[ 2 ];
@@ -956,7 +956,7 @@ void MSGET_WriteDeltaUsercmdKey( QMsg* msg, int key, etusercmd_t* from, etusercm
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits( 1, 1 );
 		msg->WriteBits( to->serverTime - from->serverTime, 8 );
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );
 		msg->WriteBits( to->serverTime, 32 );
 	}
@@ -994,7 +994,7 @@ void MSGET_WriteDeltaUsercmdKey( QMsg* msg, int key, etusercmd_t* from, etusercm
 void MSGET_ReadDeltaUsercmdKey( QMsg* msg, int key, etusercmd_t* from, etusercmd_t* to ) {
 	if ( msg->ReadBits( 1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits( 8 );
-	} else   {
+	} else {
 		to->serverTime = msg->ReadBits( 32 );
 	}
 	if ( msg->ReadBits( 1 ) ) {
@@ -1011,7 +1011,7 @@ void MSGET_ReadDeltaUsercmdKey( QMsg* msg, int key, etusercmd_t* from, etusercmd
 		to->flags = MSG_ReadDeltaKey( msg, key, from->flags, 8 );
 		to->doubleTap = MSG_ReadDeltaKey( msg, key, from->doubleTap, 3 ) & 0x7;
 		to->identClient = MSG_ReadDeltaKey( msg, key, from->identClient, 8 );				// NERVE - SMF
-	} else   {
+	} else {
 		to->angles[ 0 ] = from->angles[ 0 ];
 		to->angles[ 1 ] = from->angles[ 1 ];
 		to->angles[ 2 ] = from->angles[ 2 ];
@@ -1118,23 +1118,23 @@ void MSGQ3_WriteDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* 
 
 			if ( fullFloat == 0.0f ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				if ( trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 &&
 					 trunc + FLOAT_INT_BIAS < ( 1 << FLOAT_INT_BITS ) ) {
 					// send as small integer
 					msg->WriteBits( 0, 1 );
 					msg->WriteBits( trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
-				} else   {
+				} else {
 					// send as full floating point value
 					msg->WriteBits( 1, 1 );
 					msg->WriteBits( *toF, 32 );
 				}
 			}
-		} else   {
+		} else {
 			if ( *toF == 0 ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				// integer
 				msg->WriteBits( *toF, field->bits );
@@ -1166,7 +1166,7 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -1195,7 +1195,7 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 	if ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) {
 		print = 1;
 		common->Printf( "%3i: #%-3i ", msg->readcount, to->number );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -1208,12 +1208,12 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*( float* )toF = 0.0f;
-				} else   {
+				} else {
 					if ( msg->ReadBits( 1 ) == 0 ) {
 						// integral float
 						trunc = msg->ReadBits( FLOAT_INT_BITS );
@@ -1223,7 +1223,7 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 						if ( print ) {
 							common->Printf( "%s:%i ", field->name, trunc );
 						}
-					} else   {
+					} else {
 						// full floating point value
 						*toF = msg->ReadBits( 32 );
 						if ( print ) {
@@ -1231,10 +1231,10 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 						}
 					}
 				}
-			} else   {
+			} else {
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*toF = 0;
-				} else   {
+				} else {
 					// integer
 					*toF = msg->ReadBits( field->bits );
 					if ( print ) {
@@ -1254,7 +1254,7 @@ void MSGQ3_ReadDeltaEntity( QMsg* msg, q3entityState_t* from, q3entityState_t* t
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -1298,7 +1298,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -1365,7 +1365,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 		print = 1;
 		common->Printf( "W|%3i: #%-3i ", msg->cursize, to->number );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -1389,7 +1389,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 		if ( print ) {
 			common->Printf( "<uc> " );
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );				// compressed vector
 		msg->WriteBits( compressedVector, SMALL_VECTOR_BITS );
 		if ( print ) {
@@ -1412,7 +1412,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 
 			if ( fullFloat == 0.0f ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				if ( trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 &&
 					 trunc + FLOAT_INT_BIAS < ( 1 << FLOAT_INT_BITS ) ) {
@@ -1422,7 +1422,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 					if ( print ) {
 						common->Printf( "%s:%i ", field->name, trunc );
 					}
-				} else   {
+				} else {
 					// send as full floating point value
 					msg->WriteBits( 1, 1 );
 					msg->WriteBits( *toF, 32 );
@@ -1431,10 +1431,10 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 					}
 				}
 			}
-		} else   {
+		} else {
 			if ( *toF == 0 ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				// integer
 				msg->WriteBits( *toF, field->bits );
@@ -1449,7 +1449,7 @@ void MSGWS_WriteDeltaEntity( QMsg* msg, struct wsentityState_t* from, struct wse
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -1482,7 +1482,7 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -1510,7 +1510,7 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 		print = 1;
 		common->Printf( "%3i: #%-3i ", msg->readcount, to->number );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -1529,7 +1529,7 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 		if ( print ) {
 			common->Printf( "<uc> " );
 		}
-	} else   {
+	} else {
 		compressedVector = msg->ReadBits( SMALL_VECTOR_BITS );
 		changeVector = changeVectorLog[ compressedVector ].vector;
 		if ( print ) {
@@ -1547,12 +1547,12 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 		if ( !( changeVector[ i >> 3 ] & ( 1 << ( i & 7 ) ) ) ) {				// msg->ReadBits( 1 ) == 0 ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*( float* )toF = 0.0f;
-				} else   {
+				} else {
 					if ( msg->ReadBits( 1 ) == 0 ) {
 						// integral float
 						trunc = msg->ReadBits( FLOAT_INT_BITS );
@@ -1562,7 +1562,7 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 						if ( print ) {
 							common->Printf( "%s:%i ", field->name, trunc );
 						}
-					} else   {
+					} else {
 						// full floating point value
 						*toF = msg->ReadBits( 32 );
 						if ( print ) {
@@ -1570,10 +1570,10 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 						}
 					}
 				}
-			} else   {
+			} else {
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*toF = 0;
-				} else   {
+				} else {
 					// integer
 					*toF = msg->ReadBits( field->bits );
 					if ( print ) {
@@ -1587,7 +1587,7 @@ void MSGWS_ReadDeltaEntity( QMsg* msg, wsentityState_t* from, wsentityState_t* t
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -1680,23 +1680,23 @@ void MSGWM_WriteDeltaEntity( QMsg* msg, struct wmentityState_t* from, struct wme
 
 			if ( fullFloat == 0.0f ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				if ( trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 &&
 					 trunc + FLOAT_INT_BIAS < ( 1 << FLOAT_INT_BITS ) ) {
 					// send as small integer
 					msg->WriteBits( 0, 1 );
 					msg->WriteBits( trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
-				} else   {
+				} else {
 					// send as full floating point value
 					msg->WriteBits( 1, 1 );
 					msg->WriteBits( *toF, 32 );
 				}
 			}
-		} else   {
+		} else {
 			if ( *toF == 0 ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				// integer
 				msg->WriteBits( *toF, field->bits );
@@ -1728,7 +1728,7 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -1761,7 +1761,7 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 		print = 1;
 		common->Printf( "%3i: #%-3i ", msg->readcount, to->number );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -1774,12 +1774,12 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*( float* )toF = 0.0f;
-				} else   {
+				} else {
 					if ( msg->ReadBits( 1 ) == 0 ) {
 						// integral float
 						trunc = msg->ReadBits( FLOAT_INT_BITS );
@@ -1789,7 +1789,7 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 						if ( print ) {
 							common->Printf( "%s:%i ", field->name, trunc );
 						}
-					} else   {
+					} else {
 						// full floating point value
 						*toF = msg->ReadBits( 32 );
 						if ( print ) {
@@ -1797,10 +1797,10 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 						}
 					}
 				}
-			} else   {
+			} else {
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*toF = 0;
-				} else   {
+				} else {
 					// integer
 					*toF = msg->ReadBits( field->bits );
 					if ( print ) {
@@ -1820,7 +1820,7 @@ void MSGWM_ReadDeltaEntity( QMsg* msg, wmentityState_t* from, wmentityState_t* t
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -1949,23 +1949,23 @@ void MSGET_WriteDeltaEntity( QMsg* msg, struct etentityState_t* from, struct ete
 
 			if ( fullFloat == 0.0f ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				if ( trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 &&
 					 trunc + FLOAT_INT_BIAS < ( 1 << FLOAT_INT_BITS ) ) {
 					// send as small integer
 					msg->WriteBits( 0, 1 );
 					msg->WriteBits( trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
-				} else   {
+				} else {
 					// send as full floating point value
 					msg->WriteBits( 1, 1 );
 					msg->WriteBits( *toF, 32 );
 				}
 			}
-		} else   {
+		} else {
 			if ( *toF == 0 ) {
 				msg->WriteBits( 0, 1 );
-			} else   {
+			} else {
 				msg->WriteBits( 1, 1 );
 				// integer
 				msg->WriteBits( *toF, field->bits );
@@ -1997,7 +1997,7 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -2030,7 +2030,7 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -1 ) ) {
 		print = 1;
 		common->Printf( "%3i: #%-3i ", msg->readcount, to->number );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -2043,12 +2043,12 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*( float* )toF = 0.0f;
-				} else   {
+				} else {
 					if ( msg->ReadBits( 1 ) == 0 ) {
 						// integral float
 						trunc = msg->ReadBits( FLOAT_INT_BITS );
@@ -2058,7 +2058,7 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 						if ( print ) {
 							common->Printf( "%s:%i ", field->name, trunc );
 						}
-					} else   {
+					} else {
 						// full floating point value
 						*toF = msg->ReadBits( 32 );
 						if ( print ) {
@@ -2066,10 +2066,10 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 						}
 					}
 				}
-			} else   {
+			} else {
 				if ( msg->ReadBits( 1 ) == 0 ) {
 					*toF = 0;
-				} else   {
+				} else {
 					// integer
 					*toF = msg->ReadBits( field->bits );
 					if ( print ) {
@@ -2089,7 +2089,7 @@ void MSGET_ReadDeltaEntity( QMsg* msg, etentityState_t* from, etentityState_t* t
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -2159,12 +2159,12 @@ void MSGQ3_WriteDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerStat
 				// send as small integer
 				msg->WriteBits( 0, 1 );
 				msg->WriteBits( trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
-			} else   {
+			} else {
 				// send as full floating point value
 				msg->WriteBits( 1, 1 );
 				msg->WriteBits( *toF, 32 );
 			}
-		} else   {
+		} else {
 			// integer
 			msg->WriteBits( *toF, field->bits );
 		}
@@ -2213,7 +2213,7 @@ void MSGQ3_WriteDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerStat
 			if ( statsbits & ( 1 << i ) ) {
 				msg->WriteShort( to->stats[ i ] );
 			}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -2225,7 +2225,7 @@ void MSGQ3_WriteDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerStat
 			if ( persistantbits & ( 1 << i ) ) {
 				msg->WriteShort( to->persistant[ i ] );
 			}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -2237,7 +2237,7 @@ void MSGQ3_WriteDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerStat
 			if ( ammobits & ( 1 << i ) ) {
 				msg->WriteShort( to->ammo[ i ] );
 			}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -2249,7 +2249,7 @@ void MSGQ3_WriteDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerStat
 			if ( powerupbits & ( 1 << i ) ) {
 				msg->WriteLong( to->powerups[ i ] );
 			}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 }
@@ -2273,7 +2273,7 @@ void MSGQ3_ReadDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerState
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -2282,7 +2282,7 @@ void MSGQ3_ReadDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerState
 	if ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) {
 		print = 1;
 		common->Printf( "%3i: playerstate ", msg->readcount );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -2296,7 +2296,7 @@ void MSGQ3_ReadDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerState
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
@@ -2308,14 +2308,14 @@ void MSGQ3_ReadDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerState
 					if ( print ) {
 						common->Printf( "%s:%i ", field->name, trunc );
 					}
-				} else   {
+				} else {
 					// full floating point value
 					*toF = msg->ReadBits( 32 );
 					if ( print ) {
 						common->Printf( "%s:%f ", field->name, *( float* )toF );
 					}
 				}
-			} else   {
+			} else {
 				// integer
 				*toF = msg->ReadBits( field->bits );
 				if ( print ) {
@@ -2382,7 +2382,7 @@ void MSGQ3_ReadDeltaPlayerstate( QMsg* msg, q3playerState_t* from, q3playerState
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -2414,7 +2414,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -2423,7 +2423,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "W|%3i: playerstate ", msg->cursize );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -2454,7 +2454,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( print ) {
 					common->Printf( "%s:%i ", field->name, trunc );
 				}
-			} else   {
+			} else {
 				// send as full floating point value
 				msg->WriteBits( 1, 1 );
 				msg->WriteBits( *toF, 32 );
@@ -2462,7 +2462,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 					common->Printf( "%s:%f ", field->name, *( float* )toF );
 				}
 			}
-		} else   {
+		} else {
 			// integer
 			msg->WriteBits( *toF, field->bits );
 			if ( print ) {
@@ -2513,7 +2513,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( statsbits & ( 1 << i ) ) {
 					msg->WriteShort( to->stats[ i ] );		//----(SA)	back to short since weapon bits are handled elsewhere now
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to stats
 		}
 
@@ -2525,7 +2525,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( persistantbits & ( 1 << i ) ) {
 					msg->WriteShort( to->persistant[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to persistant
 		}
 
@@ -2537,7 +2537,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( holdablebits & ( 1 << i ) ) {
 					msg->WriteShort( to->holdable[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to holdables
 		}
 
@@ -2549,10 +2549,10 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( powerupbits & ( 1 << i ) ) {
 					msg->WriteLong( to->powerups[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to powerups
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change to any
 	}
 
@@ -2588,11 +2588,11 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 					if ( ammobits[ j ] & ( 1 << i ) ) {
 						msg->WriteShort( to->ammo[ i + ( j * 16 ) ] );
 					}
-			} else   {
+			} else {
 				msg->WriteBits( 0, 1 );		// no change
 			}
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -2611,7 +2611,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 				if ( clipbits & ( 1 << i ) ) {
 					msg->WriteShort( to->ammoclip[ i + ( j * 16 ) ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change
 		}
 	}
@@ -2619,7 +2619,7 @@ void MSGWS_WriteDeltaPlayerstate( QMsg* msg, struct wsplayerState_t* from, struc
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -2646,7 +2646,7 @@ void MSGWS_ReadDeltaPlayerstate( QMsg* msg, wsplayerState_t* from, wsplayerState
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -2655,7 +2655,7 @@ void MSGWS_ReadDeltaPlayerstate( QMsg* msg, wsplayerState_t* from, wsplayerState
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "%3i: playerstate ", msg->readcount );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -2667,7 +2667,7 @@ void MSGWS_ReadDeltaPlayerstate( QMsg* msg, wsplayerState_t* from, wsplayerState
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
@@ -2679,14 +2679,14 @@ void MSGWS_ReadDeltaPlayerstate( QMsg* msg, wsplayerState_t* from, wsplayerState
 					if ( print ) {
 						common->Printf( "%s:%i ", field->name, trunc );
 					}
-				} else   {
+				} else {
 					// full floating point value
 					*toF = msg->ReadBits( 32 );
 					if ( print ) {
 						common->Printf( "%s:%f ", field->name, *( float* )toF );
 					}
 				}
-			} else   {
+			} else {
 				// integer
 				*toF = msg->ReadBits( field->bits );
 				if ( print ) {
@@ -2787,7 +2787,7 @@ void MSGWS_ReadDeltaPlayerstate( QMsg* msg, wsplayerState_t* from, wsplayerState
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -2819,7 +2819,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -2828,7 +2828,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "W|%3i: playerstate ", msg->cursize );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -2871,7 +2871,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( print ) {
 					common->Printf( "%s:%i ", field->name, trunc );
 				}
-			} else   {
+			} else {
 				// send as full floating point value
 				msg->WriteBits( 1, 1 );
 				msg->WriteBits( *toF, 32 );
@@ -2879,7 +2879,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 					common->Printf( "%s:%f ", field->name, *( float* )toF );
 				}
 			}
-		} else   {
+		} else {
 			// integer
 			msg->WriteBits( *toF, field->bits );
 			if ( print ) {
@@ -2930,7 +2930,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( statsbits & ( 1 << i ) ) {
 					msg->WriteShort( to->stats[ i ] );		//----(SA)	back to short since weapon bits are handled elsewhere now
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to stats
 		}
 
@@ -2942,7 +2942,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( persistantbits & ( 1 << i ) ) {
 					msg->WriteShort( to->persistant[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to persistant
 		}
 
@@ -2954,7 +2954,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( holdablebits & ( 1 << i ) ) {
 					msg->WriteShort( to->holdable[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to holdables
 		}
 
@@ -2966,10 +2966,10 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( powerupbits & ( 1 << i ) ) {
 					msg->WriteLong( to->powerups[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to powerups
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change to any
 	}
 
@@ -3006,11 +3006,11 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 					if ( ammobits[ j ] & ( 1 << i ) ) {
 						msg->WriteShort( to->ammo[ i + ( j * 16 ) ] );
 					}
-			} else   {
+			} else {
 				msg->WriteBits( 0, 1 );		// no change
 			}
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -3029,7 +3029,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 				if ( clipbits & ( 1 << i ) ) {
 					msg->WriteShort( to->ammoclip[ i + ( j * 16 ) ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change
 		}
 	}
@@ -3037,7 +3037,7 @@ void MSGWM_WriteDeltaPlayerstate( QMsg* msg, struct wmplayerState_t* from, struc
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -3063,7 +3063,7 @@ void MSGWM_ReadDeltaPlayerstate( QMsg* msg, wmplayerState_t* from, wmplayerState
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -3072,7 +3072,7 @@ void MSGWM_ReadDeltaPlayerstate( QMsg* msg, wmplayerState_t* from, wmplayerState
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "%3i: playerstate ", msg->readcount );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -3086,7 +3086,7 @@ void MSGWM_ReadDeltaPlayerstate( QMsg* msg, wmplayerState_t* from, wmplayerState
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
@@ -3098,14 +3098,14 @@ void MSGWM_ReadDeltaPlayerstate( QMsg* msg, wmplayerState_t* from, wmplayerState
 					if ( print ) {
 						common->Printf( "%s:%i ", field->name, trunc );
 					}
-				} else   {
+				} else {
 					// full floating point value
 					*toF = msg->ReadBits( 32 );
 					if ( print ) {
 						common->Printf( "%s:%f ", field->name, *( float* )toF );
 					}
 				}
-			} else   {
+			} else {
 				// integer
 				*toF = msg->ReadBits( field->bits );
 				if ( print ) {
@@ -3212,7 +3212,7 @@ void MSGWM_ReadDeltaPlayerstate( QMsg* msg, wmplayerState_t* from, wmplayerState
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -3277,7 +3277,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -3286,7 +3286,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "W|%3i: playerstate ", msg->cursize );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -3326,12 +3326,12 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				// send as small integer
 				msg->WriteBits( 0, 1 );
 				msg->WriteBits( trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS );
-			} else   {
+			} else {
 				// send as full floating point value
 				msg->WriteBits( 1, 1 );
 				msg->WriteBits( *toF, 32 );
 			}
-		} else   {
+		} else {
 			// integer
 			msg->WriteBits( *toF, field->bits );
 		}
@@ -3377,7 +3377,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				if ( statsbits & ( 1 << i ) ) {
 					msg->WriteShort( to->stats[ i ] );		//----(SA)	back to short since weapon bits are handled elsewhere now
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to stats
 		}
 
@@ -3389,7 +3389,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				if ( persistantbits & ( 1 << i ) ) {
 					msg->WriteShort( to->persistant[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to persistant
 		}
 
@@ -3401,7 +3401,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				if ( holdablebits & ( 1 << i ) ) {
 					msg->WriteShort( to->holdable[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to holdables
 		}
 
@@ -3413,10 +3413,10 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				if ( powerupbits & ( 1 << i ) ) {
 					msg->WriteLong( to->powerups[ i ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change to powerups
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change to any
 	}
 
@@ -3453,11 +3453,11 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 					if ( ammobits[ j ] & ( 1 << i ) ) {
 						msg->WriteShort( to->ammo[ i + ( j * 16 ) ] );
 					}
-			} else   {
+			} else {
 				msg->WriteBits( 0, 1 );		// no change
 			}
 		}
-	} else   {
+	} else {
 		msg->WriteBits( 0, 1 );		// no change
 	}
 
@@ -3476,7 +3476,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 				if ( clipbits & ( 1 << i ) ) {
 					msg->WriteShort( to->ammoclip[ i + ( j * 16 ) ] );
 				}
-		} else   {
+		} else {
 			msg->WriteBits( 0, 1 );		// no change
 		}
 	}
@@ -3484,7 +3484,7 @@ void MSGET_WriteDeltaPlayerstate( QMsg* msg, struct etplayerState_t* from, struc
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->cursize * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->cursize - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );
@@ -3511,7 +3511,7 @@ void MSGET_ReadDeltaPlayerstate( QMsg* msg, etplayerState_t* from, etplayerState
 
 	if ( msg->bit == 0 ) {
 		startBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-	} else   {
+	} else {
 		startBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 	}
 
@@ -3520,7 +3520,7 @@ void MSGET_ReadDeltaPlayerstate( QMsg* msg, etplayerState_t* from, etplayerState
 	if ( cl_shownet && ( cl_shownet->integer >= 2 || cl_shownet->integer == -2 ) ) {
 		print = 1;
 		common->Printf( "%3i: playerstate ", msg->readcount );
-	} else   {
+	} else {
 		print = 0;
 	}
 
@@ -3534,7 +3534,7 @@ void MSGET_ReadDeltaPlayerstate( QMsg* msg, etplayerState_t* from, etplayerState
 		if ( !msg->ReadBits( 1 ) ) {
 			// no change
 			*toF = *fromF;
-		} else   {
+		} else {
 			if ( field->bits == 0 ) {
 				// float
 				if ( msg->ReadBits( 1 ) == 0 ) {
@@ -3546,14 +3546,14 @@ void MSGET_ReadDeltaPlayerstate( QMsg* msg, etplayerState_t* from, etplayerState
 					if ( print ) {
 						common->Printf( "%s:%i ", field->name, trunc );
 					}
-				} else   {
+				} else {
 					// full floating point value
 					*toF = msg->ReadBits( 32 );
 					if ( print ) {
 						common->Printf( "%s:%f ", field->name, *( float* )toF );
 					}
 				}
-			} else   {
+			} else {
 				// integer
 				*toF = msg->ReadBits( field->bits );
 				if ( print ) {
@@ -3661,7 +3661,7 @@ void MSGET_ReadDeltaPlayerstate( QMsg* msg, etplayerState_t* from, etplayerState
 	if ( print ) {
 		if ( msg->bit == 0 ) {
 			endBit = msg->readcount * 8 - GENTITYNUM_BITS_Q3;
-		} else   {
+		} else {
 			endBit = ( msg->readcount - 1 ) * 8 + msg->bit - GENTITYNUM_BITS_Q3;
 		}
 		common->Printf( " (%i bits)\n", endBit - startBit );

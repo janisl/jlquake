@@ -85,7 +85,7 @@ static void SVQ2_New_f( client_t* client ) {
 	int playernum;
 	if ( sv.state == SS_CINEMATIC || sv.state == SS_PIC ) {
 		playernum = -1;
-	} else   {
+	} else {
 		playernum = client - svs.clients;
 	}
 	client->netchan.message.WriteShort( playernum );
@@ -144,7 +144,7 @@ static void SVQ2_Configstrings_f( client_t* client ) {
 	if ( start == MAX_CONFIGSTRINGS_Q2 ) {
 		client->netchan.message.WriteByte( q2svc_stufftext );
 		client->netchan.message.WriteString2( va( "cmd baselines %i 0\n",svs.spawncount ) );
-	} else   {
+	} else {
 		client->netchan.message.WriteByte( q2svc_stufftext );
 		client->netchan.message.WriteString2( va( "cmd configstrings %i %i\n",svs.spawncount, start ) );
 	}
@@ -187,7 +187,7 @@ static void SVQ2_Baselines_f( client_t* client ) {
 	if ( start == MAX_EDICTS_Q2 ) {
 		client->netchan.message.WriteByte( q2svc_stufftext );
 		client->netchan.message.WriteString2( va( "precache %i\n", svs.spawncount ) );
-	} else   {
+	} else {
 		client->netchan.message.WriteByte( q2svc_stufftext );
 		client->netchan.message.WriteString2( va( "cmd baselines %i %i\n",svs.spawncount, start ) );
 	}
@@ -326,7 +326,7 @@ void SVQ2_Nextserver() {
 	const char* v = Cvar_VariableString( "nextserver" );
 	if ( !v[ 0 ] ) {
 		Cbuf_AddText( "killserver\n" );
-	} else   {
+	} else {
 		Cbuf_AddText( const_cast<char*>( v ) );
 		Cbuf_AddText( "\n" );
 	}
@@ -381,7 +381,7 @@ void SVQ2_UserinfoChanged( client_t* cl ) {
 		if ( cl->rate > 15000 ) {
 			cl->rate = 15000;
 		}
-	} else   {
+	} else {
 		cl->rate = 5000;
 	}
 

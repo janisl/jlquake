@@ -614,7 +614,7 @@ int FS_Delete( const char* filename ) {
 
 	if ( stat == 1 ) {
 		return FS_DeleteDir( filename, true, true );
-	} else   {
+	} else {
 		if ( remove( ospath ) != -1 ) {
 			// success
 			return 1;
@@ -995,7 +995,7 @@ int FS_FOpenFileRead( const char* filename, fileHandle_t* file, bool uniqueFILE 
 					}
 					pakFile = pakFile->next;
 				} while ( pakFile != NULL );
-			} else if ( search->pack )     {
+			} else if ( search->pack ) {
 				if ( fs_filter_flag & FS_EXCLUDE_PK3 ) {
 					continue;
 				}
@@ -1008,7 +1008,7 @@ int FS_FOpenFileRead( const char* filename, fileHandle_t* file, bool uniqueFILE 
 						return true;
 					}
 				}
-			} else if ( search->dir )     {
+			} else if ( search->dir ) {
 				if ( fs_filter_flag & FS_EXCLUDE_DIR ) {
 					continue;
 				}
@@ -1147,7 +1147,7 @@ int FS_FOpenFileRead( const char* filename, fileHandle_t* file, bool uniqueFILE 
 						if ( fsh[ *file ].handleFiles.file.z == NULL ) {
 							common->FatalError( "Couldn't reopen %s", pak->pakFilename );
 						}
-					} else   {
+					} else {
 						fsh[ *file ].handleFiles.file.z = pak->handle;
 					}
 					String::NCpyZ( fsh[ *file ].name, filename, sizeof ( fsh[ *file ].name ) );
@@ -1188,7 +1188,7 @@ int FS_FOpenFileRead( const char* filename, fileHandle_t* file, bool uniqueFILE 
 						if ( !fsh[ *file ].handleFiles.file.o ) {
 							common->FatalError( "Couldn't reopen %s", pak->filename );
 						}
-					} else   {
+					} else {
 						fsh[ *file ].handleFiles.file.o = pak->handle;
 					}
 					String::NCpyZ( fsh[ *file ].name, filename, sizeof ( fsh[ *file ].name ) );
@@ -1204,7 +1204,7 @@ int FS_FOpenFileRead( const char* filename, fileHandle_t* file, bool uniqueFILE 
 					return pak->files[ i ].filelen;
 				}
 			}
-		} else if ( search->dir )     {
+		} else if ( search->dir ) {
 			if ( fs_filter_flag & FS_EXCLUDE_DIR ) {
 				continue;
 			}
@@ -1381,7 +1381,7 @@ int FS_FOpenFileByMode( const char* qpath, fileHandle_t* f, fsMode_t mode ) {
 	if ( *f ) {
 		if ( fsh[ *f ].zipFile == true ) {
 			fsh[ *f ].baseOffset = unztell( fsh[ *f ].handleFiles.file.z );
-		} else   {
+		} else {
 			fsh[ *f ].baseOffset = ftell( fsh[ *f ].handleFiles.file.o );
 		}
 		fsh[ *f ].fileSize = r;
@@ -1530,7 +1530,7 @@ int FS_Read( void* buffer, int len, fileHandle_t f ) {
 				// sometimes returns a 0 read on windows
 				if ( !tries ) {
 					tries = 1;
-				} else   {
+				} else {
 					return len - remaining;	//Com_Error (ERR_FATAL, "FS_Read: 0 bytes read");
 				}
 			}
@@ -1543,7 +1543,7 @@ int FS_Read( void* buffer, int len, fileHandle_t f ) {
 			buf += read;
 		}
 		return len;
-	} else   {
+	} else {
 		return unzReadCurrentFile( fsh[ f ].handleFiles.file.z, buffer, len );
 	}
 }
@@ -1569,7 +1569,7 @@ int FS_Write( const void* buffer, int len, fileHandle_t h ) {
 		if ( written == 0 ) {
 			if ( !tries ) {
 				tries = 1;
-			} else   {
+			} else {
 				common->Printf( "FS_Write: 0 bytes written\n" );
 				return 0;
 			}
@@ -1614,17 +1614,17 @@ int FS_Seek( fileHandle_t f, int offset, int origin ) {
 			// set the file position in the zip file (also sets the current file info)
 			unzSetCurrentFileInfoPosition( fsh[ f ].handleFiles.file.z, fsh[ f ].zipFilePos );
 			return unzOpenCurrentFile( fsh[ f ].handleFiles.file.z );
-		} else if ( offset < 65536 && origin == FS_SEEK_SET )     {
+		} else if ( offset < 65536 && origin == FS_SEEK_SET ) {
 			char foo[ 65536 ];
 			// set the file position in the zip file (also sets the current file info)
 			unzSetCurrentFileInfoPosition( fsh[ f ].handleFiles.file.z, fsh[ f ].zipFilePos );
 			unzOpenCurrentFile( fsh[ f ].handleFiles.file.z );
 			return FS_Read( foo, offset, f );
-		} else   {
+		} else {
 			common->FatalError( "ZIP FILE FSEEK NOT YET IMPLEMENTED\n" );
 			return -1;
 		}
-	} else   {
+	} else {
 		int _origin;
 		FILE* file = FS_FileForHandle( f );
 		switch ( origin ) {
@@ -1649,7 +1649,7 @@ int FS_FTell( fileHandle_t f ) {
 	int pos;
 	if ( fsh[ f ].zipFile == true ) {
 		pos = unztell( fsh[ f ].handleFiles.file.z );
-	} else   {
+	} else {
 		pos = ftell( fsh[ f ].handleFiles.file.o );
 	}
 	return pos;
@@ -1716,7 +1716,7 @@ int FS_FileIsInPAK( const char* filename, int* pChecksum ) {
 				}
 				pakFile = pakFile->next;
 			} while ( pakFile != NULL );
-		} else if ( search->pack )     {
+		} else if ( search->pack ) {
 			// look through all the pak file elements
 			pack_t* pak = search->pack;
 			for ( int i = 0; i < pak->numfiles; i++ ) {
@@ -1782,7 +1782,7 @@ int FS_ReadFile( const char* qpath, void** buffer ) {
 
 			return len;
 		}
-	} else   {
+	} else {
 		isConfig = false;
 	}
 
@@ -1871,7 +1871,7 @@ int FS_ReadFile( const char* qpath, idList<byte>& buffer ) {
 
 			return len;
 		}
-	} else   {
+	} else {
 		isConfig = false;
 	}
 
@@ -2131,7 +2131,7 @@ static char** FS_ListFilteredFiles( const char* path, const char* extension, cha
 					}
 					// unique the match
 					nfiles = FS_AddFileToList( name, list, nfiles );
-				} else   {
+				} else {
 					zpathLen = FS_ReturnPath( name, zpath, &depth );
 
 					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || String::NICmp( name, path, pathLength ) ) {
@@ -2156,7 +2156,7 @@ static char** FS_ListFilteredFiles( const char* path, const char* extension, cha
 					nfiles = FS_AddFileToList( name + temp, list, nfiles );
 				}
 			}
-		} else if ( search->pack )     {
+		} else if ( search->pack ) {
 			// look through all the pak file elements
 			pack_t* pak = search->pack;
 			packfile_t* buildBuffer = pak->files;
@@ -2174,7 +2174,7 @@ static char** FS_ListFilteredFiles( const char* path, const char* extension, cha
 					}
 					// unique the match
 					nfiles = FS_AddFileToList( name, list, nfiles );
-				} else   {
+				} else {
 					zpathLen = FS_ReturnPath( name, zpath, &depth );
 
 					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || String::NICmp( name, path, pathLength ) ) {
@@ -2199,7 +2199,7 @@ static char** FS_ListFilteredFiles( const char* path, const char* extension, cha
 					nfiles = FS_AddFileToList( name + temp, list, nfiles );
 				}
 			}
-		} else if ( search->dir )     {
+		} else if ( search->dir ) {
 			// scan for files in the filesystem
 			char* netpath;
 			int numSysFiles;
@@ -2209,7 +2209,7 @@ static char** FS_ListFilteredFiles( const char* path, const char* extension, cha
 			// don't scan directories for files if we are pure or restricted
 			if ( fs_numServerPaks && ( !( GGameType & GAME_WolfSP ) || String::ICmp( extension, "svg" ) ) ) {
 				continue;
-			} else   {
+			} else {
 				netpath = FS_BuildOSPath( search->dir->path, search->dir->gamedir, path );
 				sysFiles = Sys_ListFiles( netpath, extension, filter, &numSysFiles, false );
 				for ( i = 0; i < numSysFiles; i++ ) {
@@ -2278,7 +2278,7 @@ int FS_GetFileList( const char* path, const char* extension, char* listbuf, int 
 			String::Cpy( listbuf, pFiles[ i ] );
 			listbuf += nLen;
 			nTotal += nLen;
-		} else   {
+		} else {
 			nFiles = i;
 			break;
 		}
@@ -2429,7 +2429,7 @@ int FS_GetModList( char* listbuf, int bufsize ) {
 					descPath[ nDescLen ] = '\0';
 				}
 				FS_FCloseFile( descHandle );
-			} else   {
+			} else {
 				String::Cpy( descPath, name );
 			}
 			nDescLen = String::Length( descPath ) + 1;
@@ -2441,7 +2441,7 @@ int FS_GetModList( char* listbuf, int bufsize ) {
 				listbuf += nDescLen;
 				nTotal += nLen + nDescLen;
 				nMods++;
-			} else   {
+			} else {
 				break;
 			}
 		}
@@ -2648,7 +2648,7 @@ void FS_PureServerSetLoadedPaks( const char* pakSums, const char* pakNames ) {
 
 	if ( fs_numServerPaks ) {
 		common->DPrintf( "Connected to a pure server.\n" );
-	} else if ( !( GGameType & GAME_WolfSP ) )       {
+	} else if ( !( GGameType & GAME_WolfSP ) ) {
 		if ( fs_reordered ) {
 			// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540
 			// force a restart to make sure the search order will be correct
@@ -2806,11 +2806,11 @@ bool FS_ComparePaks( char* neededpaks, int len, bool dlstring ) {
 					// Make something up with the checksum in it
 					String::Sprintf( st, sizeof ( st ), "%s.%08x.pk3", fs_serverReferencedPakNames[ i ], fs_serverReferencedPaks[ i ] );
 					String::Cat( neededpaks, len, st );
-				} else   {
+				} else {
 					String::Cat( neededpaks, len, fs_serverReferencedPakNames[ i ] );
 					String::Cat( neededpaks, len, ".pk3" );
 				}
-			} else   {
+			} else {
 				String::Cat( neededpaks, len, fs_serverReferencedPakNames[ i ] );
 				String::Cat( neededpaks, len, ".pk3" );
 				// Do we have one with the same name?
@@ -2954,13 +2954,13 @@ static void FS_Path_f() {
 			if ( fs_numServerPaks ) {
 				if ( !FS_PakIsPure( s->pack3 ) ) {
 					common->Printf( "    not on the pure list\n" );
-				} else   {
+				} else {
 					common->Printf( "    on the pure list\n" );
 				}
 			}
-		} else if ( s->pack )     {
+		} else if ( s->pack ) {
 			common->Printf( "%s (%i files)\n", s->pack->filename, s->pack->numfiles );
-		} else   {
+		} else {
 			common->Printf( "%s/%s\n", s->dir->path, s->dir->gamedir );
 		}
 	}
@@ -3141,30 +3141,30 @@ void FS_InitGame( bool dedicatedBuild ) {
 		if ( dedicatedBuild || !String::ICmp( COM_Argv( 1 ), "-quakeworld" ) ) {
 			GGameType |= GAME_QuakeWorld;
 		}
-	} else if ( FS_BasePathFileExists( "data1", "pak0.pak" ) )       {
+	} else if ( FS_BasePathFileExists( "data1", "pak0.pak" ) ) {
 		fs_PrimaryBaseGame = "data1";
 		Sys_SetHomePathSuffix( "jlhexen2" );
 		GGameType = GAME_Hexen2;
 		if ( dedicatedBuild || !String::ICmp( COM_Argv( 1 ), "-hexenworld" ) ) {
 			GGameType |= GAME_HexenWorld;
 		}
-	} else if ( FS_BasePathFileExists( "baseq2", "pak0.pak" ) )       {
+	} else if ( FS_BasePathFileExists( "baseq2", "pak0.pak" ) ) {
 		fs_PrimaryBaseGame = "baseq2";
 		Sys_SetHomePathSuffix( "jlquake2" );
 		GGameType = GAME_Quake2;
-	} else if ( FS_BasePathFileExists( "baseq3", "pak0.pk3" ) )       {
+	} else if ( FS_BasePathFileExists( "baseq3", "pak0.pk3" ) ) {
 		fs_PrimaryBaseGame = "baseq3";
 		Sys_SetHomePathSuffix( "jlquake3" );
 		GGameType = GAME_Quake3;
-	} else if ( FS_BasePathFileExists( "main", "pak0.pk3" ) )       {
+	} else if ( FS_BasePathFileExists( "main", "pak0.pk3" ) ) {
 		fs_PrimaryBaseGame = "main";
 		Sys_SetHomePathSuffix( "jlwolf" );
 		GGameType = dedicatedBuild || !String::ICmp( COM_Argv( 1 ), "-multiplayer" ) ? GAME_WolfMP : GAME_WolfSP;
-	} else if ( FS_BasePathFileExists( "etmain", "pak0.pk3" ) )       {
+	} else if ( FS_BasePathFileExists( "etmain", "pak0.pk3" ) ) {
 		fs_PrimaryBaseGame = "etmain";
 		Sys_SetHomePathSuffix( "jlet" );
 		GGameType = GAME_ET;
-	} else   {
+	} else {
 		common->FatalError( "Cannot detect game" );
 	}
 }
@@ -3203,7 +3203,7 @@ static void FS_Startup() {
 
 	if ( GGameType & GAME_QuakeWorld ) {
 		FS_AddGameDirectories( "qw", addPacks );
-	} else if ( GGameType & GAME_Quake )     {
+	} else if ( GGameType & GAME_Quake ) {
 		if ( COM_CheckParm( "-rogue" ) ) {
 			q1_rogue = true;
 			q1_standard_quake = false;
@@ -3214,10 +3214,10 @@ static void FS_Startup() {
 			q1_standard_quake = false;
 			FS_AddGameDirectories( "hipnotic", addPacks );
 		}
-	} else if ( GGameType & GAME_HexenWorld )     {
+	} else if ( GGameType & GAME_HexenWorld ) {
 		FS_AddGameDirectories( "portals", addPacks );
 		FS_AddGameDirectories( "hw", addPacks );
-	} else if ( GGameType & GAME_Hexen2 )     {
+	} else if ( GGameType & GAME_Hexen2 ) {
 		if ( COM_CheckParm( "-portals" ) ) {
 			GGameType |= GAME_H2Portals;
 			FS_AddGameDirectories( "portals", addPacks );
@@ -3377,11 +3377,11 @@ void FS_Restart( int checksumFeed ) {
 		if ( !Com_SafeMode() ) {
 			if ( GGameType & GAME_Quake3 ) {
 				Cbuf_AddText( "exec q3config.cfg\n" );
-			} else if ( GGameType & GAME_WolfSP )     {
+			} else if ( GGameType & GAME_WolfSP ) {
 				Cbuf_AddText( "exec wolfconfig.cfg\n" );
-			} else if ( GGameType & GAME_WolfMP )     {
+			} else if ( GGameType & GAME_WolfMP ) {
 				Cbuf_AddText( "exec wolfconfig_mp.cfg\n" );
-			} else   {
+			} else {
 				const char* cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 				if ( comet_gameInfo.usesProfiles && cl_profileStr[ 0 ] ) {
@@ -3402,7 +3402,7 @@ void FS_Restart( int checksumFeed ) {
 					// exec the config
 					Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, ETCONFIG_NAME ) );
 
-				} else   {
+				} else {
 					Cbuf_AddText( va( "exec %s\n", ETCONFIG_NAME ) );
 				}
 			}
@@ -3582,7 +3582,7 @@ void FS_SetGamedir( const char* dir ) {
 	if ( !String::Cmp( dir, fs_PrimaryBaseGame ) || ( *dir == 0 ) ) {
 		Cvar_Set( "gamedir", "" );
 		Cvar_Set( "game", "" );
-	} else   {
+	} else {
 		Cvar_Set( "gamedir", dir );
 		FS_AddGameDirectories( dir, ADDPACKS_First10 );
 	}
@@ -3593,7 +3593,7 @@ void FS_ExecAutoexec() {
 	char name [ MAX_QPATH ];
 	if ( *dir ) {
 		String::Sprintf( name, sizeof ( name ), "%s/%s/autoexec.cfg", fs_basepath->string, dir );
-	} else   {
+	} else {
 		String::Sprintf( name, sizeof ( name ), "%s/%s/autoexec.cfg", fs_basepath->string, fs_PrimaryBaseGame );
 	}
 	FILE* f = fopen( name, "rb" );

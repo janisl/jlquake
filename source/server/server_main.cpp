@@ -71,20 +71,20 @@ void SV_ExecuteClientCommand( client_t* cl, const char* s, bool clientOK, bool p
 	if ( GGameType & GAME_QuakeHexen ) {
 		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 			NET_OutOfBandPrint( NS_SERVER, cl->netchan.remoteAddress, "Bad user command: %s\n", Cmd_Argv( 0 ) );
-		} else   {
+		} else {
 			common->DPrintf( "%s tried to %s\n", cl->name, s );
 		}
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		if ( sv.state == SS_GAME ) {
 			ge->ClientCommand( cl->q2_edict );
 		}
-	} else   {
+	} else {
 		if ( clientOK ) {
 			// pass unknown strings to the game
 			if ( sv.state == SS_GAME ) {
 				SVT3_GameClientCommand( cl - svs.clients );
 			}
-		} else   {
+		} else {
 			common->DPrintf( "client text ignored for %s: %s\n", cl->name, Cmd_Argv( 0 ) );
 		}
 	}
@@ -106,12 +106,12 @@ void SV_CvarChanged( Cvar* var ) {
 			if ( sv.state != SS_DEAD ) {
 				if ( GGameType & GAME_HexenWorld ) {
 					SVQH_BroadcastCommand( "fullserverinfo \"%s\"\n", svs.qh_info );
-				} else   {
+				} else {
 					SVQW_SendServerInfoChange( var->name, var->string );
 				}
 			}
 		}
-	} else   {
+	} else {
 		if ( ( var->flags & CVAR_SERVERINFO ) ) {
 			if ( sv.state != SS_DEAD ) {
 				SVQH_BroadcastPrintf( 0, "\"%s\" changed to \"%s\"\n", var->name, var->string );
@@ -131,9 +131,9 @@ int SVQH_GetMaxClientsLimit() {
 void SV_Init() {
 	if ( GGameType & GAME_QuakeHexen ) {
 		SVQH_Init();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		SVQ2_Init();
-	} else   {
+	} else {
 		SVT3_Init();
 	}
 }
@@ -141,11 +141,11 @@ void SV_Init() {
 void SV_Shutdown( const char* finalMessage ) {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		SVQHW_Shutdown( finalMessage );
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		SVQH_Shutdown();
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		SVQ2_Shutdown( finalMessage, false );
-	} else   {
+	} else {
 		SVT3_Shutdown( finalMessage );
 	}
 }
@@ -153,11 +153,11 @@ void SV_Shutdown( const char* finalMessage ) {
 void SV_Frame( int msec ) {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		SVQHW_ServerFrame( msec );
-	} else if ( GGameType & GAME_QuakeHexen )     {
+	} else if ( GGameType & GAME_QuakeHexen ) {
 		SVQH_ServerFrame( msec * 0.001 );
-	} else if ( GGameType & GAME_Quake2 )     {
+	} else if ( GGameType & GAME_Quake2 ) {
 		SVQ2_Frame( msec );
-	} else   {
+	} else {
 		SVT3_Frame( msec );
 	}
 }

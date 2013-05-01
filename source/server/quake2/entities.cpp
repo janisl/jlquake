@@ -28,7 +28,7 @@ static void SVQ2_EmitPacketEntities( const q2client_frame_t* from, const q2clien
 	int from_num_entities;
 	if ( !from ) {
 		from_num_entities = 0;
-	} else   {
+	} else {
 		from_num_entities = from->num_entities;
 	}
 
@@ -39,7 +39,7 @@ static void SVQ2_EmitPacketEntities( const q2client_frame_t* from, const q2clien
 		int newnum;
 		if ( newindex >= to->num_entities ) {
 			newnum = 9999;
-		} else   {
+		} else {
 			newent = &svs.q2_client_entities[ ( to->first_entity + newindex ) % svs.q2_num_client_entities ];
 			newnum = newent->number;
 		}
@@ -48,7 +48,7 @@ static void SVQ2_EmitPacketEntities( const q2client_frame_t* from, const q2clien
 		int oldnum;
 		if ( oldindex >= from_num_entities ) {
 			oldnum = 9999;
-		} else   {
+		} else {
 			oldent = &svs.q2_client_entities[ ( from->first_entity + oldindex ) % svs.q2_num_client_entities ];
 			oldnum = oldent->number;
 		}
@@ -85,7 +85,7 @@ static void SVQ2_EmitPacketEntities( const q2client_frame_t* from, const q2clien
 
 			if ( bits & Q2U_NUMBER16 ) {
 				msg->WriteShort( oldnum );
-			} else   {
+			} else {
 				msg->WriteByte( oldnum );
 			}
 
@@ -104,7 +104,7 @@ static void SVQ2_WritePlayerstateToClient( const q2client_frame_t* from, const q
 	if ( !from ) {
 		Com_Memset( &dummy, 0, sizeof ( dummy ) );
 		ops = &dummy;
-	} else   {
+	} else {
 		ops = &from->ps;
 	}
 
@@ -303,11 +303,11 @@ void SVQ2_WriteFrameToClient( client_t* client, QMsg* msg ) {
 		// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = -1;
-	} else if ( sv.q2_framenum - client->q2_lastframe >= ( UPDATE_BACKUP_Q2 - 3 ) )       {
+	} else if ( sv.q2_framenum - client->q2_lastframe >= ( UPDATE_BACKUP_Q2 - 3 ) ) {
 		// client hasn't gotten a good message through in a long time
 		oldframe = NULL;
 		lastframe = -1;
-	} else   {
+	} else {
 		// we have a valid message to delta from
 		oldframe = &client->q2_frames[ client->q2_lastframe & UPDATE_MASK_Q2 ];
 		lastframe = client->q2_lastframe;
@@ -441,7 +441,7 @@ void SVQ2_BuildClientFrame( client_t* client ) {
 				if ( !( clientphs[ l >> 3 ] & ( 1 << ( l & 7 ) ) ) ) {
 					continue;
 				}
-			} else   {
+			} else {
 				// FIXME: if an ent has a model and a sound, but isn't
 				// in the PVS, only the PHS, clear the model
 				byte* bitvector = svq2_fatpvs;
@@ -452,7 +452,7 @@ void SVQ2_BuildClientFrame( client_t* client ) {
 						continue;
 					}
 					c_fullsend++;
-				} else   {
+				} else {
 					// check individual leafs
 					int i;
 					for ( i = 0; i < ent->num_clusters; i++ ) {

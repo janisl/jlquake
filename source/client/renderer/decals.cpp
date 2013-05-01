@@ -205,7 +205,7 @@ void R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t* points, vec4_t pr
 		VectorSet( dv[ 1 ].xyz, points[ 0 ][ 0 ] - radius, points[ 0 ][ 1 ] + radius, points[ 0 ][ 2 ] + radius );
 		VectorSet( dv[ 2 ].xyz, points[ 0 ][ 0 ] + radius, points[ 0 ][ 1 ] + radius, points[ 0 ][ 2 ] + radius );
 		VectorSet( dv[ 3 ].xyz, points[ 0 ][ 0 ] + radius, points[ 0 ][ 1 ] - radius, points[ 0 ][ 2 ] + radius );
-	} else   {
+	} else {
 		//	set up unidirectional
 		temp.omnidirectional = false;
 
@@ -409,9 +409,9 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 		dists[ i ] = DotProduct( inPoints[ i ], plane ) - plane[ 3 ];
 		if ( dists[ i ] > epsilon ) {
 			sides[ i ] = SIDE_FRONT;
-		} else if ( dists[ i ] < -epsilon )       {
+		} else if ( dists[ i ] < -epsilon ) {
 			sides[ i ] = SIDE_BACK;
-		} else   {
+		} else {
 			sides[ i ] = SIDE_ON;
 		}
 		counts[ sides[ i ] ]++;
@@ -452,7 +452,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 		float dot;
 		if ( d == 0 ) {
 			dot = 0;
-		} else   {
+		} else {
 			dot = dists[ i ] / d;
 		}
 
@@ -499,12 +499,12 @@ static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t
 		absNormal[ 2 ] = fabs( plane[ 2 ] );
 		if ( absNormal[ 2 ] >= absNormal[ 0 ] && absNormal[ 2 ] >= absNormal[ 1 ] ) {
 			axis = 2;
-		} else if ( absNormal[ 0 ] >= absNormal[ 1 ] && absNormal[ 0 ] >= absNormal[ 2 ] )             {
+		} else if ( absNormal[ 0 ] >= absNormal[ 1 ] && absNormal[ 0 ] >= absNormal[ 2 ] ) {
 			axis = 0;
-		} else   {
+		} else {
 			axis = 1;
 		}
-	} else   {
+	} else {
 		//	backface check
 		pd = DotProduct( dp->planes[ 0 ], plane );
 		if ( pd < -0.0001f ) {
@@ -579,7 +579,7 @@ static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t
 			alpha = 2.0f * d2 / ( d + d2 );
 			if ( alpha > 1.0f ) {
 				alpha = 1.0f;
-			} else if ( alpha < 0.0f )     {
+			} else if ( alpha < 0.0f ) {
 				alpha = 0.0f;
 			}
 		}
@@ -734,7 +734,7 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	if ( decal->parent != NULL ) {
 		srfGeneric_t* gen = ( srfGeneric_t* )decal->parent->data;
 		dlightMap = ( gen->dlightBits[ tr.smpFrame ] != 0 );
-	} else   {
+	} else {
 		dlightMap = 0;
 	}
 
@@ -774,7 +774,7 @@ void R_CullDecalProjectors() {
 	for ( int i = 0; i < tr.refdef.numDecalProjectors; i++, dp++ ) {
 		if ( R_CullPointAndRadius( dp->center, dp->radius ) == CULL_OUT ) {
 			dp->shader = NULL;
-		} else   {
+		} else {
 			numDecalProjectors = i + 1;
 			decalBits |= ( 1 << i );
 		}

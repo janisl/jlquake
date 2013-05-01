@@ -104,7 +104,7 @@ static void SVQ2C_Info( const netadr_t& from ) {
 	char string[ 64 ];
 	if ( version != Q2PROTOCOL_VERSION ) {
 		String::Sprintf( string, sizeof ( string ), "%s: wrong version\n", sv_hostname->string, sizeof ( string ) );
-	} else   {
+	} else {
 		int count = 0;
 		for ( int i = 0; i < sv_maxclients->value; i++ ) {
 			if ( svs.clients[ i ].state >= CS_CONNECTED ) {
@@ -261,7 +261,7 @@ gotnewcl:
 		if ( *Info_ValueForKey( userinfo, "rejmsg" ) ) {
 			NET_OutOfBandPrint( NS_SERVER, adr, "print\n%s\nConnection refused.\n",
 				Info_ValueForKey( userinfo, "rejmsg" ) );
-		} else   {
+		} else {
 			NET_OutOfBandPrint( NS_SERVER, adr, "print\nConnection refused.\n" );
 		}
 		common->DPrintf( "Game rejected a connection.\n" );
@@ -311,7 +311,7 @@ static void SVQ2C_RemoteCommand( const netadr_t& from, QMsg& message ) {
 
 	if ( i == 0 ) {
 		common->Printf( "Bad rcon from %s:\n%s\n", SOCK_AdrToString( from ), message._data + 4 );
-	} else   {
+	} else {
 		common->Printf( "Rcon from %s:\n%s\n", SOCK_AdrToString( from ), message._data + 4 );
 	}
 
@@ -321,7 +321,7 @@ static void SVQ2C_RemoteCommand( const netadr_t& from, QMsg& message ) {
 
 	if ( !SVQ2_Rcon_Validate() ) {
 		common->Printf( "Bad rcon_password.\n" );
-	} else   {
+	} else {
 		char remaining[ 1024 ];
 		remaining[ 0 ] = 0;
 
@@ -353,19 +353,19 @@ static void SVQ2_ConnectionlessPacket( const netadr_t& from, QMsg& message ) {
 
 	if ( !String::Cmp( c, "ping" ) ) {
 		SVQ2C_Ping( from );
-	} else if ( !String::Cmp( c, "ack" ) )       {
+	} else if ( !String::Cmp( c, "ack" ) ) {
 		SVQ2C_Ack( from );
-	} else if ( !String::Cmp( c,"status" ) )       {
+	} else if ( !String::Cmp( c,"status" ) ) {
 		SVQ2C_Status( from );
-	} else if ( !String::Cmp( c,"info" ) )       {
+	} else if ( !String::Cmp( c,"info" ) ) {
 		SVQ2C_Info( from );
-	} else if ( !String::Cmp( c,"getchallenge" ) )       {
+	} else if ( !String::Cmp( c,"getchallenge" ) ) {
 		SVQ2C_GetChallenge( from );
-	} else if ( !String::Cmp( c,"connect" ) )       {
+	} else if ( !String::Cmp( c,"connect" ) ) {
 		SVQ2C_DirectConnect( from );
-	} else if ( !String::Cmp( c, "rcon" ) )       {
+	} else if ( !String::Cmp( c, "rcon" ) ) {
 		SVQ2C_RemoteCommand( from, message );
-	} else   {
+	} else {
 		common->Printf( "bad connectionless packet from %s:\n%s\n",
 			SOCK_AdrToString( from ), s );
 	}
@@ -442,7 +442,7 @@ static void SVQ2_FinalMessage( const char* message, bool reconnect ) {
 
 	if ( reconnect ) {
 		net_message.WriteByte( q2svc_reconnect );
-	} else   {
+	} else {
 		net_message.WriteByte( q2svc_disconnect );
 	}
 
@@ -514,7 +514,7 @@ static void SVQ2_CalcPings() {
 		}
 		if ( !count ) {
 			cl->ping = 0;
-		} else   {
+		} else {
 			cl->ping = total / count;
 		}
 		// let the game dll know about the ping

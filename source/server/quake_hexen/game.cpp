@@ -57,7 +57,7 @@ void PF_changeyaw() {
 		if ( move >= 180 ) {
 			move = move - 360;
 		}
-	} else   {
+	} else {
 		if ( move <= -180 ) {
 			move = move + 360;
 		}
@@ -71,7 +71,7 @@ void PF_changeyaw() {
 		if ( move > speed ) {
 			move = speed;
 		}
-	} else   {
+	} else {
 		if ( move < -speed ) {
 			move = -speed;
 		}
@@ -146,7 +146,7 @@ void PFQ1_setmodel() {
 		vec3_t maxs;
 		CM_ModelBounds( mod, mins, maxs );
 		SetMinMaxSize( e, mins, maxs );
-	} else   {
+	} else {
 		SetMinMaxSize( e, vec3_origin, vec3_origin );
 	}
 }
@@ -193,7 +193,7 @@ void PF_ambientsound() {
 	sv.qh_signon.WritePos( pos );
 	if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_HexenWorld ) ) {
 		sv.qh_signon.WriteShort( soundnum );
-	} else   {
+	} else {
 		sv.qh_signon.WriteByte( soundnum );
 	}
 	sv.qh_signon.WriteByte( vol * 255 );
@@ -238,7 +238,7 @@ static int PF_newcheckclient( int check ) {
 	int i;
 	if ( check == maxclients ) {
 		i = 1;
-	} else   {
+	} else {
 		i = check + 1;
 	}
 
@@ -518,7 +518,7 @@ void PF_droptofloor() {
 
 	if ( trace.fraction == 1 || trace.allsolid ) {
 		G_FLOAT( OFS_RETURN ) = 0;
-	} else   {
+	} else {
 		VectorCopy( trace.endpos, ent->GetOrigin() );
 		SVQH_LinkEdict( ent, false );
 		ent->SetFlags( ( int )ent->GetFlags() | QHFL_ONGROUND );
@@ -662,7 +662,7 @@ static void SVQH_Aim( qhedict_t* ent, const vec3_t shot_org ) {
 			hold_org[ 2 ] = bestent->GetOrigin()[ 2 ] + ( 0.5 * bestent->GetMaxs()[ 2 ] );
 
 			VectorSubtract( hold_org,shot_org,dir );
-		} else   {
+		} else {
 			VectorSubtract( bestent->GetOrigin(), shot_org, dir );
 		}
 		float dist = DotProduct( dir, pr_globalVars.v_forward );
@@ -670,7 +670,7 @@ static void SVQH_Aim( qhedict_t* ent, const vec3_t shot_org ) {
 		end[ 2 ] = dir[ 2 ];
 		VectorNormalize( end );
 		VectorCopy( end, G_VECTOR( OFS_RETURN ) );
-	} else   {
+	} else {
 		VectorCopy( bestdir, G_VECTOR( OFS_RETURN ) );
 	}
 }
@@ -783,7 +783,7 @@ void PFQW_WriteByte() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 1 );
 		SVQH_ClientReliableWrite_Byte( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteByte( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -797,7 +797,7 @@ void PFQW_WriteChar() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 1 );
 		SVQH_ClientReliableWrite_Char( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteChar( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -811,7 +811,7 @@ void PFQW_WriteShort() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 2 );
 		SVQH_ClientReliableWrite_Short( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteShort( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -825,7 +825,7 @@ void PFQW_WriteLong() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 4 );
 		SVQH_ClientReliableWrite_Long( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteLong( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -839,7 +839,7 @@ void PFQW_WriteAngle() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 1 );
 		SVQH_ClientReliableWrite_Angle( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteAngle( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -853,7 +853,7 @@ void PFQW_WriteCoord() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 2 );
 		SVQH_ClientReliableWrite_Coord( cl, G_FLOAT( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteCoord( G_FLOAT( OFS_PARM1 ) );
 	}
 }
@@ -867,7 +867,7 @@ void PFQW_WriteString() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 1 + String::Length( G_STRING( OFS_PARM1 ) ) );
 		SVQH_ClientReliableWrite_String( cl, G_STRING( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteString2( G_STRING( OFS_PARM1 ) );
 	}
 }
@@ -881,7 +881,7 @@ void PFQW_WriteEntity() {
 		client_t* cl = Write_GetClient();
 		SVQH_ClientReliableCheckBlock( cl, 2 );
 		SVQH_ClientReliableWrite_Short( cl, G_EDICTNUM( OFS_PARM1 ) );
-	} else   {
+	} else {
 		QWWriteDest()->WriteShort( G_EDICTNUM( OFS_PARM1 ) );
 	}
 }
@@ -995,7 +995,7 @@ void PF_centerprint() {
 	if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
 		SVQH_ClientReliableWrite_Begin( client, GGameType & GAME_HexenWorld ? h2svc_centerprint : q1svc_centerprint, 2 + String::Length( s ) );
 		SVQH_ClientReliableWrite_String( client, s );
-	} else   {
+	} else {
 		client->qh_message.WriteChar( GGameType & GAME_Hexen2 ? h2svc_centerprint : q1svc_centerprint );
 		client->qh_message.WriteString2( s );
 	}

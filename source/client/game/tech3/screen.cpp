@@ -37,12 +37,12 @@ static void SCRT3_DrawDemoRecording() {
 	pos = FS_FTell( clc.demofile );
 	if ( GGameType & GAME_ET ) {
 		Cvar_Set( "cl_demooffset", va( "%d", pos ) );
-	} else   {
+	} else {
 		sprintf( string, "RECORDING %s: %ik", clc.q3_demoName, pos / 1024 );
 
 		if ( GGameType & GAME_WolfMP ) {
 			SCR_DrawStringExt( 5, 470, 8, string, g_color_table[ 7 ], true );
-		} else   {
+		} else {
 			SCR_DrawStringExt( 320 - String::Length( string ) * 4, 20, 8, string, g_color_table[ 7 ], true );
 		}
 	}

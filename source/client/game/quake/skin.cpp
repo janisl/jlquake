@@ -35,11 +35,11 @@ void CLQW_SkinFind( q1player_info_t* sc ) {
 	char name[ 128 ];
 	if ( allskins[ 0 ] ) {
 		String::Cpy( name, allskins );
-	} else   {
+	} else {
 		const char* s = Info_ValueForKey( sc->userinfo, "skin" );
 		if ( s && s[ 0 ] ) {
 			String::Cpy( name, s );
-		} else   {
+		} else {
 			String::Cpy( name, clqw_baseskin->string );
 		}
 	}
