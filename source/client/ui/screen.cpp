@@ -64,8 +64,8 @@ static float scr_centertime_start;				// for slow victory printing
 static float scr_centertime_off;
 static int scr_center_lines;
 
-static image_t* scr_net;
-static image_t* draw_backtile;
+static qhandle_t scr_net;
+static qhandle_t draw_backtile;
 
 int scr_draw_loading;
 
@@ -403,7 +403,7 @@ void SCR_DrawNet() {
 	if ( GGameType & GAME_Quake2 ) {
 		UI_DrawNamedPic( scr_vrect.x + 64, scr_vrect.y, "net" );
 	} else   {
-		UI_DrawPic( scr_vrect.x + 64, scr_vrect.y, scr_net );
+		UI_DrawPicShader( scr_vrect.x + 64, scr_vrect.y, scr_net );
 	}
 }
 
@@ -562,12 +562,12 @@ void SCR_UpdateScreen() {
 }
 
 void SCRQH_InitImages() {
-	scr_net = R_PicFromWad( "net" );
+	scr_net = R_ShaderFromWad( "net" );
 	if ( GGameType & GAME_Quake ) {
-		draw_backtile = R_PicFromWadRepeat( "backtile" );
+		draw_backtile = R_ShaderFromWadRepeat( "backtile" );
 		char_texture = R_LoadRawFontImageFromWad( "conchars", 128, 128 );
 	} else   {
-		draw_backtile = R_CachePicRepeat( "gfx/menu/backtile.lmp" );
+		draw_backtile = R_CacheShaderRepeat( "gfx/menu/backtile.lmp" );
 		char_texture = R_LoadRawFontImageFromFile( "gfx/menu/conchars.lmp", 256, 128 );
 		char_smalltexture = R_LoadRawFontImageFromWad( "tinyfont", 128, 32 );
 	}

@@ -1673,12 +1673,12 @@ image_t* R_CachePic( const char* path ) {
 	return pic;
 }
 
-image_t* R_CachePicRepeat( const char* path ) {
+qhandle_t R_CacheShaderRepeat( const char* path ) {
 	image_t* pic = R_FindImageFile( path, false, false, GL_REPEAT );
 	if ( !pic ) {
 		common->FatalError( "R_CachePic: failed to load %s", path );
 	}
-	return pic;
+	return R_Build2DShaderFromImage( pic )->index;
 }
 
 image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels ) {

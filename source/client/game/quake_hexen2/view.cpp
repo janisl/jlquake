@@ -80,7 +80,7 @@ static cshift_t cshift_lava = { {255,80,0}, 150 };
 
 static image_t* cs_texture;	// crosshair texture
 
-static image_t* scr_turtle;
+static qhandle_t scr_turtle;
 
 /*
 ==============================================================================
@@ -1153,7 +1153,7 @@ void SCRQH_DrawTurtle() {
 		return;
 	}
 
-	UI_DrawPic( scr_vrect.x, scr_vrect.y, scr_turtle );
+	UI_DrawPicShader( scr_vrect.x, scr_vrect.y, scr_turtle );
 }
 
 //	For program optimization
@@ -1233,5 +1233,5 @@ void VQH_Init() {
 
 void VQH_InitCrosshairTexture() {
 	cs_texture = R_CreateCrosshairImage();
-	scr_turtle = R_PicFromWad( "turtle" );
+	scr_turtle = R_ShaderFromWad( "turtle" );
 }

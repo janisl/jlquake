@@ -40,38 +40,38 @@ int sbqh_lines;					// scan lines to draw
 Cvar* clqw_hudswap;
 
 static qhandle_t sbq1_nums[ 2 ][ 11 ];
-static image_t* sbq1_colon;
-static image_t* sbq1_slash;
-static image_t* sbq1_sbar;
-static image_t* sbq1_ibar;
-static image_t* sbq1_scorebar;
+static qhandle_t sbq1_colon;
+static qhandle_t sbq1_slash;
+static qhandle_t sbq1_sbar;
+static qhandle_t sbq1_ibar;
+static qhandle_t sbq1_scorebar;
 
-static image_t* sbq1_weapons[ 7 ][ 8 ];		// 0 is active, 1 is owned, 2-5 are flashes
-static image_t* sbq1_ammo[ 4 ];
-static image_t* sbq1_sigil[ 4 ];
-static image_t* sbq1_armor[ 3 ];
-static image_t* sbq1_items[ 32 ];
-static image_t* sbq1_disc;
+static qhandle_t sbq1_weapons[ 7 ][ 8 ];		// 0 is active, 1 is owned, 2-5 are flashes
+static qhandle_t sbq1_ammo[ 4 ];
+static qhandle_t sbq1_sigil[ 4 ];
+static qhandle_t sbq1_armor[ 3 ];
+static qhandle_t sbq1_items[ 32 ];
+static qhandle_t sbq1_disc;
 
-static image_t* sbq1_faces[ 7 ][ 2 ];		// 0 is gibbed, 1 is dead, 2-6 are alive
+static qhandle_t sbq1_faces[ 7 ][ 2 ];		// 0 is gibbed, 1 is dead, 2-6 are alive
 // 0 is static, 1 is temporary animation
-static image_t* sbq1_face_invis;
-static image_t* sbq1_face_quad;
-static image_t* sbq1_face_invuln;
-static image_t* sbq1_face_invis_invuln;
+static qhandle_t sbq1_face_invis;
+static qhandle_t sbq1_face_quad;
+static qhandle_t sbq1_face_invuln;
+static qhandle_t sbq1_face_invis_invuln;
 
-static image_t* rsbq1_invbar[ 2 ];
-static image_t* rsbq1_weapons[ 5 ];
-static image_t* rsbq1_items[ 2 ];
-static image_t* rsbq1_ammo[ 3 ];
-static image_t* rsbq1_teambord;			// PGM 01/19/97 - team color border
+static qhandle_t rsbq1_invbar[ 2 ];
+static qhandle_t rsbq1_weapons[ 5 ];
+static qhandle_t rsbq1_items[ 2 ];
+static qhandle_t rsbq1_ammo[ 3 ];
+static qhandle_t rsbq1_teambord;			// PGM 01/19/97 - team color border
 
 //MED 01/04/97 added two more weapons + 3 alternates for grenade launcher
-static image_t* hsbq1_weapons[ 7 ][ 5 ];			// 0 is active, 1 is owned, 2-5 are flashes
+static qhandle_t hsbq1_weapons[ 7 ][ 5 ];			// 0 is active, 1 is owned, 2-5 are flashes
 //MED 01/04/97 added array to simplify weapon parsing
 static int hipweapons[ 4 ] = {Q1HIT_LASER_CANNON_BIT,Q1HIT_MJOLNIR_BIT,4,Q1HIT_PROXIMITY_GUN_BIT};
 //MED 01/04/97 added hipnotic items array
-static image_t* hsbq1_items[ 2 ];
+static qhandle_t hsbq1_items[ 2 ];
 
 static bool sbq1_showscores;
 static bool sbq1_showteamscores;
@@ -125,136 +125,128 @@ void SbarQ1_InitImages() {
 	sbq1_nums[ 0 ][ 10 ] = R_ShaderFromWad( "num_minus" );
 	sbq1_nums[ 1 ][ 10 ] = R_ShaderFromWad( "anum_minus" );
 
-	sbq1_colon = R_PicFromWad( "num_colon" );
-	sbq1_slash = R_PicFromWad( "num_slash" );
+	sbq1_colon = R_ShaderFromWad( "num_colon" );
+	sbq1_slash = R_ShaderFromWad( "num_slash" );
 
-	sbq1_weapons[ 0 ][ 0 ] = R_PicFromWad( "inv_shotgun" );
-	sbq1_weapons[ 0 ][ 1 ] = R_PicFromWad( "inv_sshotgun" );
-	sbq1_weapons[ 0 ][ 2 ] = R_PicFromWad( "inv_nailgun" );
-	sbq1_weapons[ 0 ][ 3 ] = R_PicFromWad( "inv_snailgun" );
-	sbq1_weapons[ 0 ][ 4 ] = R_PicFromWad( "inv_rlaunch" );
-	sbq1_weapons[ 0 ][ 5 ] = R_PicFromWad( "inv_srlaunch" );
-	sbq1_weapons[ 0 ][ 6 ] = R_PicFromWad( "inv_lightng" );
+	sbq1_weapons[ 0 ][ 0 ] = R_ShaderFromWad( "inv_shotgun" );
+	sbq1_weapons[ 0 ][ 1 ] = R_ShaderFromWad( "inv_sshotgun" );
+	sbq1_weapons[ 0 ][ 2 ] = R_ShaderFromWad( "inv_nailgun" );
+	sbq1_weapons[ 0 ][ 3 ] = R_ShaderFromWad( "inv_snailgun" );
+	sbq1_weapons[ 0 ][ 4 ] = R_ShaderFromWad( "inv_rlaunch" );
+	sbq1_weapons[ 0 ][ 5 ] = R_ShaderFromWad( "inv_srlaunch" );
+	sbq1_weapons[ 0 ][ 6 ] = R_ShaderFromWad( "inv_lightng" );
 
-	sbq1_weapons[ 1 ][ 0 ] = R_PicFromWad( "inv2_shotgun" );
-	sbq1_weapons[ 1 ][ 1 ] = R_PicFromWad( "inv2_sshotgun" );
-	sbq1_weapons[ 1 ][ 2 ] = R_PicFromWad( "inv2_nailgun" );
-	sbq1_weapons[ 1 ][ 3 ] = R_PicFromWad( "inv2_snailgun" );
-	sbq1_weapons[ 1 ][ 4 ] = R_PicFromWad( "inv2_rlaunch" );
-	sbq1_weapons[ 1 ][ 5 ] = R_PicFromWad( "inv2_srlaunch" );
-	sbq1_weapons[ 1 ][ 6 ] = R_PicFromWad( "inv2_lightng" );
+	sbq1_weapons[ 1 ][ 0 ] = R_ShaderFromWad( "inv2_shotgun" );
+	sbq1_weapons[ 1 ][ 1 ] = R_ShaderFromWad( "inv2_sshotgun" );
+	sbq1_weapons[ 1 ][ 2 ] = R_ShaderFromWad( "inv2_nailgun" );
+	sbq1_weapons[ 1 ][ 3 ] = R_ShaderFromWad( "inv2_snailgun" );
+	sbq1_weapons[ 1 ][ 4 ] = R_ShaderFromWad( "inv2_rlaunch" );
+	sbq1_weapons[ 1 ][ 5 ] = R_ShaderFromWad( "inv2_srlaunch" );
+	sbq1_weapons[ 1 ][ 6 ] = R_ShaderFromWad( "inv2_lightng" );
 
 	for ( int i = 0; i < 5; i++ ) {
-		sbq1_weapons[ 2 + i ][ 0 ] = R_PicFromWad( va( "inva%i_shotgun",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 1 ] = R_PicFromWad( va( "inva%i_sshotgun",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 2 ] = R_PicFromWad( va( "inva%i_nailgun",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 3 ] = R_PicFromWad( va( "inva%i_snailgun",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 4 ] = R_PicFromWad( va( "inva%i_rlaunch",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 5 ] = R_PicFromWad( va( "inva%i_srlaunch",i + 1 ) );
-		sbq1_weapons[ 2 + i ][ 6 ] = R_PicFromWad( va( "inva%i_lightng",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 0 ] = R_ShaderFromWad( va( "inva%i_shotgun",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 1 ] = R_ShaderFromWad( va( "inva%i_sshotgun",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 2 ] = R_ShaderFromWad( va( "inva%i_nailgun",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 3 ] = R_ShaderFromWad( va( "inva%i_snailgun",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 4 ] = R_ShaderFromWad( va( "inva%i_rlaunch",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 5 ] = R_ShaderFromWad( va( "inva%i_srlaunch",i + 1 ) );
+		sbq1_weapons[ 2 + i ][ 6 ] = R_ShaderFromWad( va( "inva%i_lightng",i + 1 ) );
 	}
 
-	sbq1_ammo[ 0 ] = R_PicFromWad( "sb_shells" );
-	sbq1_ammo[ 1 ] = R_PicFromWad( "sb_nails" );
-	sbq1_ammo[ 2 ] = R_PicFromWad( "sb_rocket" );
-	sbq1_ammo[ 3 ] = R_PicFromWad( "sb_cells" );
+	sbq1_ammo[ 0 ] = R_ShaderFromWad( "sb_shells" );
+	sbq1_ammo[ 1 ] = R_ShaderFromWad( "sb_nails" );
+	sbq1_ammo[ 2 ] = R_ShaderFromWad( "sb_rocket" );
+	sbq1_ammo[ 3 ] = R_ShaderFromWad( "sb_cells" );
 
-	sbq1_armor[ 0 ] = R_PicFromWad( "sb_armor1" );
-	sbq1_armor[ 1 ] = R_PicFromWad( "sb_armor2" );
-	sbq1_armor[ 2 ] = R_PicFromWad( "sb_armor3" );
+	sbq1_armor[ 0 ] = R_ShaderFromWad( "sb_armor1" );
+	sbq1_armor[ 1 ] = R_ShaderFromWad( "sb_armor2" );
+	sbq1_armor[ 2 ] = R_ShaderFromWad( "sb_armor3" );
 
-	sbq1_items[ 0 ] = R_PicFromWad( "sb_key1" );
-	sbq1_items[ 1 ] = R_PicFromWad( "sb_key2" );
-	sbq1_items[ 2 ] = R_PicFromWad( "sb_invis" );
-	sbq1_items[ 3 ] = R_PicFromWad( "sb_invuln" );
-	sbq1_items[ 4 ] = R_PicFromWad( "sb_suit" );
-	sbq1_items[ 5 ] = R_PicFromWad( "sb_quad" );
+	sbq1_items[ 0 ] = R_ShaderFromWad( "sb_key1" );
+	sbq1_items[ 1 ] = R_ShaderFromWad( "sb_key2" );
+	sbq1_items[ 2 ] = R_ShaderFromWad( "sb_invis" );
+	sbq1_items[ 3 ] = R_ShaderFromWad( "sb_invuln" );
+	sbq1_items[ 4 ] = R_ShaderFromWad( "sb_suit" );
+	sbq1_items[ 5 ] = R_ShaderFromWad( "sb_quad" );
 
-	sbq1_disc = R_PicFromWad( "disc" );
+	sbq1_disc = R_ShaderFromWad( "disc" );
 
-	sbq1_sigil[ 0 ] = R_PicFromWad( "sb_sigil1" );
-	sbq1_sigil[ 1 ] = R_PicFromWad( "sb_sigil2" );
-	sbq1_sigil[ 2 ] = R_PicFromWad( "sb_sigil3" );
-	sbq1_sigil[ 3 ] = R_PicFromWad( "sb_sigil4" );
+	sbq1_sigil[ 0 ] = R_ShaderFromWad( "sb_sigil1" );
+	sbq1_sigil[ 1 ] = R_ShaderFromWad( "sb_sigil2" );
+	sbq1_sigil[ 2 ] = R_ShaderFromWad( "sb_sigil3" );
+	sbq1_sigil[ 3 ] = R_ShaderFromWad( "sb_sigil4" );
 
-	sbq1_faces[ 4 ][ 0 ] = R_PicFromWad( "face1" );
-	sbq1_faces[ 4 ][ 1 ] = R_PicFromWad( "face_p1" );
-	sbq1_faces[ 3 ][ 0 ] = R_PicFromWad( "face2" );
-	sbq1_faces[ 3 ][ 1 ] = R_PicFromWad( "face_p2" );
-	sbq1_faces[ 2 ][ 0 ] = R_PicFromWad( "face3" );
-	sbq1_faces[ 2 ][ 1 ] = R_PicFromWad( "face_p3" );
-	sbq1_faces[ 1 ][ 0 ] = R_PicFromWad( "face4" );
-	sbq1_faces[ 1 ][ 1 ] = R_PicFromWad( "face_p4" );
-	sbq1_faces[ 0 ][ 0 ] = R_PicFromWad( "face5" );
-	sbq1_faces[ 0 ][ 1 ] = R_PicFromWad( "face_p5" );
+	sbq1_faces[ 4 ][ 0 ] = R_ShaderFromWad( "face1" );
+	sbq1_faces[ 4 ][ 1 ] = R_ShaderFromWad( "face_p1" );
+	sbq1_faces[ 3 ][ 0 ] = R_ShaderFromWad( "face2" );
+	sbq1_faces[ 3 ][ 1 ] = R_ShaderFromWad( "face_p2" );
+	sbq1_faces[ 2 ][ 0 ] = R_ShaderFromWad( "face3" );
+	sbq1_faces[ 2 ][ 1 ] = R_ShaderFromWad( "face_p3" );
+	sbq1_faces[ 1 ][ 0 ] = R_ShaderFromWad( "face4" );
+	sbq1_faces[ 1 ][ 1 ] = R_ShaderFromWad( "face_p4" );
+	sbq1_faces[ 0 ][ 0 ] = R_ShaderFromWad( "face5" );
+	sbq1_faces[ 0 ][ 1 ] = R_ShaderFromWad( "face_p5" );
 
-	sbq1_face_invis = R_PicFromWad( "face_invis" );
-	sbq1_face_invuln = R_PicFromWad( "face_invul2" );
-	sbq1_face_invis_invuln = R_PicFromWad( "face_inv2" );
-	sbq1_face_quad = R_PicFromWad( "face_quad" );
+	sbq1_face_invis = R_ShaderFromWad( "face_invis" );
+	sbq1_face_invuln = R_ShaderFromWad( "face_invul2" );
+	sbq1_face_invis_invuln = R_ShaderFromWad( "face_inv2" );
+	sbq1_face_quad = R_ShaderFromWad( "face_quad" );
 
-	sbq1_sbar = R_PicFromWad( "sbar" );
-	sbq1_ibar = R_PicFromWad( "ibar" );
-	sbq1_scorebar = R_PicFromWad( "scorebar" );
+	sbq1_sbar = R_ShaderFromWad( "sbar" );
+	sbq1_ibar = R_ShaderFromWad( "ibar" );
+	sbq1_scorebar = R_ShaderFromWad( "scorebar" );
 
 	if ( q1_hipnotic ) {
-		hsbq1_weapons[ 0 ][ 0 ] = R_PicFromWad( "inv_laser" );
-		hsbq1_weapons[ 0 ][ 1 ] = R_PicFromWad( "inv_mjolnir" );
-		hsbq1_weapons[ 0 ][ 2 ] = R_PicFromWad( "inv_gren_prox" );
-		hsbq1_weapons[ 0 ][ 3 ] = R_PicFromWad( "inv_prox_gren" );
-		hsbq1_weapons[ 0 ][ 4 ] = R_PicFromWad( "inv_prox" );
+		hsbq1_weapons[ 0 ][ 0 ] = R_ShaderFromWad( "inv_laser" );
+		hsbq1_weapons[ 0 ][ 1 ] = R_ShaderFromWad( "inv_mjolnir" );
+		hsbq1_weapons[ 0 ][ 2 ] = R_ShaderFromWad( "inv_gren_prox" );
+		hsbq1_weapons[ 0 ][ 3 ] = R_ShaderFromWad( "inv_prox_gren" );
+		hsbq1_weapons[ 0 ][ 4 ] = R_ShaderFromWad( "inv_prox" );
 
-		hsbq1_weapons[ 1 ][ 0 ] = R_PicFromWad( "inv2_laser" );
-		hsbq1_weapons[ 1 ][ 1 ] = R_PicFromWad( "inv2_mjolnir" );
-		hsbq1_weapons[ 1 ][ 2 ] = R_PicFromWad( "inv2_gren_prox" );
-		hsbq1_weapons[ 1 ][ 3 ] = R_PicFromWad( "inv2_prox_gren" );
-		hsbq1_weapons[ 1 ][ 4 ] = R_PicFromWad( "inv2_prox" );
+		hsbq1_weapons[ 1 ][ 0 ] = R_ShaderFromWad( "inv2_laser" );
+		hsbq1_weapons[ 1 ][ 1 ] = R_ShaderFromWad( "inv2_mjolnir" );
+		hsbq1_weapons[ 1 ][ 2 ] = R_ShaderFromWad( "inv2_gren_prox" );
+		hsbq1_weapons[ 1 ][ 3 ] = R_ShaderFromWad( "inv2_prox_gren" );
+		hsbq1_weapons[ 1 ][ 4 ] = R_ShaderFromWad( "inv2_prox" );
 
 		for ( int i = 0; i < 5; i++ ) {
-			hsbq1_weapons[ 2 + i ][ 0 ] = R_PicFromWad( va( "inva%i_laser",i + 1 ) );
-			hsbq1_weapons[ 2 + i ][ 1 ] = R_PicFromWad( va( "inva%i_mjolnir",i + 1 ) );
-			hsbq1_weapons[ 2 + i ][ 2 ] = R_PicFromWad( va( "inva%i_gren_prox",i + 1 ) );
-			hsbq1_weapons[ 2 + i ][ 3 ] = R_PicFromWad( va( "inva%i_prox_gren",i + 1 ) );
-			hsbq1_weapons[ 2 + i ][ 4 ] = R_PicFromWad( va( "inva%i_prox",i + 1 ) );
+			hsbq1_weapons[ 2 + i ][ 0 ] = R_ShaderFromWad( va( "inva%i_laser",i + 1 ) );
+			hsbq1_weapons[ 2 + i ][ 1 ] = R_ShaderFromWad( va( "inva%i_mjolnir",i + 1 ) );
+			hsbq1_weapons[ 2 + i ][ 2 ] = R_ShaderFromWad( va( "inva%i_gren_prox",i + 1 ) );
+			hsbq1_weapons[ 2 + i ][ 3 ] = R_ShaderFromWad( va( "inva%i_prox_gren",i + 1 ) );
+			hsbq1_weapons[ 2 + i ][ 4 ] = R_ShaderFromWad( va( "inva%i_prox",i + 1 ) );
 		}
 
-		hsbq1_items[ 0 ] = R_PicFromWad( "sb_wsuit" );
-		hsbq1_items[ 1 ] = R_PicFromWad( "sb_eshld" );
+		hsbq1_items[ 0 ] = R_ShaderFromWad( "sb_wsuit" );
+		hsbq1_items[ 1 ] = R_ShaderFromWad( "sb_eshld" );
 	}
 
 	if ( q1_rogue ) {
-		rsbq1_invbar[ 0 ] = R_PicFromWad( "r_invbar1" );
-		rsbq1_invbar[ 1 ] = R_PicFromWad( "r_invbar2" );
+		rsbq1_invbar[ 0 ] = R_ShaderFromWad( "r_invbar1" );
+		rsbq1_invbar[ 1 ] = R_ShaderFromWad( "r_invbar2" );
 
-		rsbq1_weapons[ 0 ] = R_PicFromWad( "r_lava" );
-		rsbq1_weapons[ 1 ] = R_PicFromWad( "r_superlava" );
-		rsbq1_weapons[ 2 ] = R_PicFromWad( "r_gren" );
-		rsbq1_weapons[ 3 ] = R_PicFromWad( "r_multirock" );
-		rsbq1_weapons[ 4 ] = R_PicFromWad( "r_plasma" );
+		rsbq1_weapons[ 0 ] = R_ShaderFromWad( "r_lava" );
+		rsbq1_weapons[ 1 ] = R_ShaderFromWad( "r_superlava" );
+		rsbq1_weapons[ 2 ] = R_ShaderFromWad( "r_gren" );
+		rsbq1_weapons[ 3 ] = R_ShaderFromWad( "r_multirock" );
+		rsbq1_weapons[ 4 ] = R_ShaderFromWad( "r_plasma" );
 
-		rsbq1_items[ 0 ] = R_PicFromWad( "r_shield1" );
-		rsbq1_items[ 1 ] = R_PicFromWad( "r_agrav1" );
+		rsbq1_items[ 0 ] = R_ShaderFromWad( "r_shield1" );
+		rsbq1_items[ 1 ] = R_ShaderFromWad( "r_agrav1" );
 
-		rsbq1_teambord = R_PicFromWad( "r_teambord" );
+		rsbq1_teambord = R_ShaderFromWad( "r_teambord" );
 
-		rsbq1_ammo[ 0 ] = R_PicFromWad( "r_ammolava" );
-		rsbq1_ammo[ 1 ] = R_PicFromWad( "r_ammomulti" );
-		rsbq1_ammo[ 2 ] = R_PicFromWad( "r_ammoplasma" );
+		rsbq1_ammo[ 0 ] = R_ShaderFromWad( "r_ammolava" );
+		rsbq1_ammo[ 1 ] = R_ShaderFromWad( "r_ammomulti" );
+		rsbq1_ammo[ 2 ] = R_ShaderFromWad( "r_ammoplasma" );
 	}
 }
 
 //=============================================================================
 // drawing routines are relative to the status bar location
 
-static void SbarQ1_DrawPic( int x, int y, image_t* pic ) {
-	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
-		UI_DrawPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), pic );
-	} else   {
-		UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y + ( viddef.height - Q1SBAR_HEIGHT ), pic );
-	}
-}
-
-static void SbarQ1_DrawPicShader( int x, int y, qhandle_t shader ) {
+static void SbarQ1_DrawPic( int x, int y, qhandle_t shader ) {
 	if ( cl.qh_gametype == QHGAME_DEATHMATCH || GGameType & GAME_QuakeWorld ) {
 		UI_DrawPicShader( x, y + ( viddef.height - Q1SBAR_HEIGHT ), shader );
 	} else   {
@@ -262,8 +254,8 @@ static void SbarQ1_DrawPicShader( int x, int y, qhandle_t shader ) {
 	}
 }
 
-static void SbarQ1_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
-	UI_DrawSubPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), pic, srcx, srcy, width, height );
+static void SbarQ1_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int srcy, int width, int height ) {
+	UI_DrawSubPic( x, y + ( viddef.height - Q1SBAR_HEIGHT ), shader, srcx, srcy, width, height );
 }
 
 //	Draws one solid graphics character
@@ -326,7 +318,7 @@ static void SbarQ1_DrawNum( int x, int y, int num, int digits, int color ) {
 			frame = *ptr - '0';
 		}
 
-		SbarQ1_DrawPicShader( x,y,sbq1_nums[ color ][ frame ] );
+		SbarQ1_DrawPic( x,y,sbq1_nums[ color ][ frame ] );
 		x += 24;
 		ptr++;
 	}
@@ -1342,16 +1334,16 @@ void SbarQ1_IntermissionOverlay() {
 	int dig = cl.qh_completed_time / 60;
 	SbarQ1_IntermissionNumber( 160, 64, dig, 3, 0 );
 	int num = cl.qh_completed_time - dig * 60;
-	UI_DrawPic( 234,64,sbq1_colon );
+	UI_DrawPicShader( 234,64,sbq1_colon );
 	UI_DrawPicShader( 246,64,sbq1_nums[ 0 ][ num / 10 ] );
 	UI_DrawPicShader( 266,64,sbq1_nums[ 0 ][ num % 10 ] );
 
 	SbarQ1_IntermissionNumber( 160, 104, cl.qh_stats[ Q1STAT_SECRETS ], 3, 0 );
-	UI_DrawPic( 232,104,sbq1_slash );
+	UI_DrawPicShader( 232,104,sbq1_slash );
 	SbarQ1_IntermissionNumber( 240, 104, cl.qh_stats[ Q1STAT_TOTALSECRETS ], 3, 0 );
 
 	SbarQ1_IntermissionNumber( 160, 144, cl.qh_stats[ Q1STAT_MONSTERS ], 3, 0 );
-	UI_DrawPic( 232,144,sbq1_slash );
+	UI_DrawPicShader( 232,144,sbq1_slash );
 	SbarQ1_IntermissionNumber( 240, 144, cl.qh_stats[ Q1STAT_TOTALMONSTERS ], 3, 0 );
 }
 

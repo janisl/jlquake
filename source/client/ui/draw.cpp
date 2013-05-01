@@ -128,19 +128,25 @@ void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* pic ) {
 	UI_DrawStretchPic( x, y, w, h, gl );
 }
 
-void UI_DrawSubPic( int x, int y, image_t* pic, int srcx, int srcy, int width, int height ) {
-	float newsl = ( float )srcx / ( float )R_GetImageWidth( pic );
-	float newsh = newsl + ( float )width / ( float )R_GetImageWidth( pic );
+void UI_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int srcy, int width, int height ) {
+	float newsl = ( float )srcx / ( float )R_GetShaderWidth( shader );
+	float newsh = newsl + ( float )width / ( float )R_GetShaderWidth( shader );
 
-	float newtl = ( float )srcy / ( float )R_GetImageHeight( pic );
-	float newth = newtl + ( float )height / ( float )R_GetImageHeight( pic );
+	float newtl = ( float )srcy / ( float )R_GetShaderHeight( shader );
+	float newth = newtl + ( float )height / ( float )R_GetShaderHeight( shader );
 
-	DoQuad( x, y, width, height, pic, newsl, newtl, newsh, newth );
+	DoQuadShader( x, y, width, height, shader, newsl, newtl, newsh, newth );
 }
 
 //	This repeats a 64*64 tile graphic to fill the screen around a sized down
 // refresh window.
-void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
+void UI_TileClear( int x, int y, int w, int h, qhandle_t shader ) {
+	DoQuadShader( x, y, w, h, shader, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0 );
+}
+
+//	This repeats a 64*64 tile graphic to fill the screen around a sized down
+// refresh window.
+static void UI_TileClear( int x, int y, int w, int h, image_t* pic ) {
 	DoQuad( x, y, w, h, pic, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0 );
 }
 

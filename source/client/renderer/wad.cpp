@@ -102,7 +102,7 @@ void* R_GetWadLumpByName( const char* name ) {
 	return NULL;
 }
 
-static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
+static qhandle_t R_PicFromWad( const char* name, GLenum WrapClampMode ) {
 	byte* qpic = ( byte* )R_GetWadLumpByName( name );
 
 	int width;
@@ -114,17 +114,13 @@ static image_t* R_PicFromWad( const char* name, GLenum WrapClampMode ) {
 
 	delete[] pic;
 
-	return image;
-}
-
-image_t* R_PicFromWad( const char* name ) {
-	return R_PicFromWad( name, GL_CLAMP );
-}
-
-image_t* R_PicFromWadRepeat( const char* name ) {
-	return R_PicFromWad( name, GL_REPEAT );
+	return R_Build2DShaderFromImage( image )->index;
 }
 
 qhandle_t R_ShaderFromWad( const char* name ) {
-	return R_Build2DShaderFromImage( R_PicFromWad( name, GL_CLAMP ) )->index;
+	return R_PicFromWad( name, GL_CLAMP );
+}
+
+qhandle_t R_ShaderFromWadRepeat( const char* name ) {
+	return R_PicFromWad( name, GL_REPEAT );
 }

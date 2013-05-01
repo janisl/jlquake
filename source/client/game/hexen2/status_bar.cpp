@@ -50,7 +50,7 @@ static Cvar* BarSpeed;
 static Cvar* DMMode;
 static Cvar* sbtrans;
 
-static image_t* sbh2_nums[ 11 ];
+static qhandle_t sbh2_nums[ 11 ];
 
 static int sbh2_fragsort[ BIGGEST_MAX_CLIENTS_QH ];
 static int sbh2_scoreboardlines;
@@ -263,15 +263,19 @@ void SbarH2_Init() {
 
 void SbarH2_InitImages() {
 	for ( int i = 0; i < 10; i++ ) {
-		sbh2_nums[ i ] = R_PicFromWad( va( "num_%i",i ) );
+		sbh2_nums[ i ] = R_ShaderFromWad( va( "num_%i",i ) );
 	}
-	sbh2_nums[ 10 ] = R_PicFromWad( "num_minus" );
+	sbh2_nums[ 10 ] = R_ShaderFromWad( "num_minus" );
 }
 
 // Relative to the current status bar location.
 static void SbarH2_DrawPic( int x, int y, image_t* pic ) {
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ),
 		y + ( viddef.height - ( int )BarHeight ), pic );
+}
+static void SbarH2_DrawPicShader( int x, int y, qhandle_t shader ) {
+	UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ),
+		y + ( viddef.height - ( int )BarHeight ), shader );
 }
 
 static void SbarH2_DrawSubPic( int x, int y, int h, image_t* pic ) {
@@ -323,7 +327,7 @@ static void SbarH2_DrawNum( int x, int y, int number, int digits ) {
 		} else   {
 			frame = *ptr - '0';
 		}
-		SbarH2_DrawPic( x, y, sbh2_nums[ frame ] );
+		SbarH2_DrawPicShader( x, y, sbh2_nums[ frame ] );
 		x += 13;
 		ptr++;
 	}
