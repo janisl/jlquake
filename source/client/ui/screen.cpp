@@ -66,6 +66,8 @@ static int scr_center_lines;
 
 static qhandle_t scr_net;
 static qhandle_t draw_backtile;
+qhandle_t scrGfxPause;
+qhandle_t scrGfxLoading;
 
 int scr_draw_loading;
 
@@ -446,35 +448,19 @@ void SCR_TileClear() {
 
 	if ( top > 0 ) {
 		// clear above view screen
-		if ( GGameType & GAME_Quake2 ) {
-			UI_NamedTileClear( 0, 0, viddef.width, top, "backtile" );
-		} else {
-			UI_TileClear( 0, 0, viddef.width, top, draw_backtile );
-		}
+		UI_TileClear( 0, 0, viddef.width, top, draw_backtile );
 	}
 	if ( viddef.height > bottom ) {
 		// clear below view screen
-		if ( GGameType & GAME_Quake2 ) {
-			UI_NamedTileClear( 0, bottom, viddef.width, viddef.height - bottom, "backtile" );
-		} else {
-			UI_TileClear( 0, bottom, viddef.width, viddef.height - bottom, draw_backtile );
-		}
+		UI_TileClear( 0, bottom, viddef.width, viddef.height - bottom, draw_backtile );
 	}
 	if ( left > 0 ) {
 		// clear left of view screen
-		if ( GGameType & GAME_Quake2 ) {
-			UI_NamedTileClear( 0, top, left, scr_vrect.height, "backtile" );
-		} else {
-			UI_TileClear( 0, top, left, scr_vrect.height, draw_backtile );
-		}
+		UI_TileClear( 0, top, left, scr_vrect.height, draw_backtile );
 	}
 	if ( viddef.width > right ) {
 		// clear left of view screen
-		if ( GGameType & GAME_Quake2 ) {
-			UI_NamedTileClear( right, top, viddef.width - right, scr_vrect.height, "backtile" );
-		} else {
-			UI_TileClear( right, top, viddef.width - right, scr_vrect.height, draw_backtile );
-		}
+		UI_TileClear( right, top, viddef.width - right, scr_vrect.height, draw_backtile );
 	}
 }
 
@@ -566,14 +552,22 @@ void SCRQH_InitShaders() {
 	if ( GGameType & GAME_Quake ) {
 		draw_backtile = R_ShaderFromWadRepeat( "backtile" );
 		char_texture = R_LoadRawFontImageFromWad( "conchars", 128, 128 );
+		scrGfxPause = R_CacheShader( "gfx/pause.lmp" );
+		scrGfxLoading = R_CacheShader( "gfx/loading.lmp" );
 	} else {
 		draw_backtile = R_CacheShaderRepeat( "gfx/menu/backtile.lmp" );
 		char_texture = R_LoadRawFontImageFromFile( "gfx/menu/conchars.lmp", 256, 128 );
 		char_smalltexture = R_LoadRawFontImageFromWad( "tinyfont", 128, 32 );
+		scrGfxPause = R_CacheShader( "gfx/menu/paused.lmp" );
+		scrGfxLoading = R_CacheShader( "gfx/menu/loading.lmp" );
 	}
 	Con_InitBackgroundShaders();
 	MQH_InitShaders();
 	VQH_InitCrosshairShader();
+}
+
+void SCRQ2_InitShaders() {
+	draw_backtile = R_CacheShaderRepeat( "pics/backtile.pcx" );
 }
 
 void SCR_Init() {

@@ -54,6 +54,8 @@ extern Cvar* cl_debuggraph;
 extern Cvar* cl_timegraph;
 extern bool scr_initialized;			// ready to draw
 extern Cvar* clq2_stereo_separation;
+extern qhandle_t scrGfxPause;
+extern qhandle_t scrGfxLoading;
 
 void UI_AdjustFromVirtualScreen( float* x, float* y, float* w, float* h );
 void UI_DrawPic( int x, int y, image_t* pic );
@@ -61,10 +63,8 @@ void UI_DrawPicShader( int x, int y, qhandle_t shader );
 void UI_DrawNamedPic( int x, int y, const char* name );
 void UI_DrawStretchPic( int x, int y, int w, int h, image_t* gl );
 void UI_DrawStretchPicShader( int x, int y, int w, int h, qhandle_t shader );
-void UI_DrawStretchNamedPic( int x, int y, int w, int h, const char* name );
 void UI_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int srcy, int width, int height );
 void UI_TileClear( int x, int y, int w, int h, qhandle_t pic );
-void UI_NamedTileClear( int x, int y, int w, int h, const char* name );
 void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a );
 void UI_FillPal( int x, int y, int w, int h, int c );
 void UI_DrawCharBase( int x, int y, int num, int w, int h, qhandle_t shader, int numberOfColumns,
@@ -88,6 +88,7 @@ void SCR_ClearCenterString();
 void SCR_CalcVrect();
 void SCR_DrawNet();
 void SCRQH_InitShaders();
+void SCRQ2_InitShaders();
 void SCR_DrawFPS();
 void SCR_TileClear();
 void SCR_UpdateScreen();

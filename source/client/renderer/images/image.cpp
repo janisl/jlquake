@@ -1656,13 +1656,13 @@ qhandle_t R_LoadQuake2FontImage( const char* name ) {
 	return R_Build2DShaderFromImage( image )->index;
 }
 
-image_t* R_CreateCrosshairImage() {
+qhandle_t R_CreateCrosshairImage() {
 	byte data[ 64 * 4 ];
 	Com_Memset( data, 255, 64 * 4 );
 	for ( int i = 0; i < 64; i++ ) {
 		data[ i * 4 + 3 ] = cs_data[ i ];
 	}
-	return R_CreateImage( "crosshair", data, 8, 8, false, false, GL_CLAMP );
+	return R_Build2DShaderFromImage( R_CreateImage( "crosshair", data, 8, 8, false, false, GL_CLAMP ) )->index;
 }
 
 image_t* R_CachePic( const char* path ) {
@@ -1697,22 +1697,14 @@ image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels ) {
 	return pic;
 }
 
-static image_t* R_RegisterPic( const char* name, GLenum wrapClampMode ) {
+image_t* R_RegisterPic( const char* name ) {
 	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
 		char fullname[ MAX_QPATH ];
 		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
-		return R_FindImageFile( fullname, false, false, wrapClampMode );
+		return R_FindImageFile( fullname, false, false, GL_CLAMP );
 	} else {
-		return R_FindImageFile( name + 1, false, false, wrapClampMode );
+		return R_FindImageFile( name + 1, false, false, GL_CLAMP );
 	}
-}
-
-image_t* R_RegisterPic( const char* name ) {
-	return R_RegisterPic( name, GL_CLAMP );
-}
-
-image_t* R_RegisterPicRepeat( const char* name ) {
-	return R_RegisterPic( name, GL_REPEAT );
 }
 
 int R_GetImageWidth( image_t* pic ) {

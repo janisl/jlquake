@@ -66,6 +66,11 @@ static qhandle_t rsbq1_items[ 2 ];
 static qhandle_t rsbq1_ammo[ 3 ];
 static qhandle_t rsbq1_teambord;			// PGM 01/19/97 - team color border
 
+static qhandle_t sbq1_ranking;
+static qhandle_t sbq1_complete;
+static qhandle_t sbq1_inter;
+static qhandle_t sbq1_finale;
+
 //MED 01/04/97 added two more weapons + 3 alternates for grenade launcher
 static qhandle_t hsbq1_weapons[ 7 ][ 5 ];			// 0 is active, 1 is owned, 2-5 are flashes
 //MED 01/04/97 added array to simplify weapon parsing
@@ -241,6 +246,11 @@ void SbarQ1_InitShaders() {
 		rsbq1_ammo[ 1 ] = R_ShaderFromWad( "r_ammomulti" );
 		rsbq1_ammo[ 2 ] = R_ShaderFromWad( "r_ammoplasma" );
 	}
+
+	sbq1_ranking = R_CacheShader( "gfx/ranking.lmp" );
+	sbq1_complete = R_CacheShader( "gfx/complete.lmp" );
+	sbq1_inter = R_CacheShader( "gfx/inter.lmp" );
+	sbq1_finale = R_CacheShader( "gfx/finale.lmp" );
 }
 
 //=============================================================================
@@ -840,8 +850,7 @@ static void SbarQ1_DeathmatchOverlay( int start ) {
 	int teamplay = GGameType & GAME_QuakeWorld && String::Atoi( Info_ValueForKey( cl.qh_serverinfo, "teamplay" ) );
 
 	if ( !start ) {
-		image_t* pic = R_CachePic( "gfx/ranking.lmp" );
-		UI_DrawPic( viddef.width / 2 - R_GetImageWidth( pic ) / 2, 8, pic );
+		UI_DrawPicShader( viddef.width / 2 - R_GetShaderWidth( sbq1_ranking ) / 2, 8, sbq1_ranking );
 	}
 
 	// scores
@@ -1005,8 +1014,7 @@ static void SbarQW_TeamOverlay() {
 		return;
 	}
 
-	image_t* pic = R_CachePic( "gfx/ranking.lmp" );
-	UI_DrawPic( 160 - R_GetImageWidth( pic ) / 2, 8, pic );
+	UI_DrawPicShader( 160 - R_GetShaderWidth( sbq1_ranking ) / 2, 8, sbq1_ranking );
 
 	int y = 32;
 	int x = 36 + ( ( viddef.width - 320 ) >> 1 );
@@ -1324,11 +1332,8 @@ void SbarQ1_IntermissionOverlay() {
 		return;
 	}
 
-	image_t* pic = R_CachePic( "gfx/complete.lmp" );
-	UI_DrawPic( 64, 24, pic );
-
-	pic = R_CachePic( "gfx/inter.lmp" );
-	UI_DrawPic( 0, 56, pic );
+	UI_DrawPicShader( 64, 24, sbq1_complete );
+	UI_DrawPicShader( 0, 56, sbq1_inter );
 
 	// time
 	int dig = cl.qh_completed_time / 60;
@@ -1348,6 +1353,5 @@ void SbarQ1_IntermissionOverlay() {
 }
 
 void SbarQ1_FinaleOverlay() {
-	image_t* pic = R_CachePic( "gfx/finale.lmp" );
-	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, 16, pic );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( sbq1_finale ) ) / 2, 16, sbq1_finale );
 }

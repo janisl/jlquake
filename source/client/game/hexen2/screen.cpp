@@ -137,7 +137,6 @@ void SCRH2_DrawCenterString( const char* message ) {
 }
 
 static void SCRH2_DrawPause() {
-	image_t* pic;
 	float delta;
 	static qboolean newdraw = false;
 	int finaly;
@@ -158,8 +157,6 @@ static void SCRH2_DrawPause() {
 		LogoPercent = 0;
 	}
 
-	pic = R_CachePic( "gfx/menu/paused.lmp" );
-
 	if ( LogoPercent < LogoTargetPercent ) {
 		delta = ( ( LogoTargetPercent - LogoPercent ) / .5 ) * cls.frametime * 0.001;
 		if ( delta < 0.004 ) {
@@ -171,21 +168,19 @@ static void SCRH2_DrawPause() {
 		}
 	}
 
-	finaly = ( ( float )R_GetImageHeight( pic ) * LogoPercent ) - R_GetImageHeight( pic );
-	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2, finaly, pic );
+	finaly = ( ( float )R_GetShaderHeight( scrGfxPause ) * LogoPercent ) - R_GetShaderHeight( scrGfxPause );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( scrGfxPause ) ) / 2, finaly, scrGfxPause );
 }
 
 static void SCRH2_DrawLoading() {
 	int size, count, offset;
-	image_t* pic;
 
 	if ( !scr_draw_loading && clh2_loading_stage == 0 ) {
 		return;
 	}
 
-	pic = R_CachePic( "gfx/menu/loading.lmp" );
-	offset = ( viddef.width - R_GetImageWidth( pic ) ) / 2;
-	UI_DrawPic( offset, 0, pic );
+	offset = ( viddef.width - R_GetShaderWidth( scrGfxLoading ) ) / 2;
+	UI_DrawPicShader( offset, 0, scrGfxLoading );
 
 	if ( clh2_loading_stage == 0 ) {
 		return;
@@ -305,7 +300,6 @@ static void I_Print( int cx, int cy, char* str ) {
 }
 
 static void SBH2_IntermissionOverlay() {
-	image_t* pic;
 	int elapsed, size, bx, by, i;
 	const char* message;
 	char temp[ 80 ];
@@ -315,42 +309,43 @@ static void SBH2_IntermissionOverlay() {
 		return;
 	}
 
+	qhandle_t shader;
 	switch ( cl.qh_intermission ) {
 	case 1:
-		pic = R_CachePic( "gfx/meso.lmp" );
+		shader = R_CacheShader( "gfx/meso.lmp" );
 		break;
 	case 2:
-		pic = R_CachePic( "gfx/egypt.lmp" );
+		shader = R_CacheShader( "gfx/egypt.lmp" );
 		break;
 	case 3:
-		pic = R_CachePic( "gfx/roman.lmp" );
+		shader = R_CacheShader( "gfx/roman.lmp" );
 		break;
 	case 4:
-		pic = R_CachePic( "gfx/castle.lmp" );
+		shader = R_CacheShader( "gfx/castle.lmp" );
 		break;
 	case 5:
-		pic = R_CachePic( "gfx/castle.lmp" );
+		shader = R_CacheShader( "gfx/castle.lmp" );
 		break;
 	case 6:
-		pic = R_CachePic( "gfx/end-1.lmp" );
+		shader = R_CacheShader( "gfx/end-1.lmp" );
 		break;
 	case 7:
-		pic = R_CachePic( "gfx/end-2.lmp" );
+		shader = R_CacheShader( "gfx/end-2.lmp" );
 		break;
 	case 8:
-		pic = R_CachePic( "gfx/end-3.lmp" );
+		shader = R_CacheShader( "gfx/end-3.lmp" );
 		break;
 	case 9:
-		pic = R_CachePic( "gfx/castle.lmp" );
+		shader = R_CacheShader( "gfx/castle.lmp" );
 		break;
 	case 10:
-		pic = R_CachePic( "gfx/mpend.lmp" );
+		shader = R_CacheShader( "gfx/mpend.lmp" );
 		break;
 	case 11:
-		pic = R_CachePic( "gfx/mpmid.lmp" );
+		shader = R_CacheShader( "gfx/mpmid.lmp" );
 		break;
 	case 12:
-		pic = R_CachePic( "gfx/end-3.lmp" );
+		shader = R_CacheShader( "gfx/end-3.lmp" );
 		break;
 
 	default:
@@ -358,7 +353,7 @@ static void SBH2_IntermissionOverlay() {
 		break;
 	}
 
-	UI_DrawPic( ( ( viddef.width - 320 ) >> 1 ),( ( viddef.height - 200 ) >> 1 ), pic );
+	UI_DrawPicShader( ( ( viddef.width - 320 ) >> 1 ),( ( viddef.height - 200 ) >> 1 ), shader );
 
 	if ( cl.qh_intermission >= 6 && cl.qh_intermission <= 8 ) {
 		elapsed = ( cl.qh_serverTimeFloat - cl.qh_completed_time ) * 20;

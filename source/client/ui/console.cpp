@@ -35,8 +35,6 @@ static int nextHistoryLine;	// the last line in the history buffer, not masked
 static int historyLine;		// the line being displayed from history buffer
 							// will be <= nextHistoryLine
 
-static image_t* conback;
-
 static Cvar* cl_noprint;
 static Cvar* cl_conXOffset;
 static Cvar* con_notifytime;
@@ -257,7 +255,7 @@ void Con_ConsolePrint( const char* txt ) {
 
 static void Con_DrawBackground( float frac, int lines ) {
 	if ( GGameType & GAME_QuakeHexen ) {
-		UI_DrawStretchPic( 0, lines - viddef.height, viddef.width, viddef.height, conback );
+		UI_DrawStretchPicShader( 0, lines - viddef.height, viddef.width, viddef.height, cls.consoleShader );
 
 		if ( !clc.download ) {
 			const char* version;
@@ -275,7 +273,7 @@ static void Con_DrawBackground( float frac, int lines ) {
 			UI_DrawString( x, y, version );
 		}
 	} else if ( GGameType & GAME_Quake2 ) {
-		UI_DrawStretchNamedPic( 0, -viddef.height + lines, viddef.width, viddef.height, "conback" );
+		UI_DrawStretchPic( 0, -viddef.height + lines, viddef.width, viddef.height, R_RegisterPic( "conback" ) );
 
 		const char* version = S_COLOR_GREEN "JLQuake II " JLQUAKE_VERSION_STRING;
 		UI_DrawString( viddef.width - 4 - String::LengthWithoutColours( version ) * 8, lines - 12, version );
@@ -1185,8 +1183,8 @@ void Con_Close() {
 
 void Con_InitBackgroundShaders() {
 	if ( GGameType & GAME_Quake ) {
-		conback = R_CachePic( "gfx/conback.lmp" );
+		cls.consoleShader = R_CacheShader( "gfx/conback.lmp" );
 	} else if ( GGameType & GAME_Hexen2 ) {
-		conback = R_CachePic( "gfx/menu/conback.lmp" );
+		cls.consoleShader = R_CacheShader( "gfx/menu/conback.lmp" );
 	}
 }

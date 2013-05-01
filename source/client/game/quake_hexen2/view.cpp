@@ -78,7 +78,7 @@ static cshift_t cshift_water = { {130,80,50}, 128 };
 static cshift_t cshift_slime = { {0,25,5}, 150 };
 static cshift_t cshift_lava = { {255,80,0}, 150 };
 
-static image_t* cs_texture;	// crosshair texture
+static qhandle_t cs_texture;	// crosshair texture
 
 static qhandle_t scr_turtle;
 
@@ -1080,7 +1080,7 @@ static void VQH_DrawCrosshair() {
 		unsigned char* pColor = r_palette[ crosshaircolor->integer ];
 		float colour[ 4 ] = { pColor[ 0 ] / 255.0, pColor[ 1 ] / 255.0, pColor[ 2 ] / 255.0, pColor[ 3 ] / 255.0 };
 		R_SetColor( colour );
-		UI_DrawStretchPic( x - 4, y - 4, 16, 16, cs_texture );
+		UI_DrawStretchPicShader( x - 4, y - 4, 16, 16, cs_texture );
 		R_SetColor( NULL );
 	} else if ( crosshair->value ) {
 		UI_DrawChar( scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value,

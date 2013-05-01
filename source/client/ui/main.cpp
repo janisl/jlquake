@@ -161,6 +161,7 @@ void CL_InitRenderer() {
 		viddef.height = cls.glconfig.vidHeight;
 
 		char_texture = R_LoadQuake2FontImage( "pics/conchars.pcx" );
+		SCRQ2_InitShaders();
 	} else {
 		// all drawing is done to a 480 pixels high virtual screen size
 		// and will be automatically scaled to the real resolution

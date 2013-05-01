@@ -36,9 +36,8 @@ static void SCRQ1_DrawPause() {
 		return;
 	}
 
-	image_t* pic = R_CachePic( "gfx/pause.lmp" );
-	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
-		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( scrGfxPause ) ) / 2,
+		( viddef.height - 48 - R_GetShaderHeight( scrGfxPause ) ) / 2, scrGfxPause );
 }
 
 static void SCRQ1_DrawLoading() {
@@ -46,9 +45,8 @@ static void SCRQ1_DrawLoading() {
 		return;
 	}
 
-	image_t* pic = R_CachePic( "gfx/loading.lmp" );
-	UI_DrawPic( ( viddef.width - R_GetImageWidth( pic ) ) / 2,
-		( viddef.height - 48 - R_GetImageHeight( pic ) ) / 2, pic );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( scrGfxLoading ) ) / 2,
+		( viddef.height - 48 - R_GetShaderHeight( scrGfxLoading ) ) / 2, scrGfxLoading );
 }
 
 #define NET_GRAPHHEIGHT 32
