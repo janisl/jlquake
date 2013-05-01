@@ -921,10 +921,10 @@ static void SbarH2_NormalOverlay() {
 		FindName( cl.h2_puzzle_pieces[ i ], name );
 
 		if ( piece < 4 ) {
-			MQH_DrawPicShader( 10, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			MQH_DrawPic( 10, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 45, y, name );
 		} else {
-			MQH_DrawPicShader( 310 - 32, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
+			MQH_DrawPic( 310 - 32, y, R_CacheShader( va( "gfx/puzzle/%s.lmp", cl.h2_puzzle_pieces[ i ] ) ) );
 			MQH_PrintWhite( 310 - 32 - 3 - ( String::Length( name ) * 8 ), 18 + y, name );
 		}
 
@@ -1009,7 +1009,7 @@ void SbarH2_DeathmatchOverlay() {
 		CL_AddReliableCommand( "pings" );
 	}
 
-	MQH_DrawPicShader( ( 320 - R_GetShaderWidth( sbh2_title8 ) ) / 2, 0, sbh2_title8 );
+	MQH_DrawPic( ( 320 - R_GetShaderWidth( sbh2_title8 ) ) / 2, 0, sbh2_title8 );
 
 	// scores
 	SbarH2_SortFrags( true );

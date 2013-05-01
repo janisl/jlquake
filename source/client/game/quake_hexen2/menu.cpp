@@ -38,6 +38,22 @@ char m_return_reason[ 32 ];
 static qhandle_t char_menufonttexture;
 static char BigCharWidth[ 27 ][ 27 ];
 
+static qhandle_t mqh_gfx_box_tl;
+static qhandle_t mqh_gfx_box_ml;
+static qhandle_t mqh_gfx_box_bl;
+static qhandle_t mqh_gfx_box_tm;
+static qhandle_t mqh_gfx_box_mm;
+static qhandle_t mqh_gfx_box_mm2;
+static qhandle_t mqh_gfx_box_bm;
+static qhandle_t mqh_gfx_box_tr;
+static qhandle_t mqh_gfx_box_mr;
+static qhandle_t mqh_gfx_box_br;
+static qhandle_t mqh_gfx_plaque;
+static qhandle_t mqh_gfx_menudot[ 8 ];
+
+static const char* TitleLastName = "";
+static bool TitleCanSwitch = true;
+static qhandle_t TitleShader;
 static float TitlePercent = 0;
 static float TitleTargetPercent = 1;
 static float LogoPercent = 0;
@@ -74,11 +90,11 @@ static void MQH_Menu_Keys_f();
 static void MQH_Menu_Video_f();
 static void MQH_Menu_Help_f();
 
-static void MQH_DrawPic( int x, int y, image_t* pic ) {
+static void MQH_DrawPicImage( int x, int y, image_t* pic ) {
 	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y, pic );
 }
 
-void MQH_DrawPicShader( int x, int y, qhandle_t shader ) {
+void MQH_DrawPic( int x, int y, qhandle_t shader ) {
 	UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ), y, shader );
 }
 
@@ -99,47 +115,35 @@ void MQH_DrawTextBox( int x, int y, int width, int lines ) {
 	// draw left side
 	int cx = x;
 	int cy = y;
-	image_t* p = R_CachePic( "gfx/box_tl.lmp" );
-	MQH_DrawPic( cx, cy, p );
-	p = R_CachePic( "gfx/box_ml.lmp" );
+	MQH_DrawPic( cx, cy, mqh_gfx_box_tl );
 	for ( int n = 0; n < lines; n++ ) {
 		cy += 8;
-		MQH_DrawPic( cx, cy, p );
+		MQH_DrawPic( cx, cy, mqh_gfx_box_ml );
 	}
-	p = R_CachePic( "gfx/box_bl.lmp" );
-	MQH_DrawPic( cx, cy + 8, p );
+	MQH_DrawPic( cx, cy + 8, mqh_gfx_box_bl );
 
 	// draw middle
 	cx += 8;
 	while ( width > 0 ) {
 		cy = y;
-		p = R_CachePic( "gfx/box_tm.lmp" );
-		MQH_DrawPic( cx, cy, p );
-		p = R_CachePic( "gfx/box_mm.lmp" );
+		MQH_DrawPic( cx, cy, mqh_gfx_box_tm );
 		for ( int n = 0; n < lines; n++ ) {
 			cy += 8;
-			if ( n == 1 ) {
-				p = R_CachePic( "gfx/box_mm2.lmp" );
-			}
-			MQH_DrawPic( cx, cy, p );
+			MQH_DrawPic( cx, cy, n == 0 ? mqh_gfx_box_mm : mqh_gfx_box_mm2 );
 		}
-		p = R_CachePic( "gfx/box_bm.lmp" );
-		MQH_DrawPic( cx, cy + 8, p );
+		MQH_DrawPic( cx, cy + 8, mqh_gfx_box_bm );
 		width -= 2;
 		cx += 16;
 	}
 
 	// draw right side
 	cy = y;
-	p = R_CachePic( "gfx/box_tr.lmp" );
-	MQH_DrawPic( cx, cy, p );
-	p = R_CachePic( "gfx/box_mr.lmp" );
+	MQH_DrawPic( cx, cy, mqh_gfx_box_tr );
 	for ( int n = 0; n < lines; n++ ) {
 		cy += 8;
-		MQH_DrawPic( cx, cy, p );
+		MQH_DrawPic( cx, cy, mqh_gfx_box_mr );
 	}
-	p = R_CachePic( "gfx/box_br.lmp" );
-	MQH_DrawPic( cx, cy + 8, p );
+	MQH_DrawPic( cx, cy + 8, mqh_gfx_box_br );
 }
 
 void MQH_DrawTextBox2( int x, int y, int width, int lines ) {
@@ -203,9 +207,6 @@ static void MH2_DrawBigString( int x, int y, const char* string ) {
 }
 
 static void MH2_ScrollTitle( const char* name ) {
-	static const char* LastName = "";
-	static bool CanSwitch = true;
-
 	float delta;
 	if ( TitlePercent < TitleTargetPercent ) {
 		delta = ( ( TitleTargetPercent - TitlePercent ) / 0.5 ) * cls.frametime * 0.001;
@@ -224,7 +225,7 @@ static void MH2_ScrollTitle( const char* name ) {
 		TitlePercent -= delta;
 		if ( TitlePercent <= TitleTargetPercent ) {
 			TitlePercent = TitleTargetPercent;
-			CanSwitch = true;
+			TitleCanSwitch = true;
 		}
 	}
 
@@ -239,24 +240,23 @@ static void MH2_ScrollTitle( const char* name ) {
 		}
 	}
 
-	if ( String::ICmp( LastName,name ) != 0 && TitleTargetPercent != 0 ) {
+	if ( String::ICmp( TitleLastName, name ) != 0 && TitleTargetPercent != 0 ) {
 		TitleTargetPercent = 0;
 	}
 
-	if ( CanSwitch ) {
-		LastName = name;
-		CanSwitch = false;
+	if ( TitleCanSwitch ) {
+		TitleLastName = name;
+		TitleCanSwitch = false;
 		TitleTargetPercent = 1;
+		TitleShader = R_CacheShader( TitleLastName );
 	}
 
-	image_t* p = R_CachePic( LastName );
-	int finaly = ( ( float )R_GetImageHeight( p ) * TitlePercent ) - R_GetImageHeight( p );
-	MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, finaly, p );
+	int finaly = ( ( float )R_GetShaderHeight( TitleShader ) * TitlePercent ) - R_GetShaderHeight( TitleShader );
+	MQH_DrawPic( ( 320 - R_GetShaderWidth( TitleShader ) ) / 2, finaly, TitleShader );
 
 	if ( m_state != m_keys ) {
-		p = R_CachePic( "gfx/menu/hplaque.lmp" );
-		finaly = ( ( float )R_GetImageHeight( p ) * LogoPercent ) - R_GetImageHeight( p );
-		MQH_DrawPic( 10, finaly, p );
+		finaly = ( ( float )R_GetShaderHeight( mqh_gfx_plaque ) * LogoPercent ) - R_GetShaderHeight( mqh_gfx_plaque );
+		MQH_DrawPic( 10, finaly, mqh_gfx_plaque );
 	}
 }
 
@@ -268,6 +268,8 @@ static void MH2_ScrollTitle( const char* name ) {
 
 static int mqh_main_cursor;
 static int mqh_save_demonum;
+static qhandle_t mqh_gfx_ttl_main;
+static qhandle_t mqh_gfx_mainmenu;
 
 void MQH_Menu_Main_f() {
 	if ( GGameType & GAME_Hexen2 && m_state == m_none ) {
@@ -281,6 +283,10 @@ void MQH_Menu_Main_f() {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_main;
 	mqh_entersound = true;
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_ttl_main = R_CacheShader( "gfx/ttl_main.lmp" );
+		mqh_gfx_mainmenu = R_CacheShader( "gfx/mainmenu.lmp" );
+	}
 }
 
 static void MQH_Main_Draw() {
@@ -300,16 +306,15 @@ static void MQH_Main_Draw() {
 		}
 
 		int f = ( cls.realtime / 100 ) % 8;
-		MQH_DrawPic( 43, 54 + mqh_main_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
+		MQH_DrawPic( 43, 54 + mqh_main_cursor * 20, mqh_gfx_menudot[ f ] );
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/ttl_main.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
-		MQH_DrawPic( 72, 32, R_CachePic( "gfx/mainmenu.lmp" ) );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_ttl_main ) ) / 2, 4, mqh_gfx_ttl_main );
+		MQH_DrawPic( 72, 32, mqh_gfx_mainmenu );
 
 		int f = ( cls.realtime / 100 ) % 6;
 
-		MQH_DrawPic( 54, 32 + mqh_main_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
+		MQH_DrawPic( 54, 32 + mqh_main_cursor * 20, mqh_gfx_menudot[ f ] );
 	}
 }
 
@@ -397,6 +402,8 @@ static void MQH_Main_Key( int key ) {
 
 static int mqh_singleplayer_cursor;
 static bool mh2_enter_portals;
+static qhandle_t mqh_gfx_ttl_sgl;
+static qhandle_t mqh_gfx_sp_menu;
 
 static void MQH_Menu_SinglePlayer_f() {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -405,6 +412,12 @@ static void MQH_Menu_SinglePlayer_f() {
 		mqh_entersound = true;
 		if ( GGameType & GAME_Hexen2 ) {
 			Cvar_SetValue( "timelimit", 0 );		//put this here to help play single after dm
+		}
+	}
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_ttl_sgl = R_CacheShader( "gfx/ttl_sgl.lmp" );
+		if ( !( GGameType & GAME_QuakeWorld ) ) {
+			mqh_gfx_sp_menu = R_CacheShader( "gfx/sp_menu.lmp" );
 		}
 	}
 }
@@ -429,21 +442,20 @@ static void MQH_SinglePlayer_Draw() {
 			}
 
 			int f = ( cls.realtime / 100 ) % 8;
-			MQH_DrawPic( 43, 54 + mqh_singleplayer_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
+			MQH_DrawPic( 43, 54 + mqh_singleplayer_cursor * 20, mqh_gfx_menudot[ f ] );
 		}
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/ttl_sgl.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_ttl_sgl ) ) / 2, 4, mqh_gfx_ttl_sgl );
 		if ( GGameType & GAME_QuakeWorld ) {
 			MQH_DrawTextBox( 60, 10 * 8, 23, 4 );
 			MQH_PrintWhite( 92, 12 * 8, "QuakeWorld is for" );
 			MQH_PrintWhite( 88, 13 * 8, "Internet play only" );
 		} else {
-			MQH_DrawPic( 72, 32, R_CachePic( "gfx/sp_menu.lmp" ) );
+			MQH_DrawPic( 72, 32, mqh_gfx_sp_menu );
 
 			int f = ( cls.realtime / 100 ) % 6;
-			MQH_DrawPic( 54, 32 + mqh_singleplayer_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
+			MQH_DrawPic( 54, 32 + mqh_singleplayer_cursor * 20, mqh_gfx_menudot[ f ] );
 		}
 	}
 }
@@ -562,6 +574,8 @@ static void MQH_SinglePlayerConfirm_Key( int key ) {
 
 static int mh2_class_flag;
 static int mqh_class_cursor;
+static qhandle_t mqh_gfx_cport;
+static qhandle_t mqh_gfx_frame;
 
 static const char* h2_ClassNamesU[ NUM_CLASSES_H2MP ] =
 {
@@ -583,9 +597,11 @@ static const char* hw_ClassNamesU[ MAX_PLAYER_CLASS ] =
 };
 
 static void MH2_Menu_Class_f() {
-	mh2_class_flag = 0;
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
+	mh2_class_flag = 0;
+	mqh_gfx_cport = R_CacheShader( va( "gfx/cport%d.lmp", mqh_class_cursor + 1 ) );
+	mqh_gfx_frame = R_CacheShader( "gfx/menu/frame.lmp" );
 }
 
 static void MH2_Menu_Class2_f() {
@@ -602,10 +618,10 @@ static void MH2_Class_Draw() {
 	}
 
 	int f = ( cls.realtime / 100 ) % 8;
-	MQH_DrawPic( 43, 54 + mqh_class_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
+	MQH_DrawPic( 43, 54 + mqh_class_cursor * 20, mqh_gfx_menudot[ f ] );
 
-	MQH_DrawPic( 251,54 + 21, R_CachePic( va( "gfx/cport%d.lmp", mqh_class_cursor + 1 ) ) );
-	MQH_DrawPic( 242,54, R_CachePic( "gfx/menu/frame.lmp" ) );
+	MQH_DrawPic( 251, 54 + 21, mqh_gfx_cport );
+	MQH_DrawPic( 242, 54, mqh_gfx_frame );
 }
 
 static void MH2_Class_Key( int key ) {
@@ -623,6 +639,7 @@ static void MH2_Class_Key( int key ) {
 		if ( ++mqh_class_cursor >= ( GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ) ) {
 			mqh_class_cursor = 0;
 		}
+		mqh_gfx_cport = R_CacheShader( va( "gfx/cport%d.lmp", mqh_class_cursor + 1 ) );
 		break;
 
 	case K_UPARROW:
@@ -630,6 +647,7 @@ static void MH2_Class_Key( int key ) {
 		if ( --mqh_class_cursor < 0 ) {
 			mqh_class_cursor = ( GGameType & GAME_HexenWorld ? MAX_PLAYER_CLASS : GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ) - 1;
 		}
+		mqh_gfx_cport = R_CacheShader( va( "gfx/cport%d.lmp", mqh_class_cursor + 1 ) );
 		break;
 
 	case K_ENTER:
@@ -710,7 +728,7 @@ static void MH2_Difficulty_Draw() {
 	}
 
 	int f = ( int )( cls.realtime / 100 ) % 8;
-	MQH_DrawPic( 43, 54 + mh2_diff_cursor * 20, R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
+	MQH_DrawPic( 43, 54 + mh2_diff_cursor * 20, mqh_gfx_menudot[ f ] );
 }
 
 static void MH2_Difficulty_Key( int key ) {
@@ -769,6 +787,9 @@ static int mqh_load_cursor;			// 0 < mqh_load_cursor < MAX_SAVEGAMES
 static char mqh_filenames[ MAX_SAVEGAMES ][ SAVEGAME_COMMENT_LENGTH + 1 ];
 static bool mqh_loadable[ MAX_SAVEGAMES ];
 
+static qhandle_t mqh_gfx_p_load;
+static qhandle_t mqh_gfx_p_save;
+
 static void MQH_ScanSaves() {
 	int i, j;
 	char name[ MAX_OSPATH ];
@@ -822,6 +843,9 @@ static void MQH_Menu_Load_f() {
 	m_state = m_load;
 	in_keyCatchers |= KEYCATCH_UI;
 	MQH_ScanSaves();
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_p_load = R_CacheShader( "gfx/p_load.lmp" );
+	}
 }
 
 static void MQH_Menu_Save_f() {
@@ -838,6 +862,9 @@ static void MQH_Menu_Save_f() {
 	m_state = m_save;
 	in_keyCatchers |= KEYCATCH_UI;
 	MQH_ScanSaves();
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_p_save = R_CacheShader( "gfx/p_save.lmp" );
+	}
 }
 
 static void MQH_Load_Draw() {
@@ -846,8 +873,7 @@ static void MQH_Load_Draw() {
 		MH2_ScrollTitle( "gfx/menu/load.lmp" );
 		y = 60;
 	} else {
-		image_t* p = R_CachePic( "gfx/p_load.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_load ) ) / 2, 4, mqh_gfx_p_load );
 		y = 32;
 	}
 
@@ -865,8 +891,7 @@ static void MQH_Save_Draw() {
 		MH2_ScrollTitle( "gfx/menu/save.lmp" );
 		y = 60;
 	} else {
-		image_t* p = R_CachePic( "gfx/p_save.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_save ) ) / 2, 4, mqh_gfx_p_save );
 		y = 32;
 	}
 
@@ -960,12 +985,20 @@ static void MQH_Save_Key( int k ) {
 #define MULTIPLAYER_ITEMS_HW    2
 
 static int mqh_multiplayer_cursor;
+static qhandle_t mqh_gfx_p_multi;
+static qhandle_t mqh_gfx_mp_menu;
 
 static void MQH_Menu_MultiPlayer_f() {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_multiplayer;
 	if ( !( GGameType & GAME_QuakeWorld ) ) {
 		mqh_entersound = true;
+	}
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_p_multi = R_CacheShader( "gfx/p_multi.lmp" );
+		if ( !( GGameType & GAME_QuakeWorld ) ) {
+			mqh_gfx_mp_menu = R_CacheShader( "gfx/mp_menu.lmp" );
+		}
 	}
 
 	mh2_message = NULL;
@@ -986,7 +1019,7 @@ static void MQH_MultiPlayer_Draw() {
 		}
 
 		int f = ( cls.realtime / 100 ) % 8;
-		MQH_DrawPic( 43, 54 + mqh_multiplayer_cursor * 20,R_CachePic( va( "gfx/menu/menudot%i.lmp", f + 1 ) ) );
+		MQH_DrawPic( 43, 54 + mqh_multiplayer_cursor * 20, mqh_gfx_menudot[ f ] );
 
 		if ( mh2_message ) {
 			MQH_PrintWhite( ( 320 / 2 ) - ( ( 27 * 8 ) / 2 ), 168, mh2_message );
@@ -1001,9 +1034,8 @@ static void MQH_MultiPlayer_Draw() {
 		}
 		MQH_PrintWhite( ( 320 / 2 ) - ( ( 27 * 8 ) / 2 ), 160, "No Communications Available" );
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2, 4, mqh_gfx_p_multi );
 		if ( GGameType & GAME_QuakeWorld ) {
 			MQH_DrawTextBox( 46, 8 * 8, 27, 9 );
 			MQH_PrintWhite( 72, 10 * 8, "If you want to find QW  " );
@@ -1014,10 +1046,10 @@ static void MQH_MultiPlayer_Draw() {
 			MQH_PrintWhite( 72, 15 * 8, "For pointers on getting " );
 			MQH_PrintWhite( 72, 16 * 8, "        started!        " );
 		} else {
-			MQH_DrawPic( 72, 32, R_CachePic( "gfx/mp_menu.lmp" ) );
+			MQH_DrawPic( 72, 32, mqh_gfx_mp_menu );
 
 			int f = ( cls.realtime / 100 ) % 6;
-			MQH_DrawPic( 54, 32 + mqh_multiplayer_cursor * 20,R_CachePic( va( "gfx/menudot%i.lmp", f + 1 ) ) );
+			MQH_DrawPic( 54, 32 + mqh_multiplayer_cursor * 20, mqh_gfx_menudot[ f ] );
 
 			if ( tcpipAvailable ) {
 				return;
@@ -1140,10 +1172,9 @@ static void MQH_LanConfig_Draw() {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 		basex = 48;
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		basex = ( 320 - R_GetImageWidth( p ) ) / 2;
-		MQH_DrawPic( basex, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		basex = ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2;
+		MQH_DrawPic( basex, 4, mqh_gfx_p_multi );
 	}
 
 	MQH_Print( basex, GGameType & GAME_Hexen2 ? 60 : 32, "Join Game - TCP/IP" );
@@ -1304,8 +1335,7 @@ static void MQH_Search_Draw() {
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 	} else {
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2, 4, mqh_gfx_p_multi );
 	}
 
 	int x = ( 320 / 2 ) - ( ( 12 * 8 ) / 2 ) + 4;
@@ -1374,8 +1404,7 @@ static void MQH_ServerList_Draw() {
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 	} else {
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2, 4, mqh_gfx_p_multi );
 	}
 	for ( int n = 0; n < hostCacheCount; n++ ) {
 		char string [ 64 ];
@@ -1900,9 +1929,8 @@ static void MQH_GameOptions_Draw() {
 		startx = 8;
 		starty = 60;
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2, 4, mqh_gfx_p_multi );
 		startx = 0;
 		starty = 32;
 	}
@@ -2413,6 +2441,7 @@ static byte mqh_translationTable[ 256 ];
 static byte mq1_menuplyr_pixels[ 4096 ];
 static byte mh2_menuplyr_pixels[ MAX_PLAYER_CLASS ][ PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT ];
 
+static qhandle_t mqh_gfx_bigbox;
 static image_t* mq1_translate_texture;
 static image_t* mh2_translate_texture[ MAX_PLAYER_CLASS ];
 
@@ -2437,6 +2466,8 @@ static void MQH_Menu_Setup_f() {
 	}
 	if ( GGameType & GAME_Quake ) {
 		mqh_setup_cursor = NUM_SETUP_CMDS_Q1 - 1;
+		mqh_gfx_p_multi = R_CacheShader( "gfx/p_multi.lmp" );
+		mqh_gfx_bigbox = R_CacheShader( "gfx/bigbox.lmp" );
 	} else if ( GGameType & GAME_HexenWorld ) {
 		if ( !com_portals ) {
 			if ( clh2_playerclass->value == CLASS_DEMON ) {
@@ -2473,9 +2504,8 @@ static void MQH_Setup_Draw() {
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title4.lmp" );
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/p_multi.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_multi ) ) / 2, 4, mqh_gfx_p_multi );
 	}
 
 	if ( !( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) ) {
@@ -2570,7 +2600,7 @@ static void MQH_Setup_Draw() {
 		R_CachePicWithTransPixels( va( "gfx/menu/netp%i.lmp", which_class ), mh2_menuplyr_pixels[ which_class - 1 ] );
 		CL_CalcHexen2SkinTranslation( setup_top, setup_bottom, which_class, mqh_translationTable );
 		R_CreateOrUpdateTranslatedImage( mh2_translate_texture[ which_class - 1 ], va( "*translate_pic%d", which_class ), mh2_menuplyr_pixels[ which_class - 1 ], mqh_translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT );
-		MQH_DrawPic( 220, 72, mh2_translate_texture[ which_class - 1 ] );
+		MQH_DrawPicImage( 220, 72, mh2_translate_texture[ which_class - 1 ] );
 	} else {
 		MQH_Print( 64, 80, "Shirt color" );
 		MQH_Print( 64, 104, "Pants color" );
@@ -2578,12 +2608,11 @@ static void MQH_Setup_Draw() {
 		MQH_DrawTextBox( 64, 140 - 8, 14, 1 );
 		MQH_Print( 72, 140, "Accept Changes" );
 
-		image_t* p = R_CachePic( "gfx/bigbox.lmp" );
-		MQH_DrawPic( 160, 64, p );
-		p = R_CachePicWithTransPixels( "gfx/menuplyr.lmp", mq1_menuplyr_pixels );
+		MQH_DrawPic( 160, 64, mqh_gfx_bigbox );
+		image_t* p = R_CachePicWithTransPixels( "gfx/menuplyr.lmp", mq1_menuplyr_pixels );
 		CL_CalcQuakeSkinTranslation( setup_top, setup_bottom, mqh_translationTable );
 		R_CreateOrUpdateTranslatedImage( mq1_translate_texture, "*translate_pic", mq1_menuplyr_pixels, mqh_translationTable, R_GetImageWidth( p ), R_GetImageHeight( p ) );
-		MQH_DrawPic( 172, 72, mq1_translate_texture );
+		MQH_DrawPicImage( 172, 72, mq1_translate_texture );
 	}
 
 	MQH_DrawCharacter( 56, GGameType & GAME_HexenWorld ? setup_cursor_table_hw[ mqh_setup_cursor ] : GGameType & GAME_Hexen2 ? setup_cursor_table_h2[ mqh_setup_cursor ] :
@@ -2920,11 +2949,15 @@ enum
 #define SLIDER_RANGE    10
 
 static int mqh_options_cursor;
+static qhandle_t mqh_gfx_p_option;
 
 static void MQH_Menu_Options_f() {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
 	mqh_entersound = true;
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_p_option = R_CacheShader( "gfx/p_option.lmp" );
+	}
 }
 
 static void MQH_DrawSlider( int x, int y, float range ) {
@@ -2956,9 +2989,8 @@ static void MQH_Options_Draw() {
 		MH2_ScrollTitle( "gfx/menu/title3.lmp" );
 		itemsStartY = 60;
 	} else {
-		MQH_DrawPic( 16, 4, R_CachePic( "gfx/qplaque.lmp" ) );
-		image_t* p = R_CachePic( "gfx/p_option.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( 16, 4, mqh_gfx_plaque );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_p_option ) ) / 2, 4, mqh_gfx_p_option );
 		itemsStartY = 32;
 	}
 
@@ -3393,6 +3425,7 @@ static int numBindNames;
 static int mqh_keys_cursor;
 static bool mqh_bind_grab;
 static int mqh_keys_top = 0;
+static qhandle_t mqh_gfx_ttl_cstm;
 
 static void MQH_Menu_Keys_f() {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -3404,6 +3437,7 @@ static void MQH_Menu_Keys_f() {
 		numBindNames = sizeof ( mh2_bindnames ) / sizeof ( mh2_bindnames[ 0 ] );
 	} else {
 		numBindNames = sizeof ( mq1_bindnames ) / sizeof ( mq1_bindnames[ 0 ] );
+		mqh_gfx_ttl_cstm = R_CacheShader( "gfx/ttl_cstm.lmp" );
 	}
 }
 
@@ -3413,8 +3447,7 @@ static void MQH_Keys_Draw() {
 		MH2_ScrollTitle( "gfx/menu/title6.lmp" );
 		topy = 64;
 	} else {
-		image_t* p = R_CachePic( "gfx/ttl_cstm.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_ttl_cstm ) ) / 2, 4, mqh_gfx_ttl_cstm );
 		topy = 32;
 	}
 
@@ -3534,18 +3567,22 @@ static void MQH_Keys_Key( int k ) {
 #define MAX_COLUMN_SIZE     9
 #define MODE_AREA_HEIGHT    ( MAX_COLUMN_SIZE + 2 )
 
+static qhandle_t mqh_gfx_vidmodes;
+
 static void MQH_Menu_Video_f() {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
 	mqh_entersound = true;
+	if ( GGameType & GAME_Quake ) {
+		mqh_gfx_vidmodes = R_CacheShader( "gfx/vidmodes.lmp" );
+	}
 }
 
 static void MQH_Video_Draw() {
 	if ( GGameType & GAME_Hexen2 ) {
 		MH2_ScrollTitle( "gfx/menu/title7.lmp" );
 	} else {
-		image_t* p = R_CachePic( "gfx/vidmodes.lmp" );
-		MQH_DrawPic( ( 320 - R_GetImageWidth( p ) ) / 2, 4, p );
+		MQH_DrawPic( ( 320 - R_GetShaderWidth( mqh_gfx_vidmodes ) ) / 2, 4, mqh_gfx_vidmodes );
 	}
 
 	MQH_Print( 3 * 8, 36 + MODE_AREA_HEIGHT * 8 + 8 * 2,
@@ -3578,24 +3615,32 @@ static void MQH_Video_Key( int key ) {
 #define NUM_SG_HELP_PAGES   10	//Siege has more help
 
 static int mqh_help_page;
+static qhandle_t mqh_gfx_help[ 10 ];
 
 static void MQH_Menu_Help_f() {
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_help;
 	mqh_entersound = true;
 	mqh_help_page = 0;
+	if ( GGameType & GAME_Hexen2 ) {
+		if ( GGameType & GAME_HexenWorld && clhw_siege ) {
+			for ( int i = 0; i < NUM_SG_HELP_PAGES; i++) {
+				mqh_gfx_help[ i ] = R_CacheShader( va( "gfx/menu/sghelp%02i.lmp", i + 1 ) );
+			}
+		} else {
+			for ( int i = 0; i < NUM_HELP_PAGES_H2; i++) {
+				mqh_gfx_help[ i ] = R_CacheShader( va( "gfx/menu/help%02i.lmp", i + 1 ) );
+			}
+		}
+	} else {
+		for ( int i = 0; i < NUM_HELP_PAGES_Q1; i++) {
+			mqh_gfx_help[ i ] = R_CacheShader( va( "gfx/help%i.lmp", i ) );
+		}
+	}
 }
 
 static void MQH_Help_Draw() {
-	if ( GGameType & GAME_Hexen2 ) {
-		if ( GGameType & GAME_HexenWorld && clhw_siege ) {
-			MQH_DrawPic( 0, 0, R_CachePic( va( "gfx/menu/sghelp%02i.lmp", mqh_help_page + 1 ) ) );
-		} else {
-			MQH_DrawPic( 0, 0, R_CachePic( va( "gfx/menu/help%02i.lmp", mqh_help_page + 1 ) ) );
-		}
-	} else {
-		MQH_DrawPic( 0, 0, R_CachePic( va( "gfx/help%i.lmp", mqh_help_page ) ) );
-	}
+	MQH_DrawPic( 0, 0, mqh_gfx_help[ mqh_help_page ] );
 }
 
 static void MQH_Help_Key( int key ) {
@@ -4385,12 +4430,11 @@ static void MQH_Quit_Draw() {
 			}
 		}
 
-		image_t* p = R_CachePic( "gfx/box_mm2.lmp" );
 		int x = 24;
 		y = topy - 8;
 		for ( int i = 4; i < ( GGameType & GAME_HexenWorld ? 36 : 38 ); i++,x += 8 ) {
-			MQH_DrawPic( x, y, p );		//background at top for smooth scroll out
-			MQH_DrawPic( x, y + ( QUIT_SIZE_H2 * 8 ), p );	//draw at bottom for smooth scroll in
+			MQH_DrawPic( x, y, mqh_gfx_box_mm2 );		//background at top for smooth scroll out
+			MQH_DrawPic( x, y + ( QUIT_SIZE_H2 * 8 ), mqh_gfx_box_mm2 );	//draw at bottom for smooth scroll in
 		}
 
 		y += ( QUIT_SIZE_H2 * 8 ) + 8;
@@ -4551,8 +4595,29 @@ void MQH_Init() {
 void MQH_InitShaders() {
 	mq1_translate_texture = NULL;
 	Com_Memset( mh2_translate_texture, 0, sizeof ( mh2_translate_texture ) );
+
+	mqh_gfx_box_tl = R_CacheShader( "gfx/box_tl.lmp" );
+	mqh_gfx_box_ml = R_CacheShader( "gfx/box_ml.lmp" );
+	mqh_gfx_box_bl = R_CacheShader( "gfx/box_bl.lmp" );
+	mqh_gfx_box_tm = R_CacheShader( "gfx/box_tm.lmp" );
+	mqh_gfx_box_mm = R_CacheShader( "gfx/box_mm.lmp" );
+	mqh_gfx_box_mm2 = R_CacheShader( "gfx/box_mm2.lmp" );
+	mqh_gfx_box_bm = R_CacheShader( "gfx/box_bm.lmp" );
+	mqh_gfx_box_tr = R_CacheShader( "gfx/box_tr.lmp" );
+	mqh_gfx_box_mr = R_CacheShader( "gfx/box_mr.lmp" );
+	mqh_gfx_box_br = R_CacheShader( "gfx/box_br.lmp" );
+
 	if ( GGameType & GAME_Hexen2 ) {
 		char_menufonttexture = R_LoadBigFontImage( "gfx/menu/bigfont2.lmp" );
+		mqh_gfx_plaque = R_CacheShader( "gfx/menu/hplaque.lmp" );
+		for ( int i = 0; i < 8; i ++ ) {
+			mqh_gfx_menudot[ i ] = R_CacheShader( va( "gfx/menu/menudot%i.lmp", i + 1 ) );
+		}
+	} else {
+		mqh_gfx_plaque = R_CacheShader( "gfx/qplaque.lmp" );
+		for ( int i = 0; i < 6; i++ ) {
+			mqh_gfx_menudot[ i ] = R_CacheShader( va( "gfx/menudot%i.lmp", i + 1 ) );
+		}
 	}
 }
 
