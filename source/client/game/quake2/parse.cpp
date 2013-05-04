@@ -144,18 +144,11 @@ void CLQ2_LoadClientinfo( q2clientinfo_t* ci, const char* s ) {
 	}
 
 	if ( clq2_noskins->value || *s == 0 ) {
-		char model_filename[ MAX_QPATH ];
-		String::Sprintf( model_filename, sizeof ( model_filename ), "players/male/tris.md2" );
-		char weapon_filename[ MAX_QPATH ];
-		String::Sprintf( weapon_filename, sizeof ( weapon_filename ), "players/male/weapon.md2" );
-		char skin_filename[ MAX_QPATH ];
-		String::Sprintf( skin_filename, sizeof ( skin_filename ), "players/male/grunt.pcx" );
-		String::Sprintf( ci->iconname, sizeof ( ci->iconname ), "/players/male/grunt_i.pcx" );
-		ci->model = R_RegisterModel( model_filename );
+		ci->model = R_RegisterModel( "players/male/tris.md2" );
 		Com_Memset( ci->weaponmodel, 0, sizeof ( ci->weaponmodel ) );
-		ci->weaponmodel[ 0 ] = R_RegisterModel( weapon_filename );
-		ci->skin = R_RegisterSkinQ2( skin_filename );
-		ci->icon = R_RegisterPic( ci->iconname );
+		ci->weaponmodel[ 0 ] = R_RegisterModel( "players/male/weapon.md2" );
+		ci->skin = R_RegisterSkinQ2( "players/male/grunt.pcx" );
+		ci->icon = R_CacheShader( "players/male/grunt_i.pcx" );
 	} else {
 		// isolate the model name
 		char model_name[ MAX_QPATH ];
@@ -225,8 +218,9 @@ void CLQ2_LoadClientinfo( q2clientinfo_t* ci, const char* s ) {
 		}
 
 		// icon file
-		String::Sprintf( ci->iconname, sizeof ( ci->iconname ), "/players/%s/%s_i.pcx", model_name, skin_name );
-		ci->icon = R_RegisterPic( ci->iconname );
+		char iconname[ MAX_QPATH ];
+		String::Sprintf( iconname, sizeof ( iconname ), "players/%s/%s_i.pcx", model_name, skin_name );
+		ci->icon = R_CacheShader( iconname );
 	}
 
 	// must have loaded all data types to be valud
@@ -279,7 +273,7 @@ static void CLQ2_ParseConfigString( QMsg& message ) {
 		}
 	} else if ( i >= Q2CS_IMAGES && i < Q2CS_IMAGES + MAX_MODELS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
-			cl.q2_image_precache[ i - Q2CS_IMAGES ] = R_RegisterPic( cl.q2_configstrings[ i ] );
+			cl.q2_image_precache[ i - Q2CS_IMAGES ] = R_RegisterPicShader( cl.q2_configstrings[ i ] );
 		}
 	} else if ( i >= Q2CS_PLAYERSKINS && i < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {

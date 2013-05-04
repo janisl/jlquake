@@ -53,8 +53,7 @@ struct q2clientinfo_t {
 	char name[ MAX_QPATH ];
 	char cinfo[ MAX_QPATH ];
 	image_t* skin;
-	image_t* icon;
-	char iconname[ MAX_QPATH ];
+	qhandle_t icon;
 	qhandle_t model;
 	qhandle_t weaponmodel[ MAX_CLIENTWEAPONMODELS_Q2 ];
 };

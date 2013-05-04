@@ -249,7 +249,7 @@ struct clientActive_t {
 
 	char q2_configstrings[ MAX_CONFIGSTRINGS_Q2 ][ MAX_QPATH ];
 
-	image_t* q2_image_precache[ MAX_IMAGES_Q2 ];
+	qhandle_t q2_image_precache[ MAX_IMAGES_Q2 ];
 
 	q2clientinfo_t q2_clientinfo[ MAX_CLIENTS_Q2 ];
 	q2clientinfo_t q2_baseclientinfo;

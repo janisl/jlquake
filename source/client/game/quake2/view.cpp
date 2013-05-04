@@ -41,27 +41,19 @@ static Cvar* clq2_testblend;
 static int gun_frame;
 static qhandle_t gun_model;
 
-static char crosshair_pic[ MAX_QPATH ];
+static qhandle_t crosshair_pic;
 static int crosshair_width, crosshair_height;
 
 //	Allows rendering code to cache all needed sbar graphics
 void SCR_TouchPics() {
-	int i, j;
-
-	for ( i = 0; i < 2; i++ )
-		for ( j = 0; j < 11; j++ )
-			R_RegisterPic( sb_nums[ i ][ j ] );
-
-	if ( crosshair->value ) {
-		if ( crosshair->value > 3 || crosshair->value < 0 ) {
-			crosshair->value = 3;
+	if ( crosshair->integer ) {
+		if ( crosshair->integer > 3 || crosshair->integer < 0 ) {
+			crosshair->integer = 3;
 		}
 
-		String::Sprintf( crosshair_pic, sizeof ( crosshair_pic ), "ch%i", ( int )( crosshair->value ) );
-		R_GetPicSize( &crosshair_width, &crosshair_height, crosshair_pic );
-		if ( !crosshair_width ) {
-			crosshair_pic[ 0 ] = 0;
-		}
+		crosshair_pic = R_CacheShader( va( "pics/ch%i.pcx", crosshair->integer ) );
+		crosshair_width = R_GetShaderWidth( crosshair_pic );
+		crosshair_height = R_GetShaderHeight( crosshair_pic );
 	}
 }
 
@@ -284,11 +276,11 @@ static void VQ2_DrawCrosshair() {
 		SCR_TouchPics();
 	}
 
-	if ( !crosshair_pic[ 0 ] ) {
+	if ( !crosshair_pic ) {
 		return;
 	}
 
-	UI_DrawNamedPic( scr_vrect.x + ( ( scr_vrect.width - crosshair_width ) >> 1 ),
+	UI_DrawPicShader( scr_vrect.x + ( ( scr_vrect.width - crosshair_width ) >> 1 ),
 		scr_vrect.y + ( ( scr_vrect.height - crosshair_height ) >> 1 ), crosshair_pic );
 }
 

@@ -127,9 +127,8 @@ void CLQ2_AddExplosions();
 //
 //	HUD
 //
-extern const char* sb_nums[ 2 ][ 11 ];
-
 void CLQ2_ParseInventory( QMsg& message );
+void SCRQ2_InitHudShaders();
 void SCRQ2_DrawHud();
 
 //

@@ -1708,6 +1708,16 @@ image_t* R_RegisterPic( const char* name ) {
 	}
 }
 
+qhandle_t R_RegisterPicShader( const char* name ) {
+	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
+		char fullname[ MAX_QPATH ];
+		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
+		return R_CacheShader( fullname );
+	} else {
+		return R_CacheShader( name + 1 );
+	}
+}
+
 int R_GetImageWidth( image_t* pic ) {
 	return pic->width;
 }

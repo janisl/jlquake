@@ -25,13 +25,9 @@
 
 #define Q2STAT_LAYOUTS  13
 
-const char* sb_nums[ 2 ][ 11 ] =
-{
-	{"num_0", "num_1", "num_2", "num_3", "num_4", "num_5",
-	 "num_6", "num_7", "num_8", "num_9", "num_minus"},
-	{"anum_0", "anum_1", "anum_2", "anum_3", "anum_4", "anum_5",
-	 "anum_6", "anum_7", "anum_8", "anum_9", "anum_minus"}
-};
+static qhandle_t sb_num_shaders[ 2 ][ 11 ];
+static qhandle_t sbq2_pic_inventory;
+static qhandle_t sbq2_pic_field_3;
 
 static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 	if ( width < 1 ) {
@@ -60,7 +56,7 @@ static void SCRQ2_DrawField( int x, int y, int color, int width, int value ) {
 			frame = *ptr - '0';
 		}
 
-		UI_DrawNamedPic( x,y,sb_nums[ color ][ frame ] );
+		UI_DrawPicShader( x, y, sb_num_shaders[ color ][ frame ] );
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
@@ -147,7 +143,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 				common->Error( "Pic >= MAX_IMAGES_Q2" );
 			}
 			if ( cl.q2_configstrings[ Q2CS_IMAGES + value ] ) {
-				UI_DrawNamedPic( x, y, cl.q2_configstrings[ Q2CS_IMAGES + value ] );
+				UI_DrawPicShader( x, y, cl.q2_image_precache[ value ] );
 			}
 			continue;
 		}
@@ -185,7 +181,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			if ( !ci->icon ) {
 				ci = &cl.q2_baseclientinfo;
 			}
-			UI_DrawNamedPic( x, y, ci->iconname );
+			UI_DrawPicShader( x, y, ci->icon );
 			continue;
 		}
 
@@ -253,7 +249,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			}
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 1 ) {
-				UI_DrawNamedPic( x, y, "field_3" );
+				UI_DrawPicShader( x, y, sbq2_pic_field_3 );
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -274,7 +270,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			}
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 4 ) {
-				UI_DrawNamedPic( x, y, "field_3" );
+				UI_DrawPicShader( x, y, sbq2_pic_field_3 );
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -293,7 +289,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 			color = 0;	// green
 
 			if ( cl.q2_frame.playerstate.stats[ Q2STAT_FLASHES ] & 2 ) {
-				UI_DrawNamedPic( x, y, "field_3" );
+				UI_DrawPicShader( x, y, sbq2_pic_field_3 );
 			}
 
 			SCRQ2_DrawField( x, y, color, width, value );
@@ -402,7 +398,7 @@ static void CLQ2_DrawInventory() {
 	int x = ( viddef.width - 256 ) / 2;
 	int y = ( viddef.height - 240 ) / 2;
 
-	UI_DrawNamedPic( x, y + 8, "inventory" );
+	UI_DrawPicShader( x, y + 8, sbq2_pic_inventory );
 
 	y += 24;
 	x += 24;
@@ -427,6 +423,18 @@ static void CLQ2_DrawInventory() {
 		UI_DrawString( x, y, string );
 		y += 8;
 	}
+}
+
+void SCRQ2_InitHudShaders() {
+	for ( int j = 0; j < 11; j++ )
+	{
+		sb_num_shaders[ 0 ][ j ] = R_CacheShader( va( "pics/num_%d.pcx", j ) );
+		sb_num_shaders[ 1 ][ j ] = R_CacheShader( va( "pics/anum_%d.pcx", j ) );
+	}
+	sb_num_shaders[ 0 ][ 10 ] = R_CacheShader( "pics/num_minus.pcx" );
+	sb_num_shaders[ 1 ][ 10 ] = R_CacheShader( "pics/anum_minus.pcx" );
+	sbq2_pic_inventory = R_CacheShader( "pics/inventory.pcx" );
+	sbq2_pic_field_3 = R_CacheShader( "pics/field_3.pcx" );
 }
 
 void SCRQ2_DrawHud() {

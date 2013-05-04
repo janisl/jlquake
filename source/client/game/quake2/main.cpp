@@ -114,6 +114,7 @@ void CLQ2_PrepRefresh() {
 	// precache status bar pics
 	common->Printf( "pics\r" );
 	SCR_UpdateScreen();
+	SCRQ2_InitHudShaders();
 	SCR_TouchPics();
 	common->Printf( "                                     \r" );
 
@@ -153,7 +154,7 @@ void CLQ2_PrepRefresh() {
 	common->Printf( "images\r" );
 	SCR_UpdateScreen();
 	for ( int i = 1; i < MAX_IMAGES_Q2 && cl.q2_configstrings[ Q2CS_IMAGES + i ][ 0 ]; i++ ) {
-		cl.q2_image_precache[ i ] = R_RegisterPic( cl.q2_configstrings[ Q2CS_IMAGES + i ] );
+		cl.q2_image_precache[ i ] = R_RegisterPicShader( cl.q2_configstrings[ Q2CS_IMAGES + i ] );
 	}
 
 	common->Printf( "                                     \r" );
