@@ -28,6 +28,7 @@
 #include "../../ui/console.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
+#include "../../../common/Common.h"
 
 menu_state_t m_state;
 menu_state_t m_return_state;
@@ -2437,13 +2438,29 @@ static int setup_bottom;
 static int class_limit;
 static int which_class;
 
-static byte mqh_translationTable[ 256 ];
-static byte mq1_menuplyr_pixels[ 4096 ];
-static byte mh2_menuplyr_pixels[ MAX_PLAYER_CLASS ][ PLAYER_PIC_WIDTH * PLAYER_PIC_HEIGHT ];
-
 static qhandle_t mqh_gfx_bigbox;
-static image_t* mq1_translate_texture;
-static image_t* mh2_translate_texture[ MAX_PLAYER_CLASS ];
+static image_t* mq1_gfx_menuplyr;
+static image_t* mq1_gfx_menuplyr_top;
+static image_t* mq1_gfx_menuplyr_bottom;
+static image_t* mh2_gfx_netp[ MAX_PLAYER_CLASS ];
+static image_t* mh2_gfx_netp_top[ MAX_PLAYER_CLASS ];
+static image_t* mh2_gfx_netp_bottom[ MAX_PLAYER_CLASS ];
+
+static void MQH_ClampSetupColours() {
+	int maxColour = GGameType & GAME_Hexen2 ? 10 : 13;
+	if ( setup_top > maxColour ) {
+		setup_top = 0;
+	}
+	if ( setup_top < 0 ) {
+		setup_top = maxColour;
+	}
+	if ( setup_bottom > maxColour ) {
+		setup_bottom = 0;
+	}
+	if ( setup_bottom < 0 ) {
+		setup_bottom = maxColour;
+	}
+}
 
 static void MQH_Menu_Setup_f() {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -2464,38 +2481,55 @@ static void MQH_Menu_Setup_f() {
 		setup_top = setup_oldtop = ( ( int )clqh_color->value ) >> 4;
 		setup_bottom = setup_oldbottom = ( ( int )clqh_color->value ) & 15;
 	}
+	MQH_ClampSetupColours();
 	if ( GGameType & GAME_Quake ) {
 		mqh_setup_cursor = NUM_SETUP_CMDS_Q1 - 1;
 		mqh_gfx_p_multi = R_CacheShader( "gfx/p_multi.lmp" );
 		mqh_gfx_bigbox = R_CacheShader( "gfx/bigbox.lmp" );
-	} else if ( GGameType & GAME_HexenWorld ) {
-		if ( !com_portals ) {
-			if ( clh2_playerclass->value == CLASS_DEMON ) {
-				clh2_playerclass->value = 0;
-			}
-		}
-		if ( String::ICmp( fs_gamedir, "siege" ) ) {
-			if ( clh2_playerclass->value == CLASS_DWARF ) {
-				clh2_playerclass->value = 0;
-			}
-		}
-
-		setup_class = clh2_playerclass->value;
-
-		class_limit = MAX_PLAYER_CLASS;
-
-		if ( setup_class < 0 || setup_class > class_limit ) {
-			setup_class = 1;
-		}
-		which_class = setup_class;
-		mqh_setup_cursor = NUM_SETUP_CMDS_HW - 1;
+		R_CacheTranslatedPic( "gfx/menuplyr.lmp", clq1_translation_info, mq1_gfx_menuplyr, mq1_gfx_menuplyr_top, mq1_gfx_menuplyr_bottom );
 	} else {
-		setup_class = clh2_playerclass->value;
-		if ( setup_class < 1 || setup_class > ( GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ) ) {
-			setup_class = ( GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 );
+		if ( GGameType & GAME_HexenWorld ) {
+			if ( !com_portals ) {
+				if ( clh2_playerclass->value == CLASS_DEMON ) {
+					clh2_playerclass->value = 0;
+				}
+			}
+			if ( String::ICmp( fs_gamedir, "siege" ) ) {
+				if ( clh2_playerclass->value == CLASS_DWARF ) {
+					clh2_playerclass->value = 0;
+				}
+			}
+
+			setup_class = clh2_playerclass->value;
+
+			class_limit = MAX_PLAYER_CLASS;
+
+			if ( setup_class < 0 || setup_class > class_limit ) {
+				setup_class = 1;
+			}
+			which_class = setup_class;
+			mqh_setup_cursor = NUM_SETUP_CMDS_HW - 1;
+		} else {
+			setup_class = clh2_playerclass->value;
+			if ( setup_class < 1 || setup_class > ( GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 ) ) {
+				setup_class = ( GGameType & GAME_H2Portals ? NUM_CLASSES_H2MP : NUM_CLASSES_H2 );
+			}
+			mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
 		}
-		mqh_setup_cursor = NUM_SETUP_CMDS_H2 - 1;
+		for ( int i = 0; i < CLH2_GetMaxPlayerClasses(); i++ ) {
+			R_CacheTranslatedPic( va( "gfx/menu/netp%i.lmp", i + 1 ), clh2_translation_info[ i ],
+				mh2_gfx_netp[ i ], mh2_gfx_netp_top[ i ], mh2_gfx_netp_bottom[ i ] );
+		}
 	}
+}
+
+static void MQH_SetColour( const byte* colour ) {
+	float floatColour[ 4 ];
+	floatColour[ 0 ] = colour[ 0 ] / 255.0f;
+	floatColour[ 1 ] = colour[ 1 ] / 255.0f;
+	floatColour[ 2 ] = colour[ 2 ] / 255.0f;
+	floatColour[ 3 ] = colour[ 3 ] / 255.0f;
+	R_SetColor( floatColour );
 }
 
 static void MQH_Setup_Draw() {
@@ -2597,10 +2631,12 @@ static void MQH_Setup_Draw() {
 			which_class = setup_class;
 		}
 
-		R_CachePicWithTransPixels( va( "gfx/menu/netp%i.lmp", which_class ), mh2_menuplyr_pixels[ which_class - 1 ] );
-		CL_CalcHexen2SkinTranslation( setup_top, setup_bottom, which_class, mqh_translationTable );
-		R_CreateOrUpdateTranslatedImage( mh2_translate_texture[ which_class - 1 ], va( "*translate_pic%d", which_class ), mh2_menuplyr_pixels[ which_class - 1 ], mqh_translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT );
-		MQH_DrawPicImage( 220, 72, mh2_translate_texture[ which_class - 1 ] );
+		MQH_DrawPicImage( 220, 72, mh2_gfx_netp[ which_class - 1 ] );
+		MQH_SetColour( clh2_translation_info[ which_class - 1 ].translatedTopColours[ setup_top ] );
+		MQH_DrawPicImage( 220, 72, mh2_gfx_netp_top[ which_class - 1 ] );
+		MQH_SetColour( clh2_translation_info[ which_class - 1 ].translatedBottomColours[ setup_bottom ] );
+		MQH_DrawPicImage( 220, 72, mh2_gfx_netp_bottom[ which_class - 1 ] );
+		R_SetColor( NULL );
 	} else {
 		MQH_Print( 64, 80, "Shirt color" );
 		MQH_Print( 64, 104, "Pants color" );
@@ -2609,10 +2645,12 @@ static void MQH_Setup_Draw() {
 		MQH_Print( 72, 140, "Accept Changes" );
 
 		MQH_DrawPic( 160, 64, mqh_gfx_bigbox );
-		image_t* p = R_CachePicWithTransPixels( "gfx/menuplyr.lmp", mq1_menuplyr_pixels );
-		CL_CalcQuakeSkinTranslation( setup_top, setup_bottom, mqh_translationTable );
-		R_CreateOrUpdateTranslatedImage( mq1_translate_texture, "*translate_pic", mq1_menuplyr_pixels, mqh_translationTable, R_GetImageWidth( p ), R_GetImageHeight( p ) );
-		MQH_DrawPicImage( 172, 72, mq1_translate_texture );
+		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr );
+		MQH_SetColour( clq1_translation_info.translatedTopColours[ setup_top ] );
+		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr_top );
+		MQH_SetColour( clq1_translation_info.translatedBottomColours[ setup_bottom ] );
+		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr_bottom );
+		R_SetColor( NULL );
 	}
 
 	MQH_DrawCharacter( 56, GGameType & GAME_HexenWorld ? setup_cursor_table_hw[ mqh_setup_cursor ] : GGameType & GAME_Hexen2 ? setup_cursor_table_h2[ mqh_setup_cursor ] :
@@ -2751,19 +2789,7 @@ forward:
 		Field_KeyDownEvent( &setup_myname, k );
 	}
 
-	int maxColour = GGameType & GAME_Hexen2 ? 10 : 13;
-	if ( setup_top > maxColour ) {
-		setup_top = 0;
-	}
-	if ( setup_top < 0 ) {
-		setup_top = maxColour;
-	}
-	if ( setup_bottom > maxColour ) {
-		setup_bottom = 0;
-	}
-	if ( setup_bottom < 0 ) {
-		setup_bottom = maxColour;
-	}
+	MQH_ClampSetupColours();
 }
 
 static void MQH_Setup_Char( int k ) {
@@ -4593,9 +4619,6 @@ void MQH_Init() {
 }
 
 void MQH_InitShaders() {
-	mq1_translate_texture = NULL;
-	Com_Memset( mh2_translate_texture, 0, sizeof ( mh2_translate_texture ) );
-
 	mqh_gfx_box_tl = R_CacheShader( "gfx/box_tl.lmp" );
 	mqh_gfx_box_ml = R_CacheShader( "gfx/box_ml.lmp" );
 	mqh_gfx_box_bl = R_CacheShader( "gfx/box_bl.lmp" );

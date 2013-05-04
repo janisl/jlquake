@@ -21,6 +21,7 @@
 #include "../../common/info_string.h"
 #include "../../common/shareddefs.h"
 #include "../../common/quake3defs.h"
+#include "../../common/Str.h"
 
 typedef int qhandle_t;
 
@@ -389,6 +390,16 @@ struct glconfig_t {
 	qboolean smpActive;						// dual processor
 };
 
+struct idSkinTranslation
+{
+	int topStartIndex;
+	int topEndIndex;
+	int bottomStartIndex;
+	int bottomEndIndex;
+	byte translatedTopColours[ 14 ][ 4 ];
+	byte translatedBottomColours[ 14 ][ 4 ];
+};
+
 void R_BeginRegistration( glconfig_t* glconfig );
 void R_EndRegistration();
 void R_PurgeCache();
@@ -400,7 +411,6 @@ void R_EndFrame( int* frontEndMsec, int* backEndMsec );
 qhandle_t R_ShaderFromWad( const char* name );
 qhandle_t R_ShaderFromWadRepeat( const char* name );
 qhandle_t R_GetImageHandle( image_t* Image );
-void R_CreateOrUpdateTranslatedImage( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
 void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
 qhandle_t R_LoadRawFontImageFromFile( const char* name, int width, int height );
 qhandle_t R_LoadRawFontImageFromWad( const char* name, int width, int height );
@@ -410,7 +420,7 @@ qhandle_t R_CreateCrosshairImage();
 image_t* R_CachePic( const char* path );
 qhandle_t R_CacheShader( const char* path );
 qhandle_t R_CacheShaderRepeat( const char* path );
-image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels );
+void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom );
 int R_GetTextureId( const char* name );
 void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation );
 void R_CreateOrUpdateTranslatedModelSkinH2( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex );

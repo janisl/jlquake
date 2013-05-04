@@ -54,12 +54,12 @@ void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32( byte* DataIn, int Width, int Height, int Mode );
 byte* R_GetFullBrightImage( byte* data8, byte* data32, int width, int height );
-void R_LoadImage( const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL );
 image_t* R_CreateImage( const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool characterMip = false );
 void R_ReUploadImage( image_t* image, byte* data );
 bool R_TouchImage( image_t* inImage );
 image_t* R_FindImage( const char* name );
-image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL, bool characterMIP = false, bool lightmap = false );
+image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, int Mode = IMG8MODE_Normal, bool characterMIP = false, bool lightmap = false );
+void R_ExtractTranslatedImages( const idSkinTranslation& translation, byte* pic, byte* picTop, byte* picBottom, int width, int height );
 void R_SetColorMappings();
 void R_GammaCorrect( byte* Buffer, int BufferSize );
 void R_InitFogTable();
@@ -82,8 +82,9 @@ void R_LoadPCX( const char* FileName, byte** Pic, byte** Palette, int* Width, in
 void R_LoadPCX32( const char* filename, byte** pic, int* width, int* height, int Mode );
 void R_SavePCXMem( idList<byte>& buffer, byte* data, int width, int height, byte* palette );
 
-void R_LoadPICMem( byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal );
-void R_LoadPIC( const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal );
+void R_LoadPICMem( byte* data, byte** pic, int* width, int* height, int mode = IMG8MODE_Normal );
+void R_LoadPIC( const char* fileName, byte** pic, int* width, int* height, int mode );
+void R_LoadPICTranslated( const char* fileName, const idSkinTranslation& translation, byte** pic, byte** picTop, byte** picBottom, int* width, int* height, int mode );
 
 void R_LoadTGA( const char* FileName, byte** Pic, int* Width, int* Height );
 void R_SaveTGA( const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha );

@@ -143,11 +143,11 @@ public:
 	void operator=( const idStr& text );
 	void operator=( const char* text );
 
-#if 0
 	friend idStr operator+( const idStr& a, const idStr& b );
 	friend idStr operator+( const idStr& a, const char* b );
 	friend idStr operator+( const char* a, const idStr& b );
 
+#if 0
 	friend idStr operator+( const idStr& a, const float b );
 	friend idStr operator+( const idStr& a, const int b );
 	friend idStr operator+( const idStr& a, const unsigned b );
@@ -546,7 +546,6 @@ inline void idStr::operator=( const idStr& text ) {
 	len = l;
 }
 
-#if 0
 inline idStr operator+( const idStr& a, const idStr& b ) {
 	idStr result( a );
 	result.Append( b );
@@ -565,6 +564,7 @@ inline idStr operator+( const char* a, const idStr& b ) {
 	return result;
 }
 
+#if 0
 inline idStr operator+( const idStr& a, const bool b ) {
 	idStr result( a );
 	result.Append( b ? "true" : "false" );

@@ -29,6 +29,7 @@ class idStrTest : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestCStr);
 	CPPUNIT_TEST(TestOperatorIndex);
 	CPPUNIT_TEST(TestOperatorAssign);
+	CPPUNIT_TEST(TestOperatorAdd);
 	CPPUNIT_TEST(TestOperatorAppend);
 	CPPUNIT_TEST(TestOperatorEq);
 	CPPUNIT_TEST(TestCmp);
@@ -49,6 +50,7 @@ public:
 	void TestCStr();
 	void TestOperatorIndex();
 	void TestOperatorAssign();
+	void TestOperatorAdd();
 	void TestOperatorAppend();
 	void TestOperatorEq();
 	void TestCmp();
@@ -123,6 +125,15 @@ void idStrTest::TestOperatorAssign()
 	CPPUNIT_ASSERT(s1 == "abc");
 	s2 = s1;
 	CPPUNIT_ASSERT(s2 == "abc");
+}
+
+void idStrTest::TestOperatorAdd()
+{
+	idStr s1("123");
+	idStr s2("hgf");
+	CPPUNIT_ASSERT(s1 + "abc" == "123abc");
+	CPPUNIT_ASSERT("abc" + s1 == "abc123");
+	CPPUNIT_ASSERT(s1 + s2 == "123hgf");
 }
 
 void idStrTest::TestOperatorAppend()

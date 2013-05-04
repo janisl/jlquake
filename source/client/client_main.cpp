@@ -60,6 +60,8 @@ clientActive_t cl;
 clientConnection_t clc;
 clientStatic_t cls;
 
+idSkinTranslation clq1_translation_info;
+idSkinTranslation clh2_translation_info[ MAX_PLAYER_CLASS ];
 byte* playerTranslation;
 
 int color_offsets[ MAX_PLAYER_CLASS ] =
@@ -220,6 +222,31 @@ int CL_ScaledMilliseconds() {
 	return Sys_Milliseconds() * com_timescale->value;
 }
 
+void CLQ1_InitPlayerTranslation()
+{
+	clq1_translation_info.topStartIndex = 16;
+	clq1_translation_info.topEndIndex = 31;
+	clq1_translation_info.bottomStartIndex = 96;
+	clq1_translation_info.bottomEndIndex = 111;
+	for ( int i = 0; i < 14; i++ ) {
+		//	The artists made some backwards ranges. sigh.
+		int sourceIndex;
+		if ( i < 8 ) {
+			sourceIndex = i * 16 + 15;
+		} else {
+			sourceIndex = i * 16;
+		}
+		clq1_translation_info.translatedTopColours[ i ][ 0 ] = r_palette[ sourceIndex ][ 0 ];
+		clq1_translation_info.translatedTopColours[ i ][ 1 ] = r_palette[ sourceIndex ][ 1 ];
+		clq1_translation_info.translatedTopColours[ i ][ 2 ] = r_palette[ sourceIndex ][ 2 ];
+		clq1_translation_info.translatedTopColours[ i ][ 3 ] = r_palette[ sourceIndex ][ 3 ];
+		clq1_translation_info.translatedBottomColours[ i ][ 0 ] = r_palette[ sourceIndex ][ 0 ];
+		clq1_translation_info.translatedBottomColours[ i ][ 1 ] = r_palette[ sourceIndex ][ 1 ];
+		clq1_translation_info.translatedBottomColours[ i ][ 2 ] = r_palette[ sourceIndex ][ 2 ];
+		clq1_translation_info.translatedBottomColours[ i ][ 3 ] = r_palette[ sourceIndex ][ 3 ];
+	}
+}
+
 void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate ) {
 	enum
 	{
@@ -258,6 +285,53 @@ void CLH2_InitPlayerTranslation() {
 	if ( !playerTranslation ) {
 		common->FatalError( "Couldn't load gfx/player.lmp" );
 	}
+	for ( int playerClass = 0; playerClass < MAX_PLAYER_CLASS; playerClass++ ) {
+		idSkinTranslation& translation = clh2_translation_info[ playerClass ];
+		translation.topStartIndex = -1;
+		translation.bottomStartIndex = -1;
+		translation.topEndIndex = -1;
+		translation.bottomEndIndex = -1;
+		byte* colorA = playerTranslation + 256 + color_offsets[ playerClass ];
+		byte* colorB = colorA + 256;
+		for ( int i = 0; i < 256; i++ ) {
+			if ( colorA[ i ] != 255 ) {
+				if ( translation.topStartIndex == -1 ) {
+					translation.topStartIndex = i;
+				}
+				translation.topEndIndex = i;
+			}
+			if ( colorB[ i ] != 255 ) {
+				if ( translation.bottomStartIndex == -1 ) {
+					translation.bottomStartIndex = i;
+				}
+				translation.bottomEndIndex = i;
+			}
+		}
+
+		//	Translation 0 is original.
+		translation.translatedTopColours[ 0 ][ 0 ] = r_palette[ translation.topEndIndex ][ 0 ];
+		translation.translatedTopColours[ 0 ][ 1 ] = r_palette[ translation.topEndIndex ][ 1 ];
+		translation.translatedTopColours[ 0 ][ 2 ] = r_palette[ translation.topEndIndex ][ 2 ];
+		translation.translatedTopColours[ 0 ][ 3 ] = r_palette[ translation.topEndIndex ][ 3 ];
+		translation.translatedBottomColours[ 0 ][ 0 ] = r_palette[ translation.bottomEndIndex ][ 0 ];
+		translation.translatedBottomColours[ 0 ][ 1 ] = r_palette[ translation.bottomEndIndex ][ 1 ];
+		translation.translatedBottomColours[ 0 ][ 2 ] = r_palette[ translation.bottomEndIndex ][ 2 ];
+		translation.translatedBottomColours[ 0 ][ 3 ] = r_palette[ translation.bottomEndIndex ][ 3 ];
+
+		for ( int i = 1; i < 11; i++ ) {
+			byte* sourceA = colorB + i * 256;
+			int sourceIndex = sourceA[ translation.topEndIndex ];
+			translation.translatedTopColours[ i ][ 0 ] = r_palette[ sourceIndex ][ 0 ];
+			translation.translatedTopColours[ i ][ 1 ] = r_palette[ sourceIndex ][ 1 ];
+			translation.translatedTopColours[ i ][ 2 ] = r_palette[ sourceIndex ][ 2 ];
+			translation.translatedTopColours[ i ][ 3 ] = r_palette[ sourceIndex ][ 3 ];
+			sourceIndex = sourceA[ translation.bottomEndIndex ];
+			translation.translatedBottomColours[ i ][ 0 ] = r_palette[ sourceIndex ][ 0 ];
+			translation.translatedBottomColours[ i ][ 1 ] = r_palette[ sourceIndex ][ 1 ];
+			translation.translatedBottomColours[ i ][ 2 ] = r_palette[ sourceIndex ][ 2 ];
+			translation.translatedBottomColours[ i ][ 3 ] = r_palette[ sourceIndex ][ 3 ];
+		}
+	}
 }
 
 void CL_CalcHexen2SkinTranslation( int top, int bottom, int playerClass, byte* translate ) {
@@ -272,18 +346,15 @@ void CL_CalcHexen2SkinTranslation( int top, int bottom, int playerClass, byte* t
 		bottom = 0;
 	}
 
-	top -= 1;
-	bottom -= 1;
-
 	byte* colorA = playerTranslation + 256 + color_offsets[ playerClass - 1 ];
 	byte* colorB = colorA + 256;
-	byte* sourceA = colorB + 256 + top * 256;
-	byte* sourceB = colorB + 256 + bottom * 256;
+	byte* sourceA = colorB + top * 256;
+	byte* sourceB = colorB + bottom * 256;
 	for ( int i = 0; i < 256; i++, colorA++, colorB++, sourceA++, sourceB++ ) {
-		if ( top >= 0 && *colorA != 255 ) {
+		if ( top > 0 && *colorA != 255 ) {
 			translate[ i ] = *sourceA;
 		}
-		if ( bottom >= 0 && *colorB != 255 ) {
+		if ( bottom > 0 && *colorB != 255 ) {
 			translate[ i ] = *sourceB;
 		}
 	}

@@ -365,7 +365,7 @@ byte* R_GetFullBrightImage( byte* data8, byte* data32, int width, int height ) {
 }
 
 //	Loads any of the supported image types into a cannonical 32 bit format.
-void R_LoadImage( const char* name, byte** pic, int* width, int* height, int Mode, byte* TransPixels ) {
+static void R_LoadImage( const char* name, byte** pic, int* width, int* height, int mode ) {
 	*pic = NULL;
 	*width = 0;
 	*height = 0;
@@ -387,7 +387,7 @@ void R_LoadImage( const char* name, byte** pic, int* width, int* height, int Mod
 			R_LoadJPG( altname, pic, width, height );
 		}
 	} else if ( !String::ICmp( name + len - 4, ".pcx" ) ) {
-		R_LoadPCX32( name, pic, width, height, Mode );
+		R_LoadPCX32( name, pic, width, height, mode );
 	} else if ( !String::ICmp( name + len - 4, ".bmp" ) ) {
 		R_LoadBMP( name, pic, width, height );
 	} else if ( !String::ICmp( name + len - 4, ".jpg" ) ) {
@@ -395,7 +395,7 @@ void R_LoadImage( const char* name, byte** pic, int* width, int* height, int Mod
 	} else if ( !String::ICmp( name + len - 4, ".wal" ) ) {
 		R_LoadWAL( name, pic, width, height );
 	} else if ( !String::ICmp( name + len - 4, ".lmp" ) ) {
-		R_LoadPIC( name, pic, width, height, TransPixels, Mode );
+		R_LoadPIC( name, pic, width, height, mode );
 	}
 }
 
@@ -978,8 +978,7 @@ static image_t* R_FindCachedImage( const char* name ) {
 
 //	Finds or loads the given image. Returns NULL if it fails, not a default image.
 image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
-	GLenum glWrapClampMode, int Mode, byte* TransPixels,
-	bool characterMIP, bool lightmap ) {
+	GLenum glWrapClampMode, int Mode, bool characterMIP, bool lightmap ) {
 	if ( !name ) {
 		return NULL;
 	}
@@ -1031,7 +1030,7 @@ image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
 	byte* pic;
 	int width;
 	int height;
-	R_LoadImage( name, &pic, &width, &height, Mode, TransPixels );
+	R_LoadImage( name, &pic, &width, &height, Mode );
 	if ( pic == NULL ) {
 		//	If we dont get a successful load copy the name and try upper case
 		// extension for unix systems, if that fails bail.
@@ -1042,7 +1041,7 @@ image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
 		altname[ len - 2 ] = String::ToUpper( altname[ len - 2 ] );
 		altname[ len - 1 ] = String::ToUpper( altname[ len - 1 ] );
 		common->Printf( "trying %s...\n", altname );
-		R_LoadImage( altname, &pic, &width, &height );
+		R_LoadImage( altname, &pic, &width, &height, Mode );
 		if ( pic == NULL ) {
 			return NULL;
 		}
@@ -1065,6 +1064,82 @@ image_t* R_FindImageFile( const char* name, bool mipmap, bool allowPicmip,
 	}
 
 	return image;
+}
+
+void R_ExtractTranslatedImages( const idSkinTranslation& translation, byte* pic, byte* picTop, byte* picBottom, int width, int height ) {
+	for ( int i = 0; i < width * height; i++ ) {
+		if ( pic[ i ] >= translation.topStartIndex && pic[ i ] <= translation.topEndIndex ) {
+			int intensity = ( pic[ i ] - translation.topStartIndex ) * 255 / ( translation.topEndIndex - translation.topStartIndex );
+			picTop[ i * 4 ] = intensity;
+			picTop[ i * 4 + 1 ] = intensity;
+			picTop[ i * 4 + 2 ] = intensity;
+			picTop[ i * 4 + 3 ] = 255;
+			pic[ i ] = 0;
+		} else {
+			picTop[ i * 4 ] = 0;
+			picTop[ i * 4 + 1 ] = 0;
+			picTop[ i * 4 + 2 ] = 0;
+			picTop[ i * 4 + 3 ] = 0;
+		}
+		if ( pic[ i ] >= translation.bottomStartIndex && pic[ i ] <= translation.bottomEndIndex ) {
+			int intensity = ( pic[ i ] - translation.bottomStartIndex ) * 255 / ( translation.bottomEndIndex - translation.bottomStartIndex );
+			picBottom[ i * 4 ] = intensity;
+			picBottom[ i * 4 + 1 ] = intensity;
+			picBottom[ i * 4 + 2 ] = intensity;
+			picBottom[ i * 4 + 3 ] = 255;
+			pic[ i ] = 0;
+		} else {
+			picBottom[ i * 4 ] = 0;
+			picBottom[ i * 4 + 1 ] = 0;
+			picBottom[ i * 4 + 2 ] = 0;
+			picBottom[ i * 4 + 3 ] = 0;
+		}
+	}
+}
+
+void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom ) {
+	idStr nameTop = "*top*" + name;
+	idStr nameBottom = "*bottom*" + name;
+	//
+	// see if the image is already loaded
+	//
+	image = R_FindImage( name.CStr() );
+	imageTop = R_FindImage( nameTop.CStr() );
+	imageBottom = R_FindImage( nameBottom.CStr() );
+	if ( image && imageTop && imageBottom ) {
+		return;
+	}
+
+	//
+	// load the pic from disk
+	//
+	byte* pic = NULL;
+	byte* picTop = NULL;
+	byte* picBottom = NULL;
+	int width = 0;
+	int height = 0;
+	R_LoadPICTranslated( name.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
+	if ( pic == NULL ) {
+		//	If we dont get a successful load copy the name and try upper case
+		// extension for unix systems, if that fails bail.
+		idStr altname = name;
+		int len = altname.Length();
+		altname[ len - 3 ] = String::ToUpper( altname[ len - 3 ] );
+		altname[ len - 2 ] = String::ToUpper( altname[ len - 2 ] );
+		altname[ len - 1 ] = String::ToUpper( altname[ len - 1 ] );
+		common->Printf( "trying %s...\n", altname.CStr() );
+		R_LoadPICTranslated( altname.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
+		if ( pic == NULL ) {
+			common->FatalError( "R_CacheTranslatedPic: failed to load %s", name.CStr() );
+		}
+	}
+
+	image = R_CreateImage( name.CStr(), pic, width, height, false, false, GL_CLAMP, false );
+	imageTop = R_CreateImage( nameTop.CStr(), picTop, width, height, false, false, GL_CLAMP, false );
+	imageBottom = R_CreateImage( nameBottom.CStr(), picBottom, width, height, false, false, GL_CLAMP, false );
+	delete[] pic;
+	delete[] picTop;
+	delete[] picBottom;
 }
 
 void R_SetColorMappings() {
@@ -1366,9 +1441,9 @@ static void R_LoadCacheImages() {
 			parms[ i ] = String::Atoi( token );
 		}
 		if ( GGameType & GAME_WolfSP ) {
-			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 3 ], IMG8MODE_Normal, NULL, parms[ 2 ] );
+			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 3 ], IMG8MODE_Normal, parms[ 2 ] );
 		} else if ( GGameType & GAME_ET ) {
-			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], IMG8MODE_Normal, NULL, false, parms[ 3 ] );
+			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], IMG8MODE_Normal, false, parms[ 3 ] );
 		} else {
 			R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ] );
 		}
@@ -1613,10 +1688,6 @@ static void R_CreateOrUpdateTranslatedImageEx( image_t*& image, const char* name
 	delete[] translated32;
 }
 
-void R_CreateOrUpdateTranslatedImage( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height ) {
-	R_CreateOrUpdateTranslatedImageEx( image, name, pixels, translation, width, height, false, IMG8MODE_Normal );
-}
-
 void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height ) {
 	R_CreateOrUpdateTranslatedImageEx( image, name, pixels, translation, width, height, true, IMG8MODE_Skin );
 }
@@ -1688,14 +1759,6 @@ qhandle_t R_CacheShaderRepeat( const char* path ) {
 		common->FatalError( "R_CachePic: failed to load %s", path );
 	}
 	return R_Build2DShaderFromImage( pic )->index;
-}
-
-image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels ) {
-	image_t* pic = R_FindImageFile( path, false, false, GL_CLAMP, IMG8MODE_Normal, TransPixels );
-	if ( !pic ) {
-		common->FatalError( "R_CachePic: failed to load %s", path );
-	}
-	return pic;
 }
 
 int R_GetImageWidth( image_t* pic ) {

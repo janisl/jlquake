@@ -226,7 +226,7 @@ void CLQ2_LoadClientinfo( q2clientinfo_t* ci, const char* s ) {
 	// must have loaded all data types to be valud
 	if ( !ci->skin || !ci->icon || !ci->model || !ci->weaponmodel[ 0 ] ) {
 		ci->skin = NULL;
-		ci->icon = NULL;
+		ci->icon = 0;
 		ci->model = 0;
 		ci->weaponmodel[ 0 ] = 0;
 		return;

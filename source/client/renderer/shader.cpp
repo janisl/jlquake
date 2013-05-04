@@ -628,7 +628,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				}
 				continue;
 			} else {
-				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, IMG8MODE_Normal, NULL, shader.characterMip );
+				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, IMG8MODE_Normal, shader.characterMip );
 				if ( !stage->bundle[ 0 ].image[ 0 ] ) {
 					common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 					return false;
@@ -645,7 +645,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				return false;
 			}
 
-			stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP, IMG8MODE_Normal, NULL, shader.characterMip );
+			stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP, IMG8MODE_Normal, shader.characterMip );
 			if ( !stage->bundle[ 0 ].image[ 0 ] ) {
 				common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 				return false;
@@ -677,7 +677,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				}
 				continue;
 			} else {
-				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, false, false, GL_CLAMP, IMG8MODE_Normal, NULL, false, true );
+				stage->bundle[ 0 ].image[ 0 ] = R_FindImageFile( token, false, false, GL_CLAMP, IMG8MODE_Normal, false, true );
 				if ( !stage->bundle[ 0 ].image[ 0 ] ) {
 					common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 					return false;
@@ -704,7 +704,7 @@ static bool ParseStage( shaderStage_t* stage, const char** text ) {
 				}
 				int num = stage->bundle[ 0 ].numImageAnimations;
 				if ( num < MAX_IMAGE_ANIMATIONS ) {
-					stage->bundle[ 0 ].image[ num ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, IMG8MODE_Normal, NULL, shader.characterMip );
+					stage->bundle[ 0 ].image[ num ] = R_FindImageFile( token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT, IMG8MODE_Normal, shader.characterMip );
 					if ( !stage->bundle[ 0 ].image[ num ] ) {
 						common->Printf( S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name );
 						return false;
@@ -2393,7 +2393,7 @@ static void R_FindLightmap( int* lightmapIndex ) {
 	// attempt to load an external lightmap
 	char fileName[ MAX_QPATH ];
 	sprintf( fileName, "%s/lm_%04d.tga", tr.worldDir, *lightmapIndex );
-	image_t* image = R_FindImageFile( fileName, false, false, GL_CLAMP, IMG8MODE_Normal, NULL, false, true );
+	image_t* image = R_FindImageFile( fileName, false, false, GL_CLAMP, IMG8MODE_Normal, false, true );
 	if ( image == NULL ) {
 		*lightmapIndex = LIGHTMAP_BY_VERTEX;
 		return;

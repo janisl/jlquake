@@ -153,6 +153,7 @@ void CL_InitRenderer() {
 			CLH2_ClearEntityTextureArrays();
 			SbarH2_InitShaders();
 		} else {
+			CLQ1_InitPlayerTranslation();
 			Com_Memset( clq1_playertextures, 0, sizeof ( clq1_playertextures ) );
 			SbarQ1_InitShaders();
 		}

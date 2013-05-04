@@ -588,11 +588,14 @@ extern Cvar* clqh_color;
 
 extern byte* playerTranslation;
 extern int color_offsets[ MAX_PLAYER_CLASS ];
+extern idSkinTranslation clq1_translation_info;
+extern idSkinTranslation clh2_translation_info[ MAX_PLAYER_CLASS ];
 
 //
 //	Client main
 //
 int CL_ScaledMilliseconds();
+void CLQ1_InitPlayerTranslation();
 void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate );
 void CLH2_InitPlayerTranslation();
 void CL_CalcHexen2SkinTranslation( int top, int bottom, int playerClass, byte* translate );

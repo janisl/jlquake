@@ -978,23 +978,20 @@ static void FindColor( int slot, int* color1, int* color2 ) {
 		bottom = 0;
 	}
 
-	top -= 1;
-	bottom -= 1;
-
 	byte* colorA = playerTranslation + 256 + color_offsets[ cl.h2_players[ slot ].playerclass - 1 ];
 	byte* colorB = colorA + 256;
-	byte* sourceA = colorB + 256 + ( top * 256 );
-	byte* sourceB = colorB + 256 + ( bottom * 256 );
+	byte* sourceA = colorB + top * 256;
+	byte* sourceB = colorB + bottom * 256;
 	for ( int j = 0; j < 256; j++, colorA++, colorB++, sourceA++, sourceB++ ) {
 		if ( *colorA != 255 ) {
-			if ( top >= 0 ) {
+			if ( top > 0 ) {
 				*color1 = *sourceA;
 			} else {
 				*color1 = *colorA;
 			}
 		}
 		if ( *colorB != 255 ) {
-			if ( bottom >= 0 ) {
+			if ( bottom > 0 ) {
 				*color2 = *sourceB;
 			} else {
 				*color2 = *colorB;
