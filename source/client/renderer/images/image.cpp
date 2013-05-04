@@ -1698,42 +1698,12 @@ image_t* R_CachePicWithTransPixels( const char* path, byte* TransPixels ) {
 	return pic;
 }
 
-image_t* R_RegisterPic( const char* name ) {
-	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
-		char fullname[ MAX_QPATH ];
-		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
-		return R_FindImageFile( fullname, false, false, GL_CLAMP );
-	} else {
-		return R_FindImageFile( name + 1, false, false, GL_CLAMP );
-	}
-}
-
-qhandle_t R_RegisterPicShader( const char* name ) {
-	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
-		char fullname[ MAX_QPATH ];
-		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
-		return R_CacheShader( fullname );
-	} else {
-		return R_CacheShader( name + 1 );
-	}
-}
-
 int R_GetImageWidth( image_t* pic ) {
 	return pic->width;
 }
 
 int R_GetImageHeight( image_t* pic ) {
 	return pic->height;
-}
-
-void R_GetPicSize( int* w, int* h, const char* pic ) {
-	image_t* gl = R_RegisterPic( pic );
-	if ( !gl ) {
-		*w = *h = -1;
-		return;
-	}
-	*w = gl->width;
-	*h = gl->height;
 }
 
 void R_BackupImages() {

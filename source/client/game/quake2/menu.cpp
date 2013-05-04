@@ -70,10 +70,11 @@ struct menulayer_t {
 static menulayer_t mq2_layers[ MAX_MENU_DEPTH ];
 static int mq2_menudepth;
 
-static void MQ2_Banner( const char* name ) {
-	int w, h;
-	R_GetPicSize( &w, &h, name );
-	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, name );
+static qhandle_t mq2_cursor[ NUM_CURSOR_FRAMES ];
+
+static void MQ2_Banner( qhandle_t shader ) {
+	int w = R_GetShaderWidth( shader );
+	UI_DrawPicShader( viddef.width / 2 - w / 2, viddef.height / 2 - 110, shader );
 }
 
 static void MQ2_PushMenu( void ( * draw )( void ), const char*( *key )( int k ), void ( * charfunc )( int key ) ) {
@@ -269,20 +270,7 @@ static void MQ2_Print( int cx, int cy, const char* str ) {
 // x,y.  The pic will extend to the left of x,
 // and both above and below y.
 static void MQ2_DrawCursor( int x, int y, int f ) {
-	static bool cached;
-	if ( !cached ) {
-		for ( int i = 0; i < NUM_CURSOR_FRAMES; i++ ) {
-			char cursorname[ 80 ];
-			String::Sprintf( cursorname, sizeof ( cursorname ), "m_cursor%d", i );
-
-			R_RegisterPic( cursorname );
-		}
-		cached = true;
-	}
-
-	char cursorname[ 80 ];
-	String::Sprintf( cursorname, sizeof ( cursorname ), "m_cursor%d", f );
-	UI_DrawNamedPic( x, y, cursorname );
+	UI_DrawPicShader( x, y, mq2_cursor[ f ] );
 }
 
 static void MQ2_DrawTextBox( int x, int y, int width, int lines ) {
@@ -341,27 +329,21 @@ MAIN MENU
 #define MAIN_ITEMS  5
 
 static int m_main_cursor;
+static qhandle_t mq2_main_logo;
+static qhandle_t mq2_main_plaque;
+static qhandle_t mq2_main_item_pics[ MAIN_ITEMS ];
+static qhandle_t mq2_main_item_sel_pics[ MAIN_ITEMS ];
 
 static void M_Main_Draw() {
 	int i;
-	int w, h;
 	int ystart;
 	int xoffset;
 	int widest = -1;
 	int totalheight = 0;
-	char litname[ 80 ];
-	const char* names[] =
-	{
-		"m_main_game",
-		"m_main_multiplayer",
-		"m_main_options",
-		"m_main_video",
-		"m_main_quit",
-		0
-	};
 
-	for ( i = 0; names[ i ] != 0; i++ ) {
-		R_GetPicSize( &w, &h, names[ i ] );
+	for ( i = 0; i < MAIN_ITEMS; i++ ) {
+		int w = R_GetShaderWidth( mq2_main_item_pics[ i ] );
+		int h = R_GetShaderHeight( mq2_main_item_pics[ i ] );
 
 		if ( w > widest ) {
 			widest = w;
@@ -372,21 +354,20 @@ static void M_Main_Draw() {
 	ystart = ( viddef.height / 2 - 110 );
 	xoffset = ( viddef.width - widest + 70 ) / 2;
 
-	for ( i = 0; names[ i ] != 0; i++ ) {
+	for ( i = 0; i < MAIN_ITEMS; i++ ) {
 		if ( i != m_main_cursor ) {
-			UI_DrawNamedPic( xoffset, ystart + i * 40 + 13, names[ i ] );
+			UI_DrawPicShader( xoffset, ystart + i * 40 + 13, mq2_main_item_pics[ i ] );
 		}
 	}
-	String::Cpy( litname, names[ m_main_cursor ] );
-	String::Cat( litname, sizeof ( litname ), "_sel" );
-	UI_DrawNamedPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
+	UI_DrawPicShader( xoffset, ystart + m_main_cursor * 40 + 13, mq2_main_item_sel_pics[ m_main_cursor ] );
 
 	MQ2_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, ( int )( cls.realtime / 100 ) % NUM_CURSOR_FRAMES );
 
-	R_GetPicSize( &w, &h, "m_main_plaque" );
-	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
+	int w = R_GetShaderWidth( mq2_main_plaque );
+	int h = R_GetShaderHeight( mq2_main_plaque );
+	UI_DrawPicShader( xoffset - 30 - w, ystart, mq2_main_plaque );
 
-	UI_DrawNamedPic( xoffset - 30 - w, ystart + h + 5, "m_main_logo" );
+	UI_DrawPicShader( xoffset - 30 - w, ystart + h + 5, mq2_main_logo );
 }
 
 static const char* M_Main_Key( int key ) {
@@ -442,6 +423,33 @@ static const char* M_Main_Key( int key ) {
 }
 
 void MQ2_Menu_Main_f() {
+	mq2_main_logo = R_CacheShader( "pics/m_main_logo.pcx" );
+	mq2_main_plaque = R_CacheShader( "pics/m_main_plaque.pcx" );
+	const char* names[ MAIN_ITEMS ] =
+	{
+		"pics/m_main_game.pcx",
+		"pics/m_main_multiplayer.pcx",
+		"pics/m_main_options.pcx",
+		"pics/m_main_video.pcx",
+		"pics/m_main_quit.pcx",
+	};
+	const char* sel_names[ MAIN_ITEMS ] =
+	{
+		"pics/m_main_game_sel.pcx",
+		"pics/m_main_multiplayer_sel.pcx",
+		"pics/m_main_options_sel.pcx",
+		"pics/m_main_video_sel.pcx",
+		"pics/m_main_quit_sel.pcx",
+	};
+	for ( int i = 0; i < MAIN_ITEMS; i++ ) {
+		mq2_main_item_pics[ i ] = R_CacheShader( names[ i ] );
+		mq2_main_item_sel_pics[ i ] = R_CacheShader( sel_names[ i ] );
+	}
+	for ( int i = 0; i < NUM_CURSOR_FRAMES; i++ ) {
+		char cursorname[ 80 ];
+		String::Sprintf( cursorname, sizeof ( cursorname ), "pics/m_cursor%d.pcx", i );
+		mq2_cursor[ i ] = R_CacheShader( cursorname );
+	}
 	MQ2_PushMenu( M_Main_Draw, M_Main_Key, NULL );
 }
 
@@ -454,6 +462,7 @@ GAME MENU
 */
 
 static int m_game_cursor;
+static qhandle_t mq2_banner_game;
 
 static menuframework_s s_game_menu;
 static menuaction_s s_easy_game_action;
@@ -562,10 +571,12 @@ static void Game_MenuInit() {
 	Menu_AddItem( &s_game_menu, ( void* )&s_credits_action );
 
 	Menu_Center( &s_game_menu );
+
+	mq2_banner_game = R_CacheShader( "pics/m_banner_game.pcx" );
 }
 
 static void Game_MenuDraw() {
-	MQ2_Banner( "m_banner_game" );
+	MQ2_Banner( mq2_banner_game );
 	Menu_AdjustCursor( &s_game_menu, 1 );
 	Menu_Draw( &s_game_menu );
 }
@@ -597,6 +608,8 @@ static menuaction_s s_loadgame_actions[ MAX_SAVEGAMES ];
 
 static char mq2_savestrings[ MAX_SAVEGAMES ][ 32 ];
 static bool mq2_savevalid[ MAX_SAVEGAMES ];
+
+static qhandle_t mq2_banner_load_game;
 
 static void Create_Savestrings() {
 	for ( int i = 0; i < MAX_SAVEGAMES; i++ ) {
@@ -647,10 +660,12 @@ static void LoadGame_MenuInit() {
 
 		Menu_AddItem( &s_loadgame_menu, &s_loadgame_actions[ i ] );
 	}
+
+	mq2_banner_load_game = R_CacheShader( "pics/m_banner_load_game.pcx" );
 }
 
 static void LoadGame_MenuDraw() {
-	MQ2_Banner( "m_banner_load_game" );
+	MQ2_Banner( mq2_banner_load_game );
 //	Menu_AdjustCursor( &s_loadgame_menu, 1 );
 	Menu_Draw( &s_loadgame_menu );
 }
@@ -679,6 +694,7 @@ SAVEGAME MENU
 =============================================================================
 */
 static menuaction_s s_savegame_actions[ MAX_SAVEGAMES ];
+static qhandle_t mq2_banner_save_game;
 
 static void SaveGameCallback( void* self ) {
 	menuaction_s* a = ( menuaction_s* )self;
@@ -688,7 +704,7 @@ static void SaveGameCallback( void* self ) {
 }
 
 static void SaveGame_MenuDraw() {
-	MQ2_Banner( "m_banner_save_game" );
+	MQ2_Banner( mq2_banner_save_game );
 	Menu_AdjustCursor( &s_savegame_menu, 1 );
 	Menu_Draw( &s_savegame_menu );
 }
@@ -714,6 +730,8 @@ static void SaveGame_MenuInit() {
 
 		Menu_AddItem( &s_savegame_menu, &s_savegame_actions[ i ] );
 	}
+
+	mq2_banner_save_game = R_CacheShader( "pics/m_banner_save_game.pcx" );
 }
 
 static const char* SaveGame_MenuKey( int key ) {
@@ -1194,9 +1212,10 @@ static menuframework_s s_multiplayer_menu;
 static menuaction_s s_join_network_server_action;
 static menuaction_s s_start_network_server_action;
 static menuaction_s s_player_setup_action;
+static qhandle_t mq2_banner_multiplayer;
 
 static void Multiplayer_MenuDraw() {
-	MQ2_Banner( "m_banner_multiplayer" );
+	MQ2_Banner( mq2_banner_multiplayer );
 
 	Menu_AdjustCursor( &s_multiplayer_menu, 1 );
 	Menu_Draw( &s_multiplayer_menu );
@@ -1246,6 +1265,8 @@ static void Multiplayer_MenuInit() {
 	Menu_SetStatusBar( &s_multiplayer_menu, NULL );
 
 	Menu_Center( &s_multiplayer_menu );
+
+	mq2_banner_multiplayer = R_CacheShader( "pics/m_banner_multiplayer.pcx" );
 }
 
 static const char* Multiplayer_MenuKey( int key ) {
@@ -1280,6 +1301,8 @@ static char local_server_names[ MAX_LOCAL_SERVERS ][ 80 ];
 
 // network address
 static netadr_t local_server_netadr[ MAX_LOCAL_SERVERS ];
+
+static qhandle_t mq2_banner_join_server;
 
 void MQ2_AddToServerList( netadr_t adr, const char* info ) {
 	if ( mq2_num_servers == MAX_LOCAL_SERVERS ) {
@@ -1390,10 +1413,12 @@ static void JoinServer_MenuInit() {
 	Menu_Center( &s_joinserver_menu );
 
 	SearchLocalGames();
+
+	mq2_banner_join_server = R_CacheShader( "pics/m_banner_join_server.pcx" );
 }
 
 static void JoinServer_MenuDraw() {
-	MQ2_Banner( "m_banner_join_server" );
+	MQ2_Banner( mq2_banner_join_server );
 	Menu_Draw( &s_joinserver_menu );
 }
 
@@ -1418,6 +1443,7 @@ ADDRESS BOOK MENU
 
 static menuframework_s s_addressbook_menu;
 static menufield_s s_addressbook_fields[ NUM_ADDRESSBOOK_ENTRIES ];
+static qhandle_t mq2_banner_addressbook;
 
 static void AddressBook_MenuInit() {
 	s_addressbook_menu.x = viddef.width / 2 - 142;
@@ -1444,6 +1470,8 @@ static void AddressBook_MenuInit() {
 
 		Menu_AddItem( &s_addressbook_menu, &s_addressbook_fields[ i ] );
 	}
+
+	mq2_banner_addressbook = R_CacheShader( "pics/m_banner_addressbook.pcx" );
 }
 
 static const char* AddressBook_MenuKey( int key ) {
@@ -1458,7 +1486,7 @@ static const char* AddressBook_MenuKey( int key ) {
 }
 
 static void AddressBook_MenuDraw() {
-	MQ2_Banner( "m_banner_addressbook" );
+	MQ2_Banner( mq2_banner_addressbook );
 	Menu_Draw( &s_addressbook_menu );
 }
 
@@ -2504,10 +2532,10 @@ static void PlayerConfig_MenuDraw() {
 
 		R_RenderScene( &refdef );
 
-		String::Sprintf( scratch, sizeof ( scratch ), "/players/%s/%s_i.pcx",
+		String::Sprintf( scratch, sizeof ( scratch ), "players/%s/%s_i.pcx",
 			s_pmi[ s_player_model_box.curvalue ].directory,
 			s_pmi[ s_player_model_box.curvalue ].skindisplaynames[ s_player_skin_box.curvalue ] );
-		UI_DrawNamedPic( s_player_config_menu.x - 40, refdef.y, scratch );
+		UI_DrawPicShader( s_player_config_menu.x - 40, refdef.y, R_CacheShader( scratch ) );
 	}
 }
 
@@ -2688,6 +2716,8 @@ static menuslider_s s_options_sfxvolume_slider;
 static menulist_s s_options_joystick_box;
 static menulist_s s_options_cdvolume_box;
 static menulist_s s_options_console_action;
+
+static qhandle_t mq2_banner_options;
 
 static void CrosshairFunc( void* unused ) {
 	Cvar_SetValueLatched( "crosshair", s_options_crosshair_box.curvalue );
@@ -2904,10 +2934,12 @@ static void Options_MenuInit() {
 	Menu_AddItem( &s_options_menu, ( void* )&s_options_customize_options_action );
 	Menu_AddItem( &s_options_menu, ( void* )&s_options_defaults_action );
 	Menu_AddItem( &s_options_menu, ( void* )&s_options_console_action );
+
+	mq2_banner_options = R_CacheShader( "pics/m_banner_options.pcx" );
 }
 
 static void Options_MenuDraw() {
-	MQ2_Banner( "m_banner_options" );
+	MQ2_Banner( mq2_banner_options );
 	Menu_AdjustCursor( &s_options_menu, 1 );
 	Menu_Draw( &s_options_menu );
 }
@@ -3306,6 +3338,8 @@ static menulist_s s_finish_box;
 static menuaction_s s_cancel_action;
 static menuaction_s s_defaults_action;
 
+static qhandle_t mq2_banner_video;
+
 static void VID_MenuInit();
 
 static void ScreenSizeCallback( void* s ) {
@@ -3376,6 +3410,9 @@ static void VID_MenuInit() {
 	}
 
 	s_mode_list.curvalue = r_mode->value;
+	if ( s_mode_list.curvalue < 0 || s_mode_list.curvalue >= 10 ) {
+		s_mode_list.curvalue = 0;
+	}
 
 	if ( !scr_viewsize ) {
 		scr_viewsize = Cvar_Get( "viewsize", "100", CVAR_ARCHIVE );
@@ -3455,13 +3492,13 @@ static void VID_MenuInit() {
 
 	Menu_Center( &s_opengl_menu );
 	s_opengl_menu.x -= 8;
+
+	mq2_banner_video = R_CacheShader( "pics/m_banner_video.pcx" );
 }
 
 static void VID_MenuDraw() {
 	//	draw the banner
-	int w, h;
-	R_GetPicSize( &w, &h, "m_banner_video" );
-	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, "m_banner_video" );
+	MQ2_Banner( mq2_banner_video );
 
 	//	move cursor to a reasonable starting position
 	Menu_AdjustCursor( &s_opengl_menu, 1 );
@@ -3520,6 +3557,8 @@ QUIT MENU
 =======================================================================
 */
 
+static qhandle_t mq2_pic_quit;
+
 static const char* M_Quit_Key( int key ) {
 	switch ( key ) {
 	case K_ESCAPE:
@@ -3541,12 +3580,12 @@ static const char* M_Quit_Key( int key ) {
 }
 
 static void M_Quit_Draw() {
-	int w, h;
-	R_GetPicSize( &w, &h, "quit" );
-	UI_DrawNamedPic( ( viddef.width - w ) / 2, ( viddef.height - h ) / 2, "quit" );
+	UI_DrawPicShader( ( viddef.width - R_GetShaderWidth( mq2_pic_quit ) ) / 2,
+		( viddef.height - R_GetShaderHeight( mq2_pic_quit ) ) / 2, mq2_pic_quit );
 }
 
 static void MQ2_Menu_Quit_f() {
+	mq2_pic_quit = R_CacheShader( "pics/quit.pcx" );
 	MQ2_PushMenu( M_Quit_Draw, M_Quit_Key, NULL );
 }
 

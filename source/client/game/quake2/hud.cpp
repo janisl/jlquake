@@ -222,7 +222,7 @@ static void SCRQ2_ExecuteLayoutString( const char* s ) {
 
 		if ( !String::Cmp( token, "picn" ) ) {	// draw a pic from a name
 			token = String::Parse2( &s );
-			UI_DrawNamedPic( x, y, token );
+			UI_DrawPicShader( x, y, CLQ2_RegisterPicShader( token ) );
 			continue;
 		}
 

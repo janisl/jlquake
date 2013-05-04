@@ -149,6 +149,7 @@ void CLQ2_Init();
 void CLQ2_UpdateSounds();
 void CLQ2_CheckVidChanges();
 void CLQ2_FixCvarCheats();
+qhandle_t CLQ2_RegisterPicShader( const char* name );
 
 //
 //	Parse

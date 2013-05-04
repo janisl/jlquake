@@ -94,6 +94,16 @@ static void R_BeginRegistrationAndLoadWorld( const char* model ) {
 	R_LoadWorld( fullname );
 }
 
+qhandle_t CLQ2_RegisterPicShader( const char* name ) {
+	if ( name[ 0 ] != '/' && name[ 0 ] != '\\' ) {
+		char fullname[ MAX_QPATH ];
+		String::Sprintf( fullname, sizeof ( fullname ), "pics/%s.pcx", name );
+		return R_CacheShader( fullname );
+	} else {
+		return R_CacheShader( name + 1 );
+	}
+}
+
 //	Call before entering a new level, or after changing dlls
 void CLQ2_PrepRefresh() {
 	if ( !cl.q2_configstrings[ Q2CS_MODELS + 1 ][ 0 ] ) {
@@ -154,7 +164,7 @@ void CLQ2_PrepRefresh() {
 	common->Printf( "images\r" );
 	SCR_UpdateScreen();
 	for ( int i = 1; i < MAX_IMAGES_Q2 && cl.q2_configstrings[ Q2CS_IMAGES + i ][ 0 ]; i++ ) {
-		cl.q2_image_precache[ i ] = R_RegisterPicShader( cl.q2_configstrings[ Q2CS_IMAGES + i ] );
+		cl.q2_image_precache[ i ] = CLQ2_RegisterPicShader( cl.q2_configstrings[ Q2CS_IMAGES + i ] );
 	}
 
 	common->Printf( "                                     \r" );

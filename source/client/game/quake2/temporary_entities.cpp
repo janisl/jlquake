@@ -82,11 +82,6 @@ void CLQ2_RegisterTEntModels() {
 	R_RegisterModel( "models/objects/gibs/bone/tris.md2" );
 	R_RegisterModel( "models/objects/gibs/sm_meat/tris.md2" );
 	R_RegisterModel( "models/objects/gibs/bone2/tris.md2" );
-
-	R_RegisterPic( "w_machinegun" );
-	R_RegisterPic( "a_bullets" );
-	R_RegisterPic( "i_health" );
-	R_RegisterPic( "a_grenades" );
 }
 
 void CLQ2_ClearTEnts() {

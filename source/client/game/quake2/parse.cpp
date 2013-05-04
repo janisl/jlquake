@@ -273,7 +273,7 @@ static void CLQ2_ParseConfigString( QMsg& message ) {
 		}
 	} else if ( i >= Q2CS_IMAGES && i < Q2CS_IMAGES + MAX_MODELS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {
-			cl.q2_image_precache[ i - Q2CS_IMAGES ] = R_RegisterPicShader( cl.q2_configstrings[ i ] );
+			cl.q2_image_precache[ i - Q2CS_IMAGES ] = CLQ2_RegisterPicShader( cl.q2_configstrings[ i ] );
 		}
 	} else if ( i >= Q2CS_PLAYERSKINS && i < Q2CS_PLAYERSKINS + MAX_CLIENTS_Q2 ) {
 		if ( cl.q2_refresh_prepped ) {

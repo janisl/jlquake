@@ -88,15 +88,6 @@ void UI_DrawPicShader( int x, int y, qhandle_t shader ) {
 	UI_DrawStretchPicShader( x, y, R_GetShaderWidth( shader ), R_GetShaderHeight( shader ), shader );
 }
 
-void UI_DrawNamedPic( int x, int y, const char* pic ) {
-	image_t* gl = R_RegisterPic( pic );
-	if ( !gl ) {
-		common->Printf( "Can't find pic: %s\n", pic );
-		return;
-	}
-	UI_DrawPic( x, y, gl );
-}
-
 static void DoQuad( float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2 ) {
 	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
