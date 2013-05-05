@@ -277,7 +277,7 @@ void Com_Frame() {
 	//
 	// watchdog
 	//
-	if ( com_dedicated->integer && !com_sv_running->integer && com_watchdog->integer ) {
+	if ( com_dedicated->integer && com_sv_running && !com_sv_running->integer && com_watchdog->integer ) {
 		static int watchdogTime = 0;
 		static bool watchWarn = false;
 		if ( watchdogTime == 0 ) {
