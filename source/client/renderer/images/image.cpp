@@ -1097,51 +1097,6 @@ void R_ExtractTranslatedImages( const idSkinTranslation& translation, byte* pic,
 	}
 }
 
-void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom ) {
-	idStr nameTop = "*top*" + name;
-	idStr nameBottom = "*bottom*" + name;
-	//
-	// see if the image is already loaded
-	//
-	image = R_FindImage( name.CStr() );
-	imageTop = R_FindImage( nameTop.CStr() );
-	imageBottom = R_FindImage( nameBottom.CStr() );
-	if ( image && imageTop && imageBottom ) {
-		return;
-	}
-
-	//
-	// load the pic from disk
-	//
-	byte* pic = NULL;
-	byte* picTop = NULL;
-	byte* picBottom = NULL;
-	int width = 0;
-	int height = 0;
-	R_LoadPICTranslated( name.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
-	if ( pic == NULL ) {
-		//	If we dont get a successful load copy the name and try upper case
-		// extension for unix systems, if that fails bail.
-		idStr altname = name;
-		int len = altname.Length();
-		altname[ len - 3 ] = String::ToUpper( altname[ len - 3 ] );
-		altname[ len - 2 ] = String::ToUpper( altname[ len - 2 ] );
-		altname[ len - 1 ] = String::ToUpper( altname[ len - 1 ] );
-		common->Printf( "trying %s...\n", altname.CStr() );
-		R_LoadPICTranslated( altname.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
-		if ( pic == NULL ) {
-			common->FatalError( "R_CacheTranslatedPic: failed to load %s", name.CStr() );
-		}
-	}
-
-	image = R_CreateImage( name.CStr(), pic, width, height, false, false, GL_CLAMP, false );
-	imageTop = R_CreateImage( nameTop.CStr(), picTop, width, height, false, false, GL_CLAMP, false );
-	imageBottom = R_CreateImage( nameBottom.CStr(), picBottom, width, height, false, false, GL_CLAMP, false );
-	delete[] pic;
-	delete[] picTop;
-	delete[] picBottom;
-}
-
 void R_SetColorMappings() {
 	// setup the overbright lighting
 	tr.overbrightBits = r_overBrightBits->integer;

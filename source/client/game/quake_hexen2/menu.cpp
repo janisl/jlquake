@@ -91,10 +91,6 @@ static void MQH_Menu_Keys_f();
 static void MQH_Menu_Video_f();
 static void MQH_Menu_Help_f();
 
-static void MQH_DrawPicImage( int x, int y, image_t* pic ) {
-	UI_DrawPic( x + ( ( viddef.width - 320 ) >> 1 ), y, pic );
-}
-
 void MQH_DrawPic( int x, int y, qhandle_t shader ) {
 	UI_DrawPicShader( x + ( ( viddef.width - 320 ) >> 1 ), y, shader );
 }
@@ -2439,12 +2435,12 @@ static int class_limit;
 static int which_class;
 
 static qhandle_t mqh_gfx_bigbox;
-static image_t* mq1_gfx_menuplyr;
-static image_t* mq1_gfx_menuplyr_top;
-static image_t* mq1_gfx_menuplyr_bottom;
-static image_t* mh2_gfx_netp[ MAX_PLAYER_CLASS ];
-static image_t* mh2_gfx_netp_top[ MAX_PLAYER_CLASS ];
-static image_t* mh2_gfx_netp_bottom[ MAX_PLAYER_CLASS ];
+static qhandle_t mq1_gfx_menuplyr;
+static qhandle_t mq1_gfx_menuplyr_top;
+static qhandle_t mq1_gfx_menuplyr_bottom;
+static qhandle_t mh2_gfx_netp[ MAX_PLAYER_CLASS ];
+static qhandle_t mh2_gfx_netp_top[ MAX_PLAYER_CLASS ];
+static qhandle_t mh2_gfx_netp_bottom[ MAX_PLAYER_CLASS ];
 
 static void MQH_ClampSetupColours() {
 	int maxColour = GGameType & GAME_Hexen2 ? 10 : 13;
@@ -2631,11 +2627,11 @@ static void MQH_Setup_Draw() {
 			which_class = setup_class;
 		}
 
-		MQH_DrawPicImage( 220, 72, mh2_gfx_netp[ which_class - 1 ] );
+		MQH_DrawPic( 220, 72, mh2_gfx_netp[ which_class - 1 ] );
 		MQH_SetColour( clh2_translation_info[ which_class - 1 ].translatedTopColours[ setup_top ] );
-		MQH_DrawPicImage( 220, 72, mh2_gfx_netp_top[ which_class - 1 ] );
+		MQH_DrawPic( 220, 72, mh2_gfx_netp_top[ which_class - 1 ] );
 		MQH_SetColour( clh2_translation_info[ which_class - 1 ].translatedBottomColours[ setup_bottom ] );
-		MQH_DrawPicImage( 220, 72, mh2_gfx_netp_bottom[ which_class - 1 ] );
+		MQH_DrawPic( 220, 72, mh2_gfx_netp_bottom[ which_class - 1 ] );
 		R_SetColor( NULL );
 	} else {
 		MQH_Print( 64, 80, "Shirt color" );
@@ -2645,11 +2641,11 @@ static void MQH_Setup_Draw() {
 		MQH_Print( 72, 140, "Accept Changes" );
 
 		MQH_DrawPic( 160, 64, mqh_gfx_bigbox );
-		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr );
+		MQH_DrawPic( 172, 72, mq1_gfx_menuplyr );
 		MQH_SetColour( clq1_translation_info.translatedTopColours[ setup_top ] );
-		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr_top );
+		MQH_DrawPic( 172, 72, mq1_gfx_menuplyr_top );
 		MQH_SetColour( clq1_translation_info.translatedBottomColours[ setup_bottom ] );
-		MQH_DrawPicImage( 172, 72, mq1_gfx_menuplyr_bottom );
+		MQH_DrawPic( 172, 72, mq1_gfx_menuplyr_bottom );
 		R_SetColor( NULL );
 	}
 

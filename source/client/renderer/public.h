@@ -421,7 +421,7 @@ qhandle_t R_CreateCrosshairImage();
 image_t* R_CachePic( const char* path );
 qhandle_t R_CacheShader( const char* path );
 qhandle_t R_CacheShaderRepeat( const char* path );
-void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom );
+void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, qhandle_t& image, qhandle_t& imageTop, qhandle_t& imageBottom );
 int R_GetTextureId( const char* name );
 
 const char* R_GetImageName( qhandle_t Handle );

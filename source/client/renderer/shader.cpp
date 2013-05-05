@@ -3485,3 +3485,56 @@ int R_GetShaderWidth( qhandle_t shader ) {
 int R_GetShaderHeight( qhandle_t shader ) {
 	return R_GetShaderByHandle( shader )->originalHeight;
 }
+
+void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation,
+	qhandle_t& image, qhandle_t& imageTop, qhandle_t& imageBottom ) {
+	char strippedName[ MAX_QPATH ];
+	String::StripExtension2( name.CStr(), strippedName, sizeof ( strippedName ) );
+	String::FixPath( strippedName );
+
+	idStr nameTop = idStr( strippedName ) + "*top";
+	idStr nameBottom = idStr( strippedName ) + "*bottom";
+	//
+	// see if the image is already loaded
+	//
+	shader_t* shaderBase = R_FindLoadedShader( strippedName, LIGHTMAP_2D );
+	shader_t* shaderTop = R_FindLoadedShader( nameTop.CStr(), LIGHTMAP_2D );
+	shader_t* shaderBottom = R_FindLoadedShader( nameBottom.CStr(), LIGHTMAP_2D );
+	if ( shaderBase && shaderTop && shaderBottom ) {
+		image = shaderBase->index;
+		imageTop = shaderTop->index;
+		imageBottom = shaderBottom->index;
+		return;
+	}
+
+	//
+	// load the pic from disk
+	//
+	byte* pic = NULL;
+	byte* picTop = NULL;
+	byte* picBottom = NULL;
+	int width = 0;
+	int height = 0;
+	R_LoadPICTranslated( name.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
+	if ( pic == NULL ) {
+		//	If we dont get a successful load copy the name and try upper case
+		// extension for unix systems, if that fails bail.
+		idStr altname = name;
+		int len = altname.Length();
+		altname[ len - 3 ] = String::ToUpper( altname[ len - 3 ] );
+		altname[ len - 2 ] = String::ToUpper( altname[ len - 2 ] );
+		altname[ len - 1 ] = String::ToUpper( altname[ len - 1 ] );
+		common->Printf( "trying %s...\n", altname.CStr() );
+		R_LoadPICTranslated( altname.CStr(), translation, &pic, &picTop, &picBottom, &width, &height, IMG8MODE_Normal );
+		if ( pic == NULL ) {
+			common->FatalError( "R_CacheTranslatedPic: failed to load %s", name.CStr() );
+		}
+	}
+
+	image = R_Build2DShaderFromImage( R_CreateImage( name.CStr(), pic, width, height, false, false, GL_CLAMP, false ) )->index;
+	imageTop = R_Build2DShaderFromImage( R_CreateImage( nameTop.CStr(), picTop, width, height, false, false, GL_CLAMP, false ) )->index;
+	imageBottom = R_Build2DShaderFromImage( R_CreateImage( nameBottom.CStr(), picBottom, width, height, false, false, GL_CLAMP, false ) )->index;
+	delete[] pic;
+	delete[] picTop;
+	delete[] picBottom;
+}
