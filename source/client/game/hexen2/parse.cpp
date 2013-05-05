@@ -804,6 +804,24 @@ static void CLHW_UpdateUserinfo( QMsg& message ) {
 	player->playerclass = String::Atoi( Info_ValueForKey( player->userinfo, "playerclass" ) );
 }
 
+static qhandle_t CLH2_RegisterModel( const char* name ) {
+	idSkinTranslation* skinTranslation = NULL;
+	if ( !String::Cmp( name,"models/paladin.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 0 ];
+	} else if ( !String::Cmp( name,"models/crusader.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 1 ];
+	} else if ( !String::Cmp( name,"models/necro.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 2 ];
+	} else if ( !String::Cmp( name,"models/assassin.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 3 ];
+	} else if ( !String::Cmp( name,"models/succubus.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 4 ];
+	} else if ( !String::Cmp( name,"models/hank.mdl" ) ) {
+		skinTranslation = &clh2_translation_info[ 5 ];
+	}
+	return R_RegisterModel( name, skinTranslation );
+}
+
 static void CLHW_Model_NextDownload() {
 	if ( clc.downloadNumber == 0 ) {
 		common->Printf( "Checking models...\n" );
@@ -829,7 +847,7 @@ static void CLHW_Model_NextDownload() {
 		if ( !cl.qh_model_name[ i ][ 0 ] ) {
 			break;
 		}
-		cl.model_draw[ i ] = R_RegisterModel( cl.qh_model_name[ i ] );
+		cl.model_draw[ i ] = CLH2_RegisterModel( cl.qh_model_name[ i ] );
 		if ( cl.qh_model_name[ i ][ 0 ] == '*' ) {
 			cl.model_clip[ i ] = CM_InlineModel( String::Atoi( cl.qh_model_name[ i ] + 1 ) );
 		}
@@ -1017,13 +1035,13 @@ static void CLHW_ParseModelList( QMsg& message ) {
 		}
 	}
 
-	clh2_player_models[ 0 ] = R_RegisterModel( "models/paladin.mdl" );
-	clh2_player_models[ 1 ] = R_RegisterModel( "models/crusader.mdl" );
-	clh2_player_models[ 2 ] = R_RegisterModel( "models/necro.mdl" );
-	clh2_player_models[ 3 ] = R_RegisterModel( "models/assassin.mdl" );
-	clh2_player_models[ 4 ] = R_RegisterModel( "models/succubus.mdl" );
+	clh2_player_models[ 0 ] = CLH2_RegisterModel( "models/paladin.mdl" );
+	clh2_player_models[ 1 ] = CLH2_RegisterModel( "models/crusader.mdl" );
+	clh2_player_models[ 2 ] = CLH2_RegisterModel( "models/necro.mdl" );
+	clh2_player_models[ 3 ] = CLH2_RegisterModel( "models/assassin.mdl" );
+	clh2_player_models[ 4 ] = CLH2_RegisterModel( "models/succubus.mdl" );
 	//siege
-	clh2_player_models[ 5 ] = R_RegisterModel( "models/hank.mdl" );
+	clh2_player_models[ 5 ] = CLH2_RegisterModel( "models/hank.mdl" );
 
 	clc.downloadNumber = 0;
 	clc.downloadType = dl_model;
@@ -1626,7 +1644,7 @@ static void CLH2_ParseServerInfo( QMsg& message ) {
 	R_LoadWorld( model_precache[ 1 ] );
 
 	for ( i = 2; i < nummodels; i++ ) {
-		cl.model_draw[ i ] = R_RegisterModel( model_precache[ i ] );
+		cl.model_draw[ i ] = CLH2_RegisterModel( model_precache[ i ] );
 		clh2_current_loading_size++;
 		SCR_UpdateScreen();
 
@@ -1637,12 +1655,12 @@ static void CLH2_ParseServerInfo( QMsg& message ) {
 		CLQH_KeepaliveMessage();
 	}
 
-	clh2_player_models[ 0 ] = R_RegisterModel( "models/paladin.mdl" );
-	clh2_player_models[ 1 ] = R_RegisterModel( "models/crusader.mdl" );
-	clh2_player_models[ 2 ] = R_RegisterModel( "models/necro.mdl" );
-	clh2_player_models[ 3 ] = R_RegisterModel( "models/assassin.mdl" );
+	clh2_player_models[ 0 ] = CLH2_RegisterModel( "models/paladin.mdl" );
+	clh2_player_models[ 1 ] = CLH2_RegisterModel( "models/crusader.mdl" );
+	clh2_player_models[ 2 ] = CLH2_RegisterModel( "models/necro.mdl" );
+	clh2_player_models[ 3 ] = CLH2_RegisterModel( "models/assassin.mdl" );
 	if ( GGameType & GAME_H2Portals ) {
-		clh2_player_models[ 4 ] = R_RegisterModel( "models/succubus.mdl" );
+		clh2_player_models[ 4 ] = CLH2_RegisterModel( "models/succubus.mdl" );
 	}
 
 	S_BeginRegistration();

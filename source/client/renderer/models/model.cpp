@@ -355,7 +355,7 @@ static bool R_FindCachedModel( const char* name, model_t* newmod ) {
 //	Zero will be returned if the model fails to load. An entry will be
 // retained for failed models as an optimization to prevent disk rescanning
 // if they are asked for again.
-int R_RegisterModel( const char* name ) {
+qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation ) {
 	if ( !name || !name[ 0 ] ) {
 		common->Printf( "R_RegisterModel: NULL name\n" );
 		return 0;
@@ -443,12 +443,12 @@ int R_RegisterModel( const char* name ) {
 	bool loaded;
 	switch ( LittleLong( *( qint32* )buf ) ) {
 	case IDPOLYHEADER:
-		Mod_LoadMdlModel( mod, buf );
+		Mod_LoadMdlModel( mod, buf, skinTranslation );
 		loaded = true;
 		break;
 
 	case RAPOLYHEADER:
-		Mod_LoadMdlModelNew( mod, buf );
+		Mod_LoadMdlModelNew( mod, buf, skinTranslation );
 		loaded = true;
 		break;
 

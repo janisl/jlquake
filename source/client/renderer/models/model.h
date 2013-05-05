@@ -911,8 +911,8 @@ void Mod_FreeSprite2Model( model_t* mod );
 void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex );
 void RB_SurfaceSp2( dsprite2_t* psprite );
 
-void Mod_LoadMdlModel( model_t* mod, const void* buffer );
-void Mod_LoadMdlModelNew( model_t* mod, const void* buffer );
+void Mod_LoadMdlModel( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation );
+void Mod_LoadMdlModelNew( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation );
 void Mod_FreeMdlModel( model_t* mod );
 void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex );
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr );
@@ -984,6 +984,5 @@ void R_FreeSurfaceGridMesh( srfGridMesh_t* Grid );
 
 extern model_t* loadmodel;
 extern byte q1_player_8bit_texels[ 320 * 200 ];
-extern byte h2_player_8bit_texels[ MAX_PLAYER_CLASS ][ 620 * 245 ];
 extern mbrush29_texture_t* r_notexture_mip;
 extern world_t s_worldData;

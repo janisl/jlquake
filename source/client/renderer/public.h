@@ -425,7 +425,6 @@ qhandle_t R_CacheShaderRepeat( const char* path );
 void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom );
 int R_GetTextureId( const char* name );
 void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation );
-void R_CreateOrUpdateTranslatedModelSkinH2( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex );
 byte* R_LoadQuakeWorldSkinData( const char* name );
 
 const char* R_GetImageName( qhandle_t Handle );
@@ -444,7 +443,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer );
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
-qhandle_t R_RegisterModel( const char* Name );
+qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation = NULL );
 void R_ModelBounds( qhandle_t Handle, vec3_t Mins, vec3_t Maxs );
 int R_ModelNumFrames( qhandle_t Handle );
 int R_ModelFlags( qhandle_t Handle );

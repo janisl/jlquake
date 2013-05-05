@@ -20,7 +20,6 @@
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
-#include "../../client_main.h"
 
 #define MAX_LBM_HEIGHT      480
 
@@ -45,7 +44,6 @@ struct idMdlVertexRemap {
 };
 
 byte q1_player_8bit_texels[ 320 * 200 ];
-byte h2_player_8bit_texels[ MAX_PLAYER_CLASS ][ 620 * 245 ];
 
 static float aliastransform[ 3 ][ 4 ];
 
@@ -181,7 +179,7 @@ static const void* Mod_LoadAliasGroup( const void* pin, mmesh1framedesc_t* frame
 
 static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags, idSkinTranslation* skinTranslation ) {
 	if ( numskins < 1 || numskins > MAX_MESH1_SKINS ) {
-		common->FatalError( "Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins );
+		common->FatalError( "Mod_LoadAllSkins: Invalid # of skins: %d\n", numskins );
 	}
 
 	int s = pheader->skinwidth * pheader->skinheight;
@@ -224,38 +222,6 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 					common->FatalError( "Player skin too large" );
 				}
 				Com_Memcpy( q1_player_8bit_texels, pic, s );
-			} else if ( GGameType & GAME_Hexen2 ) {
-				if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 0 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 0 ], pic, s );
-				} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 1 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 1 ], pic, s );
-				} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 2 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 2 ], pic, s );
-				} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 3 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 3 ], pic, s );
-				} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 4 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 4 ], pic, s );
-				} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
-					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 5 ] ) ) {
-						common->FatalError( "Player skin too large" );
-					}
-					Com_Memcpy( h2_player_8bit_texels[ 5 ], pic, s );
-				}
 			}
 
 			byte* pic32 = R_ConvertImage8To32( pic, pheader->skinwidth, pheader->skinheight, texture_mode );
@@ -397,27 +363,7 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 	}
 }
 
-void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
-	idSkinTranslation* skinTranslation = NULL;
-	// save 8 bit texels for the player model to remap
-	if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
-		skinTranslation = &clq1_translation_info;
-	} else if ( GGameType & GAME_Hexen2 ) {
-		if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 0 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 1 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 2 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 3 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 4 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 5 ];
-		}
-	}
-
+void Mod_LoadMdlModel( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
 	mdl_t* pinmodel = ( mdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -554,27 +500,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 }
 
 //	Reads extra field for num ST verts, and extra index list of them
-void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
-	idSkinTranslation* skinTranslation = NULL;
-	// save 8 bit texels for the player model to remap
-	if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
-		skinTranslation = &clq1_translation_info;
-	} else if ( GGameType & GAME_Hexen2 ) {
-		if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 0 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 1 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 2 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 3 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 4 ];
-		} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
-			skinTranslation = &clh2_translation_info[ 5 ];
-		}
-	}
-
+void Mod_LoadMdlModelNew( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
 	newmdl_t* pinmodel = ( newmdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );

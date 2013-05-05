@@ -317,10 +317,6 @@ void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, q
 	R_CreateOrUpdateTranslatedModelSkin( image, name, modelHandle, q1_player_8bit_texels, translation );
 }
 
-void R_CreateOrUpdateTranslatedModelSkinH2( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation, int classIndex ) {
-	R_CreateOrUpdateTranslatedModelSkin( image, name, modelHandle, h2_player_8bit_texels[ classIndex ], translation );
-}
-
 byte* R_LoadQuakeWorldSkinData( const char* name ) {
 	int width;
 	int height;

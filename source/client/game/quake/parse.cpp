@@ -592,6 +592,14 @@ static void CLQW_CalcModelChecksum( const char* modelName, const char* cvarName 
 	CL_AddReliableCommand( st );
 }
 
+static qhandle_t CLQ1_RegisterModel( const char* name ) {
+	idSkinTranslation* skinTranslation = NULL;
+	if ( !String::Cmp( name,"progs/player.mdl" ) ) {
+		skinTranslation = &clq1_translation_info;
+	}
+	return R_RegisterModel( name, skinTranslation );
+}
+
 static void CLQW_Model_NextDownload() {
 	if ( clc.downloadNumber == 0 ) {
 		common->Printf( "Checking models...\n" );
@@ -620,7 +628,7 @@ static void CLQW_Model_NextDownload() {
 			break;
 		}
 
-		cl.model_draw[ i ] = R_RegisterModel( cl.qh_model_name[ i ] );
+		cl.model_draw[ i ] = CLQ1_RegisterModel( cl.qh_model_name[ i ] );
 		if ( cl.qh_model_name[ i ][ 0 ] == '*' ) {
 			cl.model_clip[ i ] = CM_InlineModel( String::Atoi( cl.qh_model_name[ i ] + 1 ) );
 		}
@@ -932,7 +940,7 @@ static void CLQ1_ParseServerInfo( QMsg& message ) {
 	CLQH_KeepaliveMessage();
 
 	for ( i = 2; i < nummodels; i++ ) {
-		cl.model_draw[ i ] = R_RegisterModel( model_precache[ i ] );
+		cl.model_draw[ i ] = CLQ1_RegisterModel( model_precache[ i ] );
 		if ( cl.model_draw[ i ] == 0 ) {
 			common->Printf( "Model %s not found\n", model_precache[ i ] );
 			return;
