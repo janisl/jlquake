@@ -40,20 +40,17 @@ typedef int qhandle_t;
 ** being run right now.  These are constant once the OpenGL
 ** subsystem is initialized.
 */
-enum textureCompression_t
-{
+enum textureCompression_t {
 	TC_NONE,
 	TC_S3TC,
 	TC_EXT_COMP_S3TC
 };
 
-enum glDriverType_t
-{
+enum glDriverType_t {
 	GLDRV_ICD,					// driver is integrated with window system
 };
 
-enum glHardwareType_t
-{
+enum glHardwareType_t {
 	GLHW_GENERIC,			// where everthing works the way it should
 };
 
@@ -135,8 +132,7 @@ struct polyBuffer_t {
 //                                                                  //
 // WARNING:: synch FOG_SERVER in sv_ccmds.c if you change anything	//
 //                                                                  //
-enum glfogType_t
-{
+enum glfogType_t {
 	FOG_NONE,		//	0
 
 	FOG_SKY,		//	1	fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
@@ -203,8 +199,7 @@ struct fontInfo_t {
 //
 //==========================================================================
 
-enum refEntityType_t
-{
+enum refEntityType_t {
 	RT_MODEL,
 	RT_POLY,
 	RT_SPRITE,
@@ -220,8 +215,7 @@ enum refEntityType_t
 	RT_MAX_REF_ENTITY_TYPE
 };
 
-enum QParticleTexture
-{
+enum QParticleTexture {
 	PARTTEX_Default,
 	//	Hexen 2 snow particles
 	PARTTEX_Snow1,
@@ -230,8 +224,7 @@ enum QParticleTexture
 	PARTTEX_Snow4,
 };
 
-enum stereoFrame_t
-{
+enum stereoFrame_t {
 	STEREO_CENTER,
 	STEREO_LEFT,
 	STEREO_RIGHT
@@ -240,6 +233,11 @@ enum stereoFrame_t
 //	Games must have their own constants because in Quake/Hexen 2 it's
 // 64 and it's used by server.
 #define MAX_LIGHTSTYLES         256
+
+enum {
+	QUAKEWORLD_SKIN_WIDTH = 296,
+	QUAKEWORLD_SKIN_HEIGHT = 194,
+};
 
 struct image_t;
 

@@ -610,7 +610,7 @@ void CLQ1_TranslatePlayerSkin( int playernum ) {
 		if ( original != NULL ) {
 			//skin data width
 			R_CreateOrUpdateTranslatedSkin( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
-				original, translate, 320, 200 );
+				original, translate, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
 		} else {
 			R_CreateOrUpdateTranslatedModelSkinQ1( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
 				cl.model_draw[ clq1_playerindex ], translate );

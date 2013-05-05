@@ -326,13 +326,15 @@ byte* R_LoadQuakeWorldSkinData( const char* name ) {
 		return NULL;
 	}
 
-	byte* out = new byte[ 320 * 200 ];
-	Com_Memset( out, 0, 320 * 200 );
+	byte* out = new byte[ QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT ];
+	Com_Memset( out, 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
 
 	byte* outp = out;
 	byte* pixp = pixels;
-	for ( int y = 0; y < height; y++, outp += 320, pixp += width ) {
-		Com_Memcpy( outp, pixp, width );
+	int copyWidth = Min( width, static_cast<int>( QUAKEWORLD_SKIN_WIDTH ) );
+	int copyHeight = Min ( height , static_cast<int>( QUAKEWORLD_SKIN_HEIGHT ) );
+	for ( int y = 0; y < copyHeight; y++, outp += QUAKEWORLD_SKIN_WIDTH, pixp += width ) {
+		Com_Memcpy( outp, pixp, copyWidth );
 	}
 	delete[] pixels;
 
