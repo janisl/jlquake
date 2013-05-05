@@ -397,9 +397,12 @@ dynamic:
 }
 
 //	Returns the proper texture for a given time and base texture
-static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
+static mbrush38_texinfo_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	if ( !tex->next ) {
-		return tex->image;
+		return tex;
+	}
+	if ( tex->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		return tex;
 	}
 
 	int c = backEnd.currentEntity->e.frame % tex->numframes;
@@ -408,84 +411,20 @@ static image_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 		c--;
 	}
 
-	return tex->image;
+	return tex;
+}
+
+void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex ) {
+	mbrush38_texinfo_t* texinfo = R_TextureAnimationQ2( surf->texinfo );
+	shader_t* shader = R_BuildBsp38Shader( texinfo, surf->lightmaptexturenum );
+	R_AddDrawSurf( ( surfaceType_t* )surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
-	shaderStage_t stage1 = {};
-	texModInfo_t texmods[2] = {};
-	stage1.bundle[ 0 ].numImageAnimations = 1;
-	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage1.bundle[ 0 ].texMods = texmods;
-	if ( surf->texinfo->flags & BSP38SURF_WARP ) {
-		texmods[0].type = TMOD_TURBULENT_OLD;
-		texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
-		texmods[0].wave.amplitude = 1.0f / 16.0f;
-		stage1.bundle[ 0 ].numTexMods = 1;
-	}
-	//	Hmmm, no flowing on translucent non-turbulent surfaces
-	if ( surf->texinfo->flags & BSP38SURF_FLOWING &&
-		( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) || surf->texinfo->flags & BSP38SURF_WARP ) ) {
-		int i = stage1.bundle[ 0 ].numTexMods;
-		texmods[ i ].type = TMOD_SCROLL;
-		if ( surf->texinfo->flags & BSP38SURF_WARP ) {
-			texmods[ i ].scroll[ 0 ] = -0.5;
-		} else {
-			texmods[ i ].scroll[ 0 ] = -1.6;
-		}
-		stage1.bundle[ 0 ].numTexMods++;
-	}
-	if ( surf->texinfo->flags & BSP38SURF_WARP ) {
-		stage1.rgbGen = CGEN_IDENTITY_LIGHTING;
-	} else {
-		stage1.rgbGen = CGEN_IDENTITY;
-	}
-	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-		stage1.bundle[ 0 ].image[ 0 ] = surf->texinfo->image;
-		stage1.alphaGen = AGEN_CONST;
-		if ( surf->texinfo->flags & BSP38SURF_TRANS33 ) {
-			stage1.constantColor[ 3 ] = 84;
-		} else {
-			stage1.constantColor[ 3 ] = 168;
-		}
-		stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		stage1.bundle[ 0 ].image[ 0 ] = R_TextureAnimationQ2( surf->texinfo );
-		stage1.alphaGen = AGEN_IDENTITY;
-		stage1.stateBits = GLS_DEFAULT;
-	}
-
-	shaderStage_t stage2 = {};
-
-	shader_t shader = {};
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	shader.stages[ 0 ] = &stage1;
-
 	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
 		R_UpdateSurfaceLightmap( surf );
-		if ( !qglMultiTexCoord2fARB ) {
-			// don't bother if we're set to fullbright
-			if ( !r_fullbright->value && tr.worldModel->brush38_lightdata ) {
-				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
-				stage2.bundle[ 0 ].numImageAnimations = 1;
-				stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-				stage2.rgbGen = CGEN_IDENTITY;
-				stage2.alphaGen = AGEN_IDENTITY;
-				stage2.stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-				stage2.bundle[ 0 ].isLightmap = true;
-				shader.stages[ 1 ] = &stage2;
-			}
-		} else {
-			shader.multitextureEnv = GL_MODULATE;
-
-			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ surf->lightmaptexturenum ];
-			stage1.bundle[ 1 ].numImageAnimations = 1;
-			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-		}
 	}
-
-	RB_BeginSurface( &shader, 0 );
+	RB_BeginSurface( tess.shader, 0 );
 
 	for ( mbrush38_glpoly_t* p = surf->polys; p; p = p->next ) {
 		int numVerts = tess.numVertexes;
@@ -531,7 +470,7 @@ void R_DrawAlphaSurfaces(int& forcedSortIndex) {
 	int savedShiftedEntityNum = tr.shiftedEntityNum;
 	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
 	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
-		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+		R_AddWorldSurfaceBsp38( s, forcedSortIndex );
 	}
 	r_alpha_surfaces = NULL;
 	tr.shiftedEntityNum = savedShiftedEntityNum;

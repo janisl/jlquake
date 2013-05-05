@@ -398,6 +398,7 @@ shader_t* R_GetShaderByHandle( qhandle_t hShader );
 void R_ShaderList_f();
 void R_PurgeShaders();
 void R_BackupShaders();
+shader_t* R_BuildBsp38Shader( struct mbrush38_texinfo_t* texinfo, int lightMaptIndex );
 
 void RB_BeginSurface( shader_t* shader, int fogNum );
 void RB_StageIteratorGeneric();

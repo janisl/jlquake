@@ -829,6 +829,7 @@ void R_DrawWaterSurfaces(int& forcedSortIndex);
 void GL_BeginBuildingLightmaps( model_t* m );
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf );
 void GL_EndBuildingLightmaps();
+void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex );
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces(int& forcedSortIndex);
 

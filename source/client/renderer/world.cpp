@@ -452,7 +452,7 @@ static void R_DrawInlineBModel(int forcedSortIndex) {
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			} else {
-				R_AddDrawSurf( ( surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+				R_AddWorldSurfaceBsp38( psurf, forcedSortIndex );
 			}
 		}
 	}
@@ -813,7 +813,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
 		} else {
-			R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+			R_AddWorldSurfaceBsp38( surf, 0 );
 		}
 	}
 

@@ -3549,3 +3549,92 @@ qhandle_t R_CreateWhiteShader() {
 
 	return FinishShader()->index;
 }
+
+shader_t* R_BuildBsp38Shader( mbrush38_texinfo_t* texinfo, int lightMapIndex ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( texinfo->image->imgName, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	if ( texinfo->flags & BSP38SURF_WARP ) {
+		String::Cat( shaderName, sizeof ( shaderName ), "*warp" );
+	}
+	if ( texinfo->flags & BSP38SURF_FLOWING ) {
+		String::Cat( shaderName, sizeof ( shaderName ), "*flowing" );
+	}
+	if ( texinfo->flags & BSP38SURF_TRANS33 ) {
+		String::Cat( shaderName, sizeof ( shaderName ), "*trans33" );
+	} else if ( texinfo->flags &  BSP38SURF_TRANS66 ) {
+		String::Cat( shaderName, sizeof ( shaderName ), "*trans66" );
+	}
+	if ( texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+		lightMapIndex = LIGHTMAP_NONE;
+	}
+
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, lightMapIndex );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.cullType = CT_FRONT_SIDED;
+	shader.lightmapIndex = lightMapIndex;
+
+	texModInfo_t texmods[2] = {};
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].numImageAnimations = 1;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 0 ].bundle[ 0 ].texMods = texmods;
+	if ( texinfo->flags & BSP38SURF_WARP ) {
+		texmods[0].type = TMOD_TURBULENT_OLD;
+		texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
+		texmods[0].wave.amplitude = 1.0f / 16.0f;
+		stages[ 0 ].bundle[ 0 ].numTexMods = 1;
+	}
+	//	Hmmm, no flowing on translucent non-turbulent surfaces
+	if ( texinfo->flags & BSP38SURF_FLOWING &&
+		( !( texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) || texinfo->flags & BSP38SURF_WARP ) ) {
+		int i = stages[ 0 ].bundle[ 0 ].numTexMods;
+		texmods[ i ].type = TMOD_SCROLL;
+		if ( texinfo->flags & BSP38SURF_WARP ) {
+			texmods[ i ].scroll[ 0 ] = -0.5;
+		} else {
+			texmods[ i ].scroll[ 0 ] = -1.6;
+		}
+		stages[ 0 ].bundle[ 0 ].numTexMods++;
+	}
+	if ( texinfo->flags & BSP38SURF_WARP ) {
+		stages[ 0 ].rgbGen = CGEN_IDENTITY_LIGHTING;
+	} else {
+		stages[ 0 ].rgbGen = CGEN_IDENTITY;
+	}
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = texinfo->image;
+	if ( texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		stages[ 0 ].alphaGen = AGEN_CONST;
+		if ( texinfo->flags & BSP38SURF_TRANS33 ) {
+			stages[ 0 ].constantColor[ 3 ] = 84;
+		} else {
+			stages[ 0 ].constantColor[ 3 ] = 168;
+		}
+		stages[ 0 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stages[ 0 ].alphaGen = AGEN_IDENTITY;
+		stages[ 0 ].stateBits = GLS_DEFAULT;
+	}
+
+	if ( !( texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
+		// don't bother if we're set to fullbright
+		if ( !r_fullbright->value && tr.worldModel->brush38_lightdata ) {
+			stages[ 1 ].bundle[ 0 ].image[ 0 ] = tr.lightmaps[ lightMapIndex ];
+			stages[ 1 ].bundle[ 0 ].numImageAnimations = 1;
+			stages[ 1 ].bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+			stages[ 1 ].bundle[ 0 ].isLightmap = true;
+			stages[ 1 ].rgbGen = CGEN_IDENTITY;
+			stages[ 1 ].alphaGen = AGEN_IDENTITY;
+			stages[ 1 ].stateBits = GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+			stages[ 1 ].active = true;
+		}
+	}
+
+	return FinishShader();
+}
