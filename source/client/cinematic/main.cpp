@@ -458,15 +458,16 @@ void QCinematicPlayer::Draw( int handle ) {
 }
 
 void QCinematicPlayer::DrawFullscreen( int handle ) {
+	vec4_t colorBlack  = {0, 0, 0, 1};
+
 	if ( GGameType & GAME_Quake2 && XPos > 0 ) {
-		UI_Fill( 0, 0, XPos, viddef.height, 0, 0, 0, 1 );
-		UI_Fill( XPos + Width, 0, viddef.width - XPos - Width, viddef.height, 0, 0, 0, 1 );
+		SCR_FillRect( 0, 0, XPos, viddef.height, colorBlack );
+		SCR_FillRect( XPos + Width, 0, viddef.width - XPos - Width, viddef.height, colorBlack );
 	}
 
 	if ( GGameType & GAME_Tech3 && YPos > 0 ) {
 		float vh = ( float )cls.glconfig.vidHeight;
 		float barheight = ( ( float )YPos / 480.0f ) * vh;
-		vec4_t colorBlack  = {0, 0, 0, 1};
 		R_SetColor( &colorBlack[ 0 ] );
 		R_StretchPic( 0, 0, cls.glconfig.vidWidth, barheight, 0, 0, 0, 0, cls.whiteShader );
 		R_StretchPic( 0, vh - barheight - 1, cls.glconfig.vidWidth, barheight + 1, 0, 0, 0, 0, cls.whiteShader );

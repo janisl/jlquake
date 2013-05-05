@@ -2528,7 +2528,8 @@ static void PlayerConfig_MenuDraw() {
 
 		MQ2_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height ) - 77, refdef.width / 8, refdef.height / 8 );
 		refdef.height += 4;
-		UI_Fill( refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1 );
+		float backgroundColour[ 4 ] = { 0.3f, 0.3f, 0.3f, 1 };
+		SCR_FillRect( refdef.x, refdef.y, refdef.width, refdef.height, backgroundColour );
 
 		R_RenderScene( &refdef );
 
@@ -3617,7 +3618,8 @@ void MQ2_Draw() {
 	}
 
 	// dim everything behind it down
-	UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
+	float dimColour[ 4 ] = { 0, 0, 0, 0.8f };
+	SCR_FillRect( 0, 0, viddef.width, viddef.height, dimColour );
 
 	mq2_drawfunc();
 

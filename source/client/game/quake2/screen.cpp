@@ -77,7 +77,8 @@ void SCRQ2_DrawScreen( stereoFrame_t stereoFrame, float separation ) {
 	R_BeginFrame( stereoFrame );
 
 	if ( scr_draw_loading == 2 ) {	//  loading plaque over black screen
-		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 1 );
+		static const float blackColour[ 4 ] = { 0, 0, 0, 1 };
+		SCR_FillRect( 0, 0, viddef.width, viddef.height, blackColour );
 		SCRQ2_DrawLoading();
 	}
 	// if a cinematic is supposed to be running, handle menus

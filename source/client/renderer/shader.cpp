@@ -3538,3 +3538,14 @@ void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translati
 	delete[] picTop;
 	delete[] picBottom;
 }
+
+qhandle_t R_CreateWhiteShader() {
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, "white", sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_2D;
+
+	SetImplicitShaderStages( tr.whiteImage );
+
+	return FinishShader()->index;
+}

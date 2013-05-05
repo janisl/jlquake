@@ -147,6 +147,7 @@ void CL_InitRenderer() {
 			viddef.width = cls.glconfig.vidWidth;
 		}
 
+		cls.whiteShader = R_CreateWhiteShader();
 		SCRQH_InitShaders();
 		if ( GGameType & GAME_Hexen2 ) {
 			CLH2_InitPlayerTranslation();
@@ -160,6 +161,7 @@ void CL_InitRenderer() {
 		viddef.width = cls.glconfig.vidWidth;
 		viddef.height = cls.glconfig.vidHeight;
 
+		cls.whiteShader = R_CreateWhiteShader();
 		char_texture = R_LoadQuake2FontImage( "pics/conchars.pcx" );
 		SCRQ2_InitShaders();
 	} else {

@@ -425,10 +425,9 @@ void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translati
 int R_GetTextureId( const char* name );
 
 const char* R_GetImageName( qhandle_t Handle );
-int R_GetImageWidth( image_t* pic );
-int R_GetImageHeight( image_t* pic );
 int R_GetShaderWidth( qhandle_t shader );
 int R_GetShaderHeight( qhandle_t shader );
+qhandle_t R_CreateWhiteShader();
 
 void R_UploadCinematic( int Width, int Height, const byte* Data, int Client, bool Dirty );
 
@@ -495,8 +494,6 @@ void R_RotatedPic( float x, float y, float w, float h,
 void R_2DPolyies( polyVert_t* verts, int numverts, qhandle_t hShader );
 void R_RenderToTexture( qhandle_t textureid, int x, int y, int w, int h );
 void R_Finish();
-void R_Draw2DQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2 );
 bool R_GetScreenPosFromWorldPos( vec3_t origin, int& u, int& v );
 
 void R_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty );

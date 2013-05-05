@@ -19,6 +19,7 @@
 #include "../game/quake2/local.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
+#include "../client_main.h"
 
 static Cvar* cl_polyblend;
 
@@ -57,6 +58,6 @@ void R_PolyBlend( refdef_t* fd, float* blendColour ) {
 	}
 
 	R_SetColor( blendColour );
-	R_Draw2DQuad( fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0 );
+	R_StretchPic( fd->x, fd->y, fd->width, fd->height, 0, 0, 0, 0, cls.whiteShader );
 	R_SetColor( NULL );
 }

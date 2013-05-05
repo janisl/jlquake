@@ -4643,16 +4643,19 @@ void MQH_InitShaders() {
 
 void MQH_FadeScreen() {
 	if ( GGameType & GAME_Hexen2 ) {
-		UI_Fill( 0, 0, viddef.width, viddef.height, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2 );
+		static const float backgroundColour[ 4 ] = { 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.2 };
+		static const float randomRectColour[ 4 ] = { 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035 };
+		SCR_FillRect( 0, 0, viddef.width, viddef.height, backgroundColour );
 		for ( int c = 0; c < 40; c++ ) {
 			int x = rand() % viddef.width - 20;
 			int y = rand() % viddef.height - 20;
 			int w = ( rand() % 40 ) + 20;
 			int h = ( rand() % 40 ) + 20;
-			UI_Fill( x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035 );
+			SCR_FillRect( x, y, w, h, randomRectColour );
 		}
 	} else {
-		UI_Fill( 0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8 );
+		static const float backgroundColour[ 4 ] = { 0, 0, 0, 0.8 };
+		SCR_FillRect( 0, 0, viddef.width, viddef.height, backgroundColour );
 	}
 }
 

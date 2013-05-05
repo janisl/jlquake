@@ -84,13 +84,6 @@ void UI_DrawPicShader( int x, int y, qhandle_t shader ) {
 	UI_DrawStretchPicShader( x, y, R_GetShaderWidth( shader ), R_GetShaderHeight( shader ), shader );
 }
 
-static void DoQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2 ) {
-	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
-
-	R_Draw2DQuad( x, y, width, height, image, s1, t1, s2, t2 );
-}
-
 static void DoQuadShader( float x, float y, float width, float height,
 	qhandle_t shader, float s1, float t1, float s2, float t2 ) {
 	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
@@ -116,20 +109,6 @@ void UI_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int srcy, int widt
 // refresh window.
 void UI_TileClear( int x, int y, int w, int h, qhandle_t shader ) {
 	DoQuadShader( x, y, w, h, shader, x / 64.0, y / 64.0, ( x + w ) / 64.0, ( y + h ) / 64.0 );
-}
-
-void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a ) {
-	float colour[ 4 ] = { r, g, b, a };
-	R_SetColor( colour );
-	DoQuad( x, y, w, h, NULL, 0, 0, 0, 0 );
-	R_SetColor( NULL );
-}
-
-void UI_FillPal( int x, int y, int w, int h, int c ) {
-	if ( ( unsigned )c > 255 ) {
-		common->FatalError( "UI_FillPal: bad color" );
-	}
-	UI_Fill( x, y, w, h, r_palette[ c ][ 0 ] / 255.0, r_palette[ c ][ 1 ] / 255.0, r_palette[ c ][ 2 ] / 255.0, 1 );
 }
 
 void UI_DrawCharBase( int x, int y, int num, int w, int h, qhandle_t shader, int numberOfColumns,
@@ -238,6 +217,14 @@ void SCR_FillRect( float x, float y, float width, float height, const float* col
 	R_StretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
 
 	R_SetColor( NULL );
+}
+
+void UI_FillPal( int x, int y, int w, int h, int c ) {
+	if ( ( unsigned )c > 255 ) {
+		common->FatalError( "UI_FillPal: bad color" );
+	}
+	float colour[ 4 ] = { r_palette[ c ][ 0 ] / 255.0, r_palette[ c ][ 1 ] / 255.0, r_palette[ c ][ 2 ] / 255.0, 1 };
+	SCR_FillRect( x, y, w, h, colour );
 }
 
 void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader ) {

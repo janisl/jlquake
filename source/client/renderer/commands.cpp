@@ -221,31 +221,6 @@ void R_SetColor( const float* rgba ) {
 	cmd->color[ 3 ] = rgba[ 3 ];
 }
 
-void R_Draw2DQuad( float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2 ) {
-	if ( !tr.registered ) {
-		return;
-	}
-	if ( !image ) {
-		image = tr.whiteImage;
-	}
-
-	stretchPicCommand_t* cmd = ( stretchPicCommand_t* )R_GetCommandBuffer( sizeof ( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_STRETCH_PIC;
-	cmd->x = x;
-	cmd->y = y;
-	cmd->w = width;
-	cmd->h = height;
-	cmd->shader = R_Build2DShaderFromImage( image );
-	cmd->s1 = s1;
-	cmd->t1 = t1;
-	cmd->s2 = s2;
-	cmd->t2 = t2;
-}
-
 void R_StretchPic( float x, float y, float w, float h,
 	float s1, float t1, float s2, float t2, qhandle_t hShader ) {
 	if ( !tr.registered ) {

@@ -1694,14 +1694,6 @@ qhandle_t R_CacheShaderRepeat( const char* path ) {
 	return R_Build2DShaderFromImage( pic )->index;
 }
 
-int R_GetImageWidth( image_t* pic ) {
-	return pic->width;
-}
-
-int R_GetImageHeight( image_t* pic ) {
-	return pic->height;
-}
-
 void R_BackupImages() {
 	if ( !r_cache->integer ) {
 		return;

@@ -62,7 +62,6 @@ void UI_DrawPicShader( int x, int y, qhandle_t shader );
 void UI_DrawStretchPicShader( int x, int y, int w, int h, qhandle_t shader );
 void UI_DrawSubPic( int x, int y, qhandle_t shader, int srcx, int srcy, int width, int height );
 void UI_TileClear( int x, int y, int w, int h, qhandle_t pic );
-void UI_Fill( int x, int y, int w, int h, float r, float g, float b, float a );
 void UI_FillPal( int x, int y, int w, int h, int c );
 void UI_DrawCharBase( int x, int y, int num, int w, int h, qhandle_t shader, int numberOfColumns,
 	int numberOfRows );

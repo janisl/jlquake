@@ -170,10 +170,10 @@ void SCR_DrawDebugGraph() {
 		} else if ( GGameType & GAME_Quake2 ) {
 			UI_FillPal( x + w - 1 - a, y - h, 1,  h, color );
 		} else {
-			float r = ( color & 0xff ) / 255.0;
-			float g = ( ( color >> 8 ) & 0xff ) / 255.0;
-			float b = ( ( color >> 16 ) & 0xff ) / 255.0;
-			UI_Fill( x + w - 1 - a, y - h, 1, h, r, g, b, 1 );
+			float floatColour[ 4 ] = { ( color & 0xff ) / 255.0,
+				( ( color >> 8 ) & 0xff ) / 255.0,
+				( ( color >> 16 ) & 0xff ) / 255.0, 1 };
+			SCR_FillRect( x + w - 1 - a, y - h, 1, h, floatColour );
 		}
 	}
 }
