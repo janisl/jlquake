@@ -154,7 +154,6 @@ void CL_InitRenderer() {
 			SbarH2_InitShaders();
 		} else {
 			CLQ1_InitPlayerTranslation();
-			Com_Memset( clq1_playertextures, 0, sizeof ( clq1_playertextures ) );
 			SbarQ1_InitShaders();
 		}
 	} else if ( GGameType & GAME_Quake2 ) {

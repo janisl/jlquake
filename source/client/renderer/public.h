@@ -272,6 +272,8 @@ struct refEntity_t {
 	// texturing
 	int skinNum;				// inline skin index
 	qhandle_t customSkin;		// NULL for default skin
+	qhandle_t customSkinTop;
+	qhandle_t customSkinBottom;
 	qhandle_t customShader;		// use one image for the entire thing
 
 	// misc
@@ -411,7 +413,6 @@ void R_EndFrame( int* frontEndMsec, int* backEndMsec );
 qhandle_t R_ShaderFromWad( const char* name );
 qhandle_t R_ShaderFromWadRepeat( const char* name );
 qhandle_t R_GetImageHandle( image_t* Image );
-void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height );
 qhandle_t R_LoadRawFontImageFromFile( const char* name, int width, int height );
 qhandle_t R_LoadRawFontImageFromWad( const char* name, int width, int height );
 qhandle_t R_LoadBigFontImage( const char* name );
@@ -422,8 +423,6 @@ qhandle_t R_CacheShader( const char* path );
 qhandle_t R_CacheShaderRepeat( const char* path );
 void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, image_t*& image, image_t*& imageTop, image_t*& imageBottom );
 int R_GetTextureId( const char* name );
-void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation );
-byte* R_LoadQuakeWorldSkinData( const char* name );
 
 const char* R_GetImageName( qhandle_t Handle );
 int R_GetImageWidth( image_t* pic );
@@ -459,6 +458,7 @@ bool R_LoadDynamicShader( const char* shadername, const char* shadertext );
 
 qhandle_t R_RegisterSkin( const char* Name );
 image_t* R_RegisterSkinQ2( const char* name );
+bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom );
 bool R_GetSkinModel( qhandle_t skinid, const char* type, char* name );
 qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 

@@ -29,8 +29,6 @@ extern q1entity_state_t clq1_baselines[ MAX_EDICTS_QH ];
 extern q1entity_t clq1_entities[ MAX_EDICTS_QH ];
 extern q1entity_t clq1_static_entities[ MAX_STATIC_ENTITIES_Q1 ];
 
-extern image_t* clq1_playertextures[ BIGGEST_MAX_CLIENTS_QH ];
-
 extern int clq1_spikeindex;
 extern int clq1_playerindex;
 extern int clqw_flagindex;
@@ -59,7 +57,6 @@ void CLQW_ParsePacketEntities( QMsg& message );
 void CLQW_ParseDeltaPacketEntities( QMsg& message );
 void CLQW_ParsePlayerinfo( QMsg& message );
 void CLQ1_SetRefEntAxis( refEntity_t* ent, vec3_t ent_angles );
-void CLQ1_TranslatePlayerSkin( int playernum );
 void CLQ1_EmitEntities();
 void CLQW_EmitEntities();
 
@@ -91,7 +88,7 @@ void SCRQ1_Init();
 //	Skin
 //
 void CLQW_SkinFind( q1player_info_t* sc );
-byte* CLQW_SkinCache( qw_skin_t* skin );
+bool CLQW_SkinCache( qw_skin_t* skin );
 void CLQW_SkinNextDownload();
 void CLQW_SkinSkins_f();
 void CLQW_SkinAllSkins_f();

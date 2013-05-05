@@ -83,10 +83,13 @@ struct qwframe_t {
 	qboolean invalid;		// true if the packet_entities delta was invalid
 };
 
+struct image_t;
 struct qw_skin_t {
 	char name[ 16 ];
 	bool failedload;		// the name isn't a valid skin
-	byte* data;
+	image_t* base;
+	image_t* top;
+	image_t* bottom;
 };
 
 struct q1player_info_t {
@@ -104,9 +107,6 @@ struct q1player_info_t {
 
 	int ping;
 	byte pl;
-
-	int _topcolor;
-	int _bottomcolor;
 
 	int spectator;
 	qw_skin_t* skin;

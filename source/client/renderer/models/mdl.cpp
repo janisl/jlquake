@@ -850,6 +850,12 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
 		stage1.bundle[ 0 ].numImageAnimations = 1;
 		stage2.bundle[ 0 ].numImageAnimations = 1;
+		if ( ent->e.customSkinTop ) {
+			imageTop = tr.images[ ent->e.customSkinTop ];
+		}
+		if ( ent->e.customSkinBottom ) {
+			imageBottom = tr.images[ ent->e.customSkinBottom ];
+		}
 	} else {
 		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
 		stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];

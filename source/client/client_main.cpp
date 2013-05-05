@@ -247,39 +247,6 @@ void CLQ1_InitPlayerTranslation()
 	}
 }
 
-void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate ) {
-	enum
-	{
-		// soldier uniform colors
-		TOP_RANGE = 16,
-		BOTTOM_RANGE = 96
-	};
-
-	top = ( top < 0 ) ? 0 : ( ( top > 13 ) ? 13 : top );
-	bottom = ( bottom < 0 ) ? 0 : ( ( bottom > 13 ) ? 13 : bottom );
-	top *= 16;
-	bottom *= 16;
-
-	for ( int i = 0; i < 256; i++ ) {
-		translate[ i ] = i;
-	}
-
-	for ( int i = 0; i < 16; i++ ) {
-		//	The artists made some backwards ranges. sigh.
-		if ( top < 128 ) {
-			translate[ TOP_RANGE + i ] = top + i;
-		} else {
-			translate[ TOP_RANGE + i ] = top + 15 - i;
-		}
-
-		if ( bottom < 128 ) {
-			translate[ BOTTOM_RANGE + i ] = bottom + i;
-		} else {
-			translate[ BOTTOM_RANGE + i ] = bottom + 15 - i;
-		}
-	}
-}
-
 void CLH2_InitPlayerTranslation() {
 	FS_ReadFile( "gfx/player.lmp", ( void** )&playerTranslation );
 	if ( !playerTranslation ) {

@@ -361,7 +361,6 @@ static void CLQ1_ParseUpdateColours( QMsg& message ) {
 
 	cl.q1_players[ i ].topcolor = ( j & 0xf0 ) >> 4;
 	cl.q1_players[ i ].bottomcolor = ( j & 15 );
-	CLQ1_TranslatePlayerSkin( i );
 }
 
 static void CLQW_ParseUpdatePing( QMsg& message ) {
@@ -506,8 +505,6 @@ static void CLQW_ProcessUserInfo( int slot, q1player_info_t* player ) {
 	if ( cls.state == CA_ACTIVE ) {
 		CLQW_SkinFind( player );
 	}
-
-	CLQ1_TranslatePlayerSkin( slot );
 }
 
 static void CLQW_ParseUpdateUserinfo( QMsg& message ) {

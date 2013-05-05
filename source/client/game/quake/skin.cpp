@@ -73,22 +73,21 @@ void CLQW_SkinFind( q1player_info_t* sc ) {
 }
 
 //	Returns a pointer to the skin bitmap, or NULL to use the default
-byte* CLQW_SkinCache( qw_skin_t* skin ) {
+bool CLQW_SkinCache( qw_skin_t* skin ) {
 	if ( clc.downloadType == dl_skin ) {
-		return NULL;		// use base until downloaded
+		return false;		// use base until downloaded
 	}
 
 	if ( clqw_noskins->value == 1 ) {	// JACK: So NOSKINS > 1 will show skins, but
-		return NULL;		// not download new ones.
+		return false;		// not download new ones.
 	}
 
 	if ( skin->failedload ) {
-		return NULL;
+		return false;
 	}
 
-	byte* out = skin->data;
-	if ( out ) {
-		return out;
+	if ( skin->base ) {
+		return true;
 	}
 
 	//
@@ -101,22 +100,19 @@ byte* CLQW_SkinCache( qw_skin_t* skin ) {
 		sprintf( name, "skins/%s.pcx", clqw_baseskin->string );
 		if ( !FS_FOpenFileRead( name, NULL, false ) ) {
 			skin->failedload = true;
-			return NULL;
+			return false;
 		}
 	}
 
-	out = R_LoadQuakeWorldSkinData( name );
-
-	if ( !out ) {
+	if ( !R_LoadQuakeWorldSkinData( name, clq1_translation_info, skin->base, skin->top, skin->bottom ) ) {
 		skin->failedload = true;
 		common->Printf( "Skin %s was malformed.  You should delete it.\n", name );
-		return NULL;
+		return false;
 	}
 
-	skin->data = out;
 	skin->failedload = false;
 
-	return out;
+	return true;
 }
 
 void CLQW_SkinNextDownload() {
@@ -162,12 +158,6 @@ void CLQW_SkinNextDownload() {
 
 //	Refind all skins, downloading if needed.
 void CLQW_SkinSkins_f() {
-	for ( int i = 0; i < numskins; i++ ) {
-		if ( skins[ i ].data ) {
-			delete[] skins[ i ].data;
-			skins[ i ].data = NULL;
-		}
-	}
 	numskins = 0;
 
 	clc.downloadNumber = 0;

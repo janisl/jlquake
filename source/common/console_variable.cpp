@@ -307,6 +307,11 @@ Cvar* Cvar_Get( const char* VarName, const char* VarValue, int Flags ) {
 			}
 		}
 
+		if ( GGameType & ( GAME_QuakeWorld | GAME_HexenWorld ) ) {
+			SV_CvarChanged( var );
+			CL_CvarChanged( var );
+		}
+
 		return var;
 	}
 

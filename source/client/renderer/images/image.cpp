@@ -1670,28 +1670,6 @@ void R_UploadCinematic( int cols, int rows, const byte* data, int client, bool d
 	}
 }
 
-static void R_CreateOrUpdateTranslatedImageEx( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height, bool allowPicMip, int mode ) {
-	byte* translated = new byte[ width * height ];
-	int c = width * height;
-	for ( int i = 0; i < c; i++ ) {
-		translated[ i ] = translation[ pixels[ i ] ];
-	}
-
-	byte* translated32 = R_ConvertImage8To32( translated, width, height, mode );
-	delete[] translated;
-
-	if ( !image ) {
-		image = R_CreateImage( name, translated32, width, height, false, allowPicMip, GL_CLAMP );
-	} else {
-		R_ReUploadImage( image, translated32 );
-	}
-	delete[] translated32;
-}
-
-void R_CreateOrUpdateTranslatedSkin( image_t*& image, const char* name, byte* pixels, byte* translation, int width, int height ) {
-	R_CreateOrUpdateTranslatedImageEx( image, name, pixels, translation, width, height, true, IMG8MODE_Skin );
-}
-
 static qhandle_t R_LoadRawFontImage( const char* name, byte* data8, int width, int height ) {
 	byte* data32 = R_ConvertImage8To32( data8, width, height, IMG8MODE_Holey );
 	image_t* image = R_CreateImage( name, data32, width, height, false, false, GL_CLAMP );

@@ -296,40 +296,20 @@ image_t* R_RegisterSkinQ2( const char* name ) {
 	return R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin );
 }
 
-static void R_CreateOrUpdateTranslatedModelSkin( image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte* translation ) {
-	if ( !modelHandle ) {
-		return;
-	}
-	model_t* model = R_GetModelByHandle( modelHandle );
-	if ( model->type != MOD_MESH1 ) {
-		// only translate skins on alias models
-		return;
-	}
-
-	mesh1hdr_t* mesh1Header = ( mesh1hdr_t* )model->q1_cache;
-	int width = mesh1Header->skinwidth;
-	int height = mesh1Header->skinheight;
-
-	R_CreateOrUpdateTranslatedSkin( image, name, pixels, translation, width, height );
-}
-
-void R_CreateOrUpdateTranslatedModelSkinQ1( image_t*& image, const char* name, qhandle_t modelHandle, byte* translation ) {
-	R_CreateOrUpdateTranslatedModelSkin( image, name, modelHandle, q1_player_8bit_texels, translation );
-}
-
-byte* R_LoadQuakeWorldSkinData( const char* name ) {
+bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom ) {
 	int width;
 	int height;
 	byte* pixels;
 	R_LoadPCX( name, &pixels, NULL, &width, &height );
 	if ( !pixels ) {
-		return NULL;
+		return false;
 	}
 
-	byte* out = new byte[ QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT ];
-	Com_Memset( out, 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
+	idList<byte> out;
+	out.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
+	Com_Memset( out.Ptr(), 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
 
-	byte* outp = out;
+	byte* outp = out.Ptr();
 	byte* pixp = pixels;
 	int copyWidth = Min( width, static_cast<int>( QUAKEWORLD_SKIN_WIDTH ) );
 	int copyHeight = Min ( height , static_cast<int>( QUAKEWORLD_SKIN_HEIGHT ) );
@@ -338,7 +318,18 @@ byte* R_LoadQuakeWorldSkinData( const char* name ) {
 	}
 	delete[] pixels;
 
-	return out;
+	idList<byte> pixelsTop;
+	pixelsTop.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	idList<byte> pixelsBottom;
+	pixelsBottom.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	R_ExtractTranslatedImages( translation, out.Ptr(), pixelsTop.Ptr(), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
+	byte* pic32 = R_ConvertImage8To32( out.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, IMG8MODE_Skin );
+	base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	delete[] pic32;
+	top = R_CreateImage( va( "%s*top", name ), pixelsTop.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	bottom = R_CreateImage( va( "%s*bottom", name ), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+
+	return true;
 }
 
 //----(SA) added so client can see what model or scale for the model was specified in a skin

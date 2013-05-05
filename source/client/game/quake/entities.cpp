@@ -35,8 +35,6 @@ q1entity_state_t clq1_baselines[ MAX_EDICTS_QH ];
 q1entity_t clq1_entities[ MAX_EDICTS_QH ];
 q1entity_t clq1_static_entities[ MAX_STATIC_ENTITIES_Q1 ];
 
-image_t* clq1_playertextures[ BIGGEST_MAX_CLIENTS_QH ];		// color translated skins
-
 int clq1_playerindex;
 int clqw_flagindex;
 
@@ -145,9 +143,6 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 		} else {
 			forcelink = true;	// hack to make null model players work
 		}
-		if ( num > 0 && num <= cl.qh_maxclients ) {
-			CLQ1_TranslatePlayerSkin( num - 1 );
-		}
 	}
 
 	if ( bits & Q1U_FRAME ) {
@@ -165,17 +160,10 @@ void CLQ1_ParseUpdate( QMsg& message, int bits ) {
 		common->FatalError( "i >= cl.maxclients" );
 	}
 
-	int skin;
 	if ( bits & Q1U_SKIN ) {
-		skin = message.ReadByte();
+		ent->state.skinnum = message.ReadByte();
 	} else {
-		skin = baseline.skinnum;
-	}
-	if ( skin != ent->state.skinnum ) {
-		ent->state.skinnum = skin;
-		if ( num > 0 && num <= cl.qh_maxclients ) {
-			CLQ1_TranslatePlayerSkin( num - 1 );
-		}
+		ent->state.skinnum = baseline.skinnum;
 	}
 
 	if ( bits & Q1U_EFFECTS ) {
@@ -572,57 +560,6 @@ static void CLQ1_LinkStaticEntities() {
 	}
 }
 
-//	Translates a skin texture by the per-player color lookup
-void CLQ1_TranslatePlayerSkin( int playernum ) {
-	q1player_info_t* player = &cl.q1_players[ playernum ];
-	if ( GGameType & GAME_QuakeWorld ) {
-		if ( !player->name[ 0 ] ) {
-			return;
-		}
-
-		char s[ 512 ];
-		String::Cpy( s, Info_ValueForKey( player->userinfo, "skin" ) );
-		String::StripExtension( s, s );
-		if ( player->skin && !String::ICmp( s, player->skin->name ) ) {
-			player->skin = NULL;
-		}
-
-		if ( player->_topcolor == player->topcolor &&
-			 player->_bottomcolor == player->bottomcolor && player->skin ) {
-			return;
-		}
-
-		player->_topcolor = player->topcolor;
-		player->_bottomcolor = player->bottomcolor;
-	}
-
-	byte translate[ 256 ];
-	CL_CalcQuakeSkinTranslation( player->topcolor, player->bottomcolor, translate );
-
-	//
-	// locate the original skin pixels
-	//
-	if ( GGameType & GAME_QuakeWorld ) {
-		if ( !player->skin ) {
-			CLQW_SkinFind( player );
-		}
-		byte* original = CLQW_SkinCache( player->skin );
-		if ( original != NULL ) {
-			//skin data width
-			R_CreateOrUpdateTranslatedSkin( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
-				original, translate, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
-		} else {
-			R_CreateOrUpdateTranslatedModelSkinQ1( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
-				cl.model_draw[ clq1_playerindex ], translate );
-		}
-	} else {
-		q1entity_t* ent = &clq1_entities[ 1 + playernum ];
-
-		R_CreateOrUpdateTranslatedModelSkinQ1( clq1_playertextures[ playernum ], va( "*player%d", playernum ),
-			cl.model_draw[ ent->state.modelindex ], translate );
-	}
-}
-
 static void CLQ1_SetPlayerColours( refEntity_t* entity, int playerNum ) {
 	q1player_info_t* player = &cl.q1_players[ playerNum ];
 	int top = player->topcolor;
@@ -644,13 +581,16 @@ static void CLQ1_SetPlayerColours( refEntity_t* entity, int playerNum ) {
 }
 
 static void CLQW_HandlePlayerSkin( refEntity_t* entity, int playerNum ) {
-	//	We can't dynamically colormap textures, so they are cached
-	// seperately for the players.  Heads are just uncolored.
 	if ( !cl.q1_players[ playerNum ].skin ) {
 		CLQW_SkinFind( &cl.q1_players[ playerNum ] );
-		CLQ1_TranslatePlayerSkin( playerNum );
 	}
-	entity->customSkin = R_GetImageHandle( clq1_playertextures[ playerNum ] );
+	qw_skin_t* skin = cl.q1_players[ playerNum ].skin;
+	if ( skin && CLQW_SkinCache( skin ) )
+	{
+		entity->customSkin = R_GetImageHandle( skin->base );
+		entity->customSkinTop = R_GetImageHandle( skin->top );
+		entity->customSkinBottom = R_GetImageHandle( skin->bottom );
+	}
 	CLQ1_SetPlayerColours( entity, playerNum );
 }
 

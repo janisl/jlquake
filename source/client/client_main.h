@@ -596,7 +596,6 @@ extern idSkinTranslation clh2_translation_info[ MAX_PLAYER_CLASS ];
 //
 int CL_ScaledMilliseconds();
 void CLQ1_InitPlayerTranslation();
-void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate );
 void CLH2_InitPlayerTranslation();
 float CLQH_LerpPoint();
 void CL_AddReliableCommand( const char* cmd );
