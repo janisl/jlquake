@@ -384,7 +384,7 @@ void CLH2_UpdateStreams() {
 				angles[ 2 ] = 0;
 				ent.skinNum = stream->skin;
 				CLH2_SetRefEntAxis( &ent, angles, vec3_origin, 0, 0, 128, H2MLS_ABSLIGHT );
-				CLH2_HandleCustomSkin( &ent, -1 );
+				CLH2_HandleCustomSkin( &ent );
 				R_AddRefEntityToScene( &ent );
 				break;
 			case H2TE_STREAM_GAZE:

@@ -37,7 +37,6 @@ h2entity_t h2cl_entities[ MAX_EDICTS_QH ];
 static h2entity_t h2cl_static_entities[ MAX_STATIC_ENTITIES_H2 ];
 
 qhandle_t clh2_player_models[ MAX_PLAYER_CLASS ];
-static image_t* clh2_playertextures[ BIGGEST_MAX_CLIENTS_QH ];		// color translated skins
 
 static image_t* clh2_extra_textures[ H2MAX_EXTRA_TEXTURES ];	// generic textures for models
 
@@ -68,7 +67,6 @@ static const char* parsedelta_strings[] =
 };
 
 void CLH2_ClearEntityTextureArrays() {
-	Com_Memset( clh2_playertextures, 0, sizeof ( clh2_playertextures ) );
 	Com_Memset( clh2_extra_textures, 0, sizeof ( clh2_extra_textures ) );
 }
 
@@ -318,9 +316,6 @@ void CLH2_ParseUpdate( QMsg& message, int bits ) {
 			}
 		} else {
 			forcelink = true;	// hack to make null model players work
-		}
-		if ( num > 0 && num <= cl.qh_maxclients ) {
-			CLH2_TranslatePlayerSkin( num - 1 );
 		}
 	}
 
@@ -937,40 +932,7 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 	}
 }
 
-//	Translates a skin texture by the per-player color lookup
-void CLH2_TranslatePlayerSkin( int playernum ) {
-	h2player_info_t* player = &cl.h2_players[ playernum ];
-	if ( !player->playerclass ) {
-		return;
-	}
-	if ( GGameType & GAME_HexenWorld ) {
-		if ( !player->name[ 0 ] ) {
-			return;
-		}
-		if ( player->modelindex <= 0 ) {
-			return;
-		}
-	}
-
-	byte translate[ 256 ];
-	CL_CalcHexen2SkinTranslation( player->topColour, player->bottomColour, player->playerclass, translate );
-
-	//
-	// locate the original skin pixels
-	//
-	int classIndex;
-	if ( player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses() ) {
-		classIndex = player->playerclass - 1;
-		player->Translated = true;
-	} else {
-		classIndex = 0;
-	}
-
-	R_CreateOrUpdateTranslatedModelSkinH2( clh2_playertextures[ playernum ], va( "*player%d", playernum ),
-		clh2_player_models[ classIndex ], translate, classIndex );
-}
-
-void CLH2_HandleCustomSkin( refEntity_t* entity, int playerIndex ) {
+void CLH2_HandleCustomSkin( refEntity_t* entity ) {
 	if ( entity->skinNum >= 100 ) {
 		if ( entity->skinNum > 255 ) {
 			common->FatalError( "skinnum > 255" );
@@ -983,22 +945,33 @@ void CLH2_HandleCustomSkin( refEntity_t* entity, int playerIndex ) {
 		}
 
 		entity->customSkin = R_GetImageHandle( clh2_extra_textures[ entity->skinNum - 100 ] );
-	} else if ( playerIndex >= 0 && entity->hModel ) {
-		// we can't dynamically colormap textures, so they are cached
-		// seperately for the players.  Heads are just uncolored.
-		//FIXME? What about Dwarf?
-		if ( entity->hModel == clh2_player_models[ 0 ] ||
-			 entity->hModel == clh2_player_models[ 1 ] ||
-			 entity->hModel == clh2_player_models[ 2 ] ||
-			 entity->hModel == clh2_player_models[ 3 ] ||
-			 entity->hModel == clh2_player_models[ 4 ] ) {
-			if ( !cl.h2_players[ playerIndex ].Translated ) {
-				CLH2_TranslatePlayerSkin( playerIndex );
-			}
-
-			entity->customSkin = R_GetImageHandle( clh2_playertextures[ playerIndex ] );
-		}
 	}
+}
+
+static void CLH2_SetPlayerColours( refEntity_t* entity, int playerNum ) {
+	h2player_info_t* player = &cl.h2_players[ playerNum ];
+	int classIndex;
+	if ( player->playerclass >= 1 && player->playerclass <= CLH2_GetMaxPlayerClasses() ) {
+		classIndex = player->playerclass - 1;
+	} else {
+		classIndex = 0;
+	}
+	int top = player->topColour;
+	if ( top < 0 || top > 10 ) {
+		top = 0;
+	}
+	entity->topColour[ 0 ] = clh2_translation_info[ classIndex ].translatedTopColours[ top ][ 0 ];
+	entity->topColour[ 1 ] = clh2_translation_info[ classIndex ].translatedTopColours[ top ][ 1 ];
+	entity->topColour[ 2 ] = clh2_translation_info[ classIndex ].translatedTopColours[ top ][ 2 ];
+	entity->topColour[ 3 ] = clh2_translation_info[ classIndex ].translatedTopColours[ top ][ 3 ];
+	int bottom = player->bottomColour;
+	if ( bottom < 0 || bottom > 10 ) {
+		bottom = 0;
+	}
+	entity->bottomColour[ 0 ] = clh2_translation_info[ classIndex ].translatedBottomColours[ bottom ][ 0 ];
+	entity->bottomColour[ 1 ] = clh2_translation_info[ classIndex ].translatedBottomColours[ bottom ][ 1 ];
+	entity->bottomColour[ 2 ] = clh2_translation_info[ classIndex ].translatedBottomColours[ bottom ][ 2 ];
+	entity->bottomColour[ 3 ] = clh2_translation_info[ classIndex ].translatedBottomColours[ bottom ][ 3 ];
 }
 
 static void CLH2_LinkStaticEntities() {
@@ -1014,7 +987,7 @@ static void CLH2_LinkStaticEntities() {
 		rent.syncBase = pent->syncbase;
 		CLH2_SetRefEntAxis( &rent, pent->state.angles, vec3_origin, pent->state.scale,
 			pent->state.colormap, pent->state.abslight, pent->state.drawflags );
-		CLH2_HandleCustomSkin( &rent, -1 );
+		CLH2_HandleCustomSkin( &rent );
 		R_AddRefEntityToScene( &rent );
 	}
 }
@@ -1173,7 +1146,10 @@ static void CLH2_RelinkEntities() {
 		rent.syncBase = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
 		CLH2_SetRefEntAxis( &rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags );
-		CLH2_HandleCustomSkin( &rent, i <= cl.qh_maxclients ? i - 1 : -1 );
+		CLH2_HandleCustomSkin( &rent );
+		if ( i <= cl.qh_maxclients ) {
+			CLH2_SetPlayerColours( &rent, i - 1 );
+		}
 		if ( i == cl.viewentity && !chase_active->value ) {
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
@@ -1529,7 +1505,8 @@ static void CLHW_LinkPlayers() {
 		}
 
 		CLH2_SetRefEntAxis( &ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags );
-		CLH2_HandleCustomSkin( &ent, j );
+		CLH2_HandleCustomSkin( &ent );
+		CLH2_SetPlayerColours( &ent, j );
 		R_AddRefEntityToScene( &ent );
 	}
 }

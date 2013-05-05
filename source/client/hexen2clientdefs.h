@@ -72,7 +72,6 @@ struct h2player_info_t {
 	int level;
 	int spectator;
 	int modelindex;
-	qboolean Translated;
 	int siege_team;
 	qboolean shownames_off;
 

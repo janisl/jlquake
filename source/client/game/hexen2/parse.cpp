@@ -472,7 +472,6 @@ static void CLH2_ParseUpdateClass( QMsg& message ) {
 		common->Error( "CL_ParseServerMessage: h2svc_updateclass > MAX_CLIENTS_QH" );
 	}
 	cl.h2_players[ i ].playerclass = message.ReadByte();
-	CLH2_TranslatePlayerSkin( i );
 }
 
 static void CLHW_ParseUpdateClass( QMsg& message ) {
@@ -514,7 +513,6 @@ static void CLH2_ParseUpdateColors( QMsg& message ) {
 	int j = message.ReadByte();
 	cl.h2_players[ i ].topColour = ( j & 0xf0 ) >> 4;
 	cl.h2_players[ i ].bottomColour = ( j & 15 );
-	CLH2_TranslatePlayerSkin( i );
 }
 
 static void CLHW_ParseUpdatePing( QMsg& message ) {
@@ -804,8 +802,6 @@ static void CLHW_UpdateUserinfo( QMsg& message ) {
 	}
 
 	player->playerclass = String::Atoi( Info_ValueForKey( player->userinfo, "playerclass" ) );
-	player->Translated = false;
-	CLH2_TranslatePlayerSkin( slot );
 }
 
 static void CLHW_Model_NextDownload() {

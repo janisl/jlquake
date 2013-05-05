@@ -20,6 +20,7 @@
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
+#include "../../client_main.h"
 
 #define MAX_LBM_HEIGHT      480
 
@@ -178,7 +179,7 @@ static const void* Mod_LoadAliasGroup( const void* pin, mmesh1framedesc_t* frame
 	return ptemp;
 }
 
-static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags ) {
+static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags, idSkinTranslation* skinTranslation ) {
 	if ( numskins < 1 || numskins > MAX_MESH1_SKINS ) {
 		common->FatalError( "Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins );
 	}
@@ -198,48 +199,67 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 
 	for ( int i = 0; i < numskins; i++ ) {
 		if ( pskintype->type == ALIAS_SKIN_SINGLE ) {
-			byte* pic32 = R_ConvertImage8To32( ( byte* )( pskintype + 1 ), pheader->skinwidth, pheader->skinheight, texture_mode );
-			byte* picFullBright = R_GetFullBrightImage( ( byte* )( pskintype + 1 ), pic32, pheader->skinwidth, pheader->skinheight );
+			byte* pic = ( byte* )( pskintype + 1 );
+
+			if ( skinTranslation ) {
+				idList<byte> picTop;
+				picTop.Resize( s * 4 );
+				idList<byte> picBottom;
+				picBottom.Resize( s * 4 );
+				R_ExtractTranslatedImages( *skinTranslation, pic, picTop.Ptr(), picBottom.Ptr(), pheader->skinwidth, pheader->skinheight );
+				char topName[ 32 ];
+				sprintf( topName, "%s_%i_top", loadmodel->name, i );
+				pheader->topTexture[ i ] = R_CreateImage( topName, picTop.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+				char bottomName[ 32 ];
+				sprintf( bottomName, "%s_%i_bottom", loadmodel->name, i );
+				pheader->bottomTexture[ i ] = R_CreateImage( bottomName, picBottom.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+			} else {
+				pheader->topTexture[ i ] = NULL;
+				pheader->bottomTexture[ i ] = NULL;
+			}
 
 			// save 8 bit texels for the player model to remap
 			if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
 				if ( s > ( int )sizeof ( q1_player_8bit_texels ) ) {
 					common->FatalError( "Player skin too large" );
 				}
-				Com_Memcpy( q1_player_8bit_texels, ( byte* )( pskintype + 1 ), s );
+				Com_Memcpy( q1_player_8bit_texels, pic, s );
 			} else if ( GGameType & GAME_Hexen2 ) {
 				if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 0 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 0 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 0 ], pic, s );
 				} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 1 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 1 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 1 ], pic, s );
 				} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 2 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 2 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 2 ], pic, s );
 				} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 3 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 3 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 3 ], pic, s );
 				} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 4 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 4 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 4 ], pic, s );
 				} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
 					if ( s > ( int )sizeof ( h2_player_8bit_texels[ 5 ] ) ) {
 						common->FatalError( "Player skin too large" );
 					}
-					Com_Memcpy( h2_player_8bit_texels[ 5 ], ( byte* )( pskintype + 1 ), s );
+					Com_Memcpy( h2_player_8bit_texels[ 5 ], pic, s );
 				}
 			}
+
+			byte* pic32 = R_ConvertImage8To32( pic, pheader->skinwidth, pheader->skinheight, texture_mode );
+			byte* picFullBright = R_GetFullBrightImage( pic, pic32, pheader->skinwidth, pheader->skinheight );
 
 			char name[ 32 ];
 			sprintf( name, "%s_%i", loadmodel->name, i );
@@ -378,6 +398,26 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 }
 
 void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
+	idSkinTranslation* skinTranslation = NULL;
+	// save 8 bit texels for the player model to remap
+	if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
+		skinTranslation = &clq1_translation_info;
+	} else if ( GGameType & GAME_Hexen2 ) {
+		if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 0 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 1 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 2 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 3 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 4 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 5 ];
+		}
+	}
+
 	mdl_t* pinmodel = ( mdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -444,7 +484,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 	// load the skins
 	//
 	dmdl_skintype_t* pskintype = ( dmdl_skintype_t* )&pinmodel[ 1 ];
-	pskintype = ( dmdl_skintype_t* )Mod_LoadAllSkins( pheader->numskins, pskintype, mod->q1_flags );
+	pskintype = ( dmdl_skintype_t* )Mod_LoadAllSkins( pheader->numskins, pskintype, mod->q1_flags, skinTranslation );
 
 	//
 	// load base s and t vertices
@@ -515,6 +555,26 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer ) {
 
 //	Reads extra field for num ST verts, and extra index list of them
 void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
+	idSkinTranslation* skinTranslation = NULL;
+	// save 8 bit texels for the player model to remap
+	if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
+		skinTranslation = &clq1_translation_info;
+	} else if ( GGameType & GAME_Hexen2 ) {
+		if ( !String::Cmp( loadmodel->name,"models/paladin.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 0 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/crusader.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 1 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/necro.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 2 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/assassin.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 3 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/succubus.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 4 ];
+		} else if ( !String::Cmp( loadmodel->name,"models/hank.mdl" ) ) {
+			skinTranslation = &clh2_translation_info[ 5 ];
+		}
+	}
+
 	newmdl_t* pinmodel = ( newmdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -582,7 +642,7 @@ void Mod_LoadMdlModelNew( model_t* mod, const void* buffer ) {
 	// load the skins
 	//
 	dmdl_skintype_t* pskintype = ( dmdl_skintype_t* )&pinmodel[ 1 ];
-	pskintype = ( dmdl_skintype_t* )Mod_LoadAllSkins( pheader->numskins, pskintype, mod->q1_flags );
+	pskintype = ( dmdl_skintype_t* )Mod_LoadAllSkins( pheader->numskins, pskintype, mod->q1_flags, skinTranslation );
 
 	//
 	// load base s and t vertices
@@ -827,6 +887,8 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
 	shaderStage_t stage4 = {};
+	shaderStage_t stage5 = {};
+	shaderStage_t stage6 = {};
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			shader.cullType = CT_TWO_SIDED;
@@ -855,6 +917,8 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		stage1.alphaGen = AGEN_IDENTITY;
 	}
 
+	image_t* imageTop = NULL;
+	image_t* imageBottom = NULL;
 	if ( ent->e.customSkin ) {
 		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
 		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
@@ -873,6 +937,8 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		stage1.bundle[ 0 ].imageAnimationSpeed = 10;
 		stage2.bundle[ 0 ].numImageAnimations = 4;
 		stage2.bundle[ 0 ].imageAnimationSpeed = 10;
+		imageTop = paliashdr->topTexture[ ent->e.skinNum ];
+		imageBottom = paliashdr->bottomTexture[ ent->e.skinNum ];
 	}
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
@@ -886,6 +952,24 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	if ( doOverBright ) {
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
 		shader.stages[ numStages++ ] = &stage2;
+	}
+
+	if ( imageTop ) {
+		stage5.bundle[ 0 ].image[ 0 ] = imageTop;
+		stage5.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage5.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
+		stage5.alphaGen = AGEN_IDENTITY;
+		stage5.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		shader.stages[ numStages++ ] = &stage5;
+	}
+
+	if ( imageBottom ) {
+		stage6.bundle[ 0 ].image[ 0 ] = imageBottom;
+		stage6.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage6.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
+		stage6.alphaGen = AGEN_IDENTITY;
+		stage6.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		shader.stages[ numStages++ ] = &stage6;
 	}
 
 	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {

@@ -543,22 +543,7 @@ static void RB_CalcDiffuseColorET( unsigned char* colors ) {
 	}
 }
 
-//	The basic vertex lighting calc
-void RB_CalcDiffuseColor( byte* colors ) {
-	if ( GGameType & GAME_ET ) {
-		RB_CalcDiffuseColorET( colors );
-		return;
-	}
-
-	trRefEntity_t* ent = backEnd.currentEntity;
-	int ambientLightInt = ent->ambientLightInt;
-	vec3_t ambientLight;
-	VectorCopy( ent->ambientLight, ambientLight );
-	vec3_t directedLight;
-	VectorCopy( ent->directedLight, directedLight );
-	vec3_t lightDir;
-	VectorCopy( ent->lightDir, lightDir );
-
+void RB_CalcDiffuseColorWithCustomLights( byte* colors, vec3_t ambientLight, int ambientLightInt, vec3_t directedLight, vec3_t lightDir ) {
 	float* normal = tess.normal[ 0 ];
 
 	int numVertexes = tess.numVertexes;
@@ -589,6 +574,25 @@ void RB_CalcDiffuseColor( byte* colors ) {
 
 		colors[ i * 4 + 3 ] = 255;
 	}
+}
+
+//	The basic vertex lighting calc
+void RB_CalcDiffuseColor( byte* colors ) {
+	if ( GGameType & GAME_ET ) {
+		RB_CalcDiffuseColorET( colors );
+		return;
+	}
+
+	trRefEntity_t* ent = backEnd.currentEntity;
+	int ambientLightInt = ent->ambientLightInt;
+	vec3_t ambientLight;
+	VectorCopy( ent->ambientLight, ambientLight );
+	vec3_t directedLight;
+	VectorCopy( ent->directedLight, directedLight );
+	vec3_t lightDir;
+	VectorCopy( ent->lightDir, lightDir );
+
+	RB_CalcDiffuseColorWithCustomLights( colors, ambientLight, ambientLightInt, directedLight, lightDir );
 }
 
 void RB_CalcDiffuseOverBrightColor( byte* colors ) {
@@ -642,6 +646,58 @@ void RB_CalcDiffuseOverBrightColor( byte* colors ) {
 
 		colors[ i * 4 + 3 ] = 255;
 	}
+}
+
+void RB_CalcDiffuseColorEntityTopColour( byte* colors ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t topColour;
+	topColour[ 0 ] = ent->e.topColour[ 0 ] / 255.0f;
+	topColour[ 1 ] = ent->e.topColour[ 1 ] / 255.0f;
+	topColour[ 2 ] = ent->e.topColour[ 2 ] / 255.0f;
+	vec3_t ambientLight;
+	ambientLight[ 0 ] = ent->ambientLight[ 0 ] * topColour[ 0 ];
+	ambientLight[ 1 ] = ent->ambientLight[ 1 ] * topColour[ 1 ];
+	ambientLight[ 2 ] = ent->ambientLight[ 2 ] * topColour[ 2 ];
+	vec3_t directedLight;
+	directedLight[ 0 ] = ent->directedLight[ 0 ] * topColour[ 0 ];
+	directedLight[ 1 ] = ent->directedLight[ 1 ] * topColour[ 1 ];
+	directedLight[ 2 ] = ent->directedLight[ 2 ] * topColour[ 2 ];
+	vec3_t lightDir;
+	VectorCopy( ent->lightDir, lightDir );
+
+	int ambientLightInt;
+	( ( byte* )&ambientLightInt )[ 0 ] = idMath::FtoiFast( ambientLight[ 0 ] );
+	( ( byte* )&ambientLightInt )[ 1 ] = idMath::FtoiFast( ambientLight[ 1 ] );
+	( ( byte* )&ambientLightInt )[ 2 ] = idMath::FtoiFast( ambientLight[ 2 ] );
+	( ( byte* )&ambientLightInt )[ 3 ] = 0xff;
+
+	RB_CalcDiffuseColorWithCustomLights( colors, ambientLight, ambientLightInt, directedLight, lightDir );
+}
+
+void RB_CalcDiffuseColorEntityBottomColour( byte* colors ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+	vec3_t bottomColour;
+	bottomColour[ 0 ] = ent->e.bottomColour[ 0 ] / 255.0f;
+	bottomColour[ 1 ] = ent->e.bottomColour[ 1 ] / 255.0f;
+	bottomColour[ 2 ] = ent->e.bottomColour[ 2 ] / 255.0f;
+	vec3_t ambientLight;
+	ambientLight[ 0 ] = ent->ambientLight[ 0 ] * bottomColour[ 0 ];
+	ambientLight[ 1 ] = ent->ambientLight[ 1 ] * bottomColour[ 1 ];
+	ambientLight[ 2 ] = ent->ambientLight[ 2 ] * bottomColour[ 2 ];
+	vec3_t directedLight;
+	directedLight[ 0 ] = ent->directedLight[ 0 ] * bottomColour[ 0 ];
+	directedLight[ 1 ] = ent->directedLight[ 1 ] * bottomColour[ 1 ];
+	directedLight[ 2 ] = ent->directedLight[ 2 ] * bottomColour[ 2 ];
+	vec3_t lightDir;
+	VectorCopy( ent->lightDir, lightDir );
+
+	int ambientLightInt;
+	( ( byte* )&ambientLightInt )[ 0 ] = idMath::FtoiFast( ambientLight[ 0 ] );
+	( ( byte* )&ambientLightInt )[ 1 ] = idMath::FtoiFast( ambientLight[ 1 ] );
+	( ( byte* )&ambientLightInt )[ 2 ] = idMath::FtoiFast( ambientLight[ 2 ] );
+	( ( byte* )&ambientLightInt )[ 3 ] = 0xff;
+
+	RB_CalcDiffuseColorWithCustomLights( colors, ambientLight, ambientLightInt, directedLight, lightDir );
 }
 
 static void RB_CalcWaveColor( const waveForm_t* wf, byte* dstColors ) {
@@ -972,6 +1028,14 @@ void ComputeColors( shaderStage_t* pStage ) {
 
 	case CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT:
 		RB_CalcDiffuseOverBrightColor( ( byte* )tess.svars.colors );
+		break;
+
+	case CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR:
+		RB_CalcDiffuseColorEntityTopColour( ( byte* )tess.svars.colors );
+		break;
+
+	case CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR:
+		RB_CalcDiffuseColorEntityBottomColour( ( byte* )tess.svars.colors );
 		break;
 
 	case CGEN_EXACT_VERTEX:

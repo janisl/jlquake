@@ -666,6 +666,8 @@ struct mesh1hdr_t {
 	glIndex_t* indexes;
 	image_t* gl_texture[ MAX_MESH1_SKINS ][ 4 ];
 	image_t* fullBrightTexture[ MAX_MESH1_SKINS ][ 4 ];
+	image_t* topTexture[ MAX_MESH1_SKINS ];
+	image_t* bottomTexture[ MAX_MESH1_SKINS ];
 	mmesh1framedesc_t frames[ 1 ];		// variable sized
 };
 

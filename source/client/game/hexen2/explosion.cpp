@@ -2767,7 +2767,7 @@ void CLH2_UpdateExplosions() {
 		ent.frame = f;
 		ent.skinNum = ex->skin;
 		CLH2_SetRefEntAxis( &ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags );
-		CLH2_HandleCustomSkin( &ent, -1 );
+		CLH2_HandleCustomSkin( &ent );
 		R_AddRefEntityToScene( &ent );
 	}
 }

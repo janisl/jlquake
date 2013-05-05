@@ -2081,7 +2081,7 @@ static void CLH2_LinkEffectEntity( effect_entity_t* entity ) {
 	refEntity.skinNum = entity->state.skinnum;
 	CLH2_SetRefEntAxis( &refEntity, entity->state.angles, vec3_origin,
 		entity->state.scale, 0, entity->state.abslight, entity->state.drawflags );
-	CLH2_HandleCustomSkin( &refEntity, -1 );
+	CLH2_HandleCustomSkin( &refEntity );
 	R_AddRefEntityToScene( &refEntity );
 }
 

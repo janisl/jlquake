@@ -598,7 +598,6 @@ int CL_ScaledMilliseconds();
 void CLQ1_InitPlayerTranslation();
 void CL_CalcQuakeSkinTranslation( int top, int bottom, byte* translate );
 void CLH2_InitPlayerTranslation();
-void CL_CalcHexen2SkinTranslation( int top, int bottom, int playerClass, byte* translate );
 float CLQH_LerpPoint();
 void CL_AddReliableCommand( const char* cmd );
 void CL_ClearState();

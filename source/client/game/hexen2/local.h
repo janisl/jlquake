@@ -116,8 +116,7 @@ void CLHW_ParseDeltaPacketEntities( QMsg& message );
 void CLHW_ParsePlayerinfo( QMsg& message );
 void CLHW_SavePlayer( QMsg& message );
 void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags );
-void CLH2_TranslatePlayerSkin( int playernum );
-void CLH2_HandleCustomSkin( refEntity_t* entity, int playerIndex );
+void CLH2_HandleCustomSkin( refEntity_t* entity );
 void CLH2_EmitEntities();
 void CLHW_EmitEntities();
 

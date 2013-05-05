@@ -623,22 +623,35 @@ void CLQ1_TranslatePlayerSkin( int playernum ) {
 	}
 }
 
-static void CLQ1_HandleRefEntColormap( refEntity_t* entity, int colourMap ) {
-	//	We can't dynamically colormap textures, so they are cached
-	// seperately for the players.  Heads are just uncolored.
-	if ( colourMap && !String::Cmp( R_ModelName( entity->hModel ), "progs/player.mdl" ) ) {
-		entity->customSkin = R_GetImageHandle( clq1_playertextures[ colourMap - 1 ] );
+static void CLQ1_SetPlayerColours( refEntity_t* entity, int playerNum ) {
+	q1player_info_t* player = &cl.q1_players[ playerNum ];
+	int top = player->topcolor;
+	if ( top < 0 || top > 13 ) {
+		top = 0;
 	}
+	entity->topColour[ 0 ] = clq1_translation_info.translatedTopColours[ top ][ 0 ];
+	entity->topColour[ 1 ] = clq1_translation_info.translatedTopColours[ top ][ 1 ];
+	entity->topColour[ 2 ] = clq1_translation_info.translatedTopColours[ top ][ 2 ];
+	entity->topColour[ 3 ] = clq1_translation_info.translatedTopColours[ top ][ 3 ];
+	int bottom = player->bottomcolor;
+	if ( bottom < 0 || bottom > 13 ) {
+		bottom = 0;
+	}
+	entity->bottomColour[ 0 ] = clq1_translation_info.translatedBottomColours[ bottom ][ 0 ];
+	entity->bottomColour[ 1 ] = clq1_translation_info.translatedBottomColours[ bottom ][ 1 ];
+	entity->bottomColour[ 2 ] = clq1_translation_info.translatedBottomColours[ bottom ][ 2 ];
+	entity->bottomColour[ 3 ] = clq1_translation_info.translatedBottomColours[ bottom ][ 3 ];
 }
 
-static void CLQW_HandlePlayerSkin( refEntity_t* Ent, int PlayerNum ) {
+static void CLQW_HandlePlayerSkin( refEntity_t* entity, int playerNum ) {
 	//	We can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if ( !cl.q1_players[ PlayerNum ].skin ) {
-		CLQW_SkinFind( &cl.q1_players[ PlayerNum ] );
-		CLQ1_TranslatePlayerSkin( PlayerNum );
+	if ( !cl.q1_players[ playerNum ].skin ) {
+		CLQW_SkinFind( &cl.q1_players[ playerNum ] );
+		CLQ1_TranslatePlayerSkin( playerNum );
 	}
-	Ent->customSkin = R_GetImageHandle( clq1_playertextures[ PlayerNum ] );
+	entity->customSkin = R_GetImageHandle( clq1_playertextures[ playerNum ] );
+	CLQ1_SetPlayerColours( entity, playerNum );
 }
 
 static void CLQ1_RelinkEntities() {
@@ -753,8 +766,10 @@ static void CLQ1_RelinkEntities() {
 		CLQ1_SetRefEntAxis( &rent, ent->state.angles );
 		rent.frame = ent->state.frame;
 		rent.syncBase = ent->syncbase;
-		CLQ1_HandleRefEntColormap( &rent, ent->state.colormap );
 		rent.skinNum = ent->state.skinnum;
+		if ( ent->state.colormap ) {
+			CLQ1_SetPlayerColours( &rent, ent->state.colormap - 1 );
+		}
 		if ( i == cl.viewentity && !chase_active->value ) {
 			rent.renderfx |= RF_THIRD_PERSON;
 		}

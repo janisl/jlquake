@@ -334,32 +334,6 @@ void CLH2_InitPlayerTranslation() {
 	}
 }
 
-void CL_CalcHexen2SkinTranslation( int top, int bottom, int playerClass, byte* translate ) {
-	for ( int i = 0; i < 256; i++ ) {
-		translate[ i ] = i;
-	}
-
-	if ( top > 10 ) {
-		top = 0;
-	}
-	if ( bottom > 10 ) {
-		bottom = 0;
-	}
-
-	byte* colorA = playerTranslation + 256 + color_offsets[ playerClass - 1 ];
-	byte* colorB = colorA + 256;
-	byte* sourceA = colorB + top * 256;
-	byte* sourceB = colorB + bottom * 256;
-	for ( int i = 0; i < 256; i++, colorA++, colorB++, sourceA++, sourceB++ ) {
-		if ( top > 0 && *colorA != 255 ) {
-			translate[ i ] = *sourceA;
-		}
-		if ( bottom > 0 && *colorB != 255 ) {
-			translate[ i ] = *sourceB;
-		}
-	}
-}
-
 //	Determines the fraction between the last two messages that the objects
 // should be put at.
 float CLQH_LerpPoint() {

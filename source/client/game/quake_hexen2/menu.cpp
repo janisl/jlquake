@@ -4636,6 +4636,7 @@ void MQH_InitShaders() {
 		for ( int i = 0; i < 8; i ++ ) {
 			mqh_gfx_menudot[ i ] = R_CacheShader( va( "gfx/menu/menudot%i.lmp", i + 1 ) );
 		}
+		TitleCanSwitch = true;
 	} else {
 		mqh_gfx_plaque = R_CacheShader( "gfx/qplaque.lmp" );
 		for ( int i = 0; i < 6; i++ ) {
