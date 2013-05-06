@@ -205,6 +205,14 @@ struct mbrush38_texinfo_t {
 	image_t* image;
 };
 
+struct mbrush38_shaderInfo_t {
+	int flags;
+	int numframes;
+	mbrush38_shaderInfo_t* next;		// animation chain
+	image_t* image;
+	int lightmapIndex;
+};
+
 struct mbrush38_glpoly_t {
 	mbrush38_glpoly_t* next;
 	int numverts;
@@ -231,6 +239,7 @@ struct mbrush38_surface_t {
 	mbrush38_surface_t* texturechain;
 
 	mbrush38_texinfo_t* texinfo;
+	mbrush38_shaderInfo_t* shaderInfo;
 
 // lighting info
 	int dlightframe;
@@ -852,6 +861,9 @@ struct model_t {
 
 	int brush38_numtexinfo;
 	mbrush38_texinfo_t* brush38_texinfo;
+
+	int brush38_numShaderInfo;
+	mbrush38_shaderInfo_t* brush38_shaderInfo;
 
 	int brush38_numsurfaces;
 	mbrush38_surface_t* brush38_surfaces;

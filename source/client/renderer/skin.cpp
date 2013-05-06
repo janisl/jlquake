@@ -306,7 +306,7 @@ bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& transl
 	}
 
 	idList<byte> out;
-	out.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
+	out.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
 	Com_Memset( out.Ptr(), 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
 
 	byte* outp = out.Ptr();
@@ -319,9 +319,9 @@ bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& transl
 	delete[] pixels;
 
 	idList<byte> pixelsTop;
-	pixelsTop.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	pixelsTop.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
 	idList<byte> pixelsBottom;
-	pixelsBottom.Resize( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	pixelsBottom.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
 	R_ExtractTranslatedImages( translation, out.Ptr(), pixelsTop.Ptr(), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
 	byte* pic32 = R_ConvertImage8To32( out.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, IMG8MODE_Skin );
 	base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
