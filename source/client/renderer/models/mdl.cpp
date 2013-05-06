@@ -201,9 +201,9 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 
 			if ( skinTranslation ) {
 				idList<byte> picTop;
-				picTop.Resize( s * 4 );
+				picTop.SetNum( s * 4 );
 				idList<byte> picBottom;
-				picBottom.Resize( s * 4 );
+				picBottom.SetNum( s * 4 );
 				R_ExtractTranslatedImages( *skinTranslation, pic, picTop.Ptr(), picBottom.Ptr(), pheader->skinwidth, pheader->skinheight );
 				char topName[ 32 ];
 				sprintf( topName, "%s_%i_top", loadmodel->name, i );
