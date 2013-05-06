@@ -413,22 +413,23 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 			out->samples = loadmodel->brush38_lightdata + lightofs;
 		}
 
-		// set the drawing flags
+		// create lightmaps
+		// don't bother if we're set to fullbright
+		if ( r_fullbright->value || !loadmodel->brush38_lightdata ||
+			out->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+			out->lightmaptexturenum = LIGHTMAP_NONE;
+		} else {
+			GL_CreateSurfaceLightmapQ2( out );
+		}
 
+		// create polygons
 		if ( out->texinfo->flags & BSP38SURF_WARP ) {
 			for ( int i = 0; i < 2; i++ ) {
 				out->extents[ i ] = 16384;
 				out->texturemins[ i ] = -8192;
 			}
 			GL_SubdivideSurface( out );		// cut up polygon for warps
-		}
-
-		// create lightmaps and polygons
-		if ( !( out->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
-			GL_CreateSurfaceLightmapQ2( out );
-		}
-
-		if ( !( out->texinfo->flags & BSP38SURF_WARP ) ) {
+		} else {
 			GL_BuildPolygonFromSurface( out );
 		}
 	}

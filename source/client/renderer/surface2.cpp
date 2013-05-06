@@ -413,7 +413,7 @@ static mbrush38_texinfo_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 
 void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex ) {
 	mbrush38_texinfo_t* texinfo = R_TextureAnimationQ2( surf->texinfo );
-	shader_t* shader = R_BuildBsp38Shader( texinfo, surf->lightmaptexturenum );
+	shader_t* shader = R_BuildBsp38Shader( texinfo->image, texinfo->flags, surf->lightmaptexturenum );
 	R_AddDrawSurf( ( surfaceType_t* )surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
