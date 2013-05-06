@@ -21,6 +21,19 @@
 
 #define SUBDIVIDE_SIZE  64
 
+struct idBrush38ShaderInfoBuild {
+	int flags;
+	int numframes;
+	int next;		// animation chain
+	int lightMapIndex;
+	image_t* image;
+};
+
+struct idSurface2LoadTimeInfo
+{
+	int shaderInfoIndex;
+};
+
 static byte* mod_base;
 
 static mbrush38_surface_t* warpface;
@@ -316,6 +329,7 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 	fa->polys = poly;
 	poly->numverts = lnumverts;
 
+	mbrush38_texinfo_t* texinfo = fa->texinfo;
 	for ( int i = 0; i < lnumverts; i++ ) {
 		int lindex = tr.currentModel->brush38_surfedges[ fa->firstedge + i ];
 
@@ -328,11 +342,11 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 			r_pedge = &pedges[ -lindex ];
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
 		}
-		float s = DotProduct( vec, fa->texinfo->vecs[ 0 ] ) + fa->texinfo->vecs[ 0 ][ 3 ];
-		s /= fa->texinfo->image->width;
+		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
+		s /= texinfo->image->width;
 
-		float t = DotProduct( vec, fa->texinfo->vecs[ 1 ] ) + fa->texinfo->vecs[ 1 ][ 3 ];
-		t /= fa->texinfo->image->height;
+		float t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
+		t /= texinfo->image->height;
 
 		VectorAdd( total, vec, total );
 		VectorCopy( vec, poly->verts[ i ] );
@@ -342,17 +356,17 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 		//
 		// lightmap texture coordinates
 		//
-		s = DotProduct( vec, fa->texinfo->vecs[ 0 ] ) + fa->texinfo->vecs[ 0 ][ 3 ];
+		s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
 		s -= fa->texturemins[ 0 ];
 		s += fa->light_s * 16;
 		s += 8;
-		s /= BLOCK_WIDTH * 16;	//fa->texinfo->texture->width;
+		s /= BLOCK_WIDTH * 16;
 
-		t = DotProduct( vec, fa->texinfo->vecs[ 1 ] ) + fa->texinfo->vecs[ 1 ][ 3 ];
+		t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
 		t -= fa->texturemins[ 1 ];
 		t += fa->light_t * 16;
 		t += 8;
-		t /= BLOCK_HEIGHT * 16;	//fa->texinfo->texture->height;
+		t /= BLOCK_HEIGHT * 16;
 
 		poly->verts[ i ][ 5 ] = s;
 		poly->verts[ i ][ 6 ] = t;
@@ -360,6 +374,76 @@ static void GL_BuildPolygonFromSurface( mbrush38_surface_t* fa ) {
 
 	poly->numverts = lnumverts;
 
+}
+
+//	We need to duplicate texinfos for different lightmap indexes.
+// Since shader infos don't need texture axis, we can merge many
+// of them as well.
+static int AddShaderInfo( idList<idBrush38ShaderInfoBuild>& shaderInfos, mbrush38_texinfo_t* texinfo, int lightmapIndex )
+{
+	//	Check for duplicate.
+	for ( int i = 0; i < shaderInfos.Num(); i++ ) {
+		const idBrush38ShaderInfoBuild& check = shaderInfos[ i ];
+		if ( check.image != texinfo->image ||
+			check.lightMapIndex != lightmapIndex ||
+			check.flags != texinfo->flags ||
+			check.numframes != texinfo->numframes ) {
+			continue;
+		}
+		if ( texinfo->next ) {
+			mbrush38_texinfo_t* anim = texinfo->next;
+			int checkAnim = check.next;
+			while ( anim != texinfo ) {
+				if ( shaderInfos[ checkAnim ].image != anim->image ) {
+					break;
+				}
+				anim = anim->next;
+				checkAnim = shaderInfos[ checkAnim ].next;
+			}
+			if ( anim != texinfo ) {
+				continue;
+			}
+		}
+		return i;
+	}
+
+	int index = shaderInfos.Num();
+	idBrush38ShaderInfoBuild& base = shaderInfos.Alloc();
+	base.flags = texinfo->flags;
+	base.image = texinfo->image;
+	base.lightMapIndex = lightmapIndex;
+	base.numframes = 1;
+	if ( !texinfo->next ) {
+		base.next = -1;
+	} else {
+		base.next = shaderInfos.Num();
+		mbrush38_texinfo_t* anim = texinfo->next;
+		while ( anim != texinfo ) {
+			idBrush38ShaderInfoBuild& animFrame = shaderInfos.Alloc();
+			animFrame.flags = texinfo->flags;
+			animFrame.image = anim->image;
+			animFrame.lightMapIndex = lightmapIndex;
+			animFrame.numframes = texinfo->numframes;
+			animFrame.next = shaderInfos.Num();
+			anim = anim->next;
+		}
+		shaderInfos[ shaderInfos.Num() - 1 ].next = index;
+	}
+	return index;
+}
+
+static void LoadShaderInfos( idList<idBrush38ShaderInfoBuild>& shaderInfos ) {
+	loadmodel->brush38_numShaderInfo = shaderInfos.Num();
+	loadmodel->brush38_shaderInfo = new mbrush38_shaderInfo_t[ shaderInfos.Num() ];
+	idBrush38ShaderInfoBuild* in = shaderInfos.Ptr();
+	mbrush38_shaderInfo_t* out = loadmodel->brush38_shaderInfo;
+	for ( int i = 0; i < shaderInfos.Num(); i++, in++, out++ ) {
+		out->flags = in->flags;
+		out->image = in->image;
+		out->lightmapIndex = in->lightMapIndex;
+		out->numframes = in->numframes;
+		out->next = in->next < 0 ? NULL : &loadmodel->brush38_shaderInfo[ in->next ];
+	}
 }
 
 static void Mod_LoadFaces( bsp38_lump_t* l ) {
@@ -377,6 +461,9 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	tr.currentModel = loadmodel;
 
 	GL_BeginBuildingLightmaps( loadmodel );
+	idList<idBrush38ShaderInfoBuild> shaderInfoBuild;
+	idList<idSurface2LoadTimeInfo> loadTimeInfo;
+	loadTimeInfo.SetNum( count );
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
 		out->surfaceType = SF_FACE_Q2;
@@ -421,6 +508,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 		} else {
 			GL_CreateSurfaceLightmapQ2( out );
 		}
+		loadTimeInfo[ surfnum ].shaderInfoIndex = AddShaderInfo( shaderInfoBuild, out->texinfo, out->lightmaptexturenum );
 
 		// create polygons
 		if ( out->texinfo->flags & BSP38SURF_WARP ) {
@@ -435,6 +523,13 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	}
 
 	GL_EndBuildingLightmaps();
+
+	LoadShaderInfos( shaderInfoBuild );
+
+	out = loadmodel->brush38_surfaces;
+	for ( int surfnum = 0; surfnum < count; surfnum++, out++ ) {
+		out->shaderInfo = &loadmodel->brush38_shaderInfo[ loadTimeInfo[ surfnum ].shaderInfoIndex ];
+	}
 }
 
 static void Mod_SetParent( mbrush38_node_t* node, mbrush38_node_t* parent ) {
@@ -696,6 +791,7 @@ void Mod_FreeBsp38( model_t* mod ) {
 		}
 	}
 	delete[] mod->brush38_surfaces;
+	delete[] mod->brush38_shaderInfo;
 	delete[] mod->brush38_nodes;
 	delete[] mod->brush38_leafs;
 	delete[] mod->brush38_marksurfaces;

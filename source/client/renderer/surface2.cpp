@@ -397,7 +397,7 @@ dynamic:
 }
 
 //	Returns the proper texture for a given time and base texture
-static mbrush38_texinfo_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
+static mbrush38_shaderInfo_t* R_TextureAnimationQ2( mbrush38_shaderInfo_t* tex ) {
 	if ( !tex->next ) {
 		return tex;
 	}
@@ -412,8 +412,8 @@ static mbrush38_texinfo_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 }
 
 void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex ) {
-	mbrush38_texinfo_t* texinfo = R_TextureAnimationQ2( surf->texinfo );
-	shader_t* shader = R_BuildBsp38Shader( texinfo->image, texinfo->flags, surf->lightmaptexturenum );
+	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->shaderInfo );
+	shader_t* shader = R_BuildBsp38Shader( texinfo->image, texinfo->flags, texinfo->lightmapIndex );
 	R_AddDrawSurf( ( surfaceType_t* )surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
