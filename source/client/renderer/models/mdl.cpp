@@ -759,6 +759,8 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 }
 
 static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	RB_CHECKOVERFLOW( paliashdr->poseverts, paliashdr->numIndexes );
+
 	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {
 		common->DPrintf( "R_AliasSetupFrame: no such frame %d\n", ent->e.frame );
 		ent->e.frame = 0;
@@ -788,14 +790,15 @@ static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr
 	}
 	tess.numVertexes += paliashdr->poseverts;
 
-	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	int numIndexes = tess.numIndexes;
+	for ( int i = 0; i < paliashdr->numIndexes; i++ ) {
+		tess.indexes[ numIndexes + i ] = numVerts + paliashdr->indexes[ i ];
+	}
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
 static void GL_DrawAliasShadow( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	RB_BeginSurface( tr.projectionShadowShader, 0 );
 	EmitMdlVertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
 }
 
 static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {

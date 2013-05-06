@@ -399,6 +399,8 @@ static void GL_LerpVerts( mmd2_t* paliashdr, dmd2_trivertx_t* v, dmd2_trivertx_t
 }
 
 static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr ) {
+	RB_CHECKOVERFLOW( paliashdr->numVertexes, paliashdr->numIndexes );
+
 	dmd2_frame_t* frame = ( dmd2_frame_t* )( paliashdr->frames +
 											 ent->e.frame * paliashdr->framesize );
 	dmd2_trivertx_t* v = frame->verts;
@@ -431,10 +433,14 @@ static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr 
 		backv[ i ] = backlerp * oldframe->scale[ i ];
 	}
 
-	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ tess.numVertexes ], tess.normal[ tess.numVertexes ], move, frontv, backv );
+	int numVerts = tess.numVertexes;
+	GL_LerpVerts( paliashdr, v, ov, tess.xyz[ numVerts ], tess.normal[ numVerts ], move, frontv, backv );
 	tess.numVertexes += paliashdr->numVertexes;
 
-	Com_Memcpy( tess.indexes, paliashdr->indexes + tess.numIndexes, paliashdr->numIndexes * sizeof( glIndex_t ) );
+	int numIndexes = tess.numIndexes;
+	for ( int i = 0; i < paliashdr->numIndexes; i++ ) {
+		tess.indexes[ numIndexes + i ] = numVerts + paliashdr->indexes[ i ];
+	}
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
@@ -514,9 +520,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 }
 
 static void GL_DrawMd2Shadow( trRefEntity_t* ent, mmd2_t* paliashdr ) {
-	RB_BeginSurface( tr.projectionShadowShader, 0 );
 	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
 }
 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {

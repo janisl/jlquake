@@ -412,17 +412,17 @@ static mbrush38_shaderInfo_t* R_TextureAnimationQ2( mbrush38_shaderInfo_t* tex )
 }
 
 void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex ) {
+	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
+		R_UpdateSurfaceLightmap( surf );
+	}
 	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->shaderInfo );
 	R_AddDrawSurf( ( surfaceType_t* )surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
-	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
-		R_UpdateSurfaceLightmap( surf );
-	}
-	RB_BeginSurface( tess.shader, 0 );
-
 	for ( mbrush38_glpoly_t* p = surf->polys; p; p = p->next ) {
+		RB_CHECKOVERFLOW( p->numverts, ( p->numverts - 2 ) * 3 );
+
 		int numVerts = tess.numVertexes;
 		int numIndexes = tess.numIndexes;
 
@@ -455,8 +455,6 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 		}
 	}
 	c_brush_polys++;
-
-	RB_EndSurface();
 }
 
 //	Draw water surfaces and windows.
