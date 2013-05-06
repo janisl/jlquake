@@ -438,11 +438,9 @@ static void LoadShaderInfos( idList<idBrush38ShaderInfoBuild>& shaderInfos ) {
 	idBrush38ShaderInfoBuild* in = shaderInfos.Ptr();
 	mbrush38_shaderInfo_t* out = loadmodel->brush38_shaderInfo;
 	for ( int i = 0; i < shaderInfos.Num(); i++, in++, out++ ) {
-		out->flags = in->flags;
-		out->image = in->image;
-		out->lightmapIndex = in->lightMapIndex;
 		out->numframes = in->numframes;
 		out->next = in->next < 0 ? NULL : &loadmodel->brush38_shaderInfo[ in->next ];
+		out->shader = R_BuildBsp38Shader( in->image, in->flags, in->lightMapIndex );
 	}
 }
 

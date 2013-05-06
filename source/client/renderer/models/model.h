@@ -206,11 +206,9 @@ struct mbrush38_texinfo_t {
 };
 
 struct mbrush38_shaderInfo_t {
-	int flags;
 	int numframes;
-	mbrush38_shaderInfo_t* next;		// animation chain
-	image_t* image;
-	int lightmapIndex;
+	mbrush38_shaderInfo_t* next;	// animation chain
+	shader_t* shader;
 };
 
 struct mbrush38_glpoly_t {
