@@ -3132,6 +3132,24 @@ static shader_t* CreateProjectionShader() {
 	return FinishShader();
 }
 
+static void R_CreateParticleShader( image_t* image ) {
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, "particle", sizeof ( shader.name ) );
+	shader.cullType = CT_FRONT_SIDED;
+	shader.lightmapIndex = LIGHTMAP_NONE;
+
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = tr.particleImage;
+	stages[ 0 ].bundle[ 0 ].numImageAnimations = 1;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;		// no z buffering
+	stages[ 0 ].rgbGen = CGEN_VERTEX;
+	stages[ 0 ].alphaGen = AGEN_VERTEX;
+	stages[ 0 ].active = true;
+	
+	tr.particleShader = FinishShader();
+}
+
 static void CreateExternalShaders() {
 	if ( GGameType & GAME_Tech3 ) {
 		if ( !( GGameType & GAME_WolfSP ) ) {
@@ -3150,6 +3168,7 @@ static void CreateExternalShaders() {
 		tr.projectionShadowShader = CreateProjectionShader();
 		tr.flareShader = tr.defaultShader;
 		tr.sunShader = tr.defaultShader;
+		R_CreateParticleShader( tr.particleImage );
 	}
 }
 

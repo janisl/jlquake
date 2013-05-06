@@ -934,7 +934,9 @@ static void R_GenerateDrawSurfs() {
 
 	R_AddPolygonBufferSurfaces();
 
-	R_AddDrawSurf( &particlesSurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 2 );
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		R_AddDrawSurf( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
+	}
 
 	int forcedSortIndex = 3;
 	if ( GGameType & GAME_Quake ) {

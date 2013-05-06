@@ -125,18 +125,6 @@ static void R_DrawParticleTriangles() {
 	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
 	const particle_t* p = backEnd.refdef.particles;
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = tr.particleImage;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;		// no z buffering
-	stage.rgbGen = CGEN_VERTEX;
-	stage.alphaGen = AGEN_VERTEX;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	RB_BeginSurface( &shader, 0 );
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {
 		RB_CHECKOVERFLOW( 3, 3 );
 
@@ -162,8 +150,6 @@ static void R_DrawParticleTriangles() {
 			break;
 		}
 	}
-
-	RB_EndSurface();
 }
 
 static void R_DrawParticlePoints() {
