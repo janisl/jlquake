@@ -401,9 +401,6 @@ static mbrush38_texinfo_t* R_TextureAnimationQ2( mbrush38_texinfo_t* tex ) {
 	if ( !tex->next ) {
 		return tex;
 	}
-	if ( tex->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-		return tex;
-	}
 
 	int c = backEnd.currentEntity->e.frame % tex->numframes;
 	while ( c ) {
