@@ -818,10 +818,12 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	shaderStage_t stage4 = {};
 	shaderStage_t stage5 = {};
 	shaderStage_t stage6 = {};
+	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			shader.cullType = CT_TWO_SIDED;
 			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
+			stage1.rgbGen = CGEN_IDENTITY;
 			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
@@ -877,7 +879,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	}
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
 	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
 	stage2.alphaGen = AGEN_IDENTITY;
 
