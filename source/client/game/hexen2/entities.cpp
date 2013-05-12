@@ -806,7 +806,8 @@ void CLHW_SavePlayer( QMsg& message ) {
 
 void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int absoluteLight, int drawFlags ) {
 	if ( drawFlags & H2DRF_TRANSLUCENT ) {
-		entity->renderfx |= RF_WATERTRANS;
+		entity->renderfx |= RF_TRANSLUCENT;
+		entity->shaderRGBA[ 3 ] = 100;
 	}
 
 	vec3_t angles;
@@ -920,7 +921,6 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 }
 
 void CLH2_AddColourShadeRefEnt( refEntity_t* entity, int colourShade, int drawFlags ) {
-	//FIXME use separate refEnt
 	if ( !colourShade ) {
 		return;
 	}

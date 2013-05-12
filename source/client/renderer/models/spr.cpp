@@ -215,9 +215,8 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.rgbGen = CGEN_IDENTITY;
-	if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
-		stage.alphaGen = AGEN_CONST;
-		stage.constantColor[ 3 ] = r_wateralpha->value * 255;
+	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		stage.alphaGen = AGEN_ENTITY;
 	} else {
 		stage.alphaGen = AGEN_IDENTITY;
 	}

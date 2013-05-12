@@ -581,7 +581,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		shader.stages[ 0 ] = &stage1;
-		if ( backEnd.currentEntity->e.renderfx & RF_WATERTRANS ) {
+		if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 			//
 			// translucent poly
 			//
@@ -590,8 +590,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			} else {
 				stage1.rgbGen = CGEN_IDENTITY;
 			}
-			stage1.alphaGen = AGEN_CONST;
-			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
+			stage1.alphaGen = AGEN_ENTITY;
 			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 			//

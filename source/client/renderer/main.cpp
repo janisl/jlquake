@@ -741,7 +741,7 @@ static void R_AddEntitySurfaces() {
 
 				case MOD_MESH1:
 					if ( GGameType & GAME_Hexen2 ) {
-						item_trans = ( ent->e.renderfx & RF_WATERTRANS ) ||
+						item_trans = ( ent->e.renderfx & RF_TRANSLUCENT ) ||
 									 R_MdlHasHexen2Transparency( tr.currentModel );
 					}
 					if ( !item_trans ) {
@@ -751,7 +751,7 @@ static void R_AddEntitySurfaces() {
 
 				case MOD_BRUSH29:
 					if ( GGameType & GAME_Hexen2 ) {
-						item_trans = ( ( ent->e.renderfx & RF_WATERTRANS ) ) != 0;
+						item_trans = ( ( ent->e.renderfx & RF_TRANSLUCENT ) ) != 0;
 					}
 					if ( !item_trans ) {
 						R_DrawBrushModelQ1( ent, 0 );
