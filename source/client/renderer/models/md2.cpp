@@ -452,20 +452,9 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	//
 	// draw all the triangles
 	//
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPushMatrix();
-		qglLoadIdentity();
-		qglScalef( -1, 1, 1 );
-		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
-		qglMatrixMode( GL_MODELVIEW );
-	}
-
 	// select skin
 	image_t* skin;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		skin = tr.whiteImage;
-	} else  if ( backEnd.currentEntity->e.customSkin ) {
+	if ( backEnd.currentEntity->e.customSkin ) {
 		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
 	} else {
 		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
@@ -485,11 +474,7 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	stage.bundle[ 0 ].image[ 0 ] = skin;
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		stage.rgbGen = CGEN_ENTITY;
-	} else {
-		stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	}
+	stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
 	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 		stage.alphaGen = AGEN_ENTITY;
 		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
@@ -500,27 +485,35 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	shader.cullType = CT_FRONT_SIDED;
-	if ( backEnd.currentEntity->e.renderfx & RF_COLOUR_SHELL ) {
-		shader.deforms[0].deformation = DEFORM_WAVE;
-		shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
-		shader.deforms[0].deformationWave.func = GF_SIN;
-		shader.numDeforms = 1;
-	}
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
 	RB_BeginSurface( &shader, 0 );
 	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
-
-	if ( ent->e.renderfx & RF_LEFTHAND ) {
-		qglMatrixMode( GL_PROJECTION );
-		qglPopMatrix();
-		qglMatrixMode( GL_MODELVIEW );
-	}
 }
 
-static void GL_DrawMd2Shadow( trRefEntity_t* ent, mmd2_t* paliashdr ) {
+static void GL_DrawMd2FrameLerpColourShell( mmd2_t* paliashdr ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
+	shaderStage_t stage = {};
+	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage.bundle[ 0 ].numImageAnimations = 1;
+	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage.rgbGen = CGEN_ENTITY;
+	stage.alphaGen = AGEN_ENTITY;
+	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	shader_t shader = {};
+	shader.stages[ 0 ] = &stage;
+	shader.cullType = CT_FRONT_SIDED;
+	shader.deforms[0].deformation = DEFORM_WAVE;
+	shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
+	shader.deforms[0].deformationWave.func = GF_SIN;
+	shader.numDeforms = 1;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+
+	RB_BeginSurface( &shader, 0 );
 	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
+	RB_EndSurface();
 }
 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
@@ -528,9 +521,26 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 
 	c_alias_polys += paliashdr->numIndexes / 3;
 
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPushMatrix();
+		qglLoadIdentity();
+		qglScalef( -1, 1, 1 );
+		qglMultMatrixf( backEnd.viewParms.projectionMatrix );
+		qglMatrixMode( GL_MODELVIEW );
+	}
+
 	if ( tess.shader == tr.projectionShadowShader ) {
-		GL_DrawMd2Shadow( ent, paliashdr );
+		RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
+	} else if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
+		GL_DrawMd2FrameLerpColourShell( paliashdr );
 	} else {
 		GL_DrawMd2FrameLerp( paliashdr );
+	}
+
+	if ( ent->e.renderfx & RF_LEFTHAND ) {
+		qglMatrixMode( GL_PROJECTION );
+		qglPopMatrix();
+		qglMatrixMode( GL_MODELVIEW );
 	}
 }
