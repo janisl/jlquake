@@ -815,7 +815,6 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
-	shaderStage_t stage4 = {};
 	shaderStage_t stage5 = {};
 	shaderStage_t stage6 = {};
 	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
@@ -922,15 +921,24 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		shader.stages[ numStages++ ] = &stage3;
 	}
 
-	if ( ent->e.renderfx & RF_COLORSHADE ) {
-		stage4.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-		stage4.bundle[ 0 ].numImageAnimations = 1;
-		stage4.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage4.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		stage4.rgbGen = CGEN_ENTITY;
-		stage4.alphaGen = AGEN_ENTITY;
-		shader.stages[ numStages++ ] = &stage4;
-	}
+	RB_BeginSurface( &shader, 0 );
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
+	RB_EndSurface();
+}
+
+static void R_DrawColourShadeMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	shaderStage_t stage4 = {};
+	stage4.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stage4.bundle[ 0 ].numImageAnimations = 1;
+	stage4.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage4.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage4.rgbGen = CGEN_ENTITY;
+	stage4.alphaGen = AGEN_ENTITY;
+
+	shader_t shader = {};
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+	shader.stages[ 0 ] = &stage4;
 
 	RB_BeginSurface( &shader, 0 );
 	EmitMdlVertexesAndIndexes( ent, paliashdr );
@@ -946,6 +954,9 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 		GL_DrawAliasShadow( ent, paliashdr );
 	} else {
 		R_DrawBaseMdlSurface( ent, paliashdr );
+		if ( ent->e.renderfx & RF_COLORSHADE ) {
+			R_DrawColourShadeMdlSurface( ent, paliashdr );
+		}
 	}
 }
 
