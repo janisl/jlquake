@@ -580,6 +580,9 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	} else {
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+		stage1.stateBits = GLS_DEFAULT;
+		stage1.translucentStateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		shader.stages[ 0 ] = &stage1;
 		if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
 			//
@@ -590,15 +593,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			} else {
 				stage1.rgbGen = CGEN_IDENTITY;
 			}
-			stage1.alphaGen = AGEN_ENTITY;
-			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 			//
 			// absolute light poly
 			//
-			stage1.stateBits = GLS_DEFAULT;
 			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
-			stage1.alphaGen = AGEN_IDENTITY;
 		} else {
 			//
 			// normal lightmaped poly
@@ -606,8 +605,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			R_RenderDynamicLightmaps( s );
 
 			stage1.rgbGen = CGEN_IDENTITY;
-			stage1.alphaGen = AGEN_IDENTITY;
-			stage1.stateBits = GLS_DEFAULT;
 			if ( qglActiveTextureARB ) {
 				shader.multitextureEnv = GL_MODULATE;
 

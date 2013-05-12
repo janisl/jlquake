@@ -137,6 +137,7 @@ enum alphaGen_t
 	AGEN_SKIP,
 	AGEN_ENTITY,
 	AGEN_ONE_MINUS_ENTITY,
+	AGEN_ENTITY_CONDITIONAL_TRANSLUCENT,
 	AGEN_NORMALZFADE,
 	AGEN_VERTEX,
 	AGEN_ONE_MINUS_VERTEX,
@@ -245,6 +246,7 @@ struct shaderStage_t {
 	byte constantColor[ 4 ];						// for CGEN_CONST and AGEN_CONST
 
 	unsigned stateBits;							// GLS_xxxx mask
+	unsigned translucentStateBits;
 
 	acff_t adjustColorsForFog;
 

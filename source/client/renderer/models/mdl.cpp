@@ -825,21 +825,17 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 			stage1.rgbGen = CGEN_IDENTITY;
 			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;
-		} else if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.alphaGen = AGEN_ENTITY;
-			doOverBright = false;
-		} else if ( clmodel->q1_flags & H2MDLEF_TRANSPARENT ) {
-			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.alphaGen = AGEN_IDENTITY;
-			doOverBright = false;
-		} else if ( clmodel->q1_flags & H2MDLEF_HOLEY ) {
-			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.alphaGen = AGEN_IDENTITY;
-			doOverBright = false;
 		} else {
-			stage1.stateBits = GLS_DEPTHMASK_TRUE;
-			stage1.alphaGen = AGEN_IDENTITY;
+			stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+			if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+				doOverBright = false;
+			} else if ( clmodel->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY ) ) {
+				stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+				doOverBright = false;
+			} else {
+				stage1.stateBits = GLS_DEPTHMASK_TRUE;
+			}
+			stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		}
 	} else {
 		stage1.stateBits = GLS_DEFAULT;

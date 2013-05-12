@@ -477,13 +477,9 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		stage.alphaGen = AGEN_ENTITY;
-		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		stage.alphaGen = AGEN_IDENTITY;
-		stage.stateBits = GLS_DEFAULT;
-	}
+	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stage.stateBits = GLS_DEFAULT;
+	stage.translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	shader.cullType = CT_FRONT_SIDED;

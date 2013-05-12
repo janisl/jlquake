@@ -79,18 +79,10 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.rgbGen = CGEN_IDENTITY;
-	int alpha = 255;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		alpha = backEnd.currentEntity->e.shaderRGBA[ 3 ];
-	}
+	stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
+	stage.translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
 
-	if ( alpha != 255 ) {
-		stage.alphaGen = AGEN_ENTITY;
-		stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		stage.alphaGen = AGEN_IDENTITY;
-		stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
-	}
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;
 	shader.cullType = CT_FRONT_SIDED;

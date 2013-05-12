@@ -354,7 +354,11 @@ static void DrawMultitextured( shaderCommands_t* input, int stage ) {
 		R_FogOn();
 	}
 
-	GL_State( pStage->stateBits );
+	if ( pStage->translucentStateBits && backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+		GL_State( pStage->translucentStateBits );
+	} else {
+		GL_State( pStage->stateBits );
+	}
 
 	// this is an ugly hack to work around a GeForce driver
 	// bug with multitexture and clip planes
@@ -474,6 +478,8 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 				unsigned int stateBits = ( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) ) |
 										 ( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO );
 				GL_State( stateBits );
+			} else if ( pStage->translucentStateBits && backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
+				GL_State( pStage->translucentStateBits );
 			} else {
 				GL_State( pStage->stateBits );
 			}

@@ -215,11 +215,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	stage.bundle[ 0 ].numImageAnimations = 1;
 	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage.rgbGen = CGEN_IDENTITY;
-	if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-		stage.alphaGen = AGEN_ENTITY;
-	} else {
-		stage.alphaGen = AGEN_IDENTITY;
-	}
+	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
 	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	shader_t shader = {};
 	shader.stages[ 0 ] = &stage;

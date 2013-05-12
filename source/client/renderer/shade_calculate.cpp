@@ -864,6 +864,20 @@ static void RB_CalcAlphaFromOneMinusEntity( byte* dstColors ) {
 	}
 }
 
+static void RB_CalcAlphaFromEntityConditionalTranslucent( byte* dstColors ) {
+	if ( !backEnd.currentEntity ) {
+		return;
+	}
+
+	dstColors += 3;
+	byte alpha = backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ?
+		backEnd.currentEntity->e.shaderRGBA[ 3 ] : 0xff;
+
+	for ( int i = 0; i < tess.numVertexes; i++, dstColors += 4 ) {
+		*dstColors = alpha;
+	}
+}
+
 static void RB_CalcModulateColorsByFogET( unsigned char* colors ) {
 	// ydnar: no world, no fogging
 	if ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) {
@@ -1144,6 +1158,10 @@ void ComputeColors( shaderStage_t* pStage ) {
 
 	case AGEN_ONE_MINUS_ENTITY:
 		RB_CalcAlphaFromOneMinusEntity( ( byte* )tess.svars.colors );
+		break;
+
+	case AGEN_ENTITY_CONDITIONAL_TRANSLUCENT:
+		RB_CalcAlphaFromEntityConditionalTranslucent( ( byte* )tess.svars.colors );
 		break;
 
 	case AGEN_NORMALZFADE:
