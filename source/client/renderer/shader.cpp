@@ -2898,6 +2898,21 @@ void R_RemapShader( const char* shaderName, const char* newShaderName, const cha
 	}
 }
 
+static void R_CreateColourShadeShader() {
+	R_ClearGlobalShader();
+	String::NCpyZ( shader.name, "colorShade", sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.sort = SS_SEE_THROUGH;
+
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = tr.whiteImage;
+	stages[ 0 ].active = true;
+	stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stages[ 0 ].rgbGen = CGEN_ENTITY;
+	stages[ 0 ].alphaGen = AGEN_ENTITY;
+
+	tr.colorShadeShader = FinishShader();
+}
+
 static void CreateInternalShaders() {
 	tr.numShaders = 0;
 
@@ -2920,6 +2935,8 @@ static void CreateInternalShaders() {
 	String::NCpyZ( shader.name, "<sprite>", sizeof ( shader.name ) );
 	shader.sort = SS_SEE_THROUGH;
 	tr.spriteDummyShader = FinishShader();
+
+	R_CreateColourShadeShader();
 }
 
 static void BuildShaderChecksumLookup() {

@@ -753,6 +753,9 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( e->e.renderfx & RF_COLORSHADE ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShadeShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	}
 	if ( r_shadows->value ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
@@ -795,10 +798,6 @@ static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr
 		tess.indexes[ numIndexes + i ] = numVerts + paliashdr->indexes[ i ];
 	}
 	tess.numIndexes += paliashdr->numIndexes;
-}
-
-static void GL_DrawAliasShadow( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
 }
 
 static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
@@ -926,37 +925,15 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	RB_EndSurface();
 }
 
-static void R_DrawColourShadeMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	shaderStage_t stage4 = {};
-	stage4.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-	stage4.bundle[ 0 ].numImageAnimations = 1;
-	stage4.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage4.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage4.rgbGen = CGEN_ENTITY;
-	stage4.alphaGen = AGEN_ENTITY;
-
-	shader_t shader = {};
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	shader.stages[ 0 ] = &stage4;
-
-	RB_BeginSurface( &shader, 0 );
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	c_alias_polys += paliashdr->numtris;
 
-	if ( tess.shader == tr.projectionShadowShader ) {
-		GL_DrawAliasShadow( ent, paliashdr );
-	} else {
+	if ( tess.shader == tr.defaultShader ) {
 		R_DrawBaseMdlSurface( ent, paliashdr );
-		if ( ent->e.renderfx & RF_COLORSHADE ) {
-			R_DrawColourShadeMdlSurface( ent, paliashdr );
-		}
+	} else {
+		EmitMdlVertexesAndIndexes( ent, paliashdr );
 	}
 }
 
