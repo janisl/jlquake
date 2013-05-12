@@ -3647,6 +3647,31 @@ shader_t* R_BuildSp2Shader( image_t* image ) {
 	return FinishShader();
 }
 
+shader_t* R_BuildMd2Shader( image_t* image ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, LIGHTMAP_NONE );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ 0 ].rgbGen = CGEN_LIGHTING_DIFFUSE;
+	stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stages[ 0 ].stateBits = GLS_DEFAULT;
+	stages[ 0 ].translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	return FinishShader();
+}
+
 shader_t* R_BuildBsp38Shader( image_t* image, int flags, int lightMapIndex ) {
 	char shaderName[ MAX_QPATH ];
 	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );

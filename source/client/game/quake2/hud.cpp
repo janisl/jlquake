@@ -426,7 +426,7 @@ static void CLQ2_DrawInventory() {
 }
 
 void SCRQ2_InitHudShaders() {
-	for ( int j = 0; j < 11; j++ )
+	for ( int j = 0; j < 10; j++ )
 	{
 		sb_num_shaders[ 0 ][ j ] = R_CacheShader( va( "pics/num_%d.pcx", j ) );
 		sb_num_shaders[ 1 ][ j ] = R_CacheShader( va( "pics/anum_%d.pcx", j ) );

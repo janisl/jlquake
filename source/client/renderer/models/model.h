@@ -877,7 +877,6 @@ struct model_t {
 	byte* brush38_lightdata;
 
 	// for alias models and skins
-	image_t* q2_skins[ MAX_MD2_SKINS ];
 	shader_t* q2_skins_shader[ MAX_MD2_SKINS ];
 
 	int q2_extradatasize;

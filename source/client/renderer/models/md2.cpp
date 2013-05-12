@@ -177,8 +177,9 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 
 	// register all skins
 	for ( int i = 0; i < pheader->num_skins; i++ ) {
-		mod->q2_skins[ i ] = R_FindImageFile( ( const char* )buffer + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
+		image_t* image = R_FindImageFile( ( const char* )buffer + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
 			true, true, GL_CLAMP, IMG8MODE_Skin );
+		mod->q2_skins_shader[ i ] = R_BuildMd2Shader( image );
 	}
 
 	mod->q2_mins[ 0 ] = -32;
@@ -379,8 +380,22 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 
 	if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShellShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-	} else {
+	} else if ( ent->e.customSkin ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	} else {
+		shader_t* skin;
+		if ( ent->e.skinNum >= MAX_MD2_SKINS ) {
+			skin = tr.currentModel->q2_skins_shader[ 0 ];
+		} else {
+			skin = tr.currentModel->q2_skins_shader[ ent->e.skinNum ];
+			if ( !skin ) {
+				skin = tr.currentModel->q2_skins_shader[ 0 ];
+			}
+		}
+		if ( !skin ) {
+			skin = tr.defaultShader;	// fallback...
+		}
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, skin, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	}
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
@@ -446,50 +461,22 @@ static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr 
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
-//	interpolates between two frames and origins
-//	FIXME: batch lerp all vertexes
-static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
+static void GL_DrawMd2FrameLerpSkin( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	//
 	// draw all the triangles
 	//
 	// select skin
-	image_t* skin;
-	if ( backEnd.currentEntity->e.customSkin ) {
-		skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
-	} else {
-		if ( backEnd.currentEntity->e.skinNum >= MAX_MD2_SKINS ) {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-		} else {
-			skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.skinNum ];
-			if ( !skin ) {
-				skin = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ 0 ];
-			}
-		}
-	}
-	if ( !skin ) {
-		skin = tr.defaultImage;	// fallback...
-	}
+	image_t* skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
 
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = skin;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-	stage.stateBits = GLS_DEFAULT;
-	stage.translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	RB_BeginSurface( &shader, 0 );
+	RB_BeginSurface( R_BuildMd2Shader( skin ), 0 );
 	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	RB_EndSurface();
 }
 
+//	interpolates between two frames and origins
+//	FIXME: batch lerp all vertexes
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
@@ -504,8 +491,8 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		qglMatrixMode( GL_MODELVIEW );
 	}
 
-	if ( tess.shader == tr.defaultShader ) {
-		GL_DrawMd2FrameLerp( paliashdr );
+	if ( backEnd.currentEntity->e.customSkin ) {
+		GL_DrawMd2FrameLerpSkin( paliashdr );
 	} else {
 		RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	}
