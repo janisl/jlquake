@@ -17,6 +17,7 @@
 #include "../local.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
+#include "../../../common/strings.h"
 
 static void* Mod_LoadSpriteFrame( void* pin, msprite1frame_t** ppframe, int framenum ) {
 	dsprite1frame_t* pinframe = ( dsprite1frame_t* )pin;
@@ -43,10 +44,13 @@ static void* Mod_LoadSpriteFrame( void* pin, msprite1frame_t** ppframe, int fram
 	pspriteframe->right = width + origin[ 0 ];
 
 	char name[ 64 ];
-	sprintf( name, "%s_%i", loadmodel->name, framenum );
+	String::StripExtension2( loadmodel->name, name, sizeof( name ) );
+	String::FixPath( name );
+	String::Cat( name, sizeof( name ), va( "_%i", framenum ) );
 	byte* pic32 = R_ConvertImage8To32( ( byte* )( pinframe + 1 ), width, height, IMG8MODE_Normal );
-	pspriteframe->gl_texture = R_CreateImage( name, pic32, width, height, true, true, GL_CLAMP );
+	image_t* image = R_CreateImage( name, pic32, width, height, true, true, GL_CLAMP );
 	delete[] pic32;
+	pspriteframe->shader = R_BuildSprShader( image );
 
 	return ( void* )( ( byte* )pinframe + sizeof ( dsprite1frame_t ) + size );
 }
@@ -204,25 +208,13 @@ void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// polygon without a surface cache
 
 	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.spriteDummyShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
+
+	R_AddDrawSurf( ( surfaceType_t* )psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
-
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = frame->gl_texture;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_IDENTITY;
-	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	RB_BeginSurface( &shader, 0 );
 
 	vec3_t up;
 	vec3_t right;
@@ -366,6 +358,4 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 
 	tess.numIndexes += 6;
 	tess.numVertexes += 4;
-
-	RB_EndSurface();
 }

@@ -688,7 +688,7 @@ struct msprite1frame_t {
 	int width;
 	int height;
 	float up, down, left, right;
-	image_t* gl_texture;
+	shader_t* shader;
 };
 
 struct msprite1group_t {
@@ -878,6 +878,7 @@ struct model_t {
 
 	// for alias models and skins
 	image_t* q2_skins[ MAX_MD2_SKINS ];
+	shader_t* q2_skins_shader[ MAX_MD2_SKINS ];
 
 	int q2_extradatasize;
 	dsprite2_t* q2_sp2;

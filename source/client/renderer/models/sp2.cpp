@@ -43,7 +43,8 @@ void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
 		sprout->frames[ i ].origin_x = LittleLong( sprin->frames[ i ].origin_x );
 		sprout->frames[ i ].origin_y = LittleLong( sprin->frames[ i ].origin_y );
 		Com_Memcpy( sprout->frames[ i ].name, sprin->frames[ i ].name, MAX_SP2_SKINNAME );
-		mod->q2_skins[ i ] = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
+		image_t* image = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
+		mod->q2_skins_shader[ i ] = R_BuildSp2Shader( image );
 	}
 
 	mod->q2_sp2 = sprout;
@@ -64,31 +65,15 @@ void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// polygon without a surface cache
 
 	dsprite2_t* psprite = tr.currentModel->q2_sp2;
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	e->e.frame %= psprite->numframes;
+
+	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.currentModel->q2_skins_shader[ e->e.frame ], 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	vec3_t point;
 
-	backEnd.currentEntity->e.frame %= psprite->numframes;
-
 	dsp2_frame_t* frame = &psprite->frames[ backEnd.currentEntity->e.frame ];
-
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = R_GetModelByHandle( backEnd.currentEntity->e.hModel )->q2_skins[ backEnd.currentEntity->e.frame ];
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_IDENTITY;
-	stage.stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
-	stage.translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	stage.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	RB_BeginSurface( &shader, 0 );
 
 	float* up = backEnd.viewParms.orient.axis[ 2 ];
 	float* left = backEnd.viewParms.orient.axis[ 1 ];
@@ -152,6 +137,4 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 
 	tess.numIndexes += 6;
 	tess.numVertexes += 4;
-
-	RB_EndSurface();
 }

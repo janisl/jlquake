@@ -3606,6 +3606,47 @@ qhandle_t R_CreateWhiteShader() {
 	return FinishShader()->index;
 }
 
+shader_t* R_BuildSprShader( image_t* image ) {
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, image->imgName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ 0 ].rgbGen = CGEN_IDENTITY;
+	stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	return FinishShader();
+}
+
+shader_t* R_BuildSp2Shader( image_t* image ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, LIGHTMAP_NONE );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ 0 ].rgbGen = CGEN_IDENTITY;
+	stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stages[ 0 ].stateBits = GLS_DEFAULT | GLS_ATEST_GE_80;
+	stages[ 0 ].translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	return FinishShader();
+}
+
 shader_t* R_BuildBsp38Shader( image_t* image, int flags, int lightMapIndex ) {
 	char shaderName[ MAX_QPATH ];
 	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );
@@ -3633,26 +3674,24 @@ shader_t* R_BuildBsp38Shader( image_t* image, int flags, int lightMapIndex ) {
 	shader.cullType = CT_FRONT_SIDED;
 	shader.lightmapIndex = lightMapIndex;
 
-	texModInfo_t texmods[2] = {};
 	stages[ 0 ].active = true;
 	stages[ 0 ].bundle[ 0 ].numImageAnimations = 1;
 	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stages[ 0 ].bundle[ 0 ].texMods = texmods;
 	if ( flags & BSP38SURF_WARP ) {
-		texmods[0].type = TMOD_TURBULENT_OLD;
-		texmods[0].wave.frequency = 1.0f / idMath::TWO_PI;
-		texmods[0].wave.amplitude = 1.0f / 16.0f;
+		texMods[ 0 ][ 0 ].type = TMOD_TURBULENT_OLD;
+		texMods[ 0 ][ 0 ].wave.frequency = 1.0f / idMath::TWO_PI;
+		texMods[ 0 ][ 0 ].wave.amplitude = 1.0f / 16.0f;
 		stages[ 0 ].bundle[ 0 ].numTexMods = 1;
 	}
 	//	Hmmm, no flowing on translucent non-turbulent surfaces
 	if ( flags & BSP38SURF_FLOWING &&
 		( !( flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) || flags & BSP38SURF_WARP ) ) {
 		int i = stages[ 0 ].bundle[ 0 ].numTexMods;
-		texmods[ i ].type = TMOD_SCROLL;
+		texMods[ 0 ][ i ].type = TMOD_SCROLL;
 		if ( flags & BSP38SURF_WARP ) {
-			texmods[ i ].scroll[ 0 ] = -0.5;
+			texMods[ 0 ][ i ].scroll[ 0 ] = -0.5;
 		} else {
-			texmods[ i ].scroll[ 0 ] = -1.6;
+			texMods[ 0 ][ i ].scroll[ 0 ] = -1.6;
 		}
 		stages[ 0 ].bundle[ 0 ].numTexMods++;
 	}
