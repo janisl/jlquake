@@ -919,20 +919,21 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 	}
 }
 
-void CLH2_SetRefEntColourShade( refEntity_t* entity, int colourShade, int drawFlags ) {
+void CLH2_AddColourShadeRefEnt( refEntity_t* entity, int colourShade, int drawFlags ) {
 	//FIXME use separate refEnt
-colourShade = 134;
-	if ( colourShade ) {
-		entity->renderfx |= RF_COLORSHADE;
-		int c = ColorIndex[ colourShade >> 4 ];
-		entity->shaderRGBA[ 0 ] = r_palette[ c ][ 0 ];
-		entity->shaderRGBA[ 1 ] = r_palette[ c ][ 1 ];
-		entity->shaderRGBA[ 2 ] = r_palette[ c ][ 2 ];
-		entity->shaderRGBA[ 3 ] = 255 - ColorPercent[ colourShade & 0x0f ];
-		if ( drawFlags & H2DRF_TRANSLUCENT ) {
-			entity->shaderRGBA[ 3 ] *= 0.4f;
-		}
+	if ( !colourShade ) {
+		return;
 	}
+	entity->renderfx |= RF_COLORSHADE;
+	int c = ColorIndex[ colourShade >> 4 ];
+	entity->shaderRGBA[ 0 ] = r_palette[ c ][ 0 ];
+	entity->shaderRGBA[ 1 ] = r_palette[ c ][ 1 ];
+	entity->shaderRGBA[ 2 ] = r_palette[ c ][ 2 ];
+	entity->shaderRGBA[ 3 ] = 255 - ColorPercent[ colourShade & 0x0f ];
+	if ( drawFlags & H2DRF_TRANSLUCENT ) {
+		entity->shaderRGBA[ 3 ] *= 0.4f;
+	}
+	R_AddRefEntityToScene( entity );
 }
 
 void CLH2_HandleCustomSkin( refEntity_t* entity ) {
@@ -990,9 +991,9 @@ static void CLH2_LinkStaticEntities() {
 		rent.syncBase = pent->syncbase;
 		CLH2_SetRefEntAxis( &rent, pent->state.angles, vec3_origin, pent->state.scale,
 			pent->state.abslight, pent->state.drawflags );
-		CLH2_SetRefEntColourShade( &rent, pent->state.colormap, pent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		R_AddRefEntityToScene( &rent );
+		CLH2_AddColourShadeRefEnt( &rent, pent->state.colormap, pent->state.drawflags );
 	}
 }
 
@@ -1150,7 +1151,6 @@ static void CLH2_RelinkEntities() {
 		rent.syncBase = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
 		CLH2_SetRefEntAxis( &rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.abslight, ent->state.drawflags );
-		CLH2_SetRefEntColourShade( &rent, ent->state.colormap, ent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		if ( i <= cl.qh_maxclients ) {
 			CLH2_SetPlayerColours( &rent, i - 1 );
@@ -1159,6 +1159,7 @@ static void CLH2_RelinkEntities() {
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
 		R_AddRefEntityToScene( &rent );
+		CLH2_AddColourShadeRefEnt( &rent, ent->state.colormap, ent->state.drawflags );
 	}
 }
 
@@ -1295,8 +1296,8 @@ static void CLHW_LinkPacketEntities() {
 		}
 		if ( i == PrevPack->num_entities ) {
 			CLH2_SetRefEntAxis( &ent, angles, vec3_origin, s1->scale, s1->abslight, drawflags );
-			CLH2_SetRefEntColourShade( &ent, s1->colormap, drawflags );
 			R_AddRefEntityToScene( &ent );
+			CLH2_AddColourShadeRefEnt( &ent, s1->colormap, drawflags );
 			continue;		// not in last message
 		}
 
@@ -1321,8 +1322,8 @@ static void CLHW_LinkPacketEntities() {
 		vec3_t angleAdd;
 		HandleEffects( s1->effects, s1->number, &ent, angles, angleAdd );
 		CLH2_SetRefEntAxis( &ent, angles, angleAdd, s1->scale, s1->abslight, drawflags );
-		CLH2_SetRefEntColourShade( &ent, s1->colormap, drawflags );
 		R_AddRefEntityToScene( &ent );
+		CLH2_AddColourShadeRefEnt( &ent, s1->colormap, drawflags );
 
 		// add automatic particle trails
 		int ModelFlags = R_ModelFlags( ent.hModel );
@@ -1512,10 +1513,10 @@ static void CLHW_LinkPlayers() {
 		}
 
 		CLH2_SetRefEntAxis( &ent, angles, angleAdd, state->scale, state->abslight, drawflags );
-		CLH2_SetRefEntColourShade( &ent, colorshade, drawflags );
 		CLH2_HandleCustomSkin( &ent );
 		CLH2_SetPlayerColours( &ent, j );
 		R_AddRefEntityToScene( &ent );
+		CLH2_AddColourShadeRefEnt( &ent, colorshade, drawflags );
 	}
 }
 

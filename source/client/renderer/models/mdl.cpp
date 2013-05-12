@@ -752,12 +752,13 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	R_MdlSetupEntityLighting( e );
 
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( e->e.renderfx & RF_COLORSHADE ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShadeShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-	}
-	if ( r_shadows->value ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+	} else {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+		if ( r_shadows->value ) {
+			R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		}
 	}
 }
 
