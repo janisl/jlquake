@@ -19,8 +19,6 @@
 #include "../../../common/endian.h"
 #include "../../../common/math/Math.h"
 
-#define POWERSUIT_SCALE         4.0F
-
 struct idMd2VertexRemap {
 	int xyzIndex;
 	float s;
@@ -379,7 +377,11 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 		ent->e.backlerp = 0;
 	}
 
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShellShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	} else {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	}
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
@@ -492,30 +494,6 @@ static void GL_DrawMd2FrameLerp( mmd2_t* paliashdr ) {
 	RB_EndSurface();
 }
 
-static void GL_DrawMd2FrameLerpColourShell( mmd2_t* paliashdr ) {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	shaderStage_t stage = {};
-	stage.bundle[ 0 ].image[ 0 ] = tr.whiteImage;
-	stage.bundle[ 0 ].numImageAnimations = 1;
-	stage.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage.rgbGen = CGEN_ENTITY;
-	stage.alphaGen = AGEN_ENTITY;
-	stage.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader_t shader = {};
-	shader.stages[ 0 ] = &stage;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.deforms[0].deformation = DEFORM_WAVE;
-	shader.deforms[0].deformationWave.base = POWERSUIT_SCALE;
-	shader.deforms[0].deformationWave.func = GF_SIN;
-	shader.numDeforms = 1;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	RB_BeginSurface( &shader, 0 );
-	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
@@ -530,12 +508,10 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		qglMatrixMode( GL_MODELVIEW );
 	}
 
-	if ( tess.shader == tr.projectionShadowShader ) {
-		RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-	} else if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
-		GL_DrawMd2FrameLerpColourShell( paliashdr );
-	} else {
+	if ( tess.shader == tr.defaultShader ) {
 		GL_DrawMd2FrameLerp( paliashdr );
+	} else {
+		RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 	}
 
 	if ( ent->e.renderfx & RF_LEFTHAND ) {
