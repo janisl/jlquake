@@ -1016,7 +1016,8 @@ static void VQH_AddViewModel() {
 		gun.frame = cl.h2_viewent.state.frame;
 		gun.skinNum = cl.h2_viewent.state.skinnum;
 		gun.syncBase = cl.h2_viewent.syncbase;
-		CLH2_SetRefEntAxis( &gun, cl.h2_viewent.state.angles, vec3_origin, cl.h2_viewent.state.scale, cl.h2_viewent.state.colormap, cl.h2_viewent.state.abslight, cl.h2_viewent.state.drawflags );
+		CLH2_SetRefEntAxis( &gun, cl.h2_viewent.state.angles, vec3_origin, cl.h2_viewent.state.scale, cl.h2_viewent.state.abslight, cl.h2_viewent.state.drawflags );
+		CLH2_SetRefEntColourShade(&gun, cl.h2_viewent.state.colormap, cl.h2_viewent.state.drawflags );
 		CLH2_HandleCustomSkin( &gun );
 	} else {
 		VectorCopy( cl.q1_viewent.state.origin, gun.origin );

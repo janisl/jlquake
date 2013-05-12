@@ -804,7 +804,7 @@ void CLHW_SavePlayer( QMsg& message ) {
 	state->state_time = cl.hw_frames[ cl.qh_parsecount & UPDATE_MASK_HW ].senttime;
 }
 
-void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int colourShade, int absoluteLight, int drawFlags ) {
+void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleAdd, int scale, int absoluteLight, int drawFlags ) {
 	if ( drawFlags & H2DRF_TRANSLUCENT ) {
 		entity->renderfx |= RF_WATERTRANS;
 	}
@@ -908,7 +908,20 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 		AnglesToAxis( angles, entity->axis );
 	}
 
+	int mls = drawFlags & H2MLS_MASKIN;
+	if ( mls == H2MLS_ABSLIGHT ) {
+		entity->renderfx |= RF_ABSOLUTE_LIGHT;
+		entity->absoluteLight = absoluteLight / 128.0;
+	} else if ( mls != H2MLS_NONE ) {
+		// Use a model light style (25-30)
+		entity->renderfx |= RF_ABSOLUTE_LIGHT;
+		entity->absoluteLight = cl_lightstyle[ 24 + mls ].value[ 0 ] / 2;
+	}
+}
+
+void CLH2_SetRefEntColourShade( refEntity_t* entity, int colourShade, int drawFlags ) {
 	//FIXME use separate refEnt
+colourShade = 134;
 	if ( colourShade ) {
 		entity->renderfx |= RF_COLORSHADE;
 		int c = ColorIndex[ colourShade >> 4 ];
@@ -919,16 +932,6 @@ void CLH2_SetRefEntAxis( refEntity_t* entity, vec3_t entityAngles, vec3_t angleA
 		if ( drawFlags & H2DRF_TRANSLUCENT ) {
 			entity->shaderRGBA[ 3 ] *= 0.4f;
 		}
-	}
-
-	int mls = drawFlags & H2MLS_MASKIN;
-	if ( mls == H2MLS_ABSLIGHT ) {
-		entity->renderfx |= RF_ABSOLUTE_LIGHT;
-		entity->absoluteLight = absoluteLight / 128.0;
-	} else if ( mls != H2MLS_NONE ) {
-		// Use a model light style (25-30)
-		entity->renderfx |= RF_ABSOLUTE_LIGHT;
-		entity->absoluteLight = cl_lightstyle[ 24 + mls ].value[ 0 ] / 2;
 	}
 }
 
@@ -986,7 +989,8 @@ static void CLH2_LinkStaticEntities() {
 		rent.skinNum = pent->state.skinnum;
 		rent.syncBase = pent->syncbase;
 		CLH2_SetRefEntAxis( &rent, pent->state.angles, vec3_origin, pent->state.scale,
-			pent->state.colormap, pent->state.abslight, pent->state.drawflags );
+			pent->state.abslight, pent->state.drawflags );
+		CLH2_SetRefEntColourShade( &rent, pent->state.colormap, pent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		R_AddRefEntityToScene( &rent );
 	}
@@ -1145,7 +1149,8 @@ static void CLH2_RelinkEntities() {
 		rent.frame = ent->state.frame;
 		rent.syncBase = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
-		CLH2_SetRefEntAxis( &rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.colormap, ent->state.abslight, ent->state.drawflags );
+		CLH2_SetRefEntAxis( &rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.abslight, ent->state.drawflags );
+		CLH2_SetRefEntColourShade( &rent, ent->state.colormap, ent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		if ( i <= cl.qh_maxclients ) {
 			CLH2_SetPlayerColours( &rent, i - 1 );
@@ -1289,7 +1294,8 @@ static void CLHW_LinkPacketEntities() {
 			}
 		}
 		if ( i == PrevPack->num_entities ) {
-			CLH2_SetRefEntAxis( &ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags );
+			CLH2_SetRefEntAxis( &ent, angles, vec3_origin, s1->scale, s1->abslight, drawflags );
+			CLH2_SetRefEntColourShade( &ent, s1->colormap, drawflags );
 			R_AddRefEntityToScene( &ent );
 			continue;		// not in last message
 		}
@@ -1314,7 +1320,8 @@ static void CLHW_LinkPacketEntities() {
 
 		vec3_t angleAdd;
 		HandleEffects( s1->effects, s1->number, &ent, angles, angleAdd );
-		CLH2_SetRefEntAxis( &ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags );
+		CLH2_SetRefEntAxis( &ent, angles, angleAdd, s1->scale, s1->abslight, drawflags );
+		CLH2_SetRefEntColourShade( &ent, s1->colormap, drawflags );
 		R_AddRefEntityToScene( &ent );
 
 		// add automatic particle trails
@@ -1504,7 +1511,8 @@ static void CLHW_LinkPlayers() {
 			}
 		}
 
-		CLH2_SetRefEntAxis( &ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags );
+		CLH2_SetRefEntAxis( &ent, angles, angleAdd, state->scale, state->abslight, drawflags );
+		CLH2_SetRefEntColourShade( &ent, colorshade, drawflags );
 		CLH2_HandleCustomSkin( &ent );
 		CLH2_SetPlayerColours( &ent, j );
 		R_AddRefEntityToScene( &ent );
