@@ -822,7 +822,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
 			shader.cullType = CT_TWO_SIDED;
-			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA;
+			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			stage1.rgbGen = CGEN_IDENTITY;
 			stage1.alphaGen = AGEN_IDENTITY;
 			doOverBright = false;

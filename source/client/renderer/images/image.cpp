@@ -324,7 +324,7 @@ byte* R_ConvertImage8To32( byte* DataIn, int Width, int Height, int Mode ) {
 			DataOut[ i * 4 + 0 ] = r_palette[ ColorIndex[ p >> 4 ] ][ 0 ];
 			DataOut[ i * 4 + 1 ] = r_palette[ ColorIndex[ p >> 4 ] ][ 1 ];
 			DataOut[ i * 4 + 2 ] = r_palette[ ColorIndex[ p >> 4 ] ][ 2 ];
-			DataOut[ i * 4 + 3 ] = ColorPercent[ p & 15 ];
+			DataOut[ i * 4 + 3 ] = 255 - ColorPercent[ p & 15 ];
 		}
 		break;
 	}
