@@ -1669,12 +1669,12 @@ qhandle_t R_CreateCrosshairImage() {
 	return R_Build2DShaderFromImage( R_CreateImage( "crosshair", data, 8, 8, false, false, GL_CLAMP ) )->index;
 }
 
-image_t* R_CachePic( const char* path ) {
+qhandle_t R_CacheHexen2CustomSkinShader( const char* path ) {
 	image_t* pic = R_FindImageFile( path, false, false, GL_CLAMP );
 	if ( !pic ) {
-		common->FatalError( "R_CachePic: failed to load %s", path );
+		common->FatalError( "R_CacheHexen2CustomSkinShader: failed to load %s", path );
 	}
-	return pic;
+	return R_BuildHexen2CustomSkinShader( pic )->index;
 }
 
 qhandle_t R_CacheShader( const char* path ) {
@@ -1689,7 +1689,7 @@ qhandle_t R_CacheShader( const char* path ) {
 qhandle_t R_CacheShaderRepeat( const char* path ) {
 	image_t* pic = R_FindImageFile( path, false, false, GL_REPEAT );
 	if ( !pic ) {
-		common->FatalError( "R_CachePic: failed to load %s", path );
+		common->FatalError( "R_CacheShaderRepeat: failed to load %s", path );
 	}
 	return R_Build2DShaderFromImage( pic )->index;
 }

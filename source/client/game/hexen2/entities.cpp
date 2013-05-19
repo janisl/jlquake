@@ -38,7 +38,7 @@ static h2entity_t h2cl_static_entities[ MAX_STATIC_ENTITIES_H2 ];
 
 qhandle_t clh2_player_models[ MAX_PLAYER_CLASS ];
 
-static image_t* clh2_extra_textures[ H2MAX_EXTRA_TEXTURES ];	// generic textures for models
+static qhandle_t clh2_extra_textures[ H2MAX_EXTRA_TEXTURES ];	// generic textures for models
 
 int clhw_playerindex[ MAX_PLAYER_CLASS ];
 
@@ -945,10 +945,10 @@ void CLH2_HandleCustomSkin( refEntity_t* entity ) {
 		if ( !clh2_extra_textures[ entity->skinNum - 100 ] ) {	// Need to load it in
 			char temp[ 40 ];
 			String::Sprintf( temp, sizeof ( temp ), "gfx/skin%d.lmp", entity->skinNum );
-			clh2_extra_textures[ entity->skinNum - 100 ] = R_CachePic( temp );
+			clh2_extra_textures[ entity->skinNum - 100 ] = R_CacheHexen2CustomSkinShader( temp );
 		}
 
-		entity->customSkin = R_GetImageHandle( clh2_extra_textures[ entity->skinNum - 100 ] );
+		entity->customShader = clh2_extra_textures[ entity->skinNum - 100 ];
 	}
 }
 

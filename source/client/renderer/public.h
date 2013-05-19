@@ -238,8 +238,6 @@ enum {
 	QUAKEWORLD_SKIN_HEIGHT = 194,
 };
 
-struct image_t;
-
 struct refEntity_t {
 	refEntityType_t reType;
 	int renderfx;
@@ -409,13 +407,12 @@ void R_EndFrame( int* frontEndMsec, int* backEndMsec );
 
 qhandle_t R_ShaderFromWad( const char* name );
 qhandle_t R_ShaderFromWadRepeat( const char* name );
-qhandle_t R_GetImageHandle( image_t* Image );
 qhandle_t R_LoadRawFontImageFromFile( const char* name, int width, int height );
 qhandle_t R_LoadRawFontImageFromWad( const char* name, int width, int height );
 qhandle_t R_LoadBigFontImage( const char* name );
 qhandle_t R_LoadQuake2FontImage( const char* name );
 qhandle_t R_CreateCrosshairImage();
-image_t* R_CachePic( const char* path );
+qhandle_t R_CacheHexen2CustomSkinShader( const char* path );
 qhandle_t R_CacheShader( const char* path );
 qhandle_t R_CacheShaderRepeat( const char* path );
 void R_CacheTranslatedPic( const idStr& name, const idSkinTranslation& translation, qhandle_t& image, qhandle_t& imageTop, qhandle_t& imageBottom );

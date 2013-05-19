@@ -197,6 +197,8 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 		if ( pskintype->type == ALIAS_SKIN_SINGLE ) {
 			byte* pic = ( byte* )( pskintype + 1 );
 
+			image_t* topTexture;
+			image_t* bottomTexture;
 			if ( skinTranslation ) {
 				idList<byte> picTop;
 				picTop.SetNum( s * 4 );
@@ -205,13 +207,13 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 				R_ExtractTranslatedImages( *skinTranslation, pic, picTop.Ptr(), picBottom.Ptr(), pheader->skinwidth, pheader->skinheight );
 				char topName[ 32 ];
 				sprintf( topName, "%s_%i_top", loadmodel->name, i );
-				pheader->topTexture[ i ] = R_CreateImage( topName, picTop.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+				topTexture = R_CreateImage( topName, picTop.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 				char bottomName[ 32 ];
 				sprintf( bottomName, "%s_%i_bottom", loadmodel->name, i );
-				pheader->bottomTexture[ i ] = R_CreateImage( bottomName, picBottom.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+				bottomTexture = R_CreateImage( bottomName, picBottom.Ptr(), pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 			} else {
-				pheader->topTexture[ i ] = NULL;
-				pheader->bottomTexture[ i ] = NULL;
+				topTexture = NULL;
+				bottomTexture = NULL;
 			}
 
 			byte* pic32 = R_ConvertImage8To32( pic, pheader->skinwidth, pheader->skinheight, texture_mode );
@@ -220,28 +222,20 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 			char name[ 32 ];
 			sprintf( name, "%s_%i", loadmodel->name, i );
 
-			pheader->gl_texture[ i ][ 0 ] =
-				pheader->gl_texture[ i ][ 1 ] =
-					pheader->gl_texture[ i ][ 2 ] =
-						pheader->gl_texture[ i ][ 3 ] =
-							R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+			image_t* gl_texture = R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 			delete[] pic32;
+			image_t* fullBrightTexture;
 			if ( picFullBright ) {
 				char fbname[ 32 ];
 				sprintf( fbname, "%s_%i_fb", loadmodel->name, i );
-				pheader->fullBrightTexture[ i ][ 0 ] =
-					pheader->fullBrightTexture[ i ][ 1 ] =
-						pheader->fullBrightTexture[ i ][ 2 ] =
-							pheader->fullBrightTexture[ i ][ 3 ] =
-								R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+				fullBrightTexture = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 				delete[] picFullBright;
 			} else {
-				pheader->fullBrightTexture[ i ][ 0 ] =
-					pheader->fullBrightTexture[ i ][ 1 ] =
-						pheader->fullBrightTexture[ i ][ 2 ] =
-							pheader->fullBrightTexture[ i ][ 3 ] = NULL;
+				fullBrightTexture = NULL;
 			}
 			pskintype = ( dmdl_skintype_t* )( ( byte* )( pskintype + 1 ) + s );
+			pheader->shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 1, &gl_texture,
+				&fullBrightTexture, topTexture, bottomTexture, loadmodel->q1_flags );
 		} else {
 			// animating skin group.  yuck.
 			pskintype++;
@@ -253,39 +247,43 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 
 			int j;
 			bool haveFullBrightFrame = false;
+			image_t* gl_texture[ 4 ];
+			image_t* fullBrightTexture[ 4 ];
 			for ( j = 0; j < groupskins; j++ ) {
 				char name[ 32 ];
 				sprintf( name, "%s_%i_%i", loadmodel->name, i, j );
 
 				byte* pic32 = R_ConvertImage8To32( ( byte* )pskintype, pheader->skinwidth, pheader->skinheight, texture_mode );
 				byte* picFullBright = R_GetFullBrightImage( ( byte* )pskintype, pic32, pheader->skinwidth, pheader->skinheight );
-				pheader->gl_texture[ i ][ j & 3 ] = R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+				gl_texture[ j & 3 ] = R_CreateImage( name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 				delete[] pic32;
 				if ( picFullBright ) {
 					char fbname[ 32 ];
 					sprintf( fbname, "%s_%i_%i_fb", loadmodel->name, i, j );
-					pheader->fullBrightTexture[ i ][ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
+					fullBrightTexture[ j & 3 ] = R_CreateImage( fbname, picFullBright, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT );
 					delete[] picFullBright;
 					haveFullBrightFrame = true;
 				} else {
-					pheader->fullBrightTexture[ i ][ j & 3 ] = NULL;
+					fullBrightTexture[ j & 3 ] = NULL;
 				}
 				pskintype = ( dmdl_skintype_t* )( ( byte* )pskintype + s );
 			}
 			int k = j;
 			for ( /* */; j < 4; j++ ) {
-				pheader->gl_texture[ i ][ j & 3 ] = pheader->gl_texture[ i ][ j - k ];
-				pheader->fullBrightTexture[ i ][ j & 3 ] = pheader->fullBrightTexture[ i ][ j - k ];
+				gl_texture[ j & 3 ] = gl_texture[ j - k ];
+				fullBrightTexture[ j & 3 ] = fullBrightTexture[ j - k ];
 			}
 			//	Make sure all fullbright textures are either all NULL or all are valid textures.
 			// If some frames don't have it, use a fully transparent image.
 			if ( haveFullBrightFrame ) {
 				for ( int j = 0; j < 4; j++ ) {
-					if ( !pheader->fullBrightTexture[ i ][ j ] ) {
-						pheader->fullBrightTexture[ i ][ j ] = tr.transparentImage;
+					if ( !fullBrightTexture[ j ] ) {
+						fullBrightTexture[ j ] = tr.transparentImage;
 					}
 				}
 			}
+			pheader->shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 4, gl_texture,
+				fullBrightTexture, NULL, NULL, loadmodel->q1_flags );
 		}
 	}
 
@@ -748,7 +746,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	} else if ( e->e.customShader ) {
 		shader = R_GetShaderByHandle( e->e.customShader );
 	} else {
-		shader = tr.defaultShader;
+		shader = paliashdr->shaders[ e->e.skinNum ];
 	}
 	R_AddDrawSurf( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( e->e.renderfx & RF_NOSHADOW ) ) {
@@ -756,7 +754,11 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	}
 }
 
-static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
+	trRefEntity_t* ent = backEnd.currentEntity;
+
+	c_alias_polys += paliashdr->numtris;
+
 	RB_CHECKOVERFLOW( paliashdr->poseverts, paliashdr->numIndexes );
 
 	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {
@@ -793,160 +795,6 @@ static void EmitMdlVertexesAndIndexes( trRefEntity_t* ent, mesh1hdr_t* paliashdr
 		tess.indexes[ numIndexes + i ] = numVerts + paliashdr->indexes[ i ];
 	}
 	tess.numIndexes += paliashdr->numIndexes;
-}
-
-static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	//
-	// draw all the triangles
-	//
-
-	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
-
-	bool doOverBright = !!r_drawOverBrights->integer;
-	shader_t shader = {};
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-	shaderStage_t stage1 = {};
-	shaderStage_t stage2 = {};
-	shaderStage_t stage3 = {};
-	shaderStage_t stage5 = {};
-	shaderStage_t stage6 = {};
-	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	if ( GGameType & GAME_Hexen2 ) {
-		if ( clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS ) {
-			shader.cullType = CT_TWO_SIDED;
-			stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.rgbGen = CGEN_IDENTITY;
-			stage1.alphaGen = AGEN_IDENTITY;
-			doOverBright = false;
-		} else {
-			stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-			if ( clmodel->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY ) ) {
-				stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-				doOverBright = false;
-			} else {
-				stage1.stateBits = GLS_DEPTHMASK_TRUE;
-			}
-			stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		}
-	} else {
-		stage1.stateBits = GLS_DEFAULT;
-		stage1.alphaGen = AGEN_IDENTITY;
-	}
-
-	stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
-	stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
-	stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
-	stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
-	stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
-	stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
-	stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
-	stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
-	stage1.bundle[ 0 ].numImageAnimations = 4;
-	stage1.bundle[ 0 ].imageAnimationSpeed = 10;
-	stage2.bundle[ 0 ].numImageAnimations = 4;
-	stage2.bundle[ 0 ].imageAnimationSpeed = 10;
-	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
-	stage2.alphaGen = AGEN_IDENTITY;
-
-	int numStages = 0;
-	shader.stages[ numStages++ ] = &stage1;
-
-	if ( doOverBright ) {
-		stage2.isOverbright = true;
-		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		shader.stages[ numStages++ ] = &stage2;
-	}
-
-	if ( paliashdr->topTexture[ ent->e.skinNum ] ) {
-		stage5.bundle[ 0 ].image[ 0 ] = paliashdr->topTexture[ ent->e.skinNum ];
-		stage5.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage5.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
-		stage5.alphaGen = AGEN_IDENTITY;
-		stage5.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		shader.stages[ numStages++ ] = &stage5;
-	}
-
-	if ( paliashdr->bottomTexture[ ent->e.skinNum ] ) {
-		stage6.bundle[ 0 ].image[ 0 ] = paliashdr->bottomTexture[ ent->e.skinNum ];
-		stage6.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage6.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
-		stage6.alphaGen = AGEN_IDENTITY;
-		stage6.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		shader.stages[ numStages++ ] = &stage6;
-	}
-
-	if ( paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
-		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ];
-		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 1 ];
-		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 2 ];
-		stage3.bundle[ 0 ].image[ 3 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 3 ];
-		stage3.bundle[ 0 ].numImageAnimations = 4;
-		stage3.bundle[ 0 ].imageAnimationSpeed = 10;
-		stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage3.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		stage3.rgbGen = CGEN_IDENTITY;
-		stage3.alphaGen = AGEN_IDENTITY;
-		shader.stages[ numStages++ ] = &stage3;
-	}
-
-	RB_BeginSurface( &shader, 0 );
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
-static void R_DrawBaseMdlSurfaceCustomSkin( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	//
-	// draw all the triangles
-	//
-
-	shader_t shader = {};
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	shaderStage_t stage1 = {};
-	stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-	stage1.bundle[ 0 ].numImageAnimations = 1;
-	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-	stage1.stateBits = GLS_DEPTHMASK_TRUE;
-	stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader.stages[ 0 ] = &stage1;
-
-	shaderStage_t stage2 = {};
-	if ( r_drawOverBrights->integer ) {
-		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-		stage2.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
-		stage2.alphaGen = AGEN_IDENTITY;
-		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		stage2.isOverbright = true;
-		shader.stages[ 1 ] = &stage2;
-	}
-
-	RB_BeginSurface( &shader, 0 );
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
-void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	c_alias_polys += paliashdr->numtris;
-
-	if ( tess.shader == tr.defaultShader ) {
-		if ( ent->e.customSkin ) {
-			R_DrawBaseMdlSurfaceCustomSkin( ent, paliashdr );
-		} else {
-			R_DrawBaseMdlSurface( ent, paliashdr );
-		}
-	} else {
-		EmitMdlVertexesAndIndexes( ent, paliashdr );
-	}
 }
 
 bool R_MdlHasHexen2Transparency( model_t* Model ) {

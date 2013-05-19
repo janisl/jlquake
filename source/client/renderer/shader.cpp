@@ -25,6 +25,7 @@
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 #include "../../common/content_types.h"
+#include "../hexen2clientdefs.h"
 
 #define SHADER_HASH_SIZE    4096
 #define MAX_SHADERTEXT_HASH 2048
@@ -3710,6 +3711,141 @@ shader_t* R_BuildQuakeWorldCustomSkin( const char* name, image_t* image, image_t
 		stages[ i ].rgbGen = CGEN_IDENTITY;
 		stages[ i ].alphaGen = AGEN_IDENTITY;
 		i++;
+	}
+
+	return FinishShader();
+}
+
+shader_t* R_BuildMdlShader( const char* modelName, int skinIndex, int numImages, image_t** images,
+	image_t** fullBrightImages, image_t* topImage, image_t* bottomImage, int flags ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( modelName, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	String::Cat( shaderName, sizeof( shaderName ), va( "_%d", skinIndex ) );
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, LIGHTMAP_NONE );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	bool doOverBright = !!r_drawOverBrights->integer;
+	stages[ 0 ].active = true;
+	for ( int i = 0; i < numImages; i++ ) {
+		stages[ 0 ].bundle[ 0 ].image[ i ] = images[ i ];
+		stages[ 1 ].bundle[ 0 ].image[ i ] = images[ i ];
+	}
+	stages[ 0 ].bundle[ 0 ].numImageAnimations = numImages;
+	stages[ 1 ].bundle[ 0 ].numImageAnimations = numImages;
+	stages[ 0 ].bundle[ 0 ].imageAnimationSpeed = 10;
+	stages[ 1 ].bundle[ 0 ].imageAnimationSpeed = 10;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 1 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 0 ].rgbGen = CGEN_LIGHTING_DIFFUSE;
+	if ( GGameType & GAME_Hexen2 ) {
+		if ( flags & H2MDLEF_SPECIAL_TRANS ) {
+			shader.cullType = CT_TWO_SIDED;
+			stages[ 0 ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stages[ 0 ].rgbGen = CGEN_IDENTITY;
+			stages[ 0 ].alphaGen = AGEN_IDENTITY;
+			doOverBright = false;
+		} else {
+			stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+			if ( flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY ) ) {
+				stages[ 0 ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+				doOverBright = false;
+			} else {
+				stages[ 0 ].stateBits = GLS_DEPTHMASK_TRUE;
+			}
+			stages[ 0 ].translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		}
+	} else {
+		stages[ 0 ].stateBits = GLS_DEFAULT;
+		stages[ 0 ].alphaGen = AGEN_IDENTITY;
+	}
+
+	int idx = 1;
+	if ( doOverBright ) {
+		stages[ 1 ].active = true;
+		stages[ 1 ].rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+		stages[ 1 ].alphaGen = AGEN_IDENTITY;
+		stages[ 1 ].isOverbright = true;
+		stages[ 1 ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		idx++;
+	}
+
+	if ( topImage ) {
+		stages[ idx ].active = true;
+		stages[ idx ].bundle[ 0 ].image[ 0 ] = topImage;
+		stages[ idx ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ idx ].rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
+		stages[ idx ].alphaGen = AGEN_IDENTITY;
+		stages[ idx ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		idx++;
+	}
+
+	if ( bottomImage ) {
+		stages[ idx ].active = true;
+		stages[ idx ].bundle[ 0 ].image[ 0 ] = bottomImage;
+		stages[ idx ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ idx ].rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
+		stages[ idx ].alphaGen = AGEN_IDENTITY;
+		stages[ idx ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		idx++;
+	}
+
+	if ( fullBrightImages[ 0 ] ) {
+		stages[ idx ].active = true;
+		for ( int i = 0; i < numImages; i++ ) {
+			stages[ idx ].bundle[ 0 ].image[ i ] = fullBrightImages[ i ];
+		}
+		stages[ idx ].bundle[ 0 ].numImageAnimations = numImages;
+		stages[ idx ].bundle[ 0 ].imageAnimationSpeed = 10;
+		stages[ idx ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ idx ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ idx ].rgbGen = CGEN_IDENTITY;
+		stages[ idx ].alphaGen = AGEN_IDENTITY;
+		idx++;
+	}
+
+	return FinishShader();
+}
+
+shader_t* R_BuildHexen2CustomSkinShader( image_t* image ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, LIGHTMAP_NONE );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 0 ].rgbGen = CGEN_LIGHTING_DIFFUSE;
+	stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stages[ 0 ].stateBits = GLS_DEPTHMASK_TRUE;
+	stages[ 0 ].translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	if ( r_drawOverBrights->integer ) {
+		stages[ 1 ].active = true;
+		stages[ 1 ].bundle[ 0 ].image[ 0 ] = image;
+		stages[ 1 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ 1 ].rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+		stages[ 1 ].alphaGen = AGEN_IDENTITY;
+		stages[ 1 ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		stages[ 1 ].isOverbright = true;
 	}
 
 	return FinishShader();

@@ -673,10 +673,7 @@ struct mesh1hdr_t {
 	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
 	idVec2* texCoords;
 	glIndex_t* indexes;
-	image_t* gl_texture[ MAX_MESH1_SKINS ][ 4 ];
-	image_t* fullBrightTexture[ MAX_MESH1_SKINS ][ 4 ];
-	image_t* topTexture[ MAX_MESH1_SKINS ];
-	image_t* bottomTexture[ MAX_MESH1_SKINS ];
+	shader_t* shaders[ MAX_MESH1_SKINS ];
 	mmesh1framedesc_t frames[ 1 ];		// variable sized
 };
 
