@@ -88,7 +88,7 @@ static int vec_to_st[ 6 ][ 3 ] =
 static int sky_texorder[ 6 ] = {0, 2, 1, 3, 4, 5};
 
 //	A sky texture is 256*128, with the right side being a masked overlay
-void R_InitSky( mbrush29_texture_t* mt ) {
+shader_t* R_InitSky( mbrush29_texture_t* mt ) {
 	byte* src = ( byte* )mt + mt->offsets[ 0 ];
 
 	// make an average value for the back to avoid
@@ -118,11 +118,7 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 	transpix[ 2 ] = b / ( 128 * 128 );
 	transpix[ 3 ] = 0;
 
-	if ( !tr.solidskytexture ) {
-		tr.solidskytexture = R_CreateImage( "*solidsky", trans, 128, 128, false, false, GL_REPEAT );
-	} else {
-		R_ReUploadImage( tr.solidskytexture, trans );
-	}
+	image_t* solidskytexture = R_CreateImage( va( "%s_solid", mt->name ), trans, 128, 128, false, false, GL_REPEAT );
 
 	for ( int i = 0; i < 128; i++ ) {
 		for ( int j = 0; j < 128; j++ ) {
@@ -140,11 +136,9 @@ void R_InitSky( mbrush29_texture_t* mt ) {
 		}
 	}
 
-	if ( !tr.alphaskytexture ) {
-		tr.alphaskytexture = R_CreateImage( "*alphasky", trans, 128, 128, false, false, GL_REPEAT );
-	} else {
-		R_ReUploadImage( tr.alphaskytexture, trans );
-	}
+	image_t* alphaskytexture = R_CreateImage( va( "%s_alpha", mt->name ), trans, 128, 128, false, false, GL_REPEAT );
+
+	return R_BuildBsp29SkyShader( mt->name, solidskytexture, alphaskytexture );
 }
 
 void R_SetSky( const char* name, float rotate, vec3_t axis ) {

@@ -98,7 +98,7 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 		Com_Memcpy( tx + 1, mt + 1, pixels );
 
 		if ( !String::NCmp( mt->name,"sky",3 ) ) {
-			R_InitSky( tx );
+			tx->shader = R_InitSky( tx );
 		} else {
 			// see if the texture is allready present
 			char search[ 64 ];

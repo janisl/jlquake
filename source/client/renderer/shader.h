@@ -404,6 +404,7 @@ void R_BackupShaders();
 shader_t* R_BuildSprShader( image_t* image );
 shader_t* R_BuildSp2Shader( image_t* image );
 shader_t* R_BuildMd2Shader( image_t* image );
+shader_t* R_BuildBsp29SkyShader( const char* name, image_t* imageSolid, image_t* imageAlpha );
 shader_t* R_BuildBsp38Shader( image_t* image, int flags, int lightMaptIndex );
 
 void RB_BeginSurface( shader_t* shader, int fogNum );

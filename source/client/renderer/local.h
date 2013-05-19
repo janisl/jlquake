@@ -367,9 +367,6 @@ struct trGlobals_t {
 	image_t* fogImage;
 	image_t* particleImage;						// little dot for particles
 
-	image_t* solidskytexture;
-	image_t* alphaskytexture;
-
 	shader_t* defaultShader;
 
 	shader_t* shadowShader;
@@ -384,7 +381,6 @@ struct trGlobals_t {
 	shader_t* particleShader;
 	shader_t* colorShadeShader;
 	shader_t* colorShellShader;
-	shader_t* spriteDummyShader;
 
 	float identityLight;						// 1.0 / ( 1 << overbrightBits )
 	int identityLightByte;						// identityLight * 255
@@ -825,6 +821,7 @@ struct gllightmapstate_t {
 
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
+void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
@@ -860,7 +857,7 @@ Skies
 ====================================================================
 */
 
-void R_InitSky( mbrush29_texture_t* mt );
+shader_t* R_InitSky( mbrush29_texture_t* mt );
 void R_ClearSkyBox();
 void R_AddSkySurface( mbrush38_surface_t* fa );
 void R_DrawSkyBoxQ2( surfaceType_t* dummy );

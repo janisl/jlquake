@@ -515,6 +515,14 @@ dynamic:
 	}
 }
 
+void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex ) {
+	if ( surf->texinfo->texture->shader ) {
+		R_AddDrawSurf( ( surfaceType_t* )surf, surf->texinfo->texture->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	} else {
+		R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	}
+}
+
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
@@ -523,7 +531,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
 	texModInfo_t texmod1 = {};
-	texModInfo_t texmod2 = {};
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
@@ -555,36 +562,12 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.bundle[ 0 ].texMods = &texmod1;
 		stage1.bundle[ 0 ].numTexMods = 1;
 		shader.stages[ 0 ] = &stage1;
+
+		RB_BeginSurface( &shader, 0 );
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
 		//
-		stage1.bundle[ 0 ].image[ 0 ] = tr.solidskytexture;
-		stage1.bundle[ 0 ].numImageAnimations = 1;
-		stage1.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
-		texmod1.type = TMOD_SCROLL;
-		texmod1.scroll[ 0 ] = 8 / 128.0f;
-		texmod1.scroll[ 1 ] = 8 / 128.0f;
-		stage1.bundle[ 0 ].texMods = &texmod1;
-		stage1.bundle[ 0 ].numTexMods = 1;
-		stage1.stateBits = GLS_DEFAULT;
-		stage1.rgbGen = CGEN_IDENTITY;
-		stage1.alphaGen = AGEN_IDENTITY;
-
-		stage2.bundle[ 0 ].image[ 0 ] = tr.alphaskytexture;
-		stage2.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
-		texmod2.type = TMOD_SCROLL;
-		texmod2.scroll[ 0 ] = 16 / 128.0f;
-		texmod2.scroll[ 1 ] = 16 / 128.0f;
-		stage2.bundle[ 0 ].texMods = &texmod2;
-		stage2.bundle[ 0 ].numTexMods = 1;
-		stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		stage2.rgbGen = CGEN_IDENTITY;
-		stage2.alphaGen = AGEN_IDENTITY;
-
-		shader.stages[ 0 ] = &stage1;
-		shader.stages[ 1 ] = &stage2;
 	} else {
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
@@ -637,14 +620,14 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			shader.stages[ 2 ] = &stage3;
 		}
+
+		RB_BeginSurface( &shader, 0 );
 	}
 
 	if ( !( s->flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
 		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
 		R_RenderDynamicLightmaps( s );
 	}
-
-	RB_BeginSurface( &shader, 0 );
 
 	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
 		int numVerts = tess.numVertexes;
@@ -679,12 +662,14 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		}
 	}
 
-	RB_EndSurface();
+	if ( !( s->flags & BRUSH29_SURF_DRAWSKY ) ) {
+		RB_EndSurface();
+	}
 }
 
 void R_DrawWaterSurfaces(int& forcedSortIndex) {
 	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
-		R_AddDrawSurf( (surfaceType_t*)s, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex++ );
+		R_AddWorldSurfaceBsp29( s, forcedSortIndex++ );
 	}
 	waterchain = NULL;
 }

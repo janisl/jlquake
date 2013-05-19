@@ -421,7 +421,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 		// draw the polygon
 		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
 			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			R_AddDrawSurf( (surfaceType_t* )psurf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+			R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
 		}
 	}
 }
@@ -670,7 +670,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
 			} else {
-				R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+				R_AddWorldSurfaceBsp29( surf, 0 );
 			}
 		}
 	}

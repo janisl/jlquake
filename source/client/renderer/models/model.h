@@ -74,6 +74,7 @@ struct mbrush29_vertex_t {
 struct mbrush29_texture_t {
 	char name[ 16 ];
 	unsigned width, height;
+	shader_t* shader;
 	image_t* gl_texture;
 	image_t* fullBrightTexture;
 	int anim_total;						// total tenths in sequence ( 0 = no)

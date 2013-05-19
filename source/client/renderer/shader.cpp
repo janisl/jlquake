@@ -2951,10 +2951,6 @@ static void CreateInternalShaders() {
 	shader.sort = SS_STENCIL_SHADOW;
 	tr.shadowShader = FinishShader();
 
-	String::NCpyZ( shader.name, "<sprite>", sizeof ( shader.name ) );
-	shader.sort = SS_SEE_THROUGH;
-	tr.spriteDummyShader = FinishShader();
-
 	R_CreateColourShadeShader();
 	R_CreateColourShellShader();
 }
@@ -3668,6 +3664,38 @@ shader_t* R_BuildMd2Shader( image_t* image ) {
 	stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
 	stages[ 0 ].stateBits = GLS_DEFAULT;
 	stages[ 0 ].translucentStateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	return FinishShader();
+}
+
+shader_t* R_BuildBsp29SkyShader( const char* name, image_t* imageSolid, image_t* imageAlpha ) {
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, name, sizeof ( shader.name ) );
+	shader.cullType = CT_FRONT_SIDED;
+	shader.lightmapIndex = LIGHTMAP_NONE;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = imageSolid;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
+	texMods[ 0 ][ 0 ].type = TMOD_SCROLL;
+	texMods[ 0 ][ 0 ].scroll[ 0 ] = 8 / 128.0f;
+	texMods[ 0 ][ 0 ].scroll[ 1 ] = 8 / 128.0f;
+	stages[ 0 ].bundle[ 0 ].numTexMods = 1;
+	stages[ 0 ].stateBits = GLS_DEFAULT;
+	stages[ 0 ].rgbGen = CGEN_IDENTITY;
+	stages[ 0 ].alphaGen = AGEN_IDENTITY;
+
+	stages[ 1 ].active = true;
+	stages[ 1 ].bundle[ 0 ].image[ 0 ] = imageAlpha;
+	stages[ 1 ].bundle[ 0 ].tcGen = TCGEN_QUAKE_SKY;
+	texMods[ 1 ][ 0 ].type = TMOD_SCROLL;
+	texMods[ 1 ][ 0 ].scroll[ 0 ] = 16 / 128.0f;
+	texMods[ 1 ][ 0 ].scroll[ 1 ] = 16 / 128.0f;
+	stages[ 1 ].bundle[ 0 ].numTexMods = 1;
+	stages[ 1 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stages[ 1 ].rgbGen = CGEN_IDENTITY;
+	stages[ 1 ].alphaGen = AGEN_IDENTITY;
 
 	return FinishShader();
 }
