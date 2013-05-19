@@ -403,6 +403,7 @@ void R_PurgeShaders();
 void R_BackupShaders();
 shader_t* R_BuildSprShader( image_t* image );
 shader_t* R_BuildSp2Shader( image_t* image );
+shader_t* R_BuildQuakeWorldCustomSkin( const char* name, image_t* image, image_t* topImage, image_t* bottomImage, image_t* fullBrightImage );
 shader_t* R_BuildMd2Shader( image_t* image );
 shader_t* R_BuildBsp29Shader( struct mbrush29_texture_t* texture, int lightMapIndex );
 shader_t* R_BuildBsp29WarpShader( const char* name, image_t* image );

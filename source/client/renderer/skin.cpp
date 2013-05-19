@@ -32,13 +32,13 @@ void R_InitSkins() {
 	skin->surfaces[ 0 ]->shader = tr.defaultShader;
 }
 
-bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom ) {
+qhandle_t R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation ) {
 	int width;
 	int height;
 	byte* pixels;
 	R_LoadPCX( name, &pixels, NULL, &width, &height );
 	if ( !pixels ) {
-		return false;
+		return 0;
 	}
 
 	idList<byte> out;
@@ -60,12 +60,18 @@ bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& transl
 	pixelsBottom.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
 	R_ExtractTranslatedImages( translation, out.Ptr(), pixelsTop.Ptr(), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
 	byte* pic32 = R_ConvertImage8To32( out.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, IMG8MODE_Skin );
-	base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	byte* picFullBright = R_GetFullBrightImage( out.Ptr(), pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
+	image_t* base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
 	delete[] pic32;
-	top = R_CreateImage( va( "%s*top", name ), pixelsTop.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
-	bottom = R_CreateImage( va( "%s*bottom", name ), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	image_t* top = R_CreateImage( va( "%s*top", name ), pixelsTop.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	image_t* bottom = R_CreateImage( va( "%s*bottom", name ), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	image_t* fullBright = NULL;
+	if ( picFullBright ) {
+		fullBright = R_CreateImage( va( "%s*fb", name ), picFullBright, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+		delete[] picFullBright;
+	}
 
-	return true;
+	return R_BuildQuakeWorldCustomSkin( name, base, top, bottom, fullBright )->index;
 }
 
 qhandle_t R_RegisterSkinQ2( const char* name ) {

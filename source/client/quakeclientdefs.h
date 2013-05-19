@@ -18,6 +18,7 @@
 #define __QUAKECLIENTDEFS_H__
 
 #include "../common/quakedefs.h"
+#include "renderer/public.h"
 
 //	Model effects
 enum
@@ -87,9 +88,7 @@ struct image_t;
 struct qw_skin_t {
 	char name[ 16 ];
 	bool failedload;		// the name isn't a valid skin
-	image_t* base;
-	image_t* top;
-	image_t* bottom;
+	qhandle_t shader;
 };
 
 struct q1player_info_t {

@@ -3643,6 +3643,78 @@ shader_t* R_BuildSp2Shader( image_t* image ) {
 	return FinishShader();
 }
 
+
+shader_t* R_BuildQuakeWorldCustomSkin( const char* name, image_t* image, image_t* topImage, image_t* bottomImage, image_t* fullBrightImage ) {
+	char shaderName[ MAX_QPATH ];
+	String::StripExtension2( name, shaderName, sizeof ( shaderName ) );
+	String::FixPath( shaderName );
+	shader_t* loadedShader = R_FindLoadedShader( shaderName, LIGHTMAP_NONE );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, shaderName, sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.cullType = CT_FRONT_SIDED;
+
+	int i = 0;
+
+	stages[ i ].active = true;
+	stages[ i ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ i ].rgbGen = CGEN_LIGHTING_DIFFUSE;
+	if ( GGameType & GAME_Hexen2 ) {
+		stages[ i ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+		stages[ i ].stateBits = GLS_DEPTHMASK_TRUE;
+		stages[ i ].translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stages[ i ].alphaGen = AGEN_IDENTITY;
+		stages[ i ].stateBits = GLS_DEFAULT;
+	}
+	i++;
+
+	if ( r_drawOverBrights->integer ) {
+		stages[ i ].active = true;
+		stages[ i ].bundle[ 0 ].image[ 0 ] = image;
+		stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ i ].isOverbright = true;
+		stages[ i ].rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+		stages[ i ].alphaGen = AGEN_IDENTITY;
+		stages[ i ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		i++;
+	}
+
+	stages[ i ].active = true;
+	stages[ i ].bundle[ 0 ].image[ 0 ] = topImage;
+	stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ i ].rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
+	stages[ i ].alphaGen = AGEN_IDENTITY;
+	stages[ i ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	i++;
+
+	stages[ i ].active = true;
+	stages[ i ].bundle[ 0 ].image[ 0 ] = bottomImage;
+	stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ i ].rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
+	stages[ i ].alphaGen = AGEN_IDENTITY;
+	stages[ i ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	i++;
+
+	if ( fullBrightImage ) {
+		stages[ i ].active = true;
+		stages[ i ].bundle[ 0 ].image[ 0 ] = fullBrightImage;
+		stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ i ].stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ i ].rgbGen = CGEN_IDENTITY;
+		stages[ i ].alphaGen = AGEN_IDENTITY;
+		i++;
+	}
+
+	return FinishShader();
+}
+
 shader_t* R_BuildMd2Shader( image_t* image ) {
 	char shaderName[ MAX_QPATH ];
 	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );

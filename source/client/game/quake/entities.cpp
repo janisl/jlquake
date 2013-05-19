@@ -585,11 +585,8 @@ static void CLQW_HandlePlayerSkin( refEntity_t* entity, int playerNum ) {
 		CLQW_SkinFind( &cl.q1_players[ playerNum ] );
 	}
 	qw_skin_t* skin = cl.q1_players[ playerNum ].skin;
-	if ( skin && CLQW_SkinCache( skin ) )
-	{
-		entity->customSkin = R_GetImageHandle( skin->base );
-		entity->customSkinTop = R_GetImageHandle( skin->top );
-		entity->customSkinBottom = R_GetImageHandle( skin->bottom );
+	if ( skin && CLQW_SkinCache( skin ) ) {
+		entity->customShader = skin->shader;
 	}
 	CLQ1_SetPlayerColours( entity, playerNum );
 }

@@ -43,8 +43,6 @@ struct idMdlVertexRemap {
 	bool onBackSide;
 };
 
-byte q1_player_8bit_texels[ 320 * 200 ];
-
 static float aliastransform[ 3 ][ 4 ];
 
 static vec3_t mins;
@@ -214,14 +212,6 @@ static void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl
 			} else {
 				pheader->topTexture[ i ] = NULL;
 				pheader->bottomTexture[ i ] = NULL;
-			}
-
-			// save 8 bit texels for the player model to remap
-			if ( ( GGameType & GAME_Quake ) && !String::Cmp( loadmodel->name,"progs/player.mdl" ) ) {
-				if ( s > ( int )sizeof ( q1_player_8bit_texels ) ) {
-					common->FatalError( "Player skin too large" );
-				}
-				Com_Memcpy( q1_player_8bit_texels, pic, s );
 			}
 
 			byte* pic32 = R_ConvertImage8To32( pic, pheader->skinwidth, pheader->skinheight, texture_mode );
@@ -752,13 +742,17 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	R_MdlSetupEntityLighting( e );
 
 	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
+	shader_t* shader;
 	if ( e->e.renderfx & RF_COLORSHADE ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShadeShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+		shader = tr.colorShadeShader;
+	} else if ( e->e.customShader ) {
+		shader = R_GetShaderByHandle( e->e.customShader );
 	} else {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-		if ( r_shadows->value ) {
-			R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
-		}
+		shader = tr.defaultShader;
+	}
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	if ( r_shadows->value && !( e->e.renderfx & RF_NOSHADOW ) ) {
+		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 
@@ -939,75 +933,13 @@ static void R_DrawBaseMdlSurfaceCustomSkin( trRefEntity_t* ent, mesh1hdr_t* pali
 	RB_EndSurface();
 }
 
-static void R_DrawBaseMdlSurfaceCustomPlayerSkin( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
-	//
-	// draw all the triangles
-	//
-
-	shader_t shader = {};
-	int numStages = 0;
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	shaderStage_t stage1 = {};
-	stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-	stage1.bundle[ 0 ].numImageAnimations = 1;
-	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
-	if ( GGameType & GAME_Hexen2 ) {
-		stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-		stage1.stateBits = GLS_DEPTHMASK_TRUE;
-		stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	} else {
-		stage1.alphaGen = AGEN_IDENTITY;
-		stage1.stateBits = GLS_DEFAULT;
-	}
-	shader.stages[ numStages++ ] = &stage1;
-
-	shaderStage_t stage2 = {};
-	if ( r_drawOverBrights->integer ) {
-		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-		stage2.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage2.isOverbright = true;
-		stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
-		stage2.alphaGen = AGEN_IDENTITY;
-		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-		shader.stages[ numStages++ ] = &stage2;
-	}
-
-	shaderStage_t stage5 = {};
-	stage5.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkinTop ];
-	stage5.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage5.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
-	stage5.alphaGen = AGEN_IDENTITY;
-	stage5.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader.stages[ numStages++ ] = &stage5;
-
-	shaderStage_t stage6 = {};
-	stage6.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkinBottom ];
-	stage6.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-	stage6.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
-	stage6.alphaGen = AGEN_IDENTITY;
-	stage6.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-	shader.stages[ numStages++ ] = &stage6;
-
-	//FIXME Quake can have fullbrights as well.
-
-	RB_BeginSurface( &shader, 0 );
-	EmitMdlVertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	c_alias_polys += paliashdr->numtris;
 
 	if ( tess.shader == tr.defaultShader ) {
-		if ( ent->e.customSkin && ent->e.customSkinTop ) {
-			R_DrawBaseMdlSurfaceCustomPlayerSkin( ent, paliashdr );
-		} else if ( ent->e.customSkin ) {
+		if ( ent->e.customSkin ) {
 			R_DrawBaseMdlSurfaceCustomSkin( ent, paliashdr );
 		} else {
 			R_DrawBaseMdlSurface( ent, paliashdr );

@@ -271,8 +271,6 @@ struct refEntity_t {
 	// texturing
 	int skinNum;				// inline skin index
 	qhandle_t customSkin;		// NULL for default skin
-	qhandle_t customSkinTop;
-	qhandle_t customSkinBottom;
 	qhandle_t customShader;		// use one image for the entire thing
 
 	// misc
@@ -456,7 +454,7 @@ bool R_LoadDynamicShader( const char* shadername, const char* shadertext );
 
 qhandle_t R_RegisterSkin( const char* name );
 qhandle_t R_RegisterSkinQ2( const char* name );
-bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom );
+qhandle_t R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation );
 bool R_GetSkinModel( qhandle_t skinid, const char* type, char* name );
 qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
 

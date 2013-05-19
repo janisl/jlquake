@@ -86,7 +86,7 @@ bool CLQW_SkinCache( qw_skin_t* skin ) {
 		return false;
 	}
 
-	if ( skin->base ) {
+	if ( skin->shader ) {
 		return true;
 	}
 
@@ -104,7 +104,8 @@ bool CLQW_SkinCache( qw_skin_t* skin ) {
 		}
 	}
 
-	if ( !R_LoadQuakeWorldSkinData( name, clq1_translation_info, skin->base, skin->top, skin->bottom ) ) {
+	skin->shader = R_LoadQuakeWorldSkinData( name, clq1_translation_info );
+	if ( !skin->shader ) {
 		skin->failedload = true;
 		common->Printf( "Skin %s was malformed.  You should delete it.\n", name );
 		return false;

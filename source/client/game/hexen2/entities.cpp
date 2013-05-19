@@ -924,7 +924,7 @@ void CLH2_AddColourShadeRefEnt( refEntity_t* entity, int colourShade, int drawFl
 	if ( !colourShade ) {
 		return;
 	}
-	entity->renderfx |= RF_COLORSHADE;
+	entity->renderfx |= RF_COLORSHADE | RF_NOSHADOW;
 	int c = ColorIndex[ colourShade >> 4 ];
 	entity->shaderRGBA[ 0 ] = r_palette[ c ][ 0 ];
 	entity->shaderRGBA[ 1 ] = r_palette[ c ][ 1 ];

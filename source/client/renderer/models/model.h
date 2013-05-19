@@ -995,6 +995,5 @@ srfGridMesh_t* R_GridInsertRow( srfGridMesh_t* Grid, int Row, int Column, vec3_t
 void R_FreeSurfaceGridMesh( srfGridMesh_t* Grid );
 
 extern model_t* loadmodel;
-extern byte q1_player_8bit_texels[ 320 * 200 ];
 extern mbrush29_texture_t* r_notexture_mip;
 extern world_t s_worldData;
