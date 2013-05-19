@@ -820,6 +820,8 @@ struct gllightmapstate_t {
 };
 
 void GL_BuildLightmaps();
+void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
+bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
 void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );

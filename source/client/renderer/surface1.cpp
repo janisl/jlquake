@@ -383,7 +383,7 @@ void GL_BuildLightmaps() {
 }
 
 //	Returns the proper texture for a given time and base texture
-static void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
+void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
 	if ( backEnd.currentEntity->e.frame ) {
 		if ( base->alternate_anims ) {
 			base = base->alternate_anims;
@@ -409,7 +409,7 @@ static void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bun
 }
 
 //	Returns the proper texture for a given time and base texture
-static bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
+bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
 	if ( backEnd.currentEntity->e.frame ) {
 		if ( base->alternate_anims ) {
 			base = base->alternate_anims;
@@ -530,7 +530,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shaderStage_t stage1 = {};
 	shaderStage_t stage2 = {};
 	shaderStage_t stage3 = {};
-	texModInfo_t texmod1 = {};
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
@@ -538,32 +537,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		//
 		// subdivided water surface warp
 		//
-		stage1.rgbGen = CGEN_IDENTITY;
-		if ( GGameType & GAME_Quake && r_wateralpha->value < 1 ) {
-			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.alphaGen = AGEN_CONST;
-			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
-		} else if ( ( GGameType & GAME_Hexen2 ) &&
-			( !String::NICmp( s->texinfo->texture->name, "*rtex078", 8 ) ||
-			!String::NICmp( s->texinfo->texture->name, "*lowlight", 9 ) ) ) {
-			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			stage1.alphaGen = AGEN_CONST;
-			stage1.constantColor[ 3 ] = 102;
-		} else {
-			stage1.stateBits = GLS_DEFAULT;
-			stage1.alphaGen = AGEN_IDENTITY;
-		}
-		texmod1.type = TMOD_TURBULENT_OLD;
-		texmod1.wave.frequency = 1.0f / idMath::TWO_PI;
-		texmod1.wave.amplitude = 1.0f / 8.0f;
-		stage1.bundle[ 0 ].image[ 0 ] = s->texinfo->texture->gl_texture;
-		stage1.bundle[ 0 ].numImageAnimations = 1;
-		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage1.bundle[ 0 ].texMods = &texmod1;
-		stage1.bundle[ 0 ].numTexMods = 1;
-		shader.stages[ 0 ] = &stage1;
-
-		RB_BeginSurface( &shader, 0 );
 	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
 		//
 		// subdivided sky warp
@@ -662,7 +635,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		}
 	}
 
-	if ( !( s->flags & BRUSH29_SURF_DRAWSKY ) ) {
+	if ( !( s->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB ) ) ) {
 		RB_EndSurface();
 	}
 }

@@ -121,6 +121,9 @@ static void Mod_LoadTextures( bsp29_lump_t* l ) {
 					tx->fullBrightTexture = NULL;
 				}
 			}
+			if ( mt->name[ 0 ] == '*' ) {
+				tx->shader = R_BuildBsp29WarpShader( tx->name, tx->gl_texture );
+			}
 		}
 	}
 

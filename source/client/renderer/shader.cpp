@@ -3668,6 +3668,40 @@ shader_t* R_BuildMd2Shader( image_t* image ) {
 	return FinishShader();
 }
 
+shader_t* R_BuildBsp29WarpShader( const char* name, image_t* image ) {
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, name, sizeof ( shader.name ) );
+	shader.cullType = CT_FRONT_SIDED;
+	shader.lightmapIndex = LIGHTMAP_NONE;
+
+	stages[ 0 ].active = true;
+	stages[ 0 ].rgbGen = CGEN_IDENTITY;
+	if ( GGameType & GAME_Quake && r_wateralpha->value < 1 ) {
+		stages[ 0 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ 0 ].alphaGen = AGEN_CONST;
+		stages[ 0 ].constantColor[ 3 ] = r_wateralpha->value * 255;
+	} else if ( ( GGameType & GAME_Hexen2 ) &&
+		( !String::NICmp( name, "*rtex078", 8 ) ||
+		!String::NICmp( name, "*lowlight", 9 ) ) ) {
+		stages[ 0 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ 0 ].alphaGen = AGEN_CONST;
+		stages[ 0 ].constantColor[ 3 ] = 102;
+	} else {
+		stages[ 0 ].stateBits = GLS_DEFAULT;
+		stages[ 0 ].alphaGen = AGEN_IDENTITY;
+	}
+	texMods[ 0 ][ 0 ].type = TMOD_TURBULENT_OLD;
+	texMods[ 0 ][ 0 ].wave.frequency = 1.0f / idMath::TWO_PI;
+	texMods[ 0 ][ 0 ].wave.amplitude = 1.0f / 8.0f;
+	stages[ 0 ].bundle[ 0 ].image[ 0 ] = image;
+	stages[ 0 ].bundle[ 0 ].numImageAnimations = 1;
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stages[ 0 ].bundle[ 0 ].numTexMods = 1;
+
+	return FinishShader();
+}
+
 shader_t* R_BuildBsp29SkyShader( const char* name, image_t* imageSolid, image_t* imageAlpha ) {
 	R_ClearGlobalShader();
 
