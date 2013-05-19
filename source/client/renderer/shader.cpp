@@ -3668,6 +3668,64 @@ shader_t* R_BuildMd2Shader( image_t* image ) {
 	return FinishShader();
 }
 
+shader_t* R_BuildBsp29Shader( mbrush29_texture_t* texture, int lightMapIndex ) {
+	shader_t* loadedShader = R_FindLoadedShader( texture->name, lightMapIndex );
+	if ( loadedShader ) {
+		return loadedShader;
+	}
+
+	R_ClearGlobalShader();
+
+	String::NCpyZ( shader.name, texture->name, sizeof ( shader.name ) );
+	shader.cullType = CT_FRONT_SIDED;
+	shader.lightmapIndex = lightMapIndex;
+
+	stages[ 0 ].active = true;
+	R_TextureAnimationQ1( texture, &stages[ 0 ].bundle[ 0 ] );
+	stages[ 0 ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	if ( GGameType & GAME_Hexen2 ) {
+		stages[ 0 ].rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+		stages[ 0 ].alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	} else {
+		stages[ 0 ].rgbGen = CGEN_IDENTITY;
+		stages[ 0 ].alphaGen = AGEN_IDENTITY;
+	}
+	stages[ 0 ].stateBits = GLS_DEFAULT;
+	stages[ 0 ].translucentStateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+
+	stages[ 1 ].active = true;
+	stages[ 1 ].rgbGen = CGEN_IDENTITY;
+	stages[ 1 ].alphaGen = AGEN_IDENTITY;
+	stages[ 1 ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+	stages[ 1 ].bundle[ 0 ].image[ 0 ] = tr.lightmaps[ lightMapIndex ];
+	stages[ 1 ].bundle[ 0 ].isLightmap = true;
+	stages[ 1 ].bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+
+	int i = 2;
+	if ( r_drawOverBrights->integer ) {
+		stages[ i ].active = true;
+		R_TextureAnimationQ1( texture, &stages[ i ].bundle[ 0 ] );
+		stages[ i ].isOverbright = true;
+		stages[ i ].rgbGen = CGEN_IDENTITY;
+		stages[ i ].alphaGen = AGEN_IDENTITY;
+		stages[ i ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ i ].bundle[ 1 ].image[ 0 ] = tr.lightmaps[ lightMapIndex + MAX_LIGHTMAPS / 2 ];
+		stages[ i ].bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+		i++;
+	}
+
+	if ( R_TextureFullbrightAnimationQ1( texture, &stages[ i ].bundle[ 0 ] ) ) {
+		stages[ i ].active = true;
+		stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stages[ i ].rgbGen = CGEN_IDENTITY;
+		stages[ i ].alphaGen = AGEN_IDENTITY;
+		stages[ i ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	}
+
+	return FinishShader();
+}
+
 shader_t* R_BuildBsp29WarpShader( const char* name, image_t* image ) {
 	R_ClearGlobalShader();
 

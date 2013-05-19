@@ -215,10 +215,6 @@ store:
 }
 
 static void GL_CreateSurfaceLightmapQ1( mbrush29_surface_t* surf ) {
-	if ( surf->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB ) ) {
-		return;
-	}
-
 	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
 	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
 
@@ -353,14 +349,22 @@ void GL_BuildLightmaps() {
 		r_pcurrentvertbase = m->brush29_vertexes;
 		tr.currentModel = m;
 		for ( int i = 0; i < m->brush29_numsurfaces; i++ ) {
-			GL_CreateSurfaceLightmapQ1( m->brush29_surfaces + i );
-			if ( m->brush29_surfaces[ i ].flags & BRUSH29_SURF_DRAWTURB ) {
+			mbrush29_surface_t* surf = &m->brush29_surfaces[ i ];
+			if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
 				continue;
 			}
-			if ( m->brush29_surfaces[ i ].flags & BRUSH29_SURF_DRAWSKY ) {
+			if ( surf->flags & BRUSH29_SURF_DRAWSKY ) {
 				continue;
 			}
-			BuildSurfaceDisplayList( m->brush29_surfaces + i );
+			GL_CreateSurfaceLightmapQ1( surf );
+			BuildSurfaceDisplayList( surf );
+
+			surf->shader = R_BuildBsp29Shader( surf->texinfo->texture, surf->lightmaptexturenum );
+			if ( surf->texinfo->texture->alternate_anims ) {
+				surf->altShader = R_BuildBsp29Shader( surf->texinfo->texture->alternate_anims, surf->lightmaptexturenum );
+			} else {
+				surf->altShader = surf->shader;
+			}
 		}
 	}
 
@@ -384,12 +388,6 @@ void GL_BuildLightmaps() {
 
 //	Returns the proper texture for a given time and base texture
 void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
-	if ( backEnd.currentEntity->e.frame ) {
-		if ( base->alternate_anims ) {
-			base = base->alternate_anims;
-		}
-	}
-
 	if ( !base->anim_total ) {
 		bundle->image[ 0 ] = base->gl_texture;
 		bundle->numImageAnimations = 1;
@@ -410,12 +408,6 @@ void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
 
 //	Returns the proper texture for a given time and base texture
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle ) {
-	if ( backEnd.currentEntity->e.frame ) {
-		if ( base->alternate_anims ) {
-			base = base->alternate_anims;
-		}
-	}
-
 	if ( !base->anim_total ) {
 		bundle->image[ 0 ] = base->fullBrightTexture;
 		bundle->numImageAnimations = 1;
@@ -516,87 +508,18 @@ dynamic:
 }
 
 void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex ) {
-	if ( surf->texinfo->texture->shader ) {
-		R_AddDrawSurf( ( surfaceType_t* )surf, surf->texinfo->texture->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	shader_t* shader;
+	if ( backEnd.currentEntity->e.frame ) {
+		shader = surf->altShader;
 	} else {
-		R_AddDrawSurf( ( surfaceType_t* )surf, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+		shader = surf->shader;
 	}
+	R_AddDrawSurf( ( surfaceType_t* )surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 //	Systems that have fast state and texture changes can just do everything
 // as it passes with no need to sort
 void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
-	shader_t shader = {};
-	shaderStage_t stage1 = {};
-	shaderStage_t stage2 = {};
-	shaderStage_t stage3 = {};
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
-
-	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
-		//
-		// subdivided water surface warp
-		//
-	} else if ( s->flags & BRUSH29_SURF_DRAWSKY ) {
-		//
-		// subdivided sky warp
-		//
-	} else {
-		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
-		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		if ( GGameType & GAME_Hexen2 ) {
-			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
-			stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-		} else {
-			stage1.rgbGen = CGEN_IDENTITY;
-			stage1.alphaGen = AGEN_IDENTITY;
-		}
-		stage1.stateBits = GLS_DEFAULT;
-		stage1.translucentStateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-		shader.stages[ 0 ] = &stage1;
-		if ( qglActiveTextureARB ) {
-			shader.multitextureEnv = GL_MODULATE;
-
-			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-			stage1.bundle[ 1 ].numImageAnimations = 1;
-			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-			stage1.bundle[ 1 ].isLightmap = true;
-
-			if ( r_drawOverBrights->integer ) {
-				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
-				stage2.isOverbright = true;
-				stage2.rgbGen = CGEN_IDENTITY;
-				stage2.alphaGen = AGEN_IDENTITY;
-				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-				stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
-				stage2.bundle[ 1 ].numImageAnimations = 1;
-				stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-				shader.stages[ 1 ] = &stage2;
-			}
-		} else {
-			stage2.rgbGen = CGEN_IDENTITY;
-			stage2.alphaGen = AGEN_IDENTITY;
-			stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-			stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-			stage2.bundle[ 0 ].numImageAnimations = 1;
-			stage2.bundle[ 0 ].isLightmap = true;
-			stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-
-			shader.stages[ 1 ] = &stage2;
-		}
-
-		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
-			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-			stage3.rgbGen = CGEN_IDENTITY;
-			stage3.alphaGen = AGEN_IDENTITY;
-			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-			shader.stages[ 2 ] = &stage3;
-		}
-
-		RB_BeginSurface( &shader, 0 );
-	}
-
 	if ( !( s->flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
 		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
 		R_RenderDynamicLightmaps( s );
@@ -633,10 +556,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
 			tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
 		}
-	}
-
-	if ( !( s->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB ) ) ) {
-		RB_EndSurface();
 	}
 }
 

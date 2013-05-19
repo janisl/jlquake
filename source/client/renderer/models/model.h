@@ -121,6 +121,8 @@ struct mbrush29_surface_t {
 	mbrush29_surface_t* texturechain;
 
 	mbrush29_texinfo_t* texinfo;
+	shader_t* shader;
+	shader_t* altShader;
 
 // lighting info
 	int dlightframe;
