@@ -763,7 +763,8 @@ static void RB_CalcColorFromEntityAbsoluteLight( byte* dstColors ) {
 		return;
 	}
 
-	int value = backEnd.currentEntity->e.absoluteLight * 255;
+	int value = backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ?
+		backEnd.currentEntity->e.absoluteLight * 255 : 255;
 	if ( value > 255 ) {
 		value = 255;
 	}

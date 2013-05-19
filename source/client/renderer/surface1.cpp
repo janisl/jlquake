@@ -580,7 +580,13 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	} else {
 		R_TextureAnimationQ1( s->texinfo->texture, &stage1.bundle[ 0 ] );
 		stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-		stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+		if ( GGameType & GAME_Hexen2 ) {
+			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
+			stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+		} else {
+			stage1.rgbGen = CGEN_IDENTITY;
+			stage1.alphaGen = AGEN_IDENTITY;
+		}
 		stage1.stateBits = GLS_DEFAULT;
 		stage1.translucentStateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		shader.stages[ 0 ] = &stage1;
@@ -588,23 +594,16 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			//
 			// translucent poly
 			//
-			if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-				stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
-			} else {
-				stage1.rgbGen = CGEN_IDENTITY;
-			}
 		} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
 			//
 			// absolute light poly
 			//
-			stage1.rgbGen = CGEN_ENTITY_ABSOLUTE_LIGHT;
 		} else {
 			//
 			// normal lightmaped poly
 			//
 			R_RenderDynamicLightmaps( s );
 
-			stage1.rgbGen = CGEN_IDENTITY;
 			if ( qglActiveTextureARB ) {
 				shader.multitextureEnv = GL_MODULATE;
 
@@ -634,14 +633,14 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 				shader.stages[ 1 ] = &stage2;
 			}
+		}
 
-			if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
-				stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-				stage3.rgbGen = CGEN_IDENTITY;
-				stage3.alphaGen = AGEN_IDENTITY;
-				stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
-				shader.stages[ 2 ] = &stage3;
-			}
+		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
+			stage3.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+			stage3.rgbGen = CGEN_IDENTITY;
+			stage3.alphaGen = AGEN_IDENTITY;
+			stage3.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			shader.stages[ 2 ] = &stage3;
 		}
 	}
 
