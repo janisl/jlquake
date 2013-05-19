@@ -64,7 +64,6 @@ enum surfaceType_t
 #define BRUSH29_SURF_DRAWSKY        4
 #define BRUSH29_SURF_DRAWTURB       0x10
 #define BRUSH29_SURF_DRAWTILED      0x20
-#define BRUSH29_SURF_TRANSLUCENT    0x200
 
 struct mbrush29_surface_t;
 

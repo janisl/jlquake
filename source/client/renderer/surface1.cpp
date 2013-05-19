@@ -524,16 +524,24 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 	shaderStage_t stage3 = {};
 	texModInfo_t texmod1 = {};
 	texModInfo_t texmod2 = {};
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
 	if ( s->flags & BRUSH29_SURF_DRAWTURB ) {
 		//
 		// subdivided water surface warp
 		//
 		stage1.rgbGen = CGEN_IDENTITY;
-		if ( ( GGameType & GAME_Quake ) || ( s->flags & BRUSH29_SURF_TRANSLUCENT ) ) {
+		if ( GGameType & GAME_Quake && r_wateralpha->value < 1 ) {
 			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			stage1.alphaGen = AGEN_CONST;
 			stage1.constantColor[ 3 ] = r_wateralpha->value * 255;
+		} else if ( ( GGameType & GAME_Hexen2 ) &&
+			( !String::NICmp( s->texinfo->texture->name, "*rtex078", 8 ) ||
+			!String::NICmp( s->texinfo->texture->name, "*lowlight", 9 ) ) ) {
+			stage1.stateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stage1.alphaGen = AGEN_CONST;
+			stage1.constantColor[ 3 ] = 102;
 		} else {
 			stage1.stateBits = GLS_DEFAULT;
 			stage1.alphaGen = AGEN_IDENTITY;
@@ -630,9 +638,6 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 			shader.stages[ 2 ] = &stage3;
 		}
 	}
-
-	shader.cullType = CT_FRONT_SIDED;
-	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
 
 	if ( !( s->flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
 		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {

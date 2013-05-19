@@ -542,12 +542,6 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 			}
 			GL_SubdivideSurface( out );		// cut up polygon for warps
 
-			if ( ( GGameType & GAME_Hexen2 ) &&
-				 ( !String::NICmp( out->texinfo->texture->name, "*rtex078", 8 ) ||
-				   !String::NICmp( out->texinfo->texture->name, "*lowlight", 9 ) ) ) {
-				out->flags |= BRUSH29_SURF_TRANSLUCENT;
-			}
-
 			continue;
 		}
 	}

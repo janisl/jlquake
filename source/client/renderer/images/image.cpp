@@ -301,7 +301,7 @@ byte* R_ConvertImage8To32( byte* DataIn, int Width, int Height, int Mode ) {
 			if ( p == 0 ) {
 				DataOut[ i * 4 + 3 ] = 0;
 			} else if ( p & 1 ) {
-				DataOut[ i * 4 + 3 ] = ( int )( 255 * r_wateralpha->value );
+				DataOut[ i * 4 + 3 ] = 102;
 			} else {
 				DataOut[ i * 4 + 3 ] = 255;
 			}

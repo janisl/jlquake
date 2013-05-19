@@ -439,7 +439,7 @@ static void R_Register() {
 	//
 	r_swapInterval = Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 	r_gamma = Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
-	r_wateralpha = Cvar_Get( "r_wateralpha","0.4", CVAR_ARCHIVE );
+	r_wateralpha = Cvar_Get( "r_wateralpha","1", CVAR_ARCHIVE );
 	r_ignoreGLErrors = Cvar_Get( "r_ignoreGLErrors", "1", CVAR_ARCHIVE );
 	r_textureMode = Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_LINEAR", CVAR_ARCHIVE );
 	r_dynamiclight = Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
