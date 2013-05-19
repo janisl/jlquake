@@ -827,9 +827,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 			doOverBright = false;
 		} else {
 			stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
-			if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-				doOverBright = false;
-			} else if ( clmodel->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY ) ) {
+			if ( clmodel->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY ) ) {
 				stage1.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 				doOverBright = false;
 			} else {
@@ -842,35 +840,18 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		stage1.alphaGen = AGEN_IDENTITY;
 	}
 
-	image_t* imageTop = NULL;
-	image_t* imageBottom = NULL;
-	if ( ent->e.customSkin ) {
-		stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
-		stage1.bundle[ 0 ].numImageAnimations = 1;
-		stage2.bundle[ 0 ].numImageAnimations = 1;
-		if ( ent->e.customSkinTop ) {
-			imageTop = tr.images[ ent->e.customSkinTop ];
-		}
-		if ( ent->e.customSkinBottom ) {
-			imageBottom = tr.images[ ent->e.customSkinBottom ];
-		}
-	} else {
-		stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
-		stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
-		stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
-		stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
-		stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
-		stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
-		stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
-		stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
-		stage1.bundle[ 0 ].numImageAnimations = 4;
-		stage1.bundle[ 0 ].imageAnimationSpeed = 10;
-		stage2.bundle[ 0 ].numImageAnimations = 4;
-		stage2.bundle[ 0 ].imageAnimationSpeed = 10;
-		imageTop = paliashdr->topTexture[ ent->e.skinNum ];
-		imageBottom = paliashdr->bottomTexture[ ent->e.skinNum ];
-	}
+	stage1.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
+	stage1.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
+	stage1.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
+	stage1.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
+	stage2.bundle[ 0 ].image[ 0 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 0 ];
+	stage2.bundle[ 0 ].image[ 1 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 1 ];
+	stage2.bundle[ 0 ].image[ 2 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 2 ];
+	stage2.bundle[ 0 ].image[ 3 ] = paliashdr->gl_texture[ ent->e.skinNum ][ 3 ];
+	stage1.bundle[ 0 ].numImageAnimations = 4;
+	stage1.bundle[ 0 ].imageAnimationSpeed = 10;
+	stage2.bundle[ 0 ].numImageAnimations = 4;
+	stage2.bundle[ 0 ].imageAnimationSpeed = 10;
 	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 	stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
@@ -880,12 +861,13 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	shader.stages[ numStages++ ] = &stage1;
 
 	if ( doOverBright ) {
+		stage2.isOverbright = true;
 		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
 		shader.stages[ numStages++ ] = &stage2;
 	}
 
-	if ( imageTop ) {
-		stage5.bundle[ 0 ].image[ 0 ] = imageTop;
+	if ( paliashdr->topTexture[ ent->e.skinNum ] ) {
+		stage5.bundle[ 0 ].image[ 0 ] = paliashdr->topTexture[ ent->e.skinNum ];
 		stage5.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage5.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
 		stage5.alphaGen = AGEN_IDENTITY;
@@ -893,8 +875,8 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		shader.stages[ numStages++ ] = &stage5;
 	}
 
-	if ( imageBottom ) {
-		stage6.bundle[ 0 ].image[ 0 ] = imageBottom;
+	if ( paliashdr->bottomTexture[ ent->e.skinNum ] ) {
+		stage6.bundle[ 0 ].image[ 0 ] = paliashdr->bottomTexture[ ent->e.skinNum ];
 		stage6.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stage6.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
 		stage6.alphaGen = AGEN_IDENTITY;
@@ -902,7 +884,7 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 		shader.stages[ numStages++ ] = &stage6;
 	}
 
-	if ( !ent->e.customSkin && paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
+	if ( paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ] ) {
 		stage3.bundle[ 0 ].image[ 0 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 0 ];
 		stage3.bundle[ 0 ].image[ 1 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 1 ];
 		stage3.bundle[ 0 ].image[ 2 ] = paliashdr->fullBrightTexture[ ent->e.skinNum ][ 2 ];
@@ -921,13 +903,115 @@ static void R_DrawBaseMdlSurface( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
 	RB_EndSurface();
 }
 
+static void R_DrawBaseMdlSurfaceCustomSkin( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	//
+	// draw all the triangles
+	//
+
+	shader_t shader = {};
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+
+	shaderStage_t stage1 = {};
+	stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
+	stage1.bundle[ 0 ].numImageAnimations = 1;
+	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
+	stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+	stage1.stateBits = GLS_DEPTHMASK_TRUE;
+	stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	shader.stages[ 0 ] = &stage1;
+
+	shaderStage_t stage2 = {};
+	if ( r_drawOverBrights->integer ) {
+		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
+		stage2.bundle[ 0 ].numImageAnimations = 1;
+		stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+		stage2.alphaGen = AGEN_IDENTITY;
+		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		stage2.isOverbright = true;
+		shader.stages[ 1 ] = &stage2;
+	}
+
+	RB_BeginSurface( &shader, 0 );
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
+	RB_EndSurface();
+}
+
+static void R_DrawBaseMdlSurfaceCustomPlayerSkin( trRefEntity_t* ent, mesh1hdr_t* paliashdr ) {
+	//
+	// draw all the triangles
+	//
+
+	shader_t shader = {};
+	int numStages = 0;
+	shader.cullType = CT_FRONT_SIDED;
+	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+
+	shaderStage_t stage1 = {};
+	stage1.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
+	stage1.bundle[ 0 ].numImageAnimations = 1;
+	stage1.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage1.rgbGen = CGEN_LIGHTING_DIFFUSE;
+	if ( GGameType & GAME_Hexen2 ) {
+		stage1.alphaGen = AGEN_ENTITY_CONDITIONAL_TRANSLUCENT;
+		stage1.stateBits = GLS_DEPTHMASK_TRUE;
+		stage1.translucentStateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	} else {
+		stage1.alphaGen = AGEN_IDENTITY;
+		stage1.stateBits = GLS_DEFAULT;
+	}
+	shader.stages[ numStages++ ] = &stage1;
+
+	shaderStage_t stage2 = {};
+	if ( r_drawOverBrights->integer ) {
+		stage2.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkin ];
+		stage2.bundle[ 0 ].numImageAnimations = 1;
+		stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+		stage2.isOverbright = true;
+		stage2.rgbGen = CGEN_LIGHTING_DIFFUSE_OVER_BRIGHT;
+		stage2.alphaGen = AGEN_IDENTITY;
+		stage2.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		shader.stages[ numStages++ ] = &stage2;
+	}
+
+	shaderStage_t stage5 = {};
+	stage5.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkinTop ];
+	stage5.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage5.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_TOP_COLOUR;
+	stage5.alphaGen = AGEN_IDENTITY;
+	stage5.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	shader.stages[ numStages++ ] = &stage5;
+
+	shaderStage_t stage6 = {};
+	stage6.bundle[ 0 ].image[ 0 ] = tr.images[ ent->e.customSkinBottom ];
+	stage6.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+	stage6.rgbGen = CGEN_LIGHTING_DIFFUSE_ENTITY_BOTTOM_COLOUR;
+	stage6.alphaGen = AGEN_IDENTITY;
+	stage6.stateBits = GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	shader.stages[ numStages++ ] = &stage6;
+
+	//FIXME Quake can have fullbrights as well.
+
+	RB_BeginSurface( &shader, 0 );
+	EmitMdlVertexesAndIndexes( ent, paliashdr );
+	RB_EndSurface();
+}
+
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
 	c_alias_polys += paliashdr->numtris;
 
 	if ( tess.shader == tr.defaultShader ) {
-		R_DrawBaseMdlSurface( ent, paliashdr );
+		if ( ent->e.customSkin && ent->e.customSkinTop ) {
+			R_DrawBaseMdlSurfaceCustomPlayerSkin( ent, paliashdr );
+		} else if ( ent->e.customSkin ) {
+			R_DrawBaseMdlSurfaceCustomSkin( ent, paliashdr );
+		} else {
+			R_DrawBaseMdlSurface( ent, paliashdr );
+		}
 	} else {
 		EmitMdlVertexesAndIndexes( ent, paliashdr );
 	}

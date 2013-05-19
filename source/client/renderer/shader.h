@@ -254,6 +254,7 @@ struct shaderStage_t {
 
 	bool isDetail;
 	bool isFogged;								// used only for shaders that have fog disabled, so we can enable it for individual stages
+	bool isOverbright;
 };
 
 struct deformStage_t {

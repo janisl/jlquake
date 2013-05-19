@@ -590,49 +590,36 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		stage1.stateBits = GLS_DEFAULT;
 		stage1.translucentStateBits = GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 		shader.stages[ 0 ] = &stage1;
-		if ( backEnd.currentEntity->e.renderfx & RF_TRANSLUCENT ) {
-			//
-			// translucent poly
-			//
-		} else if ( backEnd.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT ) {
-			//
-			// absolute light poly
-			//
-		} else {
-			//
-			// normal lightmaped poly
-			//
-			R_RenderDynamicLightmaps( s );
+		if ( qglActiveTextureARB ) {
+			shader.multitextureEnv = GL_MODULATE;
 
-			if ( qglActiveTextureARB ) {
-				shader.multitextureEnv = GL_MODULATE;
+			stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+			stage1.bundle[ 1 ].numImageAnimations = 1;
+			stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
+			stage1.bundle[ 1 ].isLightmap = true;
 
-				stage1.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-				stage1.bundle[ 1 ].numImageAnimations = 1;
-				stage1.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-
-				if ( r_drawOverBrights->integer ) {
-					R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
-					stage2.rgbGen = CGEN_IDENTITY;
-					stage2.alphaGen = AGEN_IDENTITY;
-					stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
-					stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
-					stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
-					stage2.bundle[ 1 ].numImageAnimations = 1;
-					stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
-					shader.stages[ 1 ] = &stage2;
-				}
-			} else {
+			if ( r_drawOverBrights->integer ) {
+				R_TextureAnimationQ1( s->texinfo->texture, &stage2.bundle[ 0 ] );
+				stage2.isOverbright = true;
 				stage2.rgbGen = CGEN_IDENTITY;
 				stage2.alphaGen = AGEN_IDENTITY;
-				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
-				stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
-				stage2.bundle[ 0 ].numImageAnimations = 1;
-				stage2.bundle[ 0 ].isLightmap = true;
-				stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
-
+				stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+				stage2.bundle[ 0 ].tcGen = TCGEN_TEXTURE;
+				stage2.bundle[ 1 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum + MAX_LIGHTMAPS / 2 ];
+				stage2.bundle[ 1 ].numImageAnimations = 1;
+				stage2.bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
 				shader.stages[ 1 ] = &stage2;
 			}
+		} else {
+			stage2.rgbGen = CGEN_IDENTITY;
+			stage2.alphaGen = AGEN_IDENTITY;
+			stage2.stateBits = GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
+			stage2.bundle[ 0 ].image[ 0 ] = tr.lightmaps[ s->lightmaptexturenum ];
+			stage2.bundle[ 0 ].numImageAnimations = 1;
+			stage2.bundle[ 0 ].isLightmap = true;
+			stage2.bundle[ 0 ].tcGen = TCGEN_LIGHTMAP;
+
+			shader.stages[ 1 ] = &stage2;
 		}
 
 		if ( R_TextureFullbrightAnimationQ1( s->texinfo->texture, &stage3.bundle[ 0 ] ) ) {
@@ -646,6 +633,11 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 
 	shader.cullType = CT_FRONT_SIDED;
 	shader.optimalStageIteratorFunc = RB_StageIteratorGeneric;
+
+	if ( !( s->flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
+		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
+		R_RenderDynamicLightmaps( s );
+	}
 
 	RB_BeginSurface( &shader, 0 );
 

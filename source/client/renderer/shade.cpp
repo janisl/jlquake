@@ -174,6 +174,11 @@ static void R_BindAnimatedImage( textureBundle_t* bundle ) {
 		return;
 	}
 
+	if ( bundle->isLightmap && ( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
+		GL_Bind( tr.whiteImage );
+		return;
+	}
+
 	if ( bundle->numImageAnimations <= 1 ) {
 		GL_Bind( bundle->image[ 0 ] );
 		return;
@@ -407,6 +412,15 @@ static void RB_IterateStagesGeneric( shaderCommands_t* input ) {
 
 		if ( !pStage ) {
 			break;
+		}
+
+		if ( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) {
+			if ( pStage->isOverbright ) {
+				continue;
+			}
+			if ( !pStage->bundle[ 1 ].image[ 0 ] && pStage->bundle[ 0 ].isLightmap ) {
+				continue;
+			}
 		}
 
 		ComputeColors( pStage );
