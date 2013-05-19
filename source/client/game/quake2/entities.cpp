@@ -651,10 +651,10 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 			if ( s1->modelindex == 255 ) {	// use custom player skin
 				ent.skinNum = 0;
 				q2clientinfo_t* ci = &cl.q2_clientinfo[ s1->skinnum & 0xff ];
-				ent.customSkin = R_GetImageHandle( ci->skin );
+				ent.customSkin = ci->skin;
 				ent.hModel = ci->model;
 				if ( !ent.customSkin || !ent.hModel ) {
-					ent.customSkin = R_GetImageHandle( cl.q2_baseclientinfo.skin );
+					ent.customSkin = cl.q2_baseclientinfo.skin;
 					ent.hModel = cl.q2_baseclientinfo.model;
 				}
 
@@ -662,13 +662,13 @@ void CLQ2_AddPacketEntities( q2frame_t* frame ) {
 //PGM
 				if ( renderfx_old & Q2RF_USE_DISGUISE ) {
 					if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/male", 12 ) ) {
-						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/male/disguise.pcx" ) );
+						ent.customSkin = R_RegisterSkinQ2( "players/male/disguise.pcx" );
 						ent.hModel = R_RegisterModel( "players/male/tris.md2" );
 					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/female", 14 ) ) {
-						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/female/disguise.pcx" ) );
+						ent.customSkin = R_RegisterSkinQ2( "players/female/disguise.pcx" );
 						ent.hModel = R_RegisterModel( "players/female/tris.md2" );
 					} else if ( !String::NCmp( R_GetImageName( ent.customSkin ), "players/cyborg", 14 ) ) {
-						ent.customSkin = R_GetImageHandle( R_RegisterSkinQ2( "players/cyborg/disguise.pcx" ) );
+						ent.customSkin = R_RegisterSkinQ2( "players/cyborg/disguise.pcx" );
 						ent.hModel = R_RegisterModel( "players/cyborg/tris.md2" );
 					}
 				}

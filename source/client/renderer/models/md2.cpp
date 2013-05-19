@@ -378,25 +378,27 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 		ent->e.backlerp = 0;
 	}
 
+	shader_t* shader;
 	if ( ent->e.renderfx & RF_COLOUR_SHELL ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.colorShellShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-	} else if ( ent->e.customSkin ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.defaultShader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+		shader = tr.colorShellShader;
+	} else if ( ent->e.customSkin > 0 && ent->e.customSkin < tr.numSkins ) {
+		// custom player skin
+		skin_t* skin = R_GetSkinByHandle( ent->e.customSkin );
+		shader = skin->surfaces[ 0 ]->shader;
 	} else {
-		shader_t* skin;
 		if ( ent->e.skinNum >= MAX_MD2_SKINS ) {
-			skin = tr.currentModel->q2_skins_shader[ 0 ];
+			shader = tr.currentModel->q2_skins_shader[ 0 ];
 		} else {
-			skin = tr.currentModel->q2_skins_shader[ ent->e.skinNum ];
-			if ( !skin ) {
-				skin = tr.currentModel->q2_skins_shader[ 0 ];
+			shader = tr.currentModel->q2_skins_shader[ ent->e.skinNum ];
+			if ( !shader ) {
+				shader = tr.currentModel->q2_skins_shader[ 0 ];
 			}
 		}
-		if ( !skin ) {
-			skin = tr.defaultShader;	// fallback...
+		if ( !shader ) {
+			shader = tr.defaultShader;	// fallback...
 		}
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, skin, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	}
+	R_AddDrawSurf( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
 		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
@@ -461,20 +463,6 @@ static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr 
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
-static void GL_DrawMd2FrameLerpSkin( mmd2_t* paliashdr ) {
-	trRefEntity_t* ent = backEnd.currentEntity;
-
-	//
-	// draw all the triangles
-	//
-	// select skin
-	image_t* skin = tr.images[ backEnd.currentEntity->e.customSkin ];		// custom player skin
-
-	RB_BeginSurface( R_BuildMd2Shader( skin ), 0 );
-	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-	RB_EndSurface();
-}
-
 //	interpolates between two frames and origins
 //	FIXME: batch lerp all vertexes
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
@@ -491,11 +479,7 @@ void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 		qglMatrixMode( GL_MODELVIEW );
 	}
 
-	if ( backEnd.currentEntity->e.customSkin ) {
-		GL_DrawMd2FrameLerpSkin( paliashdr );
-	} else {
-		RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
-	}
+	RB_EmitMd2VertexesAndIndexes( ent, paliashdr );
 
 	if ( ent->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );

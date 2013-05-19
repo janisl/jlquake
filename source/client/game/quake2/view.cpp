@@ -246,7 +246,7 @@ static void VQ2_TestEntities() {
 		AxisClear( ent.axis );
 
 		ent.hModel = cl.q2_baseclientinfo.model;
-		ent.customSkin = R_GetImageHandle( cl.q2_baseclientinfo.skin );
+		ent.customSkin = cl.q2_baseclientinfo.skin;
 		R_AddRefEntityToScene( &ent );
 	}
 }

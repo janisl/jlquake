@@ -19,6 +19,100 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 
+void R_InitSkins() {
+	tr.numSkins = 1;
+
+	// make the default skin have all default shaders
+	skin_t* skin = tr.skins[ 0 ] = new skin_t;
+	Com_Memset( skin, 0, sizeof ( skin_t ) );
+	String::NCpyZ( skin->name, "<default skin>", sizeof ( skin->name ) );
+	skin->numSurfaces = 1;
+	skin->surfaces[ 0 ] = new skinSurface_t;
+	skin->surfaces[ 0 ]->name[ 0 ] = 0;
+	skin->surfaces[ 0 ]->shader = tr.defaultShader;
+}
+
+bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom ) {
+	int width;
+	int height;
+	byte* pixels;
+	R_LoadPCX( name, &pixels, NULL, &width, &height );
+	if ( !pixels ) {
+		return false;
+	}
+
+	idList<byte> out;
+	out.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
+	Com_Memset( out.Ptr(), 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
+
+	byte* outp = out.Ptr();
+	byte* pixp = pixels;
+	int copyWidth = Min( width, static_cast<int>( QUAKEWORLD_SKIN_WIDTH ) );
+	int copyHeight = Min ( height , static_cast<int>( QUAKEWORLD_SKIN_HEIGHT ) );
+	for ( int y = 0; y < copyHeight; y++, outp += QUAKEWORLD_SKIN_WIDTH, pixp += width ) {
+		Com_Memcpy( outp, pixp, copyWidth );
+	}
+	delete[] pixels;
+
+	idList<byte> pixelsTop;
+	pixelsTop.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	idList<byte> pixelsBottom;
+	pixelsBottom.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
+	R_ExtractTranslatedImages( translation, out.Ptr(), pixelsTop.Ptr(), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
+	byte* pic32 = R_ConvertImage8To32( out.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, IMG8MODE_Skin );
+	base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	delete[] pic32;
+	top = R_CreateImage( va( "%s*top", name ), pixelsTop.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+	bottom = R_CreateImage( va( "%s*bottom", name ), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
+
+	return true;
+}
+
+qhandle_t R_RegisterSkinQ2( const char* name ) {
+	if ( !name || !name[ 0 ] ) {
+		common->Printf( "Empty name passed to R_RegisterSkinQ2\n" );
+		return 0;
+	}
+
+	if ( String::Length( name ) >= MAX_QPATH ) {
+		common->Printf( "Skin name exceeds MAX_QPATH\n" );
+		return 0;
+	}
+
+	// see if the skin is already loaded
+	qhandle_t hSkin;
+	for ( hSkin = 1; hSkin < tr.numSkins; hSkin++ ) {
+		skin_t* skin = tr.skins[ hSkin ];
+		if ( !String::ICmp( skin->name, name ) ) {
+			if ( skin->numSurfaces == 0 ) {
+				return 0;		// default skin
+			}
+			return hSkin;
+		}
+	}
+
+	// allocate a new skin
+	if ( tr.numSkins == MAX_SKINS ) {
+		common->Printf( S_COLOR_YELLOW "WARNING: R_RegisterSkin( '%s' ) MAX_SKINS hit\n", name );
+		return 0;
+	}
+
+	// make sure the render thread is stopped
+	R_SyncRenderThread();
+
+	tr.numSkins++;
+	skin_t* skin = new skin_t;
+	Com_Memset( skin, 0, sizeof ( skin_t ) );
+	tr.skins[ hSkin ] = skin;
+	String::NCpyZ( skin->name, name, sizeof ( skin->name ) );
+	skin->numSurfaces = 1;
+	skin->numModels = 0;
+	skin->surfaces[ 0 ] = new skinSurface_t;
+	skin->surfaces[ 0 ]->name[ 0 ] = 0;
+	skin->surfaces[ 0 ]->shader = R_BuildMd2Shader( R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin ) );
+	return hSkin;
+}
+
 //	This is unfortunate, but the skin files aren't compatable with our normal
 // parsing rules.
 static const char* CommaParse( char** data_p ) {
@@ -258,78 +352,11 @@ qhandle_t R_RegisterSkin( const char* name ) {
 	return hSkin;
 }
 
-void R_InitSkins() {
-	tr.numSkins = 1;
-
-	// make the default skin have all default shaders
-	skin_t* skin = tr.skins[ 0 ] = new skin_t;
-	Com_Memset( skin, 0, sizeof ( skin_t ) );
-	String::NCpyZ( skin->name, "<default skin>", sizeof ( skin->name ) );
-	skin->numSurfaces = 1;
-	skin->surfaces[ 0 ] = new skinSurface_t;
-	skin->surfaces[ 0 ]->name[ 0 ] = 0;
-	skin->surfaces[ 0 ]->shader = tr.defaultShader;
-}
-
 skin_t* R_GetSkinByHandle( qhandle_t hSkin ) {
 	if ( hSkin < 1 || hSkin >= tr.numSkins ) {
 		return tr.skins[ 0 ];
 	}
 	return tr.skins[ hSkin ];
-}
-
-void R_SkinList_f() {
-	common->Printf( "------------------\n" );
-
-	for ( int i = 0; i < tr.numSkins; i++ ) {
-		skin_t* skin = tr.skins[ i ];
-
-		common->Printf( "%3i:%s\n", i, skin->name );
-		for ( int j = 0; j < skin->numSurfaces; j++ ) {
-			common->Printf( "       %s = %s\n", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
-		}
-	}
-	common->Printf( "------------------\n" );
-}
-
-image_t* R_RegisterSkinQ2( const char* name ) {
-	return R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin );
-}
-
-bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom ) {
-	int width;
-	int height;
-	byte* pixels;
-	R_LoadPCX( name, &pixels, NULL, &width, &height );
-	if ( !pixels ) {
-		return false;
-	}
-
-	idList<byte> out;
-	out.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
-	Com_Memset( out.Ptr(), 0, QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT );
-
-	byte* outp = out.Ptr();
-	byte* pixp = pixels;
-	int copyWidth = Min( width, static_cast<int>( QUAKEWORLD_SKIN_WIDTH ) );
-	int copyHeight = Min ( height , static_cast<int>( QUAKEWORLD_SKIN_HEIGHT ) );
-	for ( int y = 0; y < copyHeight; y++, outp += QUAKEWORLD_SKIN_WIDTH, pixp += width ) {
-		Com_Memcpy( outp, pixp, copyWidth );
-	}
-	delete[] pixels;
-
-	idList<byte> pixelsTop;
-	pixelsTop.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
-	idList<byte> pixelsBottom;
-	pixelsBottom.SetNum( QUAKEWORLD_SKIN_WIDTH * QUAKEWORLD_SKIN_HEIGHT * 4 );
-	R_ExtractTranslatedImages( translation, out.Ptr(), pixelsTop.Ptr(), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT );
-	byte* pic32 = R_ConvertImage8To32( out.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, IMG8MODE_Skin );
-	base = R_CreateImage( name, pic32, QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
-	delete[] pic32;
-	top = R_CreateImage( va( "%s*top", name ), pixelsTop.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
-	bottom = R_CreateImage( va( "%s*bottom", name ), pixelsBottom.Ptr(), QUAKEWORLD_SKIN_WIDTH, QUAKEWORLD_SKIN_HEIGHT, true, true, GL_CLAMP );
-
-	return true;
 }
 
 //----(SA) added so client can see what model or scale for the model was specified in a skin
@@ -399,4 +426,18 @@ qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap
 	}
 
 	return 0;
+}
+
+void R_SkinList_f() {
+	common->Printf( "------------------\n" );
+
+	for ( int i = 0; i < tr.numSkins; i++ ) {
+		skin_t* skin = tr.skins[ i ];
+
+		common->Printf( "%3i:%s\n", i, skin->name );
+		for ( int j = 0; j < skin->numSurfaces; j++ ) {
+			common->Printf( "       %s = %s\n", skin->surfaces[ j ]->name, skin->surfaces[ j ]->shader->name );
+		}
+	}
+	common->Printf( "------------------\n" );
 }

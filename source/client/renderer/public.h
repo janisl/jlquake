@@ -454,8 +454,8 @@ qhandle_t R_RegisterShaderNoMip( const char* Name );
 void R_RemapShader( const char* OldShader, const char* NewShader, const char* TimeOffset );
 bool R_LoadDynamicShader( const char* shadername, const char* shadertext );
 
-qhandle_t R_RegisterSkin( const char* Name );
-image_t* R_RegisterSkinQ2( const char* name );
+qhandle_t R_RegisterSkin( const char* name );
+qhandle_t R_RegisterSkinQ2( const char* name );
 bool R_LoadQuakeWorldSkinData( const char* name, const idSkinTranslation& translation, image_t*& base, image_t*& top, image_t*& bottom );
 bool R_GetSkinModel( qhandle_t skinid, const char* type, char* name );
 qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap );
