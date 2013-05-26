@@ -352,15 +352,9 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 				// GR - pass tessellation flag to the shader command
 				//		make sure to use oldAtiTess!!!
 				tess.ATI_tess = ( oldAtiTess == ATI_TESS_TRUFORM );
-				if ( GGameType & GAME_Tech3 || oldShader != tr.defaultShader ) {
-					RB_EndSurface();
-				}
+				RB_EndSurface();
 			}
-			if ( GGameType & GAME_Tech3 || shader != tr.defaultShader ) {
-				RB_BeginSurface( shader, fogNum );
-			} else {
-				tess.shader = shader;
-			}
+			RB_BeginSurface( shader, fogNum );
 			oldShader = shader;
 			oldFogNum = fogNum;
 			oldDlighted = dlighted;
@@ -436,9 +430,7 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 		// GR - pass tessellation flag to the shader command
 		//		make sure to use oldAtiTess!!!
 		tess.ATI_tess = ( oldAtiTess == ATI_TESS_TRUFORM );
-		if ( GGameType & GAME_Tech3 || oldShader != tr.defaultShader ) {
-			RB_EndSurface();
-		}
+		RB_EndSurface();
 	}
 
 	// go back to the world modelview matrix
