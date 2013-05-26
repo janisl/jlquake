@@ -802,6 +802,12 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
-bool R_MdlHasHexen2Transparency( model_t* Model ) {
-	return !!( Model->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY | H2MDLEF_SPECIAL_TRANS ) );
+bool R_MdlHasHexen2Transparency( model_t* model ) {
+	if ( model->type == MOD_MESH1 ) {
+		return !!( model->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY | H2MDLEF_SPECIAL_TRANS ) );
+	}
+	if ( model->type == MOD_SPRITE ) {
+		return true;
+	}
+	return false;
 }

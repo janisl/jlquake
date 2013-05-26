@@ -679,6 +679,72 @@ static int R_SpriteFogNum( trRefEntity_t* ent ) {
 	return 0;
 }
 
+static void R_AddBadModelSurface( trRefEntity_t* ent ) {
+	if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+		return;
+	}
+	R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
+}
+
+static void R_AddModelSurfaces( model_t* model, trRefEntity_t* ent, int forcedSortIndex ) {
+	switch ( model->type ) {
+	case MOD_BAD:
+		R_AddBadModelSurface( ent );
+		break;
+
+	case MOD_MESH1:
+		R_AddMdlSurfaces( ent, forcedSortIndex );
+		break;
+
+	case MOD_BRUSH29:
+		R_DrawBrushModelQ1( ent, forcedSortIndex );
+		break;
+
+	case MOD_SPRITE:
+		R_AddSprSurfaces( ent, forcedSortIndex );
+		break;
+
+	case MOD_MESH2:
+		R_AddMd2Surfaces( ent, forcedSortIndex );
+		break;
+
+	case MOD_BRUSH38:
+		R_DrawBrushModelQ2( ent, forcedSortIndex );
+		break;
+
+	case MOD_SPRITE2:
+		R_AddSp2Surfaces( ent, forcedSortIndex );
+		break;
+
+	case MOD_MESH3:
+		R_AddMD3Surfaces( ent );
+		break;
+
+	case MOD_MD4:
+		R_AddAnimSurfaces( ent );
+		break;
+
+	case MOD_MDC:
+		R_AddMDCSurfaces( ent );
+		break;
+
+	case MOD_MDS:
+		R_AddMdsAnimSurfaces( ent );
+		break;
+
+	case MOD_MDM:
+		R_MDM_AddAnimSurfaces( ent );
+		break;
+
+	case MOD_BRUSH46:
+		R_AddBrushModelSurfaces( ent );
+		break;
+
+	default:
+		common->Error( "R_AddEntitySurfaces: Bad modeltype" );
+	}
+}
+
 static void R_AddEntitySurfaces() {
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
@@ -706,8 +772,6 @@ static void R_AddEntitySurfaces() {
 		if ( ( ent->e.renderfx & RF_FIRST_PERSON ) && tr.viewParms.isPortal ) {
 			continue;
 		}
-
-		bool item_trans = false;
 
 		// simple generated models, like sprites and beams, are not culled
 		switch ( ent->e.reType ) {
@@ -739,94 +803,23 @@ static void R_AddEntitySurfaces() {
 			if ( !tr.currentModel ) {
 				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 			} else {
-				switch ( tr.currentModel->type ) {
-				case MOD_BAD:
-					if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+				if ( GGameType & GAME_Hexen2 ) {
+					if ( ( ent->e.renderfx & RF_TRANSLUCENT ) || R_MdlHasHexen2Transparency( tr.currentModel ) ) {
+						mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1( tr.currentEntity->e.origin, tr.worldModel );
+						if ( pLeaf->contents != BSP29CONTENTS_WATER ) {
+							cl_transvisedicts[ cl_numtransvisedicts++ ].ent = tr.currentEntity;
+						} else {
+							cl_transwateredicts[ cl_numtranswateredicts++ ].ent = tr.currentEntity;
+						}
 						break;
 					}
-					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
-					break;
-
-				case MOD_MESH1:
-					if ( GGameType & GAME_Hexen2 ) {
-						item_trans = ( ent->e.renderfx & RF_TRANSLUCENT ) ||
-									 R_MdlHasHexen2Transparency( tr.currentModel );
-					}
-					if ( !item_trans ) {
-						R_AddMdlSurfaces( ent, 0 );
-					}
-					break;
-
-				case MOD_BRUSH29:
-					if ( GGameType & GAME_Hexen2 ) {
-						item_trans = ( ( ent->e.renderfx & RF_TRANSLUCENT ) ) != 0;
-					}
-					if ( !item_trans ) {
-						R_DrawBrushModelQ1( ent, 0 );
-					}
-					break;
-
-				case MOD_SPRITE:
-					if ( GGameType & GAME_Hexen2 ) {
-						item_trans = true;
-					} else {
-						R_AddSprSurfaces( tr.currentEntity, 0 );
-					}
-					break;
-
-				case MOD_MESH2:
-					R_AddMd2Surfaces( ent, forcedSortIndex );
-					break;
-
-				case MOD_BRUSH38:
-					R_DrawBrushModelQ2( ent, forcedSortIndex );
-					break;
-
-				case MOD_SPRITE2:
-					R_AddSp2Surfaces( ent, forcedSortIndex );
-					break;
-
-				case MOD_MESH3:
-					R_AddMD3Surfaces( ent );
-					break;
-
-				case MOD_MD4:
-					R_AddAnimSurfaces( ent );
-					break;
-
-				case MOD_MDC:
-					R_AddMDCSurfaces( ent );
-					break;
-
-				case MOD_MDS:
-					R_AddMdsAnimSurfaces( ent );
-					break;
-
-				case MOD_MDM:
-					R_MDM_AddAnimSurfaces( ent );
-					break;
-
-				case MOD_BRUSH46:
-					R_AddBrushModelSurfaces( ent );
-					break;
-
-				default:
-					common->Error( "R_AddEntitySurfaces: Bad modeltype" );
 				}
+				R_AddModelSurfaces( tr.currentModel, ent, forcedSortIndex );
 			}
 			break;
 
 		default:
 			common->Error( "R_AddEntitySurfaces: Bad reType" );
-		}
-
-		if ( ( GGameType & GAME_Hexen2 ) && item_trans ) {
-			mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1( tr.currentEntity->e.origin, tr.worldModel );
-			if ( pLeaf->contents != BSP29CONTENTS_WATER ) {
-				cl_transvisedicts[ cl_numtransvisedicts++ ].ent = tr.currentEntity;
-			} else {
-				cl_transwateredicts[ cl_numtranswateredicts++ ].ent = tr.currentEntity;
-			}
 		}
 	}
 }
@@ -856,20 +849,7 @@ static void R_DrawTransEntitiesOnList( bool inwater, int& forcedSortIndex ) {
 		tr.currentEntityNum = tr.currentEntity - tr.refdef.entities;
 		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 		R_RotateForEntity( tr.currentEntity, &tr.viewParms, &tr.orient );
-
-		switch ( tr.currentModel->type ) {
-		case MOD_MESH1:
-			R_AddMdlSurfaces( tr.currentEntity, forcedSortIndex++ );
-			break;
-		case MOD_BRUSH29:
-			R_DrawBrushModelQ1( tr.currentEntity, forcedSortIndex++ );
-			break;
-		case MOD_SPRITE:
-			R_AddSprSurfaces( tr.currentEntity, forcedSortIndex++ );
-			break;
-		default:
-			break;
-		}
+		R_AddModelSurfaces( tr.currentModel, tr.currentEntity, forcedSortIndex++ );
 	}
 }
 
