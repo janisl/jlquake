@@ -1598,7 +1598,6 @@ void R_RenderView( viewParms_t* parms ) {
 		if ( ( lastTime > tr.refdef.time ) || ( lastTime < ( tr.refdef.time - 200 ) ) ) {
 			R_PurgeShaders();
 			R_PurgeBackupImages( 1 );
-			R_PurgeModels( 1 );
 			lastTime = tr.refdef.time;
 		}
 	}

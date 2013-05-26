@@ -195,7 +195,6 @@ Cvar* r_portalsky;
 
 Cvar* r_cache;
 Cvar* r_cacheShaders;
-Cvar* r_cacheModels;
 Cvar* r_cacheGathering;
 
 Cvar* r_bonesDebug;
@@ -444,7 +443,6 @@ static void R_Register() {
 	//   with r_cache enabled, non-win32 OSes were leaking 24Mb per R_Init..
 	r_cache = Cvar_Get( "r_cache", "1", CVAR_LATCH2 );		// leaving it as this for backwards compability. but it caches models and shaders also
 	r_cacheShaders = Cvar_Get( "r_cacheShaders", "1", CVAR_LATCH2 );
-	r_cacheModels = Cvar_Get( "r_cacheModels", "1", CVAR_LATCH2 );
 
 	//
 	// archived variables that can change at any time
@@ -883,7 +881,6 @@ void R_EndRegistration() {
 void R_PurgeCache() {
 	R_PurgeShaders();
 	R_PurgeBackupImages( 9999999 );
-	R_PurgeModels( 9999999 );
 }
 
 void R_Shutdown( bool destroyWindow ) {
@@ -902,7 +899,6 @@ void R_Shutdown( bool destroyWindow ) {
 	// clean out any remaining unused media from the last backup
 	R_PurgeCache();
 	if ( r_cache->integer && tr.registered && !destroyWindow ) {
-		R_BackupModels();
 		R_BackupShaders();
 		R_BackupImages();
 	}

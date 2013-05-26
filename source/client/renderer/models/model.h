@@ -22,12 +22,11 @@
 struct trRefEntity_t;
 
 idRenderModel* R_AllocModel();
+void R_AddModel( idRenderModel* model );
 void R_ModelInit();
 void R_FreeModels();
 idRenderModel* R_GetModelByHandle( qhandle_t Index );
 void R_Modellist_f();
-void R_PurgeModels( int count );
-void R_BackupModels();
 
 void Mod_LoadSpriteModel( idRenderModel* mod, void* buffer );
 void Mod_FreeSpriteModel( idRenderModel* mod );

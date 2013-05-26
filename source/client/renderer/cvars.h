@@ -177,7 +177,6 @@ extern Cvar* r_portalsky;
 
 extern Cvar* r_cache;
 extern Cvar* r_cacheShaders;
-extern Cvar* r_cacheModels;
 extern Cvar* r_cacheGathering;
 
 extern Cvar* r_bonesDebug;

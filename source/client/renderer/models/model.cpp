@@ -28,48 +28,20 @@
 
 idRenderModel* loadmodel;
 
-static idRenderModel* backupModels[ MAX_MOD_KNOWN ];
-static int numBackupModels = 0;
-
-idRenderModel* R_AllocModel() {
+void R_AddModel( idRenderModel* model ) {
 	if ( tr.numModels == MAX_MOD_KNOWN ) {
-		return NULL;
+		common->Error( "R_AllModel: MAX_MOD_KNOWN hit." );
 	}
 
-	idRenderModel* mod = new idRenderModel;
-	mod->index = tr.numModels;
-	tr.models[ tr.numModels ] = mod;
+	model->index = tr.numModels;
+	tr.models[ tr.numModels ] = model;
 	tr.numModels++;
-
-	return mod;
 }
 
-static void R_LoadCacheModels() {
-	if ( !r_cacheModels->integer ) {
-		return;
-	}
-
-	// don't load the cache list in between level loads, only on startup, or after a vid_restart
-	if ( numBackupModels > 0 ) {
-		return;
-	}
-
-	char* buf;
-	int len = FS_ReadFile( "model.cache", ( void** )&buf );
-	if ( len <= 0 ) {
-		return;
-	}
-
-	const char* pString = buf;
-
-	char* token;
-	while ( ( token = String::ParseExt( &pString, true ) ) && token[ 0 ] ) {
-		char name[ MAX_QPATH ];
-		String::NCpyZ( name, token, sizeof ( name ) );
-		R_RegisterModel( name );
-	}
-
-	FS_FreeFile( buf );
+idRenderModel* R_AllocModel() {
+	idRenderModel* mod = new idRenderModel;
+	R_AddModel( mod );
+	return mod;
 }
 
 void R_ModelInit() {
@@ -80,8 +52,6 @@ void R_ModelInit() {
 	mod->type = MOD_BAD;
 
 	R_InitBsp29NoTextureMip();
-
-	R_LoadCacheModels();
 }
 
 static void R_FreeModel( idRenderModel* mod ) {
@@ -186,13 +156,11 @@ void R_LoadWorld( const char* name ) {
 	String::StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	idRenderModel* mod = NULL;
-	if ( !( GGameType & GAME_Tech3 ) ) {
+
+	if ( GGameType & GAME_QuakeHexen ) {
 		mod = R_AllocModel();
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		loadmodel = mod;
-	}
-
-	if ( GGameType & GAME_QuakeHexen ) {
 		Mod_LoadBrush29Model( mod, buffer );
 
 		// identify sky texture
@@ -206,6 +174,9 @@ void R_LoadWorld( const char* name ) {
 			}
 		}
 	} else if ( GGameType & GAME_Quake2 ) {
+		mod = R_AllocModel();
+		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
+		loadmodel = mod;
 		switch ( LittleLong( *( unsigned* )buffer ) ) {
 		case BSP38_HEADER:
 			Mod_LoadBrush38Model( mod, buffer );
@@ -297,64 +268,6 @@ static void R_LoadModelShadow( idRenderModel* mod ) {
 	FS_FreeFile( buf );
 }
 
-//	look for the given model in the list of backupModels
-static bool R_FindCachedModel( const char* name, idRenderModel* newmod ) {
-	// NOTE TTimo
-	// would need an r_cache check here too?
-
-	if ( !r_cacheModels->integer ) {
-		return false;
-	}
-
-	if ( !numBackupModels ) {
-		return false;
-	}
-
-	idRenderModel** mod = backupModels;
-	for ( int i = 0; i < numBackupModels; i++, mod++ ) {
-		if ( *mod && !String::NCmp( ( *mod )->name, name, sizeof ( ( *mod )->name ) ) ) {
-			// copy it to a new slot
-			int index = newmod->index;
-			memcpy( newmod, *mod, sizeof ( idRenderModel ) );
-			newmod->index = index;
-			switch ( ( *mod )->type ) {
-			case MOD_MESH3:
-				for ( int j = MD3_MAX_LODS - 1; j >= 0; j-- ) {
-					if ( j < ( *mod )->q3_numLods && ( *mod )->q3_md3[ j ] ) {
-						if ( ( j == MD3_MAX_LODS - 1 ) || ( ( *mod )->q3_md3[ j ] != ( *mod )->q3_md3[ j + 1 ] ) ) {
-							newmod->q3_md3[ j ] = ( *mod )->q3_md3[ j ];
-							R_RegisterMd3Shaders( newmod, j );
-						} else {
-							newmod->q3_md3[ j ] = ( *mod )->q3_md3[ j + 1 ];
-						}
-					}
-				}
-				break;
-			case MOD_MDC:
-				for ( int j = MD3_MAX_LODS - 1; j >= 0; j-- ) {
-					if ( j < ( *mod )->q3_numLods && ( *mod )->q3_mdc[ j ] ) {
-						if ( ( j == MD3_MAX_LODS - 1 ) || ( ( *mod )->q3_mdc[ j ] != ( *mod )->q3_mdc[ j + 1 ] ) ) {
-							newmod->q3_mdc[ j ] = ( *mod )->q3_mdc[ j ];
-							R_RegisterMdcShaders( newmod, j );
-						} else {
-							newmod->q3_mdc[ j ] = ( *mod )->q3_mdc[ j + 1 ];
-						}
-					}
-				}
-				break;
-			default:
-				return false;	// not supported yet
-			}
-
-			delete *mod;
-			*mod = NULL;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 //	Loads in a model for the given name
 //	Zero will be returned if the model fails to load. An entry will be
 // retained for failed models as an optimization to prevent disk rescanning
@@ -388,34 +301,8 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		}
 	}
 
-	// allocate a new idRenderModel
-	idRenderModel* mod = R_AllocModel();
-	if ( mod == NULL ) {
-		common->Printf( S_COLOR_YELLOW "R_RegisterModel: R_AllocModel() failed for '%s'\n", name );
-		return 0;
-	}
-
-	// only set the name after the model has been successfully loaded
-	String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
-
-	// GR - by default models are not tessellated
-	mod->q3_ATI_tess = false;
-	// GR - check if can be tessellated...
-	//		make sure to tessellate model heads
-	if ( GGameType & GAME_WolfSP && strstr( name, "head" ) ) {
-		mod->q3_ATI_tess = true;
-	}
-
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
-
-	// Ridah, look for it cached
-	if ( R_FindCachedModel( name, mod ) ) {
-		R_LoadModelShadow( mod );
-		return mod->index;
-	}
-
-	R_LoadModelShadow( mod );
 
 	void* buf;
 	int modfilelen = FS_ReadFile( name, &buf );
@@ -437,9 +324,17 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
 		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
+		idRenderModel* mod = R_AllocModel();
 		mod->type = MOD_BAD;
+		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		return 0;
 	}
+
+	// allocate a new idRenderModel
+	idRenderModel* mod = R_AllocModel();
+
+	// only set the name after the model has been successfully loaded
+	String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 
 	loadmodel = mod;
 
@@ -506,6 +401,16 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	}
 
 	FS_FreeFile( buf );
+
+	R_LoadModelShadow( mod );
+
+	// GR - by default models are not tessellated
+	mod->q3_ATI_tess = false;
+	// GR - check if can be tessellated...
+	//		make sure to tessellate model heads
+	if ( GGameType & GAME_WolfSP && strstr( name, "head" ) ) {
+		mod->q3_ATI_tess = true;
+	}
 
 	if ( !loaded ) {
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
@@ -899,55 +804,4 @@ void R_Modellist_f() {
 		total += DataSize;
 	}
 	common->Printf( "%8i : Total models\n", total );
-}
-
-void R_PurgeModels( int count ) {
-	static int lastPurged = 0;
-
-	if ( !numBackupModels ) {
-		return;
-	}
-
-	for ( int i = lastPurged; i < numBackupModels; i++ ) {
-		if ( backupModels[ i ] ) {
-			R_FreeModel( backupModels[ i ] );
-			backupModels[ i ] = NULL;
-			count--;
-			if ( count <= 0 ) {
-				lastPurged = i + 1;
-				return;
-			}
-		}
-	}
-
-	lastPurged = 0;
-	numBackupModels = 0;
-}
-
-void R_BackupModels() {
-	if ( !r_cache->integer ) {
-		return;
-	}
-	if ( !r_cacheModels->integer ) {
-		return;
-	}
-
-	if ( numBackupModels ) {
-		R_PurgeModels( numBackupModels + 1 );	// get rid of them all
-	}
-
-	// copy each model in memory across to the backupModels
-	idRenderModel** modBack = backupModels;
-	for ( int i = 0; i < tr.numModels; i++ ) {
-		idRenderModel* mod = tr.models[ i ];
-
-		if ( mod->type == MOD_MESH3 || mod->type == MOD_MDC ) {
-			*modBack = mod;
-			modBack++;
-			numBackupModels++;
-		} else {
-			R_FreeModel( mod );
-		}
-	}
-	tr.numModels = 0;
 }
