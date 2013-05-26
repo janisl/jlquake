@@ -22,6 +22,7 @@
 #include "../../../common/strings.h"
 #include "../../../common/content_types.h"
 #include "../../../common/endian.h"
+#include "RenderModelBSP29.h"
 
 #define SUBDIVIDE_SIZE  64
 
@@ -810,7 +811,8 @@ void Mod_LoadBrush29Model( idRenderModel* mod, void* buffer ) {
 
 		if ( i < mod->brush29_numsubmodels - 1 ) {
 			// duplicate the basic information
-			loadmodel = R_AllocModel();
+			loadmodel = new idRenderModelBSP29();
+			R_AddModel( loadmodel );
 			int saved_index = loadmodel->index;
 			*loadmodel = *mod;
 			loadmodel->index = saved_index;

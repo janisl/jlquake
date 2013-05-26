@@ -21,7 +21,6 @@
 
 struct trRefEntity_t;
 
-idRenderModel* R_AllocModel();
 void R_AddModel( idRenderModel* model );
 void R_ModelInit();
 void R_FreeModels();

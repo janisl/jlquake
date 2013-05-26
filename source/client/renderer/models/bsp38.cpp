@@ -21,6 +21,7 @@
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
+#include "RenderModelBSP38.h"
 
 #define SUBDIVIDE_SIZE  64
 
@@ -746,7 +747,8 @@ void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer ) {
 		if ( i == 0 ) {
 			starmod = loadmodel;
 		} else {
-			starmod = R_AllocModel();
+			starmod = new idRenderModelBSP38();
+			R_AddModel( starmod );
 
 			int saved_index = starmod->index;
 			*starmod = *loadmodel;

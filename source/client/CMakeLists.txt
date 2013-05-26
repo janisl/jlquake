@@ -104,6 +104,21 @@ set(CLIENT_FILES
 	renderer/models/mds.cpp
 	renderer/models/model.cpp
 	renderer/models/RenderModel.cpp
+	renderer/models/RenderModelBad.cpp
+	renderer/models/RenderModelBSP29.cpp
+	renderer/models/RenderModelBSP38.cpp
+	renderer/models/RenderModelBSP46.cpp
+	renderer/models/RenderModelMD2.cpp
+	renderer/models/RenderModelMD3.cpp
+	renderer/models/RenderModelMD4.cpp
+	renderer/models/RenderModelMDC.cpp
+	renderer/models/RenderModelMDL.cpp
+	renderer/models/RenderModelMDLNew.cpp
+	renderer/models/RenderModelMDM.cpp
+	renderer/models/RenderModelMDS.cpp
+	renderer/models/RenderModelMDX.cpp
+	renderer/models/RenderModelSP2.cpp
+	renderer/models/RenderModelSPR.cpp
 	renderer/models/sp2.cpp
 	renderer/models/spr.cpp
 	renderer/backend.cpp

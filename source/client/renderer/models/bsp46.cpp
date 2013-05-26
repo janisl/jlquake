@@ -14,8 +14,6 @@
 //**
 //**************************************************************************
 
-// HEADER FILES ------------------------------------------------------------
-
 #include "model.h"
 #include "../main.h"
 #include "../commands.h"
@@ -27,38 +25,15 @@
 #include "../../../common/command_buffer.h"
 #include "../../../common/endian.h"
 #include "../../../common/file_formats/bsp47.h"
-
-// MACROS ------------------------------------------------------------------
+#include "RenderModelBSP46.h"
 
 #define LIGHTMAP_SIZE       128
 
 #define MAX_FACE_POINTS     64
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
 world_t s_worldData;
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
 static byte* fileBase;
-
-// CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	HSVtoRGB
-//
-//==========================================================================
 
 static void HSVtoRGB( float h, float s, float v, float rgb[ 3 ] ) {
 	h *= 5;
@@ -103,12 +78,6 @@ static void HSVtoRGB( float h, float s, float v, float rgb[ 3 ] ) {
 		break;
 	}
 }
-
-//==========================================================================
-//
-//	R_ColorShiftLightingBytes
-//
-//==========================================================================
 
 static void R_ColorShiftLightingBytes( byte in[ 4 ], byte out[ 4 ] ) {
 	// shift the color data based on overbright range
@@ -180,12 +149,6 @@ float R_ProcessLightmap( byte* buf_p, int in_padding, int width, int height, byt
 	return maxIntensity;
 }
 
-//==========================================================================
-//
-//	R_ColorShiftLightingBytes
-//
-//==========================================================================
-
 static void R_LoadLightmaps( bsp46_lump_t* l ) {
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;
@@ -232,12 +195,6 @@ static void R_LoadLightmaps( bsp46_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_LoadVisibility
-//
-//==========================================================================
-
 static void R_LoadVisibility( bsp46_lump_t* l ) {
 	int len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = new byte[ len ];
@@ -256,12 +213,6 @@ static void R_LoadVisibility( bsp46_lump_t* l ) {
 	Com_Memcpy( dest, buf + 8, len - 8 );
 	s_worldData.vis = dest;
 }
-
-//==========================================================================
-//
-//	ShaderForShaderNum
-//
-//==========================================================================
 
 static shader_t* ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 	shaderNum = LittleLong( shaderNum );
@@ -310,12 +261,6 @@ static void FinishGenericSurface( bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_
 	SetPlaneSignbits( &gen->plane );
 	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
 }
-
-//==========================================================================
-//
-//	ParseFace
-//
-//==========================================================================
 
 static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
 	int lightmapNum = LittleLong( ds->lightmapNum );
@@ -373,12 +318,6 @@ static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 
 	surf->data = ( surfaceType_t* )cv;
 }
-
-//==========================================================================
-//
-//	ParseMesh
-//
-//==========================================================================
 
 static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf ) {
 	int lightmapNum = LittleLong( ds->lightmapNum );
@@ -441,12 +380,6 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 	FinishGenericSurface( ds, ( srfGeneric_t* )grid, grid->verts[ 0 ].xyz );
 }
 
-//==========================================================================
-//
-//	ParseTriSurf
-//
-//==========================================================================
-
 static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
@@ -500,12 +433,6 @@ static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t* )tri, tri->verts[ 0 ].xyz );
 }
-
-//==========================================================================
-//
-//	ParseFlare
-//
-//==========================================================================
 
 static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
 	// get fog volume
@@ -636,14 +563,7 @@ static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	FinishGenericSurface( ds, ( srfGeneric_t* )foliage, foliage->xyz[ 0 ] );
 }
 
-//==========================================================================
-//
-//	R_MergedWidthPoints
-//
 //	returns true if there are grid points merged on a width edge
-//
-//==========================================================================
-
 static bool R_MergedWidthPoints( srfGridMesh_t* grid, int offset ) {
 	for ( int i = 1; i < grid->width - 1; i++ ) {
 		for ( int j = i + 1; j < grid->width - 1; j++ ) {
@@ -662,14 +582,7 @@ static bool R_MergedWidthPoints( srfGridMesh_t* grid, int offset ) {
 	return false;
 }
 
-//==========================================================================
-//
-//	R_MergedHeightPoints
-//
 //	returns true if there are grid points merged on a height edge
-//
-//==========================================================================
-
 static bool R_MergedHeightPoints( srfGridMesh_t* grid, int offset ) {
 	for ( int i = 1; i < grid->height - 1; i++ ) {
 		for ( int j = i + 1; j < grid->height - 1; j++ ) {
@@ -688,16 +601,9 @@ static bool R_MergedHeightPoints( srfGridMesh_t* grid, int offset ) {
 	return false;
 }
 
-//==========================================================================
-//
-//	R_FixSharedVertexLodError_r
-//
 //	NOTE: never sync LoD through grid edges with merged points!
 //
 //	FIXME: write generalized version that also avoids cracks between a patch and one that meets half way?
-//
-//==========================================================================
-
 static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 	int k, l, m, n, offset1, offset2;
 
@@ -858,16 +764,9 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_FixSharedVertexLodError
-//
 //	This function assumes that all patches in one group are nicely stitched
 // together for the highest LoD. If this is not the case this function will
 // still do its job but won't fix the highest LoD cracks.
-//
-//==========================================================================
-
 static void R_FixSharedVertexLodError() {
 	for ( int i = 0; i < s_worldData.numsurfaces; i++ ) {
 		srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ].data;
@@ -884,12 +783,6 @@ static void R_FixSharedVertexLodError() {
 		R_FixSharedVertexLodError_r( i + 1, grid1 );
 	}
 }
-
-//==========================================================================
-//
-//	R_StitchPatches
-//
-//==========================================================================
 
 static bool R_StitchPatches( int grid1num, int grid2num ) {
 	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ].data;
@@ -1409,10 +1302,6 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 	return false;
 }
 
-//==========================================================================
-//
-//	R_TryStitchPatch
-//
 //	This function will try to stitch patches in the same LoD group together
 // for the highest LoD.
 //
@@ -1421,9 +1310,6 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 //	Vertices will be joined at the patch side a crack is first found, at the
 // other side of the patch (on the same row or column) the vertices will not
 // be joined and cracks might still appear at that side.
-//
-//==========================================================================
-
 static int R_TryStitchingPatch( int grid1num ) {
 	int numstitches = 0;
 	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ].data;
@@ -1454,12 +1340,6 @@ static int R_TryStitchingPatch( int grid1num ) {
 	return numstitches;
 }
 
-//==========================================================================
-//
-//	R_StitchAllPatches
-//
-//==========================================================================
-
 static void R_StitchAllPatches() {
 	int numstitches = 0;
 	bool stitched;
@@ -1482,12 +1362,6 @@ static void R_StitchAllPatches() {
 	} while ( stitched );
 	common->Printf( "stitched %d LoD cracks\n", numstitches );
 }
-
-//==========================================================================
-//
-//	R_LoadSurfaces
-//
-//==========================================================================
 
 static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_t* indexLump ) {
 	bsp46_dsurface_t* in = ( bsp46_dsurface_t* )( fileBase + surfs->fileofs );
@@ -1558,12 +1432,6 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 		numFaces, numMeshes, numTriSurfs, numFlares, numFoliage );
 }
 
-//==========================================================================
-//
-//	R_SetParent
-//
-//==========================================================================
-
 static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 	node->parent = parent;
 	if ( node->contents != -1 ) {
@@ -1596,12 +1464,6 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 	AddPointToBounds( node->children[ 1 ]->surfMins, node->surfMins, node->surfMaxs );
 	AddPointToBounds( node->children[ 1 ]->surfMaxs, node->surfMins, node->surfMaxs );
 }
-
-//==========================================================================
-//
-//	R_LoadNodesAndLeafs
-//
-//==========================================================================
 
 static void R_LoadNodesAndLeafs( bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump ) {
 	bsp46_dnode_t* in = ( bsp46_dnode_t* )( fileBase + nodeLump->fileofs );
@@ -1676,12 +1538,6 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump 
 	R_SetParent( s_worldData.nodes, NULL );
 }
 
-//==========================================================================
-//
-//	R_LoadShaders
-//
-//==========================================================================
-
 static void R_LoadShaders( bsp46_lump_t* l ) {
 	bsp46_dshader_t* in = ( bsp46_dshader_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -1701,12 +1557,6 @@ static void R_LoadShaders( bsp46_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_LoadMarksurfaces
-//
-//==========================================================================
-
 static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
 	int* in = ( int* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -1723,12 +1573,6 @@ static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
 		out[ i ] = s_worldData.surfaces + j;
 	}
 }
-
-//==========================================================================
-//
-//	R_LoadPlanes
-//
-//==========================================================================
 
 static void R_LoadPlanes( bsp46_lump_t* l ) {
 	bsp46_dplane_t* in = ( bsp46_dplane_t* )( fileBase + l->fileofs );
@@ -1754,12 +1598,6 @@ static void R_LoadPlanes( bsp46_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	ColorBytes4
-//
-//==========================================================================
-
 unsigned ColorBytes4( float r, float g, float b, float a ) {
 	unsigned i;
 
@@ -1770,12 +1608,6 @@ unsigned ColorBytes4( float r, float g, float b, float a ) {
 
 	return i;
 }
-
-//==========================================================================
-//
-//	R_LoadFogs
-//
-//==========================================================================
 
 static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesLump ) {
 	bsp46_dfog_t* fogs = ( bsp46_dfog_t* )( fileBase + l->fileofs );
@@ -1900,12 +1732,6 @@ static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t
 	}
 }
 
-//==========================================================================
-//
-//	R_LoadLightGrid
-//
-//==========================================================================
-
 static void R_LoadLightGrid( bsp46_lump_t* l ) {
 	world_t* w = &s_worldData;
 
@@ -1940,12 +1766,6 @@ static void R_LoadLightGrid( bsp46_lump_t* l ) {
 		R_ColorShiftLightingBytes( &w->lightGridData[ i * 8 + 3 ], &w->lightGridData[ i * 8 + 3 ] );
 	}
 }
-
-//==========================================================================
-//
-//	R_LoadEntities
-//
-//==========================================================================
 
 static void R_LoadEntities( bsp46_lump_t* l ) {
 	world_t* w = &s_worldData;
@@ -2024,12 +1844,6 @@ static void R_LoadEntities( bsp46_lump_t* l ) {
 	}
 }
 
-//==========================================================================
-//
-//	R_LoadSubmodels
-//
-//==========================================================================
-
 static void R_LoadSubmodels( bsp46_lump_t* l ) {
 	bsp46_dmodel_t* in = ( bsp46_dmodel_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -2042,7 +1856,8 @@ static void R_LoadSubmodels( bsp46_lump_t* l ) {
 	s_worldData.bmodels = out;
 
 	for ( int i = 0; i < count; i++, in++, out++ ) {
-		idRenderModel* model = R_AllocModel();
+		idRenderModel* model = new idRenderModelBSP46();
+		R_AddModel( model );
 
 		assert( model != NULL );			// this should never happen
 
@@ -2074,12 +1889,6 @@ static void ExecUpdateScreen() {
 		Cbuf_ExecuteText( EXEC_NOW, "updatescreen\n" );
 	}
 }
-
-//==========================================================================
-//
-//	R_LoadBrush46Model
-//
-//==========================================================================
 
 void R_LoadBrush46Model( void* buffer ) {
 	bsp46_dheader_t* header = ( bsp46_dheader_t* )buffer;
@@ -2123,12 +1932,6 @@ void R_LoadBrush46Model( void* buffer ) {
 	ExecUpdateScreen();
 }
 
-//==========================================================================
-//
-//	R_FreeBsp46
-//
-//==========================================================================
-
 void R_FreeBsp46( world_t* mod ) {
 	delete[] mod->novis;
 	if ( mod->vis ) {
@@ -2167,21 +1970,9 @@ void R_FreeBsp46( world_t* mod ) {
 	delete[] mod->bmodels;
 }
 
-//==========================================================================
-//
-//	R_FreeBsp46Model
-//
-//==========================================================================
-
 void R_FreeBsp46Model( idRenderModel* mod ) {
 	delete[] mod->q3_bmodel->decals;
 }
-
-//==========================================================================
-//
-//	R_ClusterPVS
-//
-//==========================================================================
 
 const byte* R_ClusterPVS( int cluster ) {
 	if ( !tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters ) {
@@ -2190,12 +1981,6 @@ const byte* R_ClusterPVS( int cluster ) {
 
 	return tr.world->vis + cluster * tr.world->clusterBytes;
 }
-
-//==========================================================================
-//
-//	R_PointInLeaf
-//
-//==========================================================================
 
 mbrush46_node_t* R_PointInLeaf( const vec3_t p ) {
 	if ( !tr.world ) {

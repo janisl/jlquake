@@ -25,6 +25,20 @@
 #include "../../../common/strings.h"
 #include "../../../common/command_buffer.h"
 #include "../../../common/endian.h"
+#include "RenderModelBad.h"
+#include "RenderModelBSP29.h"
+#include "RenderModelBSP38.h"
+#include "RenderModelSPR.h"
+#include "RenderModelSP2.h"
+#include "RenderModelMDL.h"
+#include "RenderModelMDLNew.h"
+#include "RenderModelMD2.h"
+#include "RenderModelMD3.h"
+#include "RenderModelMD4.h"
+#include "RenderModelMDC.h"
+#include "RenderModelMDS.h"
+#include "RenderModelMDM.h"
+#include "RenderModelMDX.h"
 
 idRenderModel* loadmodel;
 
@@ -38,17 +52,12 @@ void R_AddModel( idRenderModel* model ) {
 	tr.numModels++;
 }
 
-idRenderModel* R_AllocModel() {
-	idRenderModel* mod = new idRenderModel;
-	R_AddModel( mod );
-	return mod;
-}
-
 void R_ModelInit() {
 	// leave a space for NULL model
 	tr.numModels = 0;
 
-	idRenderModel* mod = R_AllocModel();
+	idRenderModel* mod = new idRenderModelBad();
+	R_AddModel( mod );
 	mod->type = MOD_BAD;
 
 	R_InitBsp29NoTextureMip();
@@ -158,7 +167,8 @@ void R_LoadWorld( const char* name ) {
 	idRenderModel* mod = NULL;
 
 	if ( GGameType & GAME_QuakeHexen ) {
-		mod = R_AllocModel();
+		mod = new idRenderModelBSP29();
+		R_AddModel( mod );
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		loadmodel = mod;
 		Mod_LoadBrush29Model( mod, buffer );
@@ -174,7 +184,8 @@ void R_LoadWorld( const char* name ) {
 			}
 		}
 	} else if ( GGameType & GAME_Quake2 ) {
-		mod = R_AllocModel();
+		mod = new idRenderModelBSP38();
+		R_AddModel( mod );
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		loadmodel = mod;
 		switch ( LittleLong( *( unsigned* )buffer ) ) {
@@ -324,14 +335,69 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
 		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
-		idRenderModel* mod = R_AllocModel();
+		idRenderModel* mod = new idRenderModelBad();
+		R_AddModel( mod );
 		mod->type = MOD_BAD;
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		return 0;
 	}
 
 	// allocate a new idRenderModel
-	idRenderModel* mod = R_AllocModel();
+	idRenderModel* mod;
+	switch ( LittleLong( *( qint32* )buf ) ) {
+	case BSP29_VERSION:
+		mod = new idRenderModelBSP29();
+		break;
+
+	case IDSPRITE1HEADER:
+		mod = new idRenderModelSPR();
+		break;
+
+	case IDSPRITE2HEADER:
+		mod = new idRenderModelSP2();
+		break;
+
+	case IDPOLYHEADER:
+		mod = new idRenderModelMDL();
+		break;
+
+	case RAPOLYHEADER:
+		mod = new idRenderModelMDLNew();
+		break;
+
+	case IDMESH2HEADER:
+		mod = new idRenderModelMD2();
+		break;
+
+	case MD3_IDENT:
+		mod = new idRenderModelMD3();
+		break;
+
+	case MD4_IDENT:
+		mod = new idRenderModelMD4();
+		break;
+
+	case MDC_IDENT:
+		mod = new idRenderModelMDC();
+		break;
+
+	case MDS_IDENT:
+		mod = new idRenderModelMDS();
+		break;
+
+	case MDM_IDENT:
+		mod = new idRenderModelMDM();
+		break;
+
+	case MDX_IDENT:
+		mod = new idRenderModelMDX();
+		break;
+
+	default:
+		mod = new idRenderModelBad;
+		break;
+	}
+	R_AddModel( mod );
 
 	// only set the name after the model has been successfully loaded
 	String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
@@ -416,7 +482,11 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
 		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
+		delete mod;
+		mod = new idRenderModelBad();
+		R_AddModel( mod );
 		mod->type = MOD_BAD;
+		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		return 0;
 	}
 
