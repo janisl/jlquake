@@ -62,7 +62,7 @@ static const dmdl_trivertx_t* poseverts[ MAXALIASFRAMES ];
 static dmdl_stvert_t stverts[ MAXALIASVERTS ];
 static mmesh1triangle_t triangles[ MAXALIASTRIS ];
 
-static model_t* aliasmodel;
+static idRenderModel* aliasmodel;
 static mesh1hdr_t* paliashdr;
 
 // all frames will have their vertexes rearranged and expanded
@@ -309,7 +309,7 @@ static int AddMdlVertex( int xyzIndex, int stIndex, bool onBackSide ) {
 	return numorder++;
 }
 
-static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
+static void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr ) {
 	aliasmodel = m;
 	paliashdr = hdr;	// (mesh1hdr_t *)Mod_Extradata (m);
 
@@ -356,7 +356,7 @@ static void GL_MakeAliasModelDisplayLists( model_t* m, mesh1hdr_t* hdr ) {
 	}
 }
 
-void Mod_LoadMdlModel( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
+void Mod_LoadMdlModel( idRenderModel* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
 	mdl_t* pinmodel = ( mdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -493,7 +493,7 @@ void Mod_LoadMdlModel( model_t* mod, const void* buffer, idSkinTranslation* skin
 }
 
 //	Reads extra field for num ST verts, and extra index list of them
-void Mod_LoadMdlModelNew( model_t* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
+void Mod_LoadMdlModelNew( idRenderModel* mod, const void* buffer, idSkinTranslation* skinTranslation ) {
 	newmdl_t* pinmodel = ( newmdl_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -629,7 +629,7 @@ void Mod_LoadMdlModelNew( model_t* mod, const void* buffer, idSkinTranslation* s
 	mod->q1_cache = pheader;
 }
 
-void Mod_FreeMdlModel( model_t* mod ) {
+void Mod_FreeMdlModel( idRenderModel* mod ) {
 	mesh1hdr_t* pheader = ( mesh1hdr_t* )mod->q1_cache;
 	delete[] pheader->indexes;
 	delete[] pheader->posedata;
@@ -647,7 +647,7 @@ float R_CalcEntityLight( refEntity_t* e ) {
 	if ( GGameType & GAME_Hexen2 ) {
 		vec3_t adjust_origin;
 		VectorCopy( lorg, adjust_origin );
-		model_t* clmodel = R_GetModelByHandle( e->hModel );
+		idRenderModel* clmodel = R_GetModelByHandle( e->hModel );
 		adjust_origin[ 2 ] += ( clmodel->q1_mins[ 2 ] + clmodel->q1_maxs[ 2 ] ) / 2;
 		light = R_LightPointQ1( adjust_origin );
 	} else {
@@ -691,7 +691,7 @@ static void R_MdlSetupEntityLighting( trRefEntity_t* ent ) {
 		shadelight = 192 - ambientlight;
 	}
 
-	model_t* clmodel = R_GetModelByHandle( ent->e.hModel );
+	idRenderModel* clmodel = R_GetModelByHandle( ent->e.hModel );
 
 	// ZOID: never allow players to go totally black
 	if ( ( GGameType & GAME_Quake ) && !String::Cmp( clmodel->name, "progs/player.mdl" ) ) {
@@ -802,7 +802,7 @@ void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	tess.numIndexes += paliashdr->numIndexes;
 }
 
-bool R_MdlHasHexen2Transparency( model_t* model ) {
+bool R_MdlHasHexen2Transparency( idRenderModel* model ) {
 	if ( model->type == MOD_MESH1 ) {
 		return !!( model->q1_flags & ( H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY | H2MDLEF_SPECIAL_TRANS ) );
 	}

@@ -2042,7 +2042,7 @@ static void R_LoadSubmodels( bsp46_lump_t* l ) {
 	s_worldData.bmodels = out;
 
 	for ( int i = 0; i < count; i++, in++, out++ ) {
-		model_t* model = R_AllocModel();
+		idRenderModel* model = R_AllocModel();
 
 		assert( model != NULL );			// this should never happen
 
@@ -2173,7 +2173,7 @@ void R_FreeBsp46( world_t* mod ) {
 //
 //==========================================================================
 
-void R_FreeBsp46Model( model_t* mod ) {
+void R_FreeBsp46Model( idRenderModel* mod ) {
 	delete[] mod->q3_bmodel->decals;
 }
 

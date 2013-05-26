@@ -281,7 +281,7 @@ void R_AddModelShadow( const refEntity_t* ent ) {
 	}
 
 	//	get model
-	model_t* m = R_GetModelByHandle( ent->hModel );
+	idRenderModel* m = R_GetModelByHandle( ent->hModel );
 	if ( m == NULL || m->q3_shadowShader == 0 ) {
 		return;
 	}

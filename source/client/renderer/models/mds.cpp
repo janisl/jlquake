@@ -96,7 +96,7 @@ static refEntity_t lastBoneEntity;
 
 static int totalrv, totalrt, totalv, totalt;	//----(SA)
 
-bool R_LoadMds( model_t* mod, const void* buffer ) {
+bool R_LoadMds( idRenderModel* mod, const void* buffer ) {
 	mdsHeader_t* pinmodel = ( mdsHeader_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -263,7 +263,7 @@ bool R_LoadMds( model_t* mod, const void* buffer ) {
 	return true;
 }
 
-void R_FreeMds( model_t* mod ) {
+void R_FreeMds( idRenderModel* mod ) {
 	Mem_Free( mod->q3_mds );
 }
 

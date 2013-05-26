@@ -44,7 +44,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
 
-void GL_BeginBuildingLightmaps( model_t* m );
+void GL_BeginBuildingLightmaps( idRenderModel* m );
 void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf );
 void GL_EndBuildingLightmaps();
 void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex );

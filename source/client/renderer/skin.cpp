@@ -400,7 +400,7 @@ qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap
 		surfnum = 0;
 	}
 
-	model_t* model = R_GetModelByHandle( modelid );		// (SA) should be correct now
+	idRenderModel* model = R_GetModelByHandle( modelid );		// (SA) should be correct now
 
 	if ( model ) {
 		mbrush46_model_t* bmodel  = model->q3_bmodel;

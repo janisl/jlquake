@@ -61,7 +61,7 @@ frame.
 //
 //==========================================================================
 
-bool R_LoadMD4( model_t* mod, void* buffer, const char* mod_name ) {
+bool R_LoadMD4( idRenderModel* mod, void* buffer, const char* mod_name ) {
 	md4Header_t* pinmodel = ( md4Header_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -200,7 +200,7 @@ bool R_LoadMD4( model_t* mod, void* buffer, const char* mod_name ) {
 //
 //==========================================================================
 
-void R_FreeMd4( model_t* mod ) {
+void R_FreeMd4( idRenderModel* mod ) {
 	Mem_Free( mod->q3_md4 );
 }
 

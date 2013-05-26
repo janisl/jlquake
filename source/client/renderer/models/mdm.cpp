@@ -109,7 +109,7 @@ static int totalrv, totalrt, totalv, totalt;				//----(SA)
 
 //-----------------------------------------------------------------------------
 
-bool R_LoadMdm( model_t* mod, const void* buffer ) {
+bool R_LoadMdm( idRenderModel* mod, const void* buffer ) {
 	mdmHeader_t* pinmodel = ( mdmHeader_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -260,11 +260,11 @@ bool R_LoadMdm( model_t* mod, const void* buffer ) {
 	return true;
 }
 
-void R_FreeMdm( model_t* mod ) {
+void R_FreeMdm( idRenderModel* mod ) {
 	Mem_Free( mod->q3_mdm );
 }
 
-bool R_LoadMdx( model_t* mod, const void* buffer ) {
+bool R_LoadMdx( idRenderModel* mod, const void* buffer ) {
 	mdxHeader_t* pinmodel = ( mdxHeader_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -322,7 +322,7 @@ bool R_LoadMdx( model_t* mod, const void* buffer ) {
 	return true;
 }
 
-void R_FreeMdx( model_t* mod ) {
+void R_FreeMdx( idRenderModel* mod ) {
 	Mem_Free( mod->q3_mdx );
 }
 

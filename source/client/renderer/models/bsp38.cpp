@@ -701,7 +701,7 @@ static void Mod_LoadSubmodels( bsp38_lump_t* l ) {
 	}
 }
 
-void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
+void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer ) {
 	Com_Memset( mod_novis, 0xff, sizeof ( mod_novis ) );
 
 	loadmodel->type = MOD_BRUSH38;
@@ -740,7 +740,7 @@ void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
 	// set up the submodels
 	//
 	for ( int i = 0; i < mod->brush38_numsubmodels; i++ ) {
-		model_t* starmod;
+		idRenderModel* starmod;
 
 		mbrush38_model_t* bm = &mod->brush38_submodels[ i ];
 		if ( i == 0 ) {
@@ -769,7 +769,7 @@ void Mod_LoadBrush38Model( model_t* mod, void* buffer ) {
 	}
 }
 
-void Mod_FreeBsp38( model_t* mod ) {
+void Mod_FreeBsp38( idRenderModel* mod ) {
 	if ( mod->name[ 0 ] == '*' ) {
 		return;
 	}
@@ -801,7 +801,7 @@ void Mod_FreeBsp38( model_t* mod ) {
 	delete[] mod->brush38_submodels;
 }
 
-static byte* Mod_DecompressVis( byte* in, model_t* model ) {
+static byte* Mod_DecompressVis( byte* in, idRenderModel* model ) {
 	static byte decompressed[ BSP38MAX_MAP_LEAFS / 8 ];
 
 	int row = ( model->brush38_vis->numclusters + 7 ) >> 3;
@@ -833,14 +833,14 @@ static byte* Mod_DecompressVis( byte* in, model_t* model ) {
 	return decompressed;
 }
 
-byte* Mod_ClusterPVS( int cluster, model_t* model ) {
+byte* Mod_ClusterPVS( int cluster, idRenderModel* model ) {
 	if ( cluster == -1 || !model->brush38_vis ) {
 		return mod_novis;
 	}
 	return Mod_DecompressVis( ( byte* )model->brush38_vis + model->brush38_vis->bitofs[ cluster ][ BSP38DVIS_PVS ], model );
 }
 
-mbrush38_leaf_t* Mod_PointInLeafQ2( vec3_t p, model_t* model ) {
+mbrush38_leaf_t* Mod_PointInLeafQ2( vec3_t p, idRenderModel* model ) {
 	if ( !model || !model->brush38_nodes ) {
 		common->Error( "Mod_PointInLeafQ2: bad model" );
 	}

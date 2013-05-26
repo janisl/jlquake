@@ -103,6 +103,7 @@ set(CLIENT_FILES
 	renderer/models/mdm.cpp
 	renderer/models/mds.cpp
 	renderer/models/model.cpp
+	renderer/models/RenderModel.cpp
 	renderer/models/sp2.cpp
 	renderer/models/spr.cpp
 	renderer/backend.cpp

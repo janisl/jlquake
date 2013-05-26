@@ -468,7 +468,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 
 	VectorCopy( ent->e.origin, orient->origin );
 
-	model_t* model = R_GetModelByHandle( ent->e.hModel );
+	idRenderModel* model = R_GetModelByHandle( ent->e.hModel );
 	if ( model->type == MOD_SPRITE || model->type == MOD_SPRITE2 ) {
 		//	Sprites handle orientation in drawing code.
 		AxisClear( orient->axis );
@@ -686,7 +686,7 @@ static void R_AddBadModelSurface( trRefEntity_t* ent ) {
 	R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 }
 
-static void R_AddModelSurfaces( model_t* model, trRefEntity_t* ent, int forcedSortIndex ) {
+static void R_AddModelSurfaces( idRenderModel* model, trRefEntity_t* ent, int forcedSortIndex ) {
 	switch ( model->type ) {
 	case MOD_BAD:
 		R_AddBadModelSurface( ent );

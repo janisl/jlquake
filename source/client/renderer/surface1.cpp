@@ -340,7 +340,7 @@ void GL_BuildLightmaps() {
 	}
 
 	for ( int j = 1; j < MAX_MOD_KNOWN; j++ ) {
-		model_t* m = tr.models[ j ];
+		idRenderModel* m = tr.models[ j ];
 		if ( !m ) {
 			break;
 		}

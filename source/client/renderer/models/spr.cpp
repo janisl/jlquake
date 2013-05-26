@@ -94,7 +94,7 @@ static void* Mod_LoadSpriteGroup( void* pin, msprite1frame_t** ppframe, int fram
 	return ptemp;
 }
 
-void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
+void Mod_LoadSpriteModel( idRenderModel* mod, void* buffer ) {
 	dsprite1_t* pin = ( dsprite1_t* )buffer;
 
 	int version = LittleLong( pin->version );
@@ -151,7 +151,7 @@ void Mod_LoadSpriteModel( model_t* mod, void* buffer ) {
 	mod->type = MOD_SPRITE;
 }
 
-void Mod_FreeSpriteModel( model_t* mod ) {
+void Mod_FreeSpriteModel( idRenderModel* mod ) {
 	msprite1_t* psprite = ( msprite1_t* )mod->q1_cache;
 	for ( int i = 0; i < psprite->numframes; i++ ) {
 		if ( psprite->frames[ i ].type == SPR_SINGLE ) {

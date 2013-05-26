@@ -47,7 +47,7 @@ static float r_anormals[ NUMMDCVERTEXNORMALS ][ 3 ] =
 #include "anorms256.h"
 };
 
-static bool R_LoadMdcLod( model_t* mod, int lod, void* buffer, const char* mod_name ) {
+static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char* mod_name ) {
 	mdcHeader_t* pinmodel = ( mdcHeader_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -224,7 +224,7 @@ static bool R_LoadMdcLod( model_t* mod, int lod, void* buffer, const char* mod_n
 	return true;
 }
 
-bool R_LoadMdc( model_t* mod, void* buffer ) {
+bool R_LoadMdc( idRenderModel* mod, void* buffer ) {
 	mod->q3_numLods = 0;
 
 	//
@@ -300,7 +300,7 @@ bool R_LoadMdc( model_t* mod, void* buffer ) {
 	return true;
 }
 
-void R_FreeMdc( model_t* mod ) {
+void R_FreeMdc( idRenderModel* mod ) {
 	Mem_Free( mod->q3_mdc[ 0 ] );
 	for ( int lod = 1; lod < MD3_MAX_LODS; lod++ ) {
 		if ( mod->q3_mdc[ lod ] != mod->q3_mdc[ lod - 1 ] ) {
@@ -309,7 +309,7 @@ void R_FreeMdc( model_t* mod ) {
 	}
 }
 
-void R_RegisterMdcShaders( model_t* mod, int lod ) {
+void R_RegisterMdcShaders( idRenderModel* mod, int lod ) {
 	// swap all the surfaces
 	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ] + mod->q3_mdc[ lod ]->ofsSurfaces );
 	for ( int i = 0; i < mod->q3_mdc[ lod ]->numSurfaces; i++ ) {

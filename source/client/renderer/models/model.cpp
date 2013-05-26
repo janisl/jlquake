@@ -26,18 +26,17 @@
 #include "../../../common/command_buffer.h"
 #include "../../../common/endian.h"
 
-model_t* loadmodel;
+idRenderModel* loadmodel;
 
-static model_t* backupModels[ MAX_MOD_KNOWN ];
+static idRenderModel* backupModels[ MAX_MOD_KNOWN ];
 static int numBackupModels = 0;
 
-model_t* R_AllocModel() {
+idRenderModel* R_AllocModel() {
 	if ( tr.numModels == MAX_MOD_KNOWN ) {
 		return NULL;
 	}
 
-	model_t* mod = new model_t;
-	Com_Memset( mod, 0, sizeof ( model_t ) );
+	idRenderModel* mod = new idRenderModel;
 	mod->index = tr.numModels;
 	tr.models[ tr.numModels ] = mod;
 	tr.numModels++;
@@ -77,7 +76,7 @@ void R_ModelInit() {
 	// leave a space for NULL model
 	tr.numModels = 0;
 
-	model_t* mod = R_AllocModel();
+	idRenderModel* mod = R_AllocModel();
 	mod->type = MOD_BAD;
 
 	R_InitBsp29NoTextureMip();
@@ -85,7 +84,7 @@ void R_ModelInit() {
 	R_LoadCacheModels();
 }
 
-static void R_FreeModel( model_t* mod ) {
+static void R_FreeModel( idRenderModel* mod ) {
 	if ( mod->type == MOD_SPRITE ) {
 		Mod_FreeSpriteModel( mod );
 	} else if ( mod->type == MOD_SPRITE2 ) {
@@ -172,13 +171,6 @@ void R_LoadWorld( const char* name ) {
 		common->Error( "R_LoadWorld: %s not found", name );
 	}
 
-	model_t* mod = NULL;
-	if ( !( GGameType & GAME_Tech3 ) ) {
-		mod = R_AllocModel();
-		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
-		loadmodel = mod;
-	}
-
 	// ydnar: set map meta dir
 	tr.worldDir = __CopyString( name );
 	String::StripExtension( tr.worldDir, tr.worldDir );
@@ -192,6 +184,13 @@ void R_LoadWorld( const char* name ) {
 
 	String::NCpyZ( s_worldData.baseName, String::SkipPath( s_worldData.name ), sizeof ( s_worldData.name ) );
 	String::StripExtension( s_worldData.baseName, s_worldData.baseName );
+
+	idRenderModel* mod = NULL;
+	if ( !( GGameType & GAME_Tech3 ) ) {
+		mod = R_AllocModel();
+		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
+		loadmodel = mod;
+	}
 
 	if ( GGameType & GAME_QuakeHexen ) {
 		Mod_LoadBrush29Model( mod, buffer );
@@ -248,7 +247,7 @@ bool R_GetEntityToken( char* buffer, int size ) {
 	}
 }
 
-model_t* R_GetModelByHandle( qhandle_t index ) {
+idRenderModel* R_GetModelByHandle( qhandle_t index ) {
 	// out of range gets the defualt model
 	if ( index < 1 || index >= tr.numModels ) {
 		return tr.models[ 0 ];
@@ -258,7 +257,7 @@ model_t* R_GetModelByHandle( qhandle_t index ) {
 }
 
 //	loads a model's shadow script
-static void R_LoadModelShadow( model_t* mod ) {
+static void R_LoadModelShadow( idRenderModel* mod ) {
 	// set default shadow
 	mod->q3_shadowShader = 0;
 
@@ -299,7 +298,7 @@ static void R_LoadModelShadow( model_t* mod ) {
 }
 
 //	look for the given model in the list of backupModels
-static bool R_FindCachedModel( const char* name, model_t* newmod ) {
+static bool R_FindCachedModel( const char* name, idRenderModel* newmod ) {
 	// NOTE TTimo
 	// would need an r_cache check here too?
 
@@ -311,12 +310,12 @@ static bool R_FindCachedModel( const char* name, model_t* newmod ) {
 		return false;
 	}
 
-	model_t** mod = backupModels;
+	idRenderModel** mod = backupModels;
 	for ( int i = 0; i < numBackupModels; i++, mod++ ) {
 		if ( *mod && !String::NCmp( ( *mod )->name, name, sizeof ( ( *mod )->name ) ) ) {
 			// copy it to a new slot
 			int index = newmod->index;
-			memcpy( newmod, *mod, sizeof ( model_t ) );
+			memcpy( newmod, *mod, sizeof ( idRenderModel ) );
 			newmod->index = index;
 			switch ( ( *mod )->type ) {
 			case MOD_MESH3:
@@ -380,7 +379,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	// search the currently loaded models
 	//
 	for ( int hModel = 1; hModel < tr.numModels; hModel++ ) {
-		model_t* mod = tr.models[ hModel ];
+		idRenderModel* mod = tr.models[ hModel ];
 		if ( !String::ICmp( mod->name, name ) ) {
 			if ( mod->type == MOD_BAD ) {
 				return 0;
@@ -389,8 +388,8 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		}
 	}
 
-	// allocate a new model_t
-	model_t* mod = R_AllocModel();
+	// allocate a new idRenderModel
+	idRenderModel* mod = R_AllocModel();
 	if ( mod == NULL ) {
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: R_AllocModel() failed for '%s'\n", name );
 		return 0;
@@ -436,7 +435,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	}
 	if ( !buf ) {
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
-		// we still keep the model_t around, so if the model name is asked for
+		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
 		mod->type = MOD_BAD;
 		return 0;
@@ -510,7 +509,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 
 	if ( !loaded ) {
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
-		// we still keep the model_t around, so if the model name is asked for
+		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
 		mod->type = MOD_BAD;
 		return 0;
@@ -520,7 +519,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 }
 
 void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
-	model_t* model = R_GetModelByHandle( handle );
+	idRenderModel* model = R_GetModelByHandle( handle );
 
 	switch ( model->type ) {
 	case MOD_BRUSH29:
@@ -569,7 +568,7 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 }
 
 int R_ModelNumFrames( qhandle_t Handle ) {
-	model_t* Model = R_GetModelByHandle( Handle );
+	idRenderModel* Model = R_GetModelByHandle( Handle );
 	switch ( Model->type ) {
 	case MOD_BRUSH29:
 	case MOD_SPRITE:
@@ -609,7 +608,7 @@ int R_ModelNumFrames( qhandle_t Handle ) {
 
 //	Use only by Quake and Hexen 2, only .MDL files will have meaningfull flags.
 int R_ModelFlags( qhandle_t Handle ) {
-	model_t* Model = R_GetModelByHandle( Handle );
+	idRenderModel* Model = R_GetModelByHandle( Handle );
 	if ( Model->type == MOD_MESH1 ) {
 		return Model->q1_flags;
 	}
@@ -617,7 +616,7 @@ int R_ModelFlags( qhandle_t Handle ) {
 }
 
 bool R_IsMeshModel( qhandle_t Handle ) {
-	model_t* Model = R_GetModelByHandle( Handle );
+	idRenderModel* Model = R_GetModelByHandle( Handle );
 	return Model->type == MOD_MESH1 || Model->type == MOD_MESH2 ||
 		   Model->type == MOD_MESH3 || Model->type == MOD_MD4 ||
 		   Model->type == MOD_MDC || Model->type == MOD_MDS || Model->type == MOD_MDM;
@@ -628,7 +627,7 @@ const char* R_ModelName( qhandle_t Handle ) {
 }
 
 int R_ModelSyncType( qhandle_t Handle ) {
-	model_t* Model = R_GetModelByHandle( Handle );
+	idRenderModel* Model = R_GetModelByHandle( Handle );
 	switch ( Model->type ) {
 	case MOD_SPRITE:
 	case MOD_MESH1:
@@ -640,7 +639,7 @@ int R_ModelSyncType( qhandle_t Handle ) {
 }
 
 void R_CalculateModelScaleOffset( qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out ) {
-	model_t* Model = R_GetModelByHandle( Handle );
+	idRenderModel* Model = R_GetModelByHandle( Handle );
 	if ( Model->type != MOD_MESH1 ) {
 		VectorClear( Out );
 		return;
@@ -677,7 +676,7 @@ bool R_LerpTag( orientation_t* tag, qhandle_t handle, int startFrame, int endFra
 	int i;
 	float frontLerp, backLerp;
 
-	model_t* model = R_GetModelByHandle( handle );
+	idRenderModel* model = R_GetModelByHandle( handle );
 	if ( !model->q3_md3[ 0 ] ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
@@ -766,7 +765,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 	int endFrame = refent->frame;
 	float frac = 1.0 - refent->backlerp;
 
-	model_t* model = R_GetModelByHandle( handle );
+	idRenderModel* model = R_GetModelByHandle( handle );
 	if ( !model->q3_md3[ 0 ] && !model->q3_mdc[ 0 ] && !model->q3_mds && !model->q3_mdm ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
@@ -857,7 +856,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 void R_Modellist_f() {
 	int total = 0;
 	for ( int i = 0; i < tr.numModels; i++ ) {
-		model_t* mod = tr.models[ i ];
+		idRenderModel* mod = tr.models[ i ];
 		int lods = 1;
 		int DataSize = 0;
 		switch ( mod->type ) {
@@ -938,9 +937,9 @@ void R_BackupModels() {
 	}
 
 	// copy each model in memory across to the backupModels
-	model_t** modBack = backupModels;
+	idRenderModel** modBack = backupModels;
 	for ( int i = 0; i < tr.numModels; i++ ) {
-		model_t* mod = tr.models[ i ];
+		idRenderModel* mod = tr.models[ i ];
 
 		if ( mod->type == MOD_MESH3 || mod->type == MOD_MDC ) {
 			*modBack = mod;

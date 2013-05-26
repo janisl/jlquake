@@ -401,7 +401,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 		return;
 	}
 
-	model_t* clmodel = R_GetModelByHandle( e->e.hModel );
+	idRenderModel* clmodel = R_GetModelByHandle( e->e.hModel );
 
 	if ( R_CullLocalBox( &clmodel->q1_mins ) == CULL_OUT ) {
 		return;
@@ -504,7 +504,7 @@ static int R_BmodelFogNum( trRefEntity_t* re, mbrush46_model_t* bmodel ) {
 }
 
 void R_AddBrushModelSurfaces( trRefEntity_t* ent ) {
-	model_t* pModel = R_GetModelByHandle( ent->e.hModel );
+	idRenderModel* pModel = R_GetModelByHandle( ent->e.hModel );
 
 	mbrush46_model_t* bmodel = pModel->q3_bmodel;
 

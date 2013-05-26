@@ -86,7 +86,7 @@ static void ExtractMd2Triangles( int* order, idList<glIndex_t>& indexes, idList<
 	}
 }
 
-void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
+void Mod_LoadMd2Model( idRenderModel* mod, const void* buffer ) {
 	// byte swap the header fields and sanity check
 	dmd2_t pinmodel;
 	for ( int i = 0; i < ( int )sizeof ( dmd2_t ) / 4; i++ ) {
@@ -196,7 +196,7 @@ void Mod_LoadMd2Model( model_t* mod, const void* buffer ) {
 	mod->q2_maxs[ 2 ] = 32;
 }
 
-void Mod_FreeMd2Model( model_t* mod ) {
+void Mod_FreeMd2Model( idRenderModel* mod ) {
 	Mem_Free( mod->q2_md2 );
 }
 

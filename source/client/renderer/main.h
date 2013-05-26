@@ -241,7 +241,7 @@ struct trGlobals_t {
 
 	bool worldMapLoaded;
 	world_t* world;
-	model_t* worldModel;
+	idRenderModel* worldModel;
 	char* worldDir;		// ydnar: for referencing external lightmaps
 
 	image_t* defaultImage;
@@ -280,7 +280,7 @@ struct trGlobals_t {
 	trRefEntity_t worldEntity;					// point currentEntity at this when rendering world
 	int currentEntityNum;
 	int shiftedEntityNum;						// currentEntityNum << QSORT_ENTITYNUM_SHIFT
-	model_t* currentModel;
+	idRenderModel* currentModel;
 	mbrush46_model_t* currentBModel;	// only valid when rendering brush models
 
 	viewParms_t viewParms;
@@ -302,7 +302,7 @@ struct trGlobals_t {
 	// put large tables at the end, so most elements will be
 	// within the +/32K indexed range on risc processors
 	//
-	model_t* models[ MAX_MOD_KNOWN ];
+	idRenderModel* models[ MAX_MOD_KNOWN ];
 	int numModels;
 
 	int numLightmaps;

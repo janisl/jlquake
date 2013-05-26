@@ -54,7 +54,7 @@
 //
 //==========================================================================
 
-static bool R_LoadMd3Lod( model_t* mod, int lod, const void* buffer, const char* mod_name ) {
+static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const char* mod_name ) {
 	md3Header_t* pinmodel = ( md3Header_t* )buffer;
 
 	int version = LittleLong( pinmodel->version );
@@ -218,7 +218,7 @@ static bool R_LoadMd3Lod( model_t* mod, int lod, const void* buffer, const char*
 //
 //==========================================================================
 
-bool R_LoadMd3( model_t* mod, void* buffer ) {
+bool R_LoadMd3( idRenderModel* mod, void* buffer ) {
 	mod->q3_numLods = 0;
 
 	//
@@ -300,7 +300,7 @@ bool R_LoadMd3( model_t* mod, void* buffer ) {
 //
 //==========================================================================
 
-void R_FreeMd3( model_t* mod ) {
+void R_FreeMd3( idRenderModel* mod ) {
 	Mem_Free( mod->q3_md3[ 0 ] );
 	for ( int lod = 1; lod < MD3_MAX_LODS; lod++ ) {
 		if ( mod->q3_md3[ lod ] != mod->q3_md3[ lod - 1 ] ) {
@@ -309,7 +309,7 @@ void R_FreeMd3( model_t* mod ) {
 	}
 }
 
-void R_RegisterMd3Shaders( model_t* mod, int lod ) {
+void R_RegisterMd3Shaders( idRenderModel* mod, int lod ) {
 	// swap all the surfaces
 	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsSurfaces );
 	for ( int i = 0; i < mod->q3_md3[ lod ]->numSurfaces; i++ ) {

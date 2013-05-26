@@ -20,7 +20,7 @@
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
 
-void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
+void Mod_LoadSprite2Model( idRenderModel* mod, void* buffer, int modfilelen ) {
 	dsprite2_t* sprin = ( dsprite2_t* )buffer;
 	dsprite2_t* sprout = ( dsprite2_t* )Mem_Alloc( modfilelen );
 
@@ -54,7 +54,7 @@ void Mod_LoadSprite2Model( model_t* mod, void* buffer, int modfilelen ) {
 	mod->type = MOD_SPRITE2;
 }
 
-void Mod_FreeSprite2Model( model_t* mod ) {
+void Mod_FreeSprite2Model( idRenderModel* mod ) {
 	Mem_Free( mod->q2_sp2 );
 }
 

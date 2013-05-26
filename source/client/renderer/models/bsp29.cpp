@@ -749,7 +749,7 @@ static void Mod_LoadSubmodelsH2( bsp29_lump_t* l ) {
 	}
 }
 
-void Mod_LoadBrush29Model( model_t* mod, void* buffer ) {
+void Mod_LoadBrush29Model( idRenderModel* mod, void* buffer ) {
 	Com_Memset( mod_novis, 0xff, sizeof ( mod_novis ) );
 
 	loadmodel->type = MOD_BRUSH29;
@@ -820,7 +820,7 @@ void Mod_LoadBrush29Model( model_t* mod, void* buffer ) {
 	}
 }
 
-void Mod_FreeBsp29( model_t* mod ) {
+void Mod_FreeBsp29( idRenderModel* mod ) {
 	if ( mod->name[ 0 ] == '*' ) {
 		return;
 	}
@@ -862,7 +862,7 @@ void Mod_FreeBsp29( model_t* mod ) {
 	delete[] mod->brush29_submodels;
 }
 
-static byte* Mod_DecompressVis( byte* in, model_t* model ) {
+static byte* Mod_DecompressVis( byte* in, idRenderModel* model ) {
 	static byte decompressed[ BSP29_MAX_MAP_LEAFS / 8 ];
 
 	int row = ( model->brush29_numleafs + 7 ) >> 3;
@@ -894,14 +894,14 @@ static byte* Mod_DecompressVis( byte* in, model_t* model ) {
 	return decompressed;
 }
 
-byte* Mod_LeafPVS( mbrush29_leaf_t* leaf, model_t* model ) {
+byte* Mod_LeafPVS( mbrush29_leaf_t* leaf, idRenderModel* model ) {
 	if ( leaf == model->brush29_leafs ) {
 		return mod_novis;
 	}
 	return Mod_DecompressVis( leaf->compressed_vis, model );
 }
 
-mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t p, model_t* model ) {
+mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t p, idRenderModel* model ) {
 	if ( !model || !model->brush29_nodes ) {
 		common->FatalError( "Mod_PointInLeafQ1: bad model" );
 	}
