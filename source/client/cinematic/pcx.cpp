@@ -19,7 +19,7 @@
 #include "local.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
-#include "../renderer/local.h"
+#include "../renderer/images/image.h"
 
 // MACROS ------------------------------------------------------------------
 

@@ -27,7 +27,10 @@ frame.
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../local.h"
+#include "model.h"
+#include "../main.h"
+#include "../backend.h"
+#include "../surface.h"
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"

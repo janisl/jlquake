@@ -20,7 +20,7 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../local.h"
+#include "image.h"
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"

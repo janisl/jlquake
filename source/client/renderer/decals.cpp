@@ -15,7 +15,11 @@
 //**************************************************************************
 // handles projection of decals (nee marks) onto brush model surfaces
 
-#include "local.h"
+#include "decals.h"
+#include "main.h"
+#include "cvars.h"
+#include "scene.h"
+#include "backend.h"
 #include "../../common/Common.h"
 #include "../../common/content_types.h"
 #include "../../common/strings.h"

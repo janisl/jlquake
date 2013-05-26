@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "image.h"
 #include "../../../common/endian.h"
 
 struct qpic_t {

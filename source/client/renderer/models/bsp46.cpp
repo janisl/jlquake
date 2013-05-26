@@ -16,12 +16,17 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../local.h"
+#include "model.h"
+#include "../main.h"
+#include "../commands.h"
+#include "../cvars.h"
+#include "../decals.h"
 #include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"
 #include "../../../common/command_buffer.h"
 #include "../../../common/endian.h"
+#include "../../../common/file_formats/bsp47.h"
 
 // MACROS ------------------------------------------------------------------
 

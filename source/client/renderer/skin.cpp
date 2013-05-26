@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "skin.h"
+#include "main.h"
+#include "commands.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

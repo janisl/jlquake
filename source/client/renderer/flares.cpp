@@ -45,7 +45,10 @@ up to five or more times in a frame with 3D status bar icons).
 =============================================================================
 */
 
-#include "local.h"
+#include "flares.h"
+#include "main.h"
+#include "backend.h"
+#include "cvars.h"
 
 #define MAX_FLARES      128
 

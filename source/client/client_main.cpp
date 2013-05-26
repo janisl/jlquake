@@ -30,7 +30,7 @@
 #include "game/tech3/local.h"
 #include "game/wolfsp/local.h"
 #include "game/et/dl_public.h"
-#include "renderer/local.h"
+#include "renderer/driver.h"
 #include "ui/ui.h"
 #include "ui/console.h"
 #include "cinematic/public.h"

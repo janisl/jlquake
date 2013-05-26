@@ -22,7 +22,8 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "models/model.h"
+#include "cvars.h"
 
 static void LerpDrawVert( bsp46_drawVert_t* a, bsp46_drawVert_t* b, bsp46_drawVert_t* out ) {
 	out->xyz[ 0 ] = 0.5f * ( a->xyz[ 0 ] + b->xyz[ 0 ] );

@@ -22,7 +22,8 @@
 #include "../../common/command_buffer.h"
 #include "../../common/system.h"
 #include "../public.h"
-#include "../renderer/local.h"
+#include "../renderer/main.h"
+#include "../renderer/cvars.h"
 #include "../unix_shared.h"
 #include <X11/Xutil.h>
 #include <X11/extensions/Xxf86dga.h>

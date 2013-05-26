@@ -63,7 +63,9 @@
 //
 //**************************************************************************
 
-#include "local.h"
+#include "font.h"
+#include "commands.h"
+#include "cvars.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

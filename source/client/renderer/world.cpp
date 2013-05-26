@@ -14,10 +14,19 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "world.h"
+#include "main.h"
+#include "decals.h"
+#include "sky.h"
+#include "surface.h"
+#include "cvars.h"
+#include "light.h"
+#include "backend.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
+
+#define BACKFACE_EPSILON    0.01
 
 static surfaceType_t q2SkySurface = SF_SKYBOX_Q2;
 

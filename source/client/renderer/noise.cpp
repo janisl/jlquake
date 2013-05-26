@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "noise.h"
 
 #define NOISE_SIZE          256
 #define NOISE_MASK          ( NOISE_SIZE - 1 )

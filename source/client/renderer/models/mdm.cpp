@@ -14,7 +14,14 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "model.h"
+#include "../main.h"
+#include "../backend.h"
+#include "../surface.h"
+#include "../cvars.h"
+#include "../state.h"
+#include "../light.h"
+#include "../skin.h"
 #include "skeletal_model_inlines.h"
 #include "../../../common/Common.h"
 #include "../../../common/common_defs.h"

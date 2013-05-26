@@ -14,7 +14,15 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "main.h"
+#include "backend.h"
+#include "commands.h"
+#include "decals.h"
+#include "world.h"
+#include "surface.h"
+#include "cvars.h"
+#include "state.h"
+#include "light.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

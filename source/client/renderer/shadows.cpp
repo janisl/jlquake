@@ -26,7 +26,11 @@
 
 */
 
-#include "local.h"
+#include "shader.h"
+#include "main.h"
+#include "backend.h"
+#include "cvars.h"
+#include "state.h"
 
 #define MAX_EDGE_DEFS   32
 

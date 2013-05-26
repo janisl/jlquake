@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "model.h"
+#include "../sky.h"
+#include "../cvars.h"
 #include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

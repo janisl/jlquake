@@ -14,7 +14,11 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "driver.h"
+#include "main.h"
+#include "cvars.h"
+#include "state.h"
+#include "init.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../unix_shared.h"

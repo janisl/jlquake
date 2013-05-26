@@ -14,6 +14,11 @@
 //**
 //**************************************************************************
 
+#ifndef _R_STATE_H_
+#define _R_STATE_H_
+
+#include "images/image.h"
+
 #define GLS_SRCBLEND_ZERO                       0x00000001
 #define GLS_SRCBLEND_ONE                        0x00000002
 #define GLS_SRCBLEND_DST_COLOR                  0x00000003
@@ -66,3 +71,5 @@ void GL_State( unsigned long StateVector );
 void GL_Cull( int cullType );
 
 extern glstate_t glState;			// outside of TR since it shouldn't be cleared during ref re-init
+
+#endif

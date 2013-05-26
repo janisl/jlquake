@@ -14,7 +14,13 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "model.h"
+#include "../main.h"
+#include "../backend.h"
+#include "../surface.h"
+#include "../cvars.h"
+#include "../light.h"
+#include "../skin.h"
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
 #include "../../../common/math/Math.h"

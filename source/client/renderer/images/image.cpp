@@ -14,7 +14,14 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "image.h"
+#include "../main.h"
+#include "../commands.h"
+#include "../particle.h"
+#include "../cvars.h"
+#include "../state.h"
+#include "../wad.h"
+#include "../driver.h"
 #include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

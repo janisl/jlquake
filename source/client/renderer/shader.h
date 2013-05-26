@@ -18,6 +18,11 @@
 //**
 //**************************************************************************
 
+#ifndef _R_SHADER_H
+#define _R_SHADER_H
+
+#include "images/image.h"
+
 #define GL_INDEX_TYPE       GL_UNSIGNED_INT
 typedef unsigned int glIndex_t;
 
@@ -434,3 +439,5 @@ void RB_ShadowTessEnd();
 void RB_ShadowFinish();
 
 extern shaderCommands_t tess;
+
+#endif

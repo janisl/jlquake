@@ -14,7 +14,29 @@
 //**
 //**************************************************************************
 
+#ifndef _R_MODEL_H_
+#define _R_MODEL_H_
+
+#include "../shader.h"
 #include "../../../common/math/Vec2.h"
+#include "../../../common/file_formats/bsp29.h"
+#include "../../../common/file_formats/bsp38.h"
+#include "../../../common/file_formats/bsp46.h"
+#include "../../../common/file_formats/mdl.h"
+#include "../../../common/file_formats/md2.h"
+#include "../../../common/file_formats/md3.h"
+#include "../../../common/file_formats/md4.h"
+#include "../../../common/file_formats/mdc.h"
+#include "../../../common/file_formats/mds.h"
+#include "../../../common/file_formats/mdm.h"
+#include "../../../common/file_formats/mdx.h"
+#include "../../../common/file_formats/spr.h"
+#include "../../../common/file_formats/sp2.h"
+
+// everything that is needed by the backend needs
+// to be double buffered to allow it to run in
+// parallel on a dual cpu machine
+#define SMP_FRAMES      2
 
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
@@ -994,3 +1016,5 @@ void R_FreeSurfaceGridMesh( srfGridMesh_t* Grid );
 extern model_t* loadmodel;
 extern mbrush29_texture_t* r_notexture_mip;
 extern world_t s_worldData;
+
+#endif

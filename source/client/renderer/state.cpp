@@ -14,7 +14,10 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "state.h"
+#include "main.h"
+#include "backend.h"
+#include "cvars.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 

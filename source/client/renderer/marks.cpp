@@ -15,7 +15,8 @@
 //**************************************************************************
 // tr_marks.c -- polygon projection on the world polygons
 
-#include "local.h"
+#include "public.h"
+#include "main.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
 

@@ -14,7 +14,11 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "shader.h"
+#include "main.h"
+#include "backend.h"
+#include "surface.h"
+#include "noise.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

@@ -14,7 +14,13 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "commands.h"
+#include "main.h"
+#include "backend.h"
+#include "cvars.h"
+#include "state.h"
+#include "driver.h"
+#include "scene.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

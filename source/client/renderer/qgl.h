@@ -14,6 +14,20 @@
 //**
 //**************************************************************************
 
+#ifndef _R_QGL_H
+#define _R_QGL_H
+
+#include "../../common/qcommon.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+#include <GL/gl.h>
+
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+
 #define GLF_0( r, n )         extern r( APIENTRY * qgl ## n ) ( );
 #define GLF_V0( n )           extern void( APIENTRY * qgl ## n ) ( );
 #define GLF_1( r, n, t1, p1 ) extern r( APIENTRY * qgl ## n ) ( t1 p1 );
@@ -140,4 +154,6 @@ typedef void ( APIENTRY * PFNGLPNTRIANGLESFATIPROC )( GLenum pname, GLfloat para
 #ifndef GL_GENERATE_MIPMAP_SGIS
 #define GL_GENERATE_MIPMAP_SGIS             0x8191
 #define GL_GENERATE_MIPMAP_HINT_SGIS        0x8192
+#endif
+
 #endif

@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "driver.h"
 #include "../windows_shared.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"

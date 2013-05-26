@@ -14,6 +14,12 @@
 //**
 //**************************************************************************
 
+#ifndef _R_IMAGE_H_
+#define _R_IMAGE_H_
+
+#include "../public.h"
+#include "../qgl.h"
+
 //	Hexen 2 model texture modes, plus special type for skins.
 enum
 {
@@ -93,3 +99,5 @@ void R_LoadWAL( const char* FileName, byte** Pic, int* Width, int* Height );
 
 extern byte host_basepal[ 768 ];
 extern unsigned* d_8to24table;
+
+#endif

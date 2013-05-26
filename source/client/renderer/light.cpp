@@ -14,7 +14,9 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "light.h"
+#include "main.h"
+#include "cvars.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 

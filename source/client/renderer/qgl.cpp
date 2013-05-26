@@ -18,7 +18,10 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "qgl.h"
+#include "main.h"
+#include "cvars.h"
+#include "driver.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 #include <time.h>

@@ -15,7 +15,12 @@
 //**************************************************************************
 
 #include "../client_main.h"
-#include "local.h"
+#include "scene.h"
+#include "main.h"
+#include "backend.h"
+#include "decals.h"
+#include "cvars.h"
+#include "light.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

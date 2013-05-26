@@ -14,7 +14,19 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "init.h"
+#include "cvars.h"
+#include "font.h"
+#include "main.h"
+#include "backend.h"
+#include "commands.h"
+#include "screenshot.h"
+#include "flares.h"
+#include "surface.h"
+#include "state.h"
+#include "noise.h"
+#include "driver.h"
+#include "skin.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

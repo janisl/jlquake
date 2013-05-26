@@ -14,7 +14,12 @@
 //**
 //**************************************************************************
 
-#include "../local.h"
+#include "model.h"
+#include "../main.h"
+#include "../commands.h"
+#include "../surface.h"
+#include "../cvars.h"
+#include "../scene.h"
 #include "../../../common/Common.h"
 #include "../../../common/common_defs.h"
 #include "../../../common/strings.h"

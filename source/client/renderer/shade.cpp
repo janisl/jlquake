@@ -21,7 +21,13 @@
 */
 
 #include "../cinematic/public.h"
-#include "local.h"
+#include "shader.h"
+#include "main.h"
+#include "backend.h"
+#include "sky.h"
+#include "cvars.h"
+#include "state.h"
+#include "scene.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"

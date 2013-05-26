@@ -14,7 +14,8 @@
 //**
 //**************************************************************************
 
-#include "local.h"
+#include "wad.h"
+#include "shader.h"
 #include "../../common/Common.h"
 #include "../../common/strings.h"
 #include "../../common/endian.h"

@@ -19,13 +19,21 @@
 //**************************************************************************
 
 #include "../cinematic/public.h"
-#include "local.h"
+#include "shader.h"
+#include "main.h"
+#include "backend.h"
+#include "commands.h"
+#include "sky.h"
+#include "surface.h"
+#include "cvars.h"
+#include "state.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/command_buffer.h"
 #include "../../common/content_types.h"
 #include "../hexen2clientdefs.h"
+#include "../../common/file_formats/bsp47.h"
 
 #define SHADER_HASH_SIZE    4096
 #define MAX_SHADERTEXT_HASH 2048

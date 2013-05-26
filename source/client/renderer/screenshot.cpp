@@ -33,7 +33,10 @@ FIXME: the statics don't get a reinit between fs_game changes
 ==============================================================================
 */
 
-#include "local.h"
+#include "screenshot.h"
+#include "main.h"
+#include "commands.h"
+#include "wad.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
