@@ -2768,7 +2768,6 @@ static void GetSoundtime() {
 
 static void S_Update_() {
 	static float lastTime = 0.0f;
-	static int ot = -1;
 
 	int samps;
 
@@ -2793,11 +2792,12 @@ static void S_Update_() {
 	float ma = s_mixahead->value * dma.speed;
 	if ( GGameType & GAME_Tech3 ) {
 #ifdef _WIN32
+		static int ot = -1;
 		if ( s_soundtime == ot ) {
 			return;
 		}
-#endif
 		ot = s_soundtime;
+#endif
 
 		// clear any sound effects that end before the current time,
 		// and start any new sounds

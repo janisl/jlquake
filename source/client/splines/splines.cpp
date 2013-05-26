@@ -730,10 +730,9 @@ bool idCameraPosition::parseToken( const char* key, const char** text ) {
 
 
 void idFixedPosition::parse( const char** text ) {
-	const char* token;
 	Com_MatchToken( text, "{" );
 	do {
-		token = Com_Parse( text );
+		const char* token = Com_Parse( text );
 
 		if ( !token[ 0 ] ) {
 			break;
@@ -752,7 +751,7 @@ void idFixedPosition::parse( const char** text ) {
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse( text );
+			token = Com_Parse( text );
 			if ( String::ICmp( key.CStr(), "pos" ) == 0 ) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, pos.ToFloatPtr() );
@@ -775,10 +774,9 @@ void idFixedPosition::parse( const char** text ) {
 }
 
 void idInterpolatedPosition::parse( const char** text ) {
-	const char* token;
 	Com_MatchToken( text, "{" );
 	do {
-		token = Com_Parse( text );
+		const char* token = Com_Parse( text );
 
 		if ( !token[ 0 ] ) {
 			break;
@@ -797,7 +795,7 @@ void idInterpolatedPosition::parse( const char** text ) {
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse( text );
+			token = Com_Parse( text );
 			if ( String::ICmp( key.CStr(), "startPos" ) == 0 ) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, startPos.ToFloatPtr() );
@@ -824,10 +822,9 @@ void idInterpolatedPosition::parse( const char** text ) {
 
 
 void idSplinePosition::parse( const char** text ) {
-	const char* token;
 	Com_MatchToken( text, "{" );
 	do {
-		token = Com_Parse( text );
+		const char* token = Com_Parse( text );
 
 		if ( !token[ 0 ] ) {
 			break;
@@ -846,7 +843,7 @@ void idSplinePosition::parse( const char** text ) {
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine( text );
 
-			const char* token = Com_Parse( text );
+			token = Com_Parse( text );
 			if ( String::ICmp( key.CStr(), "target" ) == 0 ) {
 				target.parse( text );
 			} else {

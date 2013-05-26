@@ -1070,7 +1070,6 @@ static bool SVQHW_FilterPacket( const netadr_t& net_from ) {
 }
 
 static void SVQHW_ReadPackets() {
-	bool good = false;
 	netadr_t net_from;
 	QMsg net_message;
 	byte net_message_buffer[ MAX_MSGLEN ];
@@ -1121,7 +1120,6 @@ static void SVQHW_ReadPackets() {
 				// this is a valid, sequenced packet, so process it
 				cl->netchan.lastReceived = svs.realtime;
 				svs.qh_stats.packets++;
-				good = true;
 				cl->qh_send_message = true;	// reply at end of frame
 				if ( cl->state != CS_ZOMBIE ) {
 					if ( GGameType & GAME_HexenWorld ) {

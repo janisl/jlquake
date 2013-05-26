@@ -563,7 +563,6 @@ static void SVQH_PushRotate( qhedict_t* pusher, float movetime ) {
 	vec3_t org, org2, check_center;
 	vec3_t forward, right, up;
 	qhedict_t* ground;
-	qhedict_t* master;
 	qhedict_t* slave;
 	int slaves_moved;
 	qboolean moveit;
@@ -590,7 +589,6 @@ static void SVQH_PushRotate( qhedict_t* pusher, float movetime ) {
 	pusher->v.ltime += movetime;
 	SVQH_LinkEdict( pusher, false );
 
-	master = pusher;
 	slaves_moved = 0;
 
 	// see if any solid entities are inside the final position

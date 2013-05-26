@@ -899,15 +899,11 @@ void ED_Free( qhedict_t* ed ) {
 }
 
 qhedict_t* ED_Alloc_Temp() {
-	int i,j,Found;
-	qhedict_t* e,* Least;
-	float LeastTime;
-	qboolean LeastSet;
-
-	LeastTime = -1;
-	LeastSet = false;
-	for ( i = ( GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients ) + 1,j = 0; j < max_temp_edicts->value; i++,j++ ) {
-		e = QH_EDICT_NUM( i );
+	qhedict_t* Least;
+	float LeastTime = -1;
+	bool LeastSet = false;
+	for ( int i = ( GGameType & GAME_QuakeWorld ? MAX_CLIENTS_QHW : svs.qh_maxclients ) + 1, j = 0; j < max_temp_edicts->value; i++, j++ ) {
+		qhedict_t* e = QH_EDICT_NUM( i );
 		// the first couple seconds of server time can involve a lot of
 		// freeing and allocating, so relax the replacement policy
 		if ( e->free && ( e->freetime < 2 || sv.qh_time - e->freetime * 1000 > 500 ) ) {
@@ -918,7 +914,6 @@ qhedict_t* ED_Alloc_Temp() {
 		} else if ( e->alloctime < LeastTime || !LeastSet ) {
 			Least = e;
 			LeastTime = e->alloctime;
-			Found = j;
 			LeastSet = true;
 		}
 	}

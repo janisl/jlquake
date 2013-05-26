@@ -593,7 +593,6 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				frame_test_vel[ 2 ] = savevel[ 2 ];
 			}
 		} else if ( n < cmdframes ) {
-			int ax = 0;
 			float maxvel = phys_maxwalkvelocity;
 			float accelerate = phys_airaccelerate;
 			vec3_t wishdir;
@@ -613,12 +612,10 @@ static bool AAS_ClientMovementPrediction( aas_clientmove_t* move,
 				} else {
 					accelerate = phys_walkaccelerate;
 				}
-				ax = 2;
 			}
 			if ( swimming ) {
 				maxvel = phys_maxswimvelocity;
 				accelerate = phys_swimaccelerate;
-				ax = 3;
 			} else {
 				wishdir[ 2 ] = 0;
 			}

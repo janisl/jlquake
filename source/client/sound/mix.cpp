@@ -531,7 +531,7 @@ void S_PaintChannels( int endtime ) {
 				// rain - the announcer is ent -1, so make sure we're >= 0
 				if ( ( GGameType & ( GAME_WolfSP | GAME_ET ) ) && firstPass && ss->channel == Q3CHAN_VOICE &&
 					 ss->entnum >= 0 && ss->entnum < ( GGameType & GAME_ET ? MAX_CLIENTS_ET : MAX_CLIENTS_WS ) ) {
-					int talkcnt, talktime;
+					int talktime;
 					int sfx_count, vstop;
 					int data;
 
@@ -539,7 +539,6 @@ void S_PaintChannels( int endtime ) {
 					// animation creates lag in the time it takes to display the current facial frame
 					talktime = s_paintedtime + ( int )( TALK_FUTURE_SEC * ( float )s_khz->integer * 1000 );
 					vstop = ( talktime + 100 < s_rawend[ si ] ) ? talktime + 100 : s_rawend[ si ];
-					talkcnt = 1;
 					sfx_count = 0;
 
 					for ( i = talktime; i < vstop; i++ ) {

@@ -1377,7 +1377,7 @@ static bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge( int area1num, 
 	int ground_bestarea2groundedgenum, ground_foundreach;
 	int water_bestarea2groundedgenum, water_foundreach;
 	int side1, area1swim, faceside1, groundface1num;
-	float dist, dist1, dist2, diff, invgravitydot, ortdot;
+	float dist, dist1, dist2, diff, ortdot;
 	float x1, x2, x3, x4, y1, y2, y3, y4, tmp, y;
 	float length, ground_bestlength, water_bestlength, ground_bestdist, water_bestdist;
 	vec3_t v1, v2, v3, v4, tmpv, p1area1, p1area2, p2area1, p2area2;
@@ -1388,7 +1388,7 @@ static bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge( int area1num, 
 	vec3_t testpoint;
 	aas_plane_t* plane;
 	aas_area_t* area1, * area2;
-	aas_face_t* groundface1, * groundface2, * ground_bestface1, * water_bestface1;
+	aas_face_t* groundface1, * groundface2;
 	aas_edge_t* edge1, * edge2;
 	aas_lreachability_t* lreach;
 	aas_trace_t trace;
@@ -1504,7 +1504,7 @@ static bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge( int area1num, 
 					//edges if they overlap in the direction orthogonal to
 					//the gravity direction
 					CrossProduct( invgravity, normal, ort );
-					invgravitydot = DotProduct( invgravity, invgravity );
+					//float invgravitydot = DotProduct( invgravity, invgravity );
 					ortdot = DotProduct( ort, ort );
 					//projection into the step plane
 					//NOTE: since gravity is vertical this is just the z coordinate
@@ -1611,7 +1611,6 @@ static bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge( int area1num, 
 							ground_bestlength = length;
 							ground_foundreach = true;
 							ground_bestarea2groundedgenum = edge1num;
-							ground_bestface1 = groundface1;
 							//best point towards area1
 							VectorCopy( start, ground_beststart );
 							//normal is pointing into area2
@@ -1629,7 +1628,6 @@ static bool AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge( int area1num, 
 							water_bestlength = length;
 							water_foundreach = true;
 							water_bestarea2groundedgenum = edge1num;
-							water_bestface1 = groundface1;
 							//best point towards area1
 							VectorCopy( start, water_beststart );
 							//normal is pointing into area2
@@ -2950,7 +2948,7 @@ static void AAS_Reachability_Elevator() {
 
 static void AAS_Reachability_JumpPad() {
 	int face2num, i, ret, area2num, visualize, bot_visualizejumppads;
-	float speed, zvel, hordist;
+	float speed, zvel;
 	aas_face_t* face2;
 	aas_area_t* area2;
 	aas_lreachability_t* lreach;
@@ -3103,7 +3101,7 @@ static void AAS_Reachability_JumpPad() {
 					//direction towards the face center
 					VectorSubtract( facecenter, areastart, dir );
 					dir[ 2 ] = 0;
-					hordist = VectorNormalize( dir );
+					//float hordist = VectorNormalize( dir );
 					//if (hordist < 1.6 * facecenter[2] - areastart[2])
 					{
 						//get command movement
@@ -3505,7 +3503,7 @@ static void AAS_SetWeaponJumpAreaFlagsET() {
 // check if the bot can rocketjump from area1 to area2
 static bool AAS_Reachability_WeaponJump( int area1num, int area2num ) {
 	int face2num, i, n, ret;
-	float speed, zvel, hordist;
+	float speed, zvel;
 	aas_face_t* face2;
 	aas_area_t* area1, * area2;
 	aas_lreachability_t* lreach;
@@ -3576,7 +3574,7 @@ static bool AAS_Reachability_WeaponJump( int area1num, int area2num ) {
 				//direction towards the face center
 				VectorSubtract( facecenter, areastart, dir );
 				dir[ 2 ] = 0;
-				hordist = VectorNormalize( dir );
+				//float hordist = VectorNormalize( dir );
 				//if (hordist < 1.6 * (facecenter[2] - areastart[2]))
 				{
 					//get command movement

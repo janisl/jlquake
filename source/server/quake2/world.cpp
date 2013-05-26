@@ -325,11 +325,6 @@ int SVQ2_PointContents( vec3_t p ) {
 
 		// might intersect, so do an exact clip
 		clipHandle_t model = SVQ2_HullForEntity( hit );
-		float* angles = hit->s.angles;
-		if ( hit->solid != Q2SOLID_BSP ) {
-			angles = vec3_origin;	// boxes don't rotate
-
-		}
 		int c2 = CM_TransformedPointContentsQ2( p, model, hit->s.origin, hit->s.angles );
 
 		contents |= c2;

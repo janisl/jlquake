@@ -417,9 +417,6 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 	int* indexes;
 	float radius;
 	vec3_t center;			// center of original mark
-	//vec3_t			bestCenter;	// center point projected onto the closest surface
-	float texCoordScale;
-	//float			dot;
 	int numPoints = 4;				// Ridah, we were only ever passing in 4, so I made this local and used the parameter for the orientation
 	qboolean oldMapping = false;
 
@@ -476,8 +473,6 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 
 	numsurfaces = 0;
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 4096, &numsurfaces, projectionDir );
-
-	texCoordScale = 0.5 * 1.0 / radius;
 
 	returnedPoints = 0;
 	returnedFragments = 0;

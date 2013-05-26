@@ -541,14 +541,6 @@ static void CLT3_AdjustTimeDelta() {
 		return;
 	}
 
-	// if the current time is WAY off, just correct to the current value
-	int resetTime;
-	if ( com_sv_running->integer ) {
-		resetTime = 100;
-	} else {
-		resetTime = RESET_TIME;
-	}
-
 	int newDelta = GGameType & GAME_WolfSP ? cl.ws_snap.serverTime - cls.realtime :
 				   GGameType & GAME_WolfMP ? cl.wm_snap.serverTime - cls.realtime :
 				   GGameType & GAME_ET ? cl.et_snap.serverTime - cls.realtime :
