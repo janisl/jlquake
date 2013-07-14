@@ -23,6 +23,8 @@ class idRenderModelSPR : public idRenderModel {
 public:
 	idRenderModelSPR();
 	virtual ~idRenderModelSPR();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
 };
 
 #endif

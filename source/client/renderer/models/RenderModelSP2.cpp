@@ -15,9 +15,46 @@
 //**************************************************************************
 
 #include "RenderModelSP2.h"
+#include "../../../common/Common.h"
+#include "../../../common/endian.h"
 
 idRenderModelSP2::idRenderModelSP2() {
 }
 
 idRenderModelSP2::~idRenderModelSP2() {
+}
+
+bool idRenderModelSP2::Load( idList<byte>& buffer, idSkinTranslation* skinTranslation ) {
+	dsprite2_t* sprin = ( dsprite2_t* )buffer.Ptr();
+	dsprite2_t* sprout = ( dsprite2_t* )Mem_Alloc( buffer.Num() );
+
+	sprout->ident = LittleLong( sprin->ident );
+	sprout->version = LittleLong( sprin->version );
+	sprout->numframes = LittleLong( sprin->numframes );
+
+	if ( sprout->version != SPRITE2_VERSION ) {
+		common->Error( "%s has wrong version number (%i should be %i)",
+			name, sprout->version, SPRITE2_VERSION );
+	}
+
+	if ( sprout->numframes > MAX_MD2_SKINS ) {
+		common->Error( "%s has too many frames (%i > %i)",
+			name, sprout->numframes, MAX_MD2_SKINS );
+	}
+
+	// byte swap everything
+	for ( int i = 0; i < sprout->numframes; i++ ) {
+		sprout->frames[ i ].width = LittleLong( sprin->frames[ i ].width );
+		sprout->frames[ i ].height = LittleLong( sprin->frames[ i ].height );
+		sprout->frames[ i ].origin_x = LittleLong( sprin->frames[ i ].origin_x );
+		sprout->frames[ i ].origin_y = LittleLong( sprin->frames[ i ].origin_y );
+		Com_Memcpy( sprout->frames[ i ].name, sprin->frames[ i ].name, MAX_SP2_SKINNAME );
+		image_t* image = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
+		q2_skins_shader[ i ] = R_BuildSp2Shader( image );
+	}
+
+	q2_sp2 = sprout;
+	q2_extradatasize = buffer.Num();
+	type = MOD_SPRITE2;
+	return true;
 }

@@ -20,40 +20,6 @@
 #include "../../../common/Common.h"
 #include "../../../common/endian.h"
 
-void Mod_LoadSprite2Model( idRenderModel* mod, void* buffer, int modfilelen ) {
-	dsprite2_t* sprin = ( dsprite2_t* )buffer;
-	dsprite2_t* sprout = ( dsprite2_t* )Mem_Alloc( modfilelen );
-
-	sprout->ident = LittleLong( sprin->ident );
-	sprout->version = LittleLong( sprin->version );
-	sprout->numframes = LittleLong( sprin->numframes );
-
-	if ( sprout->version != SPRITE2_VERSION ) {
-		common->Error( "%s has wrong version number (%i should be %i)",
-			mod->name, sprout->version, SPRITE2_VERSION );
-	}
-
-	if ( sprout->numframes > MAX_MD2_SKINS ) {
-		common->Error( "%s has too many frames (%i > %i)",
-			mod->name, sprout->numframes, MAX_MD2_SKINS );
-	}
-
-	// byte swap everything
-	for ( int i = 0; i < sprout->numframes; i++ ) {
-		sprout->frames[ i ].width = LittleLong( sprin->frames[ i ].width );
-		sprout->frames[ i ].height = LittleLong( sprin->frames[ i ].height );
-		sprout->frames[ i ].origin_x = LittleLong( sprin->frames[ i ].origin_x );
-		sprout->frames[ i ].origin_y = LittleLong( sprin->frames[ i ].origin_y );
-		Com_Memcpy( sprout->frames[ i ].name, sprin->frames[ i ].name, MAX_SP2_SKINNAME );
-		image_t* image = R_FindImageFile( sprout->frames[ i ].name, true, true, GL_CLAMP );
-		mod->q2_skins_shader[ i ] = R_BuildSp2Shader( image );
-	}
-
-	mod->q2_sp2 = sprout;
-	mod->q2_extradatasize = modfilelen;
-	mod->type = MOD_SPRITE2;
-}
-
 void Mod_FreeSprite2Model( idRenderModel* mod ) {
 	Mem_Free( mod->q2_sp2 );
 }

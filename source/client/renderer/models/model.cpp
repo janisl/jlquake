@@ -144,9 +144,8 @@ void R_LoadWorld( const char* name ) {
 	tr.worldDir = NULL;
 
 	// load it
-	void* buffer;
-	FS_ReadFile( name, &buffer );
-	if ( !buffer ) {
+	idList<byte> buffer;
+	if ( FS_ReadFile( name, buffer ) < 0 ) {
 		common->Error( "R_LoadWorld: %s not found", name );
 	}
 
@@ -171,7 +170,7 @@ void R_LoadWorld( const char* name ) {
 		R_AddModel( mod );
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		loadmodel = mod;
-		Mod_LoadBrush29Model( mod, buffer );
+		mod->Load( buffer, NULL );
 
 		// identify sky texture
 		skytexturenum = -1;
@@ -188,9 +187,9 @@ void R_LoadWorld( const char* name ) {
 		R_AddModel( mod );
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );
 		loadmodel = mod;
-		switch ( LittleLong( *( unsigned* )buffer ) ) {
+		switch ( LittleLong( *( unsigned* )buffer.Ptr() ) ) {
 		case BSP38_HEADER:
-			Mod_LoadBrush38Model( mod, buffer );
+			Mod_LoadBrush38Model( mod, buffer.Ptr() );
 			break;
 
 		default:
@@ -198,7 +197,7 @@ void R_LoadWorld( const char* name ) {
 			break;
 		}
 	} else {
-		R_LoadBrush46Model( buffer );
+		R_LoadBrush46Model( buffer.Ptr() );
 	}
 
 	// only set tr.world now that we know the entire level has loaded properly
@@ -214,8 +213,6 @@ void R_LoadWorld( const char* name ) {
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) && tr.sunShaderName ) {
 		tr.sunShader = R_FindShader( tr.sunShaderName, LIGHTMAP_NONE, true );
 	}
-
-	FS_FreeFile( buffer );
 }
 
 bool R_GetEntityToken( char* buffer, int size ) {
@@ -315,23 +312,23 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	void* buf;
-	int modfilelen = FS_ReadFile( name, &buf );
-	if ( !buf && ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) ) {
+	idList<byte> buf;
+	int modfilelen = FS_ReadFile( name, buf );
+	if ( modfilelen < 0 && ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) ) {
 		char filename[ 1024 ];
 		String::Cpy( filename, name );
 
 		//	try MDC first
 		filename[ String::Length( filename ) - 1 ] = 'c';
-		FS_ReadFile( filename, &buf );
+		modfilelen = FS_ReadFile( filename, buf );
 
-		if ( !buf ) {
+		if ( modfilelen < 0 ) {
 			// try MD3 second
 			filename[ String::Length( filename ) - 1 ] = '3';
-			FS_ReadFile( filename, &buf );
+			modfilelen = FS_ReadFile( filename, buf );
 		}
 	}
-	if ( !buf ) {
+	if ( modfilelen < 0 ) {
 		common->Printf( S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name );
 		// we still keep the idRenderModel around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
@@ -344,7 +341,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 
 	// allocate a new idRenderModel
 	idRenderModel* mod;
-	switch ( LittleLong( *( qint32* )buf ) ) {
+	switch ( LittleLong( *( qint32* )buf.Ptr() ) ) {
 	case BSP29_VERSION:
 		mod = new idRenderModelBSP29();
 		break;
@@ -394,6 +391,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 		break;
 
 	default:
+		common->Printf( S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name );
 		mod = new idRenderModelBad;
 		break;
 	}
@@ -405,68 +403,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	loadmodel = mod;
 
 	//	call the apropriate loader
-	bool loaded;
-	switch ( LittleLong( *( qint32* )buf ) ) {
-	case IDPOLYHEADER:
-		Mod_LoadMdlModel( mod, buf, skinTranslation );
-		loaded = true;
-		break;
-
-	case RAPOLYHEADER:
-		Mod_LoadMdlModelNew( mod, buf, skinTranslation );
-		loaded = true;
-		break;
-
-	case IDSPRITE1HEADER:
-		Mod_LoadSpriteModel( mod, buf );
-		loaded = true;
-		break;
-
-	case BSP29_VERSION:
-		Mod_LoadBrush29Model( mod, buf );
-		loaded = true;
-		break;
-
-	case IDMESH2HEADER:
-		Mod_LoadMd2Model( mod, buf );
-		loaded = true;
-		break;
-
-	case IDSPRITE2HEADER:
-		Mod_LoadSprite2Model( mod, buf, modfilelen );
-		loaded = true;
-		break;
-
-	case MD3_IDENT:
-		loaded = R_LoadMd3( mod, buf );
-		break;
-
-	case MD4_IDENT:
-		loaded = R_LoadMD4( mod, buf, name );
-		break;
-
-	case MDC_IDENT:
-		loaded = R_LoadMdc( mod, buf );
-		break;
-
-	case MDS_IDENT:
-		loaded = R_LoadMds( mod, buf );
-		break;
-
-	case MDM_IDENT:
-		loaded = R_LoadMdm( mod, buf );
-		break;
-
-	case MDX_IDENT:
-		loaded = R_LoadMdx( mod, buf );
-		break;
-
-	default:
-		common->Printf( S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name );
-		loaded = false;
-	}
-
-	FS_FreeFile( buf );
+	bool loaded = mod->Load( buf, skinTranslation );
 
 	R_LoadModelShadow( mod );
 

@@ -19,10 +19,40 @@
 
 #include "RenderModel.h"
 
+#define MAX_LBM_HEIGHT      480
+
+#define ALIAS_BASE_SIZE_RATIO       ( 1.0 / 11.0 )
+// normalizing factor so player model works out to about
+//  1 pixel per triangle
+
+#define MAXALIASFRAMES      256
+#define MAXALIASVERTS       2000
+#define MAXALIASTRIS        2048
+
+struct mmesh1triangle_t {
+	int facesfront;
+	int vertindex[ 3 ];
+	int stindex[ 3 ];
+};
+
 class idRenderModelMDL : public idRenderModel {
 public:
 	idRenderModelMDL();
 	virtual ~idRenderModelMDL();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
 };
+
+extern vec3_t mdl_mins;
+extern vec3_t mdl_maxs;
+extern int mdl_posenum;
+extern mesh1hdr_t* mdl_pheader;
+extern dmdl_stvert_t mdl_stverts[ MAXALIASVERTS ];
+extern mmesh1triangle_t mdl_triangles[ MAXALIASTRIS ];
+
+const void* Mod_LoadAliasFrame( const void* pin, mmesh1framedesc_t* frame );
+const void* Mod_LoadAliasGroup( const void* pin, mmesh1framedesc_t* frame );
+void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags, idSkinTranslation* skinTranslation );
+void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr );
 
 #endif

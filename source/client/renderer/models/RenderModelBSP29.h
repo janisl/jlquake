@@ -23,6 +23,8 @@ class idRenderModelBSP29 : public idRenderModel {
 public:
 	idRenderModelBSP29();
 	virtual ~idRenderModelBSP29();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
 };
 
 #endif

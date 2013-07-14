@@ -108,3 +108,7 @@ idRenderModel::idRenderModel() {
 
 idRenderModel::~idRenderModel() {
 }
+
+bool idRenderModel::Load( idList<byte>& buffer, idSkinTranslation* skinTranslation ) {
+	return false;
+}

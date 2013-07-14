@@ -15,9 +15,183 @@
 //**************************************************************************
 
 #include "RenderModelMD2.h"
+#include "../../../common/Common.h"
+#include "../../../common/endian.h"
 
 idRenderModelMD2::idRenderModelMD2() {
 }
 
 idRenderModelMD2::~idRenderModelMD2() {
+}
+
+struct idMd2VertexRemap {
+	int xyzIndex;
+	float s;
+	float t;
+};
+
+static int AddToVertexMap( idList< idMd2VertexRemap >& vertexMap, int xyzIndex, float s, float t ) {
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+		if ( vertexMap[ i ].xyzIndex == xyzIndex && vertexMap[ i ].s == s && vertexMap[ i ].t == t) {
+			return i;
+		}
+	}
+
+	idMd2VertexRemap& v = vertexMap.Alloc();
+	v.xyzIndex = xyzIndex;
+	v.s = s;
+	v.t = t;
+	return vertexMap.Num() - 1;
+}
+
+static void ExtractMd2Triangles( int* order, idList<glIndex_t>& indexes, idList<idMd2VertexRemap>& vertexMap ) {
+	while ( 1 ) {
+		// get the vertex count and primitive type
+		int count = *order++;
+		if ( !count ) {
+			break;		// done
+		}
+		bool isFan = count < 0;
+		if ( isFan ) {
+			count = -count;
+		}
+
+		int i = 0;
+		int triangle[3] = { -1, -1, -1 };
+		do {
+			// texture coordinates come from the draw list
+			int index = AddToVertexMap( vertexMap, order[ 2 ], ( ( float* )order )[ 0 ], ( ( float* )order )[ 1 ] );
+			order += 3;
+			if ( i < 3 ) {
+				triangle[ i ] = index;
+			} else if ( isFan ) {
+				triangle[ 1 ] = triangle[ 2 ];
+				triangle[ 2 ] = index;
+			} else if ( i & 1 ) {
+				triangle[ 0 ] = triangle[ 1 ];
+				triangle[ 1 ] = index;
+				triangle[ 2 ] = triangle[ 2 ];
+			} else {
+				triangle[ 0 ] = triangle[ 2 ];
+				triangle[ 2 ] = index;
+			}
+			i++;
+			if ( i >= 3 ) {
+				indexes.Append( triangle[ 0 ] );
+				indexes.Append( triangle[ 1 ] );
+				indexes.Append( triangle[ 2 ] );
+			}
+		} while ( --count );
+	}
+}
+
+bool idRenderModelMD2::Load( idList<byte>& buffer, idSkinTranslation* skinTranslation ) {
+	// byte swap the header fields and sanity check
+	dmd2_t pinmodel;
+	for ( int i = 0; i < ( int )sizeof ( dmd2_t ) / 4; i++ ) {
+		( ( int* )&pinmodel )[ i ] = LittleLong( ( ( int* )buffer.Ptr() )[ i ] );
+	}
+
+	if ( pinmodel.version != MESH2_VERSION ) {
+		common->Error( "%s has wrong version number (%i should be %i)",
+			name, pinmodel.version, MESH2_VERSION );
+	}
+
+	if ( pinmodel.num_xyz <= 0 ) {
+		common->Error( "model %s has no vertices", name );
+	}
+
+	if ( pinmodel.num_xyz > MAX_MD2_VERTS ) {
+		common->Error( "model %s has too many vertices", name );
+	}
+
+	if ( pinmodel.num_st <= 0 ) {
+		common->Error( "model %s has no st vertices", name );
+	}
+
+	if ( pinmodel.num_tris <= 0 ) {
+		common->Error( "model %s has no triangles", name );
+	}
+
+	if ( pinmodel.num_frames <= 0 ) {
+		common->Error( "model %s has no frames", name );
+	}
+
+	//
+	// load the glcmds
+	//
+	const int* pincmd = ( const int* )( ( const byte* )buffer.Ptr() + pinmodel.ofs_glcmds );
+	idList<int> glcmds;
+	glcmds.SetNum( pinmodel.num_glcmds );
+	for ( int i = 0; i < pinmodel.num_glcmds; i++ ) {
+		glcmds[ i ] = LittleLong( pincmd[ i ] );
+	}
+
+	idList<glIndex_t> indexes;
+	idList<idMd2VertexRemap> vertexMap;
+	ExtractMd2Triangles( glcmds.Ptr(), indexes, vertexMap );
+
+	int frameSize = sizeof( dmd2_frame_t ) + ( vertexMap.Num() - 1 ) * sizeof( dmd2_trivertx_t );
+
+	type = MOD_MESH2;
+	q2_extradatasize = sizeof( mmd2_t ) +
+		pinmodel.num_frames * frameSize +
+		sizeof( idVec2 ) * vertexMap.Num() +
+		sizeof( glIndex_t ) * indexes.Num();
+	q2_md2 = ( mmd2_t* )Mem_Alloc( q2_extradatasize );
+	q2_numframes = pinmodel.num_frames;
+
+	mmd2_t* pheader = q2_md2;
+
+	pheader->surfaceType = SF_MD2;
+	pheader->framesize = frameSize;
+	pheader->num_skins = pinmodel.num_skins;
+	pheader->num_frames = pinmodel.num_frames;
+	pheader->numVertexes = vertexMap.Num();
+	pheader->numIndexes = indexes.Num();
+
+	//
+	// load the frames
+	//
+	pheader->frames = ( byte* )pheader + sizeof( mmd2_t );
+	for ( int i = 0; i < pheader->num_frames; i++ ) {
+		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer.Ptr() +
+			pinmodel.ofs_frames + i * pinmodel.framesize );
+		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->frames + i * pheader->framesize );
+
+		Com_Memcpy( poutframe->name, pinframe->name, sizeof ( poutframe->name ) );
+		for ( int j = 0; j < 3; j++ ) {
+			poutframe->scale[ j ] = LittleFloat( pinframe->scale[ j ] );
+			poutframe->translate[ j ] = LittleFloat( pinframe->translate[ j ] );
+		}
+		for ( int j = 0; j < vertexMap.Num(); j++ ) {
+			Com_Memcpy( &poutframe->verts[ j ], &pinframe->verts[ vertexMap[ j ].xyzIndex ], sizeof ( dmd2_trivertx_t ) );
+		}
+	}
+
+	//	Copy texture coordinates
+	pheader->texCoords = ( idVec2* )( pheader->frames + pheader->num_frames * pheader->framesize );
+	for ( int i = 0; i < vertexMap.Num(); i++ ) {
+		pheader->texCoords[ i ].x = vertexMap[ i ].s;
+		pheader->texCoords[ i ].y = vertexMap[ i ].t;
+	}
+
+	//	Copy indexes
+	pheader->indexes = ( glIndex_t* )( ( byte* )pheader->texCoords + sizeof( idVec2 ) * vertexMap.Num() );
+	Com_Memcpy( pheader->indexes, indexes.Ptr(), pheader->numIndexes * sizeof( glIndex_t ) );
+
+	// register all skins
+	for ( int i = 0; i < pheader->num_skins; i++ ) {
+		image_t* image = R_FindImageFile( ( const char* )buffer.Ptr() + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
+			true, true, GL_CLAMP, IMG8MODE_Skin );
+		q2_skins_shader[ i ] = R_BuildMd2Shader( image );
+	}
+
+	q2_mins[ 0 ] = -32;
+	q2_mins[ 1 ] = -32;
+	q2_mins[ 2 ] = -32;
+	q2_maxs[ 0 ] = 32;
+	q2_maxs[ 1 ] = 32;
+	q2_maxs[ 2 ] = 32;
+	return true;
 }

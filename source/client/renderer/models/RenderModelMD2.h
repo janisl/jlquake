@@ -23,6 +23,8 @@ class idRenderModelMD2 : public idRenderModel {
 public:
 	idRenderModelMD2();
 	virtual ~idRenderModelMD2();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
 };
 
 #endif

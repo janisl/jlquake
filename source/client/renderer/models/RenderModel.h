@@ -924,6 +924,8 @@ public:
 
 	idRenderModel();
 	virtual ~idRenderModel();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
 };
 
 #endif
