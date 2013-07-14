@@ -3925,6 +3925,7 @@ shader_t* R_BuildBsp29Shader( mbrush29_texture_t* texture, int lightMapIndex ) {
 		stages[ i ].rgbGen = CGEN_IDENTITY;
 		stages[ i ].alphaGen = AGEN_IDENTITY;
 		stages[ i ].stateBits = GLS_DEFAULT | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE;
+		shader.multitextureEnv = GL_MODULATE;
 		stages[ i ].bundle[ 0 ].tcGen = TCGEN_TEXTURE;
 		stages[ i ].bundle[ 1 ].image[ 0 ] = tr.lightmaps[ lightMapIndex + MAX_LIGHTMAPS / 2 ];
 		stages[ i ].bundle[ 1 ].tcGen = TCGEN_LIGHTMAP;
