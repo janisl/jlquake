@@ -105,6 +105,11 @@ qhandle_t R_RegisterSkinQ2( const char* name ) {
 		return 0;
 	}
 
+	image_t* image = R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin );
+	if ( !image ) {
+		return 0;
+	}
+
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
@@ -117,7 +122,7 @@ qhandle_t R_RegisterSkinQ2( const char* name ) {
 	skin->numModels = 0;
 	skin->surfaces[ 0 ] = new skinSurface_t;
 	skin->surfaces[ 0 ]->name[ 0 ] = 0;
-	skin->surfaces[ 0 ]->shader = R_BuildMd2Shader( R_FindImageFile( name, true, true, GL_CLAMP, IMG8MODE_Skin ) );
+	skin->surfaces[ 0 ]->shader = R_BuildMd2Shader( image );
 	return hSkin;
 }
 
