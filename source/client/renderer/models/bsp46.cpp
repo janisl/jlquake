@@ -316,7 +316,7 @@ static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t* )cv, cv->points[ 0 ] );
 
-	surf->data = ( surfaceType_t* )cv;
+	surf->data = cv;
 }
 
 static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf ) {
@@ -334,7 +334,7 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 	// we may have a nodraw surface, because they might still need to
 	// be around for movement clipping
 	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & BSP46SURF_NODRAW ) {
-		static surfaceType_t skipData = SF_SKIP;
+		static surface_base_t skipData = { SF_SKIP };
 
 		surf->data = &skipData;
 		return;
@@ -360,7 +360,7 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 
 	// pre-tesseleate
 	srfGridMesh_t* grid = R_SubdividePatchToGrid( width, height, points );
-	surf->data = ( surfaceType_t* )grid;
+	surf->data = grid;
 
 	// copy the level of detail origin, which is the center
 	// of the group of all curves that must subdivide the same
@@ -402,7 +402,7 @@ static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	tri->verts = ( bsp46_drawVert_t* )( tri + 1 );
 	tri->indexes = ( int* )( tri->verts + tri->numVerts );
 
-	surf->data = ( surfaceType_t* )tri;
+	surf->data = tri;
 
 	// copy vertexes
 	ClearBounds( tri->bounds[ 0 ], tri->bounds[ 1 ] );
@@ -447,7 +447,7 @@ static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_
 	srfFlare_t* flare = new srfFlare_t();
 	flare->surfaceType = SF_FLARE;
 
-	surf->data = ( surfaceType_t* )flare;
+	surf->data = flare;
 
 	for ( int i = 0; i < 3; i++ ) {
 		flare->origin[ i ] = LittleFloat( ds->lightmapOrigin[ i ] );
@@ -497,7 +497,7 @@ static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
 
-	surf->data = ( surfaceType_t* )foliage;
+	surf->data = foliage;
 
 	// get foliage drawscale
 	float scale = r_drawfoliage->value;
@@ -852,7 +852,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -909,7 +909,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -979,7 +979,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1036,7 +1036,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1106,7 +1106,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1166,7 +1166,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 						break;
 					}
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1236,7 +1236,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1293,7 +1293,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = ( surfaceType_t* )grid2;
+					s_worldData.surfaces[ grid2num ].data = grid2;
 					return true;
 				}
 			}
@@ -1938,7 +1938,7 @@ void R_FreeBsp46( world_t* mod ) {
 		delete[] mod->vis;
 	}
 	for ( int i = 0; i < mod->numsurfaces; i++ ) {
-		switch ( *mod->surfaces[ i ].data ) {
+		switch ( mod->surfaces[ i ].data->surfaceType ) {
 		case SF_GRID:
 			R_FreeSurfaceGridMesh( ( srfGridMesh_t* )mod->surfaces[ i ].data );
 			break;

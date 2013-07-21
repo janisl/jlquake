@@ -153,7 +153,7 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 			surf->viewCount = tr.viewCount;
 		}
 		// extra check for surfaces to avoid list overflows
-		else if ( *( surf->data ) == SF_FACE ) {
+		else if ( surf->data->surfaceType == SF_FACE ) {
 			if ( !( GGameType & GAME_ET ) || ( ( srfSurfaceFace_t* )surf->data )->plane.type != PLANE_NON_PLANAR ) {
 				// the face plane should go through the box
 				int s = BoxOnPlaneSide( mins, maxs, &( ( srfSurfaceFace_t* )surf->data )->plane );

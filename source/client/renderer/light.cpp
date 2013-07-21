@@ -710,13 +710,13 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 	for ( int i = 0; i < bmodel->numSurfaces; i++ ) {
 		mbrush46_surface_t* surf = bmodel->firstSurface + i;
 
-		if ( *surf->data == SF_FACE ) {
+		if ( surf->data->surfaceType == SF_FACE ) {
 			( ( srfSurfaceFace_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_GRID ) {
+		} else if ( surf->data->surfaceType == SF_GRID ) {
 			( ( srfGridMesh_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_TRIANGLES ) {
+		} else if ( surf->data->surfaceType == SF_TRIANGLES ) {
 			( ( srfTriangles_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( *surf->data == SF_FOLIAGE ) {
+		} else if ( surf->data->surfaceType == SF_FOLIAGE ) {
 			( ( srfFoliage_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
 		}
 	}

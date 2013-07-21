@@ -76,7 +76,7 @@ static bool R_CullGrid( srfGridMesh_t* cv ) {
 	return false;
 }
 
-static bool R_CullSurfaceET( surfaceType_t* surface, shader_t* shader, int* frontFace ) {
+static bool R_CullSurfaceET( surface_base_t* surface, shader_t* shader, int* frontFace ) {
 	// force to non-front facing
 	*frontFace = 0;
 
@@ -85,7 +85,7 @@ static bool R_CullSurfaceET( surfaceType_t* surface, shader_t* shader, int* fron
 	}
 
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	switch ( *surface ) {
+	switch ( surface->surfaceType ) {
 	case SF_FACE:
 	case SF_TRIANGLES:
 		break;
@@ -154,7 +154,7 @@ static bool R_CullSurfaceET( surfaceType_t* surface, shader_t* shader, int* fron
 // sorting list.
 //
 //	This will also allow mirrors on both sides of a model without recursion.
-static bool R_CullSurface( surfaceType_t* surface, shader_t* shader, int* frontFace ) {
+static bool R_CullSurface( surface_base_t* surface, shader_t* shader, int* frontFace ) {
 	if ( GGameType & GAME_ET ) {
 		return R_CullSurfaceET( surface, shader, frontFace );
 	}
@@ -166,15 +166,15 @@ static bool R_CullSurface( surfaceType_t* surface, shader_t* shader, int* frontF
 		return false;
 	}
 
-	if ( *surface == SF_GRID ) {
+	if ( surface->surfaceType == SF_GRID ) {
 		return R_CullGrid( ( srfGridMesh_t* )surface );
 	}
 
-	if ( *surface == SF_TRIANGLES ) {
+	if ( surface->surfaceType == SF_TRIANGLES ) {
 		return R_CullTriSurf( ( srfTriangles_t* )surface );
 	}
 
-	if ( *surface != SF_FACE ) {
+	if ( surface->surfaceType != SF_FACE ) {
 		return false;
 	}
 
@@ -270,7 +270,7 @@ static int R_DlightSurfaceET( mbrush46_surface_t* surface, int dlightBits ) {
 	gen = ( srfGeneric_t* )surface->data;
 
 	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
-	switch ( ( surfaceType_t )*surface->data ) {
+	switch ( surface->data->surfaceType ) {
 	case SF_FACE:
 	case SF_TRIANGLES:
 	case SF_GRID:
@@ -338,11 +338,11 @@ static int R_DlightSurface( mbrush46_surface_t* surf, int dlightBits ) {
 		return R_DlightSurfaceET( surf, dlightBits );
 	}
 
-	if ( *surf->data == SF_FACE ) {
+	if ( surf->data->surfaceType == SF_FACE ) {
 		dlightBits = R_DlightFace( ( srfSurfaceFace_t* )surf->data, dlightBits );
-	} else if ( *surf->data == SF_GRID ) {
+	} else if ( surf->data->surfaceType == SF_GRID ) {
 		dlightBits = R_DlightGrid( ( srfGridMesh_t* )surf->data, dlightBits );
-	} else if ( *surf->data == SF_TRIANGLES ) {
+	} else if ( surf->data->surfaceType == SF_TRIANGLES ) {
 		dlightBits = R_DlightTrisurf( ( srfTriangles_t* )surf->data, dlightBits );
 	} else {
 		dlightBits = 0;
@@ -385,7 +385,7 @@ static void R_AddWorldSurface( mbrush46_surface_t* surf, shader_t* shader, int d
 		}
 	}
 
-	R_AddDrawSurf( surf->data, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( &surf->data->surfaceType, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE, 0 );
 }
 
 /*

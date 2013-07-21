@@ -121,6 +121,7 @@ set(CLIENT_FILES
 	renderer/models/RenderModelSPR.cpp
 	renderer/models/sp2.cpp
 	renderer/models/spr.cpp
+	renderer/models/Surface.cpp
 	renderer/backend.cpp
 	renderer/commands.cpp
 	renderer/curve.cpp

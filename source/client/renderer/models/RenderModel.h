@@ -32,6 +32,7 @@
 #include "../../../common/file_formats/mdx.h"
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/file_formats/sp2.h"
+#include "Surface.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -40,39 +41,6 @@
 
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
-
-// any changes in surfaceType must be mirrored in rb_surfaceTable[]
-enum surfaceType_t
-{
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE_Q1,
-	SF_FACE_Q2,
-	SF_SKYBOX_Q2,
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-	SF_POLY,
-	SF_SPR,
-	SF_SP2,
-	SF_MDL,
-	SF_MD2,
-	SF_MD3,
-	SF_MD4,
-	SF_MDC,
-	SF_MDS,
-	SF_MDM,
-	SF_FLARE,
-	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_DISPLAY_LIST,
-	SF_POLYBUFFER,
-	SF_DECAL,				// ydnar: decal surfaces
-	SF_PARTICLES,
-
-	SF_NUM_SURFACE_TYPES,
-	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
-};
 
 //==============================================================================
 //
@@ -124,8 +92,7 @@ struct mbrush29_glpoly_t {
 	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush29_surface_t {
-	surfaceType_t surfaceType;
+struct mbrush29_surface_t : surface_base_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -241,9 +208,7 @@ struct mbrush38_glpoly_t {
 	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush38_surface_t {
-	surfaceType_t surfaceType;
-
+struct mbrush38_surface_t : surface_base_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -367,42 +332,35 @@ struct drawSurf_t {
 
 // when cgame directly specifies a polygon, it becomes a srfPoly_t
 // as soon as it is called
-struct srfPoly_t {
-	surfaceType_t surfaceType;
+struct srfPoly_t : surface_base_t {
 	qhandle_t hShader;
 	int fogIndex;
 	int numVerts;
 	polyVert_t* verts;
 };
 
-struct srfPolyBuffer_t {
-	surfaceType_t surfaceType;
+struct srfPolyBuffer_t : surface_base_t {
 	int fogIndex;
 	polyBuffer_t* pPolyBuffer;
 };
 
-struct srfDisplayList_t {
-	surfaceType_t surfaceType;
+struct srfDisplayList_t : surface_base_t {
 	int listNum;
 };
 
-struct srfFlare_t {
-	surfaceType_t surfaceType;
+struct srfFlare_t : surface_base_t {
 	vec3_t origin;
 	vec3_t normal;
 	vec3_t color;
 };
 
-struct srfDecal_t {
-	surfaceType_t surfaceType;
+struct srfDecal_t : surface_base_t {
 	int numVerts;
 	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
 
 // ydnar: normal map drawsurfaces must match this header
-struct srfGeneric_t {
-	surfaceType_t surfaceType;
-
+struct srfGeneric_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
@@ -413,9 +371,7 @@ struct srfGeneric_t {
 	cplane_t plane;
 };
 
-struct srfGridMesh_t {
-	surfaceType_t surfaceType;
-
+struct srfGridMesh_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
@@ -440,9 +396,7 @@ struct srfGridMesh_t {
 	bsp46_drawVert_t verts[ 1 ];			// variable sized
 };
 
-struct srfSurfaceFace_t {
-	surfaceType_t surfaceType;
-
+struct srfSurfaceFace_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
@@ -461,9 +415,7 @@ struct srfSurfaceFace_t {
 };
 
 // misc_models in maps are turned into direct geometry by q3map
-struct srfTriangles_t {
-	surfaceType_t surfaceType;
-
+struct srfTriangles_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
@@ -489,9 +441,7 @@ struct foliageInstance_t {
 	fcolor4ub_t color;
 };
 
-struct srfFoliage_t {
-	surfaceType_t surfaceType;
-
+struct srfFoliage_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
@@ -532,7 +482,7 @@ struct mbrush46_surface_t {
 	shader_t* shader;
 	int fogIndex;
 
-	surfaceType_t* data;					// any of srf*_t
+	surface_base_t* data;					// any of srf*_t
 };
 
 struct mbrush46_node_t {
