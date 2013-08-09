@@ -22,7 +22,7 @@
 #include "commands.h"
 #include "screenshot.h"
 #include "flares.h"
-#include "surface.h"
+#include "surfaces.h"
 #include "state.h"
 #include "noise.h"
 #include "driver.h"

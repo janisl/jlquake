@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-#include "surface.h"
+#include "surfaces.h"
 #include "main.h"
 #include "backend.h"
 #include "cvars.h"

@@ -18,7 +18,7 @@
 #include "main.h"
 #include "decals.h"
 #include "sky.h"
-#include "surface.h"
+#include "surfaces.h"
 #include "cvars.h"
 #include "light.h"
 #include "backend.h"

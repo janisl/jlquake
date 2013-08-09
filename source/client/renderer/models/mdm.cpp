@@ -17,7 +17,7 @@
 #include "model.h"
 #include "../main.h"
 #include "../backend.h"
-#include "../surface.h"
+#include "../surfaces.h"
 #include "../cvars.h"
 #include "../state.h"
 #include "../light.h"

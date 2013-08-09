@@ -21,7 +21,7 @@
 #include "screenshot.h"
 #include "flares.h"
 #include "sky.h"
-#include "surface.h"
+#include "surfaces.h"
 #include "cvars.h"
 #include "state.h"
 #include "light.h"

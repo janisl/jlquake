@@ -27,7 +27,7 @@ It is safe to actually issue drawing commands here if you don't want to
 use the shader system.
 */
 
-#include "surface.h"
+#include "surfaces.h"
 #include "main.h"
 #include "backend.h"
 #include "particle.h"

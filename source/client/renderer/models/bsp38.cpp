@@ -16,7 +16,7 @@
 
 #include "model.h"
 #include "../main.h"
-#include "../surface.h"
+#include "../surfaces.h"
 #include "../cvars.h"
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"

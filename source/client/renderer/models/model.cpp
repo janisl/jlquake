@@ -17,7 +17,7 @@
 #include "model.h"
 #include "../main.h"
 #include "../commands.h"
-#include "../surface.h"
+#include "../surfaces.h"
 #include "../cvars.h"
 #include "../scene.h"
 #include "../../../common/Common.h"

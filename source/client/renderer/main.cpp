@@ -19,7 +19,7 @@
 #include "commands.h"
 #include "decals.h"
 #include "world.h"
-#include "surface.h"
+#include "surfaces.h"
 #include "cvars.h"
 #include "state.h"
 #include "light.h"

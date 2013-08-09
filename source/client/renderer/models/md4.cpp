@@ -28,7 +28,7 @@ frame.
 #include "model.h"
 #include "../main.h"
 #include "../backend.h"
-#include "../surface.h"
+#include "../surfaces.h"
 #include "../../../common/Common.h"
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"

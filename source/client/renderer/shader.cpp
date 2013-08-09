@@ -24,7 +24,7 @@
 #include "backend.h"
 #include "commands.h"
 #include "sky.h"
-#include "surface.h"
+#include "surfaces.h"
 #include "cvars.h"
 #include "state.h"
 #include "../../common/Common.h"
