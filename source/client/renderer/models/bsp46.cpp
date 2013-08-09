@@ -26,6 +26,11 @@
 #include "../../../common/endian.h"
 #include "../../../common/file_formats/bsp47.h"
 #include "RenderModelBSP46.h"
+#include "../SurfaceGrid.h"
+#include "../SurfaceTriangles.h"
+#include "../SurfaceFace.h"
+#include "../SurfaceFoliage.h"
+#include "../SurfaceFlare.h"
 
 #define LIGHTMAP_SIZE       128
 
@@ -1395,33 +1400,33 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 	for ( int i = 0; i < count; i++, in++, out++ ) {
 		switch ( LittleLong( in->surfaceType ) ) {
 		case BSP46MST_PATCH:
-			*out = new idSurfaceBrush46;
+			*out = new idSurfaceGrid;
 			ParseMesh( in, dv, *out );
 			numMeshes++;
 			break;
 		case BSP46MST_TRIANGLE_SOUP:
-			*out = new idSurfaceBrush46;
+			*out = new idSurfaceTriangles;
 			ParseTriSurf( in, dv, *out, indexes );
 			numTriSurfs++;
 			break;
 		case BSP46MST_PLANAR:
 			if ( GGameType & GAME_ET ) {
 				// ydnar: faces and triangle surfaces are now homogenous
-				*out = new idSurfaceBrush46;
+				*out = new idSurfaceTriangles;
 				ParseTriSurf( in, dv, *out, indexes );
 			} else {
-				*out = new idSurfaceBrush46;
+				*out = new idSurfaceFace;
 				ParseFace( in, dv, *out, indexes );
 			}
 			numFaces++;
 			break;
 		case BSP46MST_FLARE:
-			*out = new idSurfaceBrush46;
+			*out = new idSurfaceFlare;
 			ParseFlare( in, dv, *out, indexes );
 			numFlares++;
 			break;
 		case BSP47MST_FOLIAGE:	// ydnar
-			*out = new idSurfaceBrush46;
+			*out = new idSurfaceFoliage;
 			ParseFoliage( in, dv, *out, indexes );
 			numFoliage++;
 			break;

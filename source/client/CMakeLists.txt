@@ -149,6 +149,11 @@ set(CLIENT_FILES
 	renderer/surface2.cpp
 	renderer/surface3.cpp
 	renderer/SurfaceBrush46.cpp
+	renderer/SurfaceFlare.cpp
+	renderer/SurfaceFoliage.cpp
+	renderer/SurfaceGeneric.cpp
+	renderer/SurfaceGrid.cpp
+	renderer/SurfaceTriangles.cpp
 	renderer/wad.cpp
 	renderer/world.cpp
 	sound/audiocd/linux.cpp
