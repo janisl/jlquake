@@ -53,7 +53,8 @@ bool idRenderModelSP2::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 		q2_skins_shader[ i ] = R_BuildSp2Shader( image );
 	}
 
-	q2_sp2 = sprout;
+	q2_sp2 = new idSurfaceSP2;
+	q2_sp2->data = ( surface_base_t* )sprout;
 	q2_extradatasize = buffer.Num();
 	type = MOD_SPRITE2;
 	return true;

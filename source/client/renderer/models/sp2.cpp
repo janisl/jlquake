@@ -21,7 +21,8 @@
 #include "../../../common/endian.h"
 
 void Mod_FreeSprite2Model( idRenderModel* mod ) {
-	Mem_Free( mod->q2_sp2 );
+	Mem_Free( mod->q2_sp2->GetSp2() );
+	delete mod->q2_sp2;
 }
 
 void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
@@ -32,10 +33,10 @@ void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	dsprite2_t* psprite = tr.currentModel->q2_sp2;
-	e->e.frame %= psprite->numframes;
+	idSurfaceSP2* psprite = tr.currentModel->q2_sp2;
+	e->e.frame %= psprite->GetSp2()->numframes;
 
-	R_AddDrawSurfOld( ( surfaceType_t* )psprite, tr.currentModel->q2_skins_shader[ e->e.frame ], 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( psprite, tr.currentModel->q2_skins_shader[ e->e.frame ], 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSp2( dsprite2_t* psprite ) {

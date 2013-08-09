@@ -159,6 +159,7 @@ set(CLIENT_FILES
 	renderer/SurfaceMD2.cpp
 	renderer/SurfaceMDL.cpp
 	renderer/SurfaceSkip.cpp
+	renderer/SurfaceSP2.cpp
 	renderer/SurfaceSPR.cpp
 	renderer/SurfaceTriangles.cpp
 	renderer/wad.cpp

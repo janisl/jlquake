@@ -26,7 +26,6 @@
 #include "../../../common/file_formats/mds.h"
 #include "../../../common/file_formats/mdm.h"
 #include "../../../common/file_formats/mdx.h"
-#include "../../../common/file_formats/sp2.h"
 #include "../Surface.h"
 #include "../SurfaceFaceQ1.h"
 #include "../SurfaceFaceQ2.h"
@@ -34,6 +33,7 @@
 #include "../SurfaceMDL.h"
 #include "../SurfaceSPR.h"
 #include "../SurfaceMD2.h"
+#include "../SurfaceSP2.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -602,7 +602,7 @@ public:
 	shader_t* q2_skins_shader[ MAX_MD2_SKINS ];
 
 	int q2_extradatasize;
-	dsprite2_t* q2_sp2;
+	idSurfaceSP2* q2_sp2;
 	idSurfaceMD2* q2_md2;
 
 	int q3_dataSize;					// just for listing purposes

@@ -71,7 +71,6 @@ public:
 	SF_BAD,
 	SF_SKYBOX_Q2,
 	SF_POLY,
-	SF_SP2,
 	SF_MD3,
 	SF_MD4,
 	SF_MDC,
