@@ -16,8 +16,7 @@
 
 #include "SurfaceMDL.h"
 
-idSurfaceMDL::idSurfaceMDL()
-{
+idSurfaceMDL::idSurfaceMDL() {
 	Com_Memset( &header, 0, sizeof( header ) );
 	data = &header;
 }

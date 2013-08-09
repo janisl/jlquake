@@ -16,8 +16,7 @@
 
 #include "SurfaceSPR.h"
 
-idSurfaceSPR::idSurfaceSPR()
-{
+idSurfaceSPR::idSurfaceSPR() {
 	Com_Memset( &header, 0, sizeof( header ) );
 	data = &header;
 }

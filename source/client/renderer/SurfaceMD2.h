@@ -14,10 +14,31 @@
 //**
 //**************************************************************************
 
-#include "SurfaceFaceQ1.h"
+#ifndef __idSurfaceMD2__
+#define __idSurfaceMD2__
 
-idSurfaceFaceQ1::idSurfaceFaceQ1()
-: texturechain(NULL) {
-	Com_Memset( &surf, 0, sizeof( surf ) );
-	data = &surf;
-}
+#include "Surface.h"
+#include "../../common/math/Vec2.h"
+#include "shader.h"
+
+struct mmd2_t : surface_base_t {
+	int framesize;				// byte size of each frame
+
+	int num_skins;
+	int numVertexes;
+	int numIndexes;
+	int num_frames;
+
+	idVec2* texCoords;
+	glIndex_t* indexes;
+	byte* frames;
+};
+
+class idSurfaceMD2 : public idSurface {
+public:
+	mmd2_t header;
+
+	idSurfaceMD2();
+};
+
+#endif

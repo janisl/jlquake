@@ -138,26 +138,26 @@ bool idRenderModelMD2::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 		pinmodel.num_frames * frameSize +
 		sizeof( idVec2 ) * vertexMap.Num() +
 		sizeof( glIndex_t ) * indexes.Num();
-	q2_md2 = ( mmd2_t* )Mem_Alloc( q2_extradatasize );
+	q2_md2 = new idSurfaceMD2;
 	q2_numframes = pinmodel.num_frames;
 
-	mmd2_t* pheader = q2_md2;
+	idSurfaceMD2* pheader = q2_md2;
 
-	pheader->surfaceType = SF_MD2;
-	pheader->framesize = frameSize;
-	pheader->num_skins = pinmodel.num_skins;
-	pheader->num_frames = pinmodel.num_frames;
-	pheader->numVertexes = vertexMap.Num();
-	pheader->numIndexes = indexes.Num();
+	pheader->header.surfaceType = SF_MD2;
+	pheader->header.framesize = frameSize;
+	pheader->header.num_skins = pinmodel.num_skins;
+	pheader->header.num_frames = pinmodel.num_frames;
+	pheader->header.numVertexes = vertexMap.Num();
+	pheader->header.numIndexes = indexes.Num();
 
 	//
 	// load the frames
 	//
-	pheader->frames = ( byte* )pheader + sizeof( mmd2_t );
-	for ( int i = 0; i < pheader->num_frames; i++ ) {
+	pheader->header.frames = new byte[ pinmodel.num_frames * frameSize ];
+	for ( int i = 0; i < pheader->header.num_frames; i++ ) {
 		const dmd2_frame_t* pinframe = ( const dmd2_frame_t* )( ( const byte* )buffer.Ptr() +
 			pinmodel.ofs_frames + i * pinmodel.framesize );
-		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->frames + i * pheader->framesize );
+		dmd2_frame_t* poutframe = ( dmd2_frame_t* )( pheader->header.frames + i * pheader->header.framesize );
 
 		Com_Memcpy( poutframe->name, pinframe->name, sizeof ( poutframe->name ) );
 		for ( int j = 0; j < 3; j++ ) {
@@ -170,18 +170,18 @@ bool idRenderModelMD2::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 	}
 
 	//	Copy texture coordinates
-	pheader->texCoords = ( idVec2* )( pheader->frames + pheader->num_frames * pheader->framesize );
+	pheader->header.texCoords = new idVec2[ vertexMap.Num() ];
 	for ( int i = 0; i < vertexMap.Num(); i++ ) {
-		pheader->texCoords[ i ].x = vertexMap[ i ].s;
-		pheader->texCoords[ i ].y = vertexMap[ i ].t;
+		pheader->header.texCoords[ i ].x = vertexMap[ i ].s;
+		pheader->header.texCoords[ i ].y = vertexMap[ i ].t;
 	}
 
 	//	Copy indexes
-	pheader->indexes = ( glIndex_t* )( ( byte* )pheader->texCoords + sizeof( idVec2 ) * vertexMap.Num() );
-	Com_Memcpy( pheader->indexes, indexes.Ptr(), pheader->numIndexes * sizeof( glIndex_t ) );
+	pheader->header.indexes = new glIndex_t[ pheader->header.numIndexes ];
+	Com_Memcpy( pheader->header.indexes, indexes.Ptr(), pheader->header.numIndexes * sizeof( glIndex_t ) );
 
 	// register all skins
-	for ( int i = 0; i < pheader->num_skins; i++ ) {
+	for ( int i = 0; i < pheader->header.num_skins; i++ ) {
 		image_t* image = R_FindImageFile( ( const char* )buffer.Ptr() + pinmodel.ofs_skins + i * MAX_MD2_SKINNAME,
 			true, true, GL_CLAMP, IMG8MODE_Skin );
 		q2_skins_shader[ i ] = R_BuildMd2Shader( image );

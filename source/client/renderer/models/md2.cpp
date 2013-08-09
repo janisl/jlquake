@@ -26,26 +26,29 @@
 #include "../../../common/math/Math.h"
 
 void Mod_FreeMd2Model( idRenderModel* mod ) {
-	Mem_Free( mod->q2_md2 );
+	delete[] mod->q2_md2->header.frames;
+	delete[] mod->q2_md2->header.texCoords;
+	delete[] mod->q2_md2->header.indexes;
+	delete mod->q2_md2;
 }
 
 static bool R_CullMd2Model( trRefEntity_t* e ) {
-	mmd2_t* paliashdr = tr.currentModel->q2_md2;
+	idSurfaceMD2* paliashdr = tr.currentModel->q2_md2;
 
-	if ( ( e->e.frame >= paliashdr->num_frames ) || ( e->e.frame < 0 ) ) {
+	if ( ( e->e.frame >= paliashdr->header.num_frames ) || ( e->e.frame < 0 ) ) {
 		common->Printf( "R_CullMd2Model %s: no such frame %d\n",
 			tr.currentModel->name, e->e.frame );
 		e->e.frame = 0;
 	}
-	if ( ( e->e.oldframe >= paliashdr->num_frames ) || ( e->e.oldframe < 0 ) ) {
+	if ( ( e->e.oldframe >= paliashdr->header.num_frames ) || ( e->e.oldframe < 0 ) ) {
 		common->Printf( "R_CullMd2Model %s: no such oldframe %d\n",
 			tr.currentModel->name, e->e.oldframe );
 		e->e.oldframe = 0;
 	}
 
-	dmd2_frame_t* pframe = ( dmd2_frame_t* )( paliashdr->frames + e->e.frame * paliashdr->framesize );
+	dmd2_frame_t* pframe = ( dmd2_frame_t* )( paliashdr->header.frames + e->e.frame * paliashdr->header.framesize );
 
-	dmd2_frame_t* poldframe = ( dmd2_frame_t* )( paliashdr->frames + e->e.oldframe * paliashdr->framesize );
+	dmd2_frame_t* poldframe = ( dmd2_frame_t* )( paliashdr->header.frames + e->e.oldframe * paliashdr->header.framesize );
 
 	/*
 	** compute axially aligned mins and maxs
@@ -193,16 +196,16 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 
 	R_Md2SetupEntityLighting( ent );
 
-	mmd2_t* paliashdr = tr.currentModel->q2_md2;
+	idSurfaceMD2* paliashdr = tr.currentModel->q2_md2;
 
-	if ( ( ent->e.frame >= paliashdr->num_frames ) || ( ent->e.frame < 0 ) ) {
+	if ( ( ent->e.frame >= paliashdr->header.num_frames ) || ( ent->e.frame < 0 ) ) {
 		common->Printf( "R_AddMd2Surfaces %s: no such frame %d\n",
 			R_GetModelByHandle( ent->e.hModel )->name, ent->e.frame );
 		ent->e.frame = 0;
 		ent->e.oldframe = 0;
 	}
 
-	if ( ( ent->e.oldframe >= paliashdr->num_frames ) || ( ent->e.oldframe < 0 ) ) {
+	if ( ( ent->e.oldframe >= paliashdr->header.num_frames ) || ( ent->e.oldframe < 0 ) ) {
 		common->Printf( "R_AddMd2Surfaces %s: no such oldframe %d\n",
 			R_GetModelByHandle( ent->e.hModel )->name, ent->e.oldframe );
 		ent->e.frame = 0;
@@ -233,9 +236,9 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 			shader = tr.defaultShader;	// fallback...
 		}
 	}
-	R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
-		R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		R_AddDrawSurf( paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 

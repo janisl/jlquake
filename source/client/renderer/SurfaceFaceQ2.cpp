@@ -17,8 +17,7 @@
 #include "SurfaceFaceQ2.h"
 
 idSurfaceFaceQ2::idSurfaceFaceQ2()
-: texturechain(NULL)
-{
+: texturechain(NULL) {
 	Com_Memset( &surf, 0, sizeof( surf ) );
 	data = &surf;
 }

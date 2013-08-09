@@ -33,6 +33,7 @@
 #include "../SurfaceBrush46.h"
 #include "../SurfaceMDL.h"
 #include "../SurfaceSPR.h"
+#include "../SurfaceMD2.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -454,27 +455,6 @@ struct world_t {
 
 //==============================================================================
 //
-//	QUAKE 2 MESH MODELS
-//
-//==============================================================================
-
-struct mmd2_t {
-	surfaceType_t surfaceType;
-
-	int framesize;				// byte size of each frame
-
-	int num_skins;
-	int numVertexes;
-	int numIndexes;
-	int num_frames;
-
-	idVec2* texCoords;
-	glIndex_t* indexes;
-	byte* frames;
-};
-
-//==============================================================================
-//
 //	Whole model
 //
 //==============================================================================
@@ -623,7 +603,7 @@ public:
 
 	int q2_extradatasize;
 	dsprite2_t* q2_sp2;
-	mmd2_t* q2_md2;
+	idSurfaceMD2* q2_md2;
 
 	int q3_dataSize;					// just for listing purposes
 	mbrush46_model_t* q3_bmodel;			// only if type == MOD_BRUSH

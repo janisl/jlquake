@@ -14,10 +14,9 @@
 //**
 //**************************************************************************
 
-#include "SurfaceFaceQ1.h"
+#include "SurfaceMD2.h"
 
-idSurfaceFaceQ1::idSurfaceFaceQ1()
-: texturechain(NULL) {
-	Com_Memset( &surf, 0, sizeof( surf ) );
-	data = &surf;
+idSurfaceMD2::idSurfaceMD2() {
+	Com_Memset( &header, 0, sizeof ( header ) );
+	data = &header;
 }
