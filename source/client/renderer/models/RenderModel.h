@@ -26,13 +26,13 @@
 #include "../../../common/file_formats/mds.h"
 #include "../../../common/file_formats/mdm.h"
 #include "../../../common/file_formats/mdx.h"
-#include "../../../common/file_formats/spr.h"
 #include "../../../common/file_formats/sp2.h"
 #include "../Surface.h"
 #include "../SurfaceFaceQ1.h"
 #include "../SurfaceFaceQ2.h"
 #include "../SurfaceBrush46.h"
 #include "../SurfaceMDL.h"
+#include "../SurfaceSPR.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -454,40 +454,6 @@ struct world_t {
 
 //==============================================================================
 //
-//	QUAKE SPRITE MODELS
-//
-//==============================================================================
-
-struct msprite1frame_t {
-	int width;
-	int height;
-	float up, down, left, right;
-	shader_t* shader;
-};
-
-struct msprite1group_t {
-	int numframes;
-	float* intervals;
-	msprite1frame_t* frames[ 1 ];
-};
-
-struct msprite1framedesc_t {
-	sprite1frametype_t type;
-	msprite1frame_t* frameptr;
-};
-
-struct msprite1_t {
-	surfaceType_t surfaceType;
-	int type;
-	int maxwidth;
-	int maxheight;
-	int numframes;
-	float beamlength;					// remove?
-	msprite1framedesc_t frames[ 1 ];
-};
-
-//==============================================================================
-//
 //	QUAKE 2 MESH MODELS
 //
 //==============================================================================
@@ -596,7 +562,7 @@ public:
 // additional model data
 //
 	idSurfaceMDL* q1_mdl;
-	msprite1_t* q1_spr;			// only access through Mod_Extradata
+	idSurfaceSPR* q1_spr;			// only access through Mod_Extradata
 
 	int q2_numframes;
 

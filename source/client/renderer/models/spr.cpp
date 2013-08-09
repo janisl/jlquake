@@ -22,12 +22,12 @@
 #include "../../../common/strings.h"
 
 void Mod_FreeSpriteModel( idRenderModel* mod ) {
-	msprite1_t* psprite = mod->q1_spr;
-	for ( int i = 0; i < psprite->numframes; i++ ) {
-		if ( psprite->frames[ i ].type == SPR_SINGLE ) {
-			delete psprite->frames[ i ].frameptr;
+	idSurfaceSPR* psprite = mod->q1_spr;
+	for ( int i = 0; i < psprite->header.numframes; i++ ) {
+		if ( psprite->header.frames[ i ].type == SPR_SINGLE ) {
+			delete psprite->header.frames[ i ].frameptr;
 		} else {
-			msprite1group_t* pspritegroup = ( msprite1group_t* )psprite->frames[ i ].frameptr;
+			msprite1group_t* pspritegroup = ( msprite1group_t* )psprite->header.frames[ i ].frameptr;
 			for ( int j = 0; j < pspritegroup->numframes; j++ ) {
 				delete pspritegroup->frames[ j ];
 			}
@@ -35,7 +35,8 @@ void Mod_FreeSpriteModel( idRenderModel* mod ) {
 			Mem_Free( pspritegroup );
 		}
 	}
-	Mem_Free( psprite );
+	delete[] psprite->header.frames;
+	delete psprite;
 }
 
 static msprite1frame_t* R_GetSpriteFrame( msprite1_t* psprite, trRefEntity_t* currententity ) {
@@ -79,10 +80,10 @@ void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	msprite1_t* psprite = tr.currentModel->q1_spr;
-	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
+	idSurfaceSPR* psprite = tr.currentModel->q1_spr;
+	msprite1frame_t* frame = R_GetSpriteFrame( &psprite->header, backEnd.currentEntity );
 
-	R_AddDrawSurfOld( ( surfaceType_t* )psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {

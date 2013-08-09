@@ -158,6 +158,7 @@ set(CLIENT_FILES
 	renderer/SurfaceGrid.cpp
 	renderer/SurfaceMDL.cpp
 	renderer/SurfaceSkip.cpp
+	renderer/SurfaceSPR.cpp
 	renderer/SurfaceTriangles.cpp
 	renderer/wad.cpp
 	renderer/world.cpp

@@ -110,24 +110,23 @@ bool idRenderModelSPR::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 
 	int numframes = LittleLong( pin->numframes );
 
-	int size = sizeof ( msprite1_t ) + ( numframes - 1 ) * sizeof ( msprite1framedesc_t );
-
-	msprite1_t* psprite = ( msprite1_t* )Mem_Alloc( size );
+	idSurfaceSPR* psprite = new idSurfaceSPR;
 
 	q1_spr = psprite;
 
-	psprite->surfaceType = SF_SPR;
-	psprite->type = LittleLong( pin->type );
-	psprite->maxwidth = LittleLong( pin->width );
-	psprite->maxheight = LittleLong( pin->height );
-	psprite->beamlength = LittleFloat( pin->beamlength );
+	psprite->header.surfaceType = SF_SPR;
+	psprite->header.type = LittleLong( pin->type );
+	psprite->header.maxwidth = LittleLong( pin->width );
+	psprite->header.maxheight = LittleLong( pin->height );
+	psprite->header.beamlength = LittleFloat( pin->beamlength );
 	q1_synctype = ( synctype_t )LittleLong( pin->synctype );
-	psprite->numframes = numframes;
+	psprite->header.numframes = numframes;
+	psprite->header.frames = new msprite1framedesc_t[ numframes ];
 
-	q1_mins[ 0 ] = q1_mins[ 1 ] = -psprite->maxwidth / 2;
-	q1_maxs[ 0 ] = q1_maxs[ 1 ] = psprite->maxwidth / 2;
-	q1_mins[ 2 ] = -psprite->maxheight / 2;
-	q1_maxs[ 2 ] = psprite->maxheight / 2;
+	q1_mins[ 0 ] = q1_mins[ 1 ] = -psprite->header.maxwidth / 2;
+	q1_maxs[ 0 ] = q1_maxs[ 1 ] = psprite->header.maxwidth / 2;
+	q1_mins[ 2 ] = -psprite->header.maxheight / 2;
+	q1_maxs[ 2 ] = psprite->header.maxheight / 2;
 
 	//
 	// load the frames
@@ -142,14 +141,14 @@ bool idRenderModelSPR::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 
 	for ( int i = 0; i < numframes; i++ ) {
 		sprite1frametype_t frametype = ( sprite1frametype_t )LittleLong( pframetype->type );
-		psprite->frames[ i ].type = frametype;
+		psprite->header.frames[ i ].type = frametype;
 
 		if ( frametype == SPR_SINGLE ) {
 			pframetype = ( dsprite1frametype_t* )Mod_LoadSpriteFrame( pframetype + 1,
-				&psprite->frames[ i ].frameptr, i );
+				&psprite->header.frames[ i ].frameptr, i );
 		} else {
 			pframetype = ( dsprite1frametype_t* )Mod_LoadSpriteGroup( pframetype + 1,
-				&psprite->frames[ i ].frameptr, i );
+				&psprite->header.frames[ i ].frameptr, i );
 		}
 	}
 
