@@ -67,4 +67,25 @@ public:
 	virtual ~idSurface();
 };
 
+/* Pending:
+	SF_BAD,
+	SF_FACE_Q1,
+	SF_FACE_Q2,
+	SF_SKYBOX_Q2,
+	SF_POLY,
+	SF_SPR,
+	SF_SP2,
+	SF_MDL,
+	SF_MD2,
+	SF_MD3,
+	SF_MD4,
+	SF_MDC,
+	SF_MDS,
+	SF_MDM,
+	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
+	SF_DISPLAY_LIST,
+	SF_POLYBUFFER,
+	SF_DECAL,				// ydnar: decal surfaces
+	SF_PARTICLES,
+ */
 #endif

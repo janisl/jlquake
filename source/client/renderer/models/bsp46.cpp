@@ -26,9 +26,10 @@
 #include "../../../common/endian.h"
 #include "../../../common/file_formats/bsp47.h"
 #include "RenderModelBSP46.h"
+#include "../SurfaceSkip.h"
+#include "../SurfaceFace.h"
 #include "../SurfaceGrid.h"
 #include "../SurfaceTriangles.h"
-#include "../SurfaceFace.h"
 #include "../SurfaceFoliage.h"
 #include "../SurfaceFlare.h"
 
@@ -267,7 +268,8 @@ static void FinishGenericSurface( bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_
 	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
 }
 
-static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
+static idSurfaceBrush46* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+	idSurfaceFace* surf = new idSurfaceFace;
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
 	// get fog volume
@@ -322,9 +324,32 @@ static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceB
 	FinishGenericSurface( ds, ( srfGeneric_t* )cv, cv->points[ 0 ] );
 
 	surf->data = cv;
+	return surf;
 }
 
-static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf ) {
+static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts ) {
+	// we may have a nodraw surface, because they might still need to
+	// be around for movement clipping
+	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & BSP46SURF_NODRAW ) {
+		static surface_base_t skipData = { SF_SKIP };
+
+		idSurfaceSkip* surf = new idSurfaceSkip;
+		int lightmapNum = LittleLong( ds->lightmapNum );
+
+		// get fog volume
+		surf->fogIndex = LittleLong( ds->fogNum ) + 1;
+
+		// get shader value
+		surf->shader = ShaderForShaderNum( ds->shaderNum, lightmapNum );
+		if ( r_singleShader->integer && !surf->shader->isSky ) {
+			surf->shader = tr.defaultShader;
+		}
+
+		surf->data = &skipData;
+		return surf;
+	}
+
+	idSurfaceGrid* surf = new idSurfaceGrid;
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
 	// get fog volume
@@ -334,15 +359,6 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceB
 	surf->shader = ShaderForShaderNum( ds->shaderNum, lightmapNum );
 	if ( r_singleShader->integer && !surf->shader->isSky ) {
 		surf->shader = tr.defaultShader;
-	}
-
-	// we may have a nodraw surface, because they might still need to
-	// be around for movement clipping
-	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & BSP46SURF_NODRAW ) {
-		static surface_base_t skipData = { SF_SKIP };
-
-		surf->data = &skipData;
-		return;
 	}
 
 	int width = LittleLong( ds->patchWidth );
@@ -383,9 +399,11 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceB
 
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t* )grid, grid->verts[ 0 ].xyz );
+	return surf;
 }
 
-static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
+static idSurfaceBrush46* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+	idSurfaceTriangles* surf = new idSurfaceTriangles;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -436,10 +454,12 @@ static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfa
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, ( srfGeneric_t* )tri, tri->verts[ 0 ].xyz );
+	FinishGenericSurface( ds, tri, tri->verts[ 0 ].xyz );
+	return surf;
 }
 
-static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
+static idSurfaceBrush46* ParseFlare( bsp46_dsurface_t* ds ) {
+	idSurfaceFlare* surf = new idSurfaceFlare;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -459,9 +479,11 @@ static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurface
 		flare->color[ i ] = LittleFloat( ds->lightmapVecs[ 0 ][ i ] );
 		flare->normal[ i ] = LittleFloat( ds->lightmapVecs[ 2 ][ i ] );
 	}
+	return surf;
 }
 
-static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
+static idSurfaceBrush46* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+	idSurfaceFoliage* surf = new idSurfaceFoliage;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -566,6 +588,7 @@ static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfa
 
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t* )foliage, foliage->xyz[ 0 ] );
+	return surf;
 }
 
 //	returns true if there are grid points merged on a width edge
@@ -1400,34 +1423,28 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 	for ( int i = 0; i < count; i++, in++, out++ ) {
 		switch ( LittleLong( in->surfaceType ) ) {
 		case BSP46MST_PATCH:
-			*out = new idSurfaceGrid;
-			ParseMesh( in, dv, *out );
+			*out = ParseMesh( in, dv );
 			numMeshes++;
 			break;
 		case BSP46MST_TRIANGLE_SOUP:
-			*out = new idSurfaceTriangles;
-			ParseTriSurf( in, dv, *out, indexes );
+			*out = ParseTriSurf( in, dv, indexes );
 			numTriSurfs++;
 			break;
 		case BSP46MST_PLANAR:
 			if ( GGameType & GAME_ET ) {
 				// ydnar: faces and triangle surfaces are now homogenous
-				*out = new idSurfaceTriangles;
-				ParseTriSurf( in, dv, *out, indexes );
+				*out = ParseTriSurf( in, dv, indexes );
 			} else {
-				*out = new idSurfaceFace;
-				ParseFace( in, dv, *out, indexes );
+				*out = ParseFace( in, dv, indexes );
 			}
 			numFaces++;
 			break;
 		case BSP46MST_FLARE:
-			*out = new idSurfaceFlare;
-			ParseFlare( in, dv, *out, indexes );
+			*out = ParseFlare( in );
 			numFlares++;
 			break;
 		case BSP47MST_FOLIAGE:	// ydnar
-			*out = new idSurfaceFoliage;
-			ParseFoliage( in, dv, *out, indexes );
+			*out = ParseFoliage( in, dv, indexes );
 			numFoliage++;
 			break;
 		default:

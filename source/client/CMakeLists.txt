@@ -153,6 +153,7 @@ set(CLIENT_FILES
 	renderer/SurfaceFoliage.cpp
 	renderer/SurfaceGeneric.cpp
 	renderer/SurfaceGrid.cpp
+	renderer/SurfaceSkip.cpp
 	renderer/SurfaceTriangles.cpp
 	renderer/wad.cpp
 	renderer/world.cpp
