@@ -158,6 +158,6 @@ bool idRenderModelMDL::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 	//
 	GL_MakeAliasModelDisplayLists( this, mdl_pheader );
 
-	q1_cache = mdl_pheader;
+	q1_mdl = mdl_pheader;
 	return true;
 }

@@ -342,7 +342,7 @@ void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr ) {
 }
 
 void Mod_FreeMdlModel( idRenderModel* mod ) {
-	mesh1hdr_t* mdl_pheader = ( mesh1hdr_t* )mod->q1_cache;
+	mesh1hdr_t* mdl_pheader = mod->q1_mdl;
 	delete[] mdl_pheader->indexes;
 	delete[] mdl_pheader->posedata;
 	delete[] mdl_pheader->texCoords;
@@ -456,7 +456,7 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 
 	R_MdlSetupEntityLighting( e );
 
-	mesh1hdr_t* paliashdr = ( mesh1hdr_t* )tr.currentModel->q1_cache;
+	mesh1hdr_t* paliashdr = tr.currentModel->q1_mdl;
 	shader_t* shader;
 	if ( e->e.renderfx & RF_COLORSHADE ) {
 		shader = tr.colorShadeShader;

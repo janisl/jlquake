@@ -54,7 +54,8 @@ idRenderModel::idRenderModel() {
 	brush29_visdata = NULL;
 	brush29_lightdata = NULL;
 	brush29_entities = NULL;
-	q1_cache = NULL;
+	q1_mdl = NULL;
+	q1_spr = NULL;
 	q2_numframes = 0;
 	q2_flags = 0;
 	VectorClear( q2_mins );

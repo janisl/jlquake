@@ -635,7 +635,8 @@ public:
 //
 // additional model data
 //
-	void* q1_cache;				// only access through Mod_Extradata
+	mesh1hdr_t* q1_mdl;
+	msprite1_t* q1_spr;			// only access through Mod_Extradata
 
 	int q2_numframes;
 

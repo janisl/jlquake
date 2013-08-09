@@ -22,7 +22,7 @@
 #include "../../../common/strings.h"
 
 void Mod_FreeSpriteModel( idRenderModel* mod ) {
-	msprite1_t* psprite = ( msprite1_t* )mod->q1_cache;
+	msprite1_t* psprite = mod->q1_spr;
 	for ( int i = 0; i < psprite->numframes; i++ ) {
 		if ( psprite->frames[ i ].type == SPR_SINGLE ) {
 			delete psprite->frames[ i ].frameptr;
@@ -79,7 +79,7 @@ void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	msprite1_t* psprite = ( msprite1_t* )tr.currentModel->q1_cache;
+	msprite1_t* psprite = tr.currentModel->q1_spr;
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
 
 	R_AddDrawSurf( ( surfaceType_t* )psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );

@@ -114,7 +114,7 @@ bool idRenderModelSPR::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 
 	msprite1_t* psprite = ( msprite1_t* )Mem_Alloc( size );
 
-	q1_cache = psprite;
+	q1_spr = psprite;
 
 	psprite->surfaceType = SF_SPR;
 	psprite->type = LittleLong( pin->type );

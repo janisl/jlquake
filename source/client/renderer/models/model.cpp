@@ -557,7 +557,7 @@ void R_CalculateModelScaleOffset( qhandle_t Handle, float ScaleX, float ScaleY, 
 		return;
 	}
 
-	mesh1hdr_t* AliasHdr = ( mesh1hdr_t* )Model->q1_cache;
+	mesh1hdr_t* AliasHdr = Model->q1_mdl;
 
 	Out[ 0 ] = -( ScaleX - 1.0 ) * ( AliasHdr->scale[ 0 ] * 127.95 + AliasHdr->scale_origin[ 0 ] );
 	Out[ 1 ] = -( ScaleY - 1.0 ) * ( AliasHdr->scale[ 1 ] * 127.95 + AliasHdr->scale_origin[ 1 ] );
