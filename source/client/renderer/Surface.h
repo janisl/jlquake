@@ -56,12 +56,15 @@ struct surface_base_t {
 	surfaceType_t surfaceType;
 };
 
-class idSurface : public surface_base_t {
+class idSurface {
 public:
+	surface_base_t* data;					// any of srf*_t
+	
+	idSurface()
+	: data(NULL)
+	{
+	}
 	virtual ~idSurface();
-	virtual void Draw() = 0;
 };
-
-void CallSurfaceDraw( idSurface* surface );
 
 #endif

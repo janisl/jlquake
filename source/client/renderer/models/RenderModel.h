@@ -33,6 +33,7 @@
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/file_formats/sp2.h"
 #include "../Surface.h"
+#include "../SurfaceBrush46.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -440,14 +441,6 @@ struct srfFoliage_t : srfGeneric_t {
 // ydnar: optimization
 #define WORLD_MAX_SKY_NODES     32
 
-struct mbrush46_surface_t {
-	int viewCount;							// if == tr.viewCount, already added
-	shader_t* shader;
-	int fogIndex;
-
-	surface_base_t* data;					// any of srf*_t
-};
-
 struct mbrush46_node_t {
 	// common with leaf and node
 	int contents;							// -1 for nodes, to differentiate from leafs
@@ -464,13 +457,13 @@ struct mbrush46_node_t {
 	int cluster;
 	int area;
 
-	mbrush46_surface_t** firstmarksurface;
+	idSurfaceBrush46** firstmarksurface;
 	int nummarksurfaces;
 };
 
 // ydnar: bsp model decal surfaces
 struct mbrush46_decal_t {
-	mbrush46_surface_t* parent;
+	idSurfaceBrush46* parent;
 	shader_t* shader;
 	float fadeStartTime, fadeEndTime;
 	int fogIndex;
@@ -480,7 +473,7 @@ struct mbrush46_decal_t {
 
 struct mbrush46_model_t {
 	vec3_t bounds[ 2 ];							// for culling
-	mbrush46_surface_t* firstSurface;
+	idSurfaceBrush46** firstSurface;
 	int numSurfaces;
 
 	// ydnar: decals
@@ -526,10 +519,10 @@ struct world_t {
 	mbrush46_node_t* nodes;
 
 	int numsurfaces;
-	mbrush46_surface_t* surfaces;
+	idSurfaceBrush46** surfaces;
 
 	int nummarksurfaces;
-	mbrush46_surface_t** marksurfaces;
+	idSurfaceBrush46** marksurfaces;
 
 	int numfogs;
 	mbrush46_fog_t* fogs;

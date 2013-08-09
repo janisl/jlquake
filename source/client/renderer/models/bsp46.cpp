@@ -262,7 +262,7 @@ static void FinishGenericSurface( bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_
 	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
 }
 
-static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
+static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
 	// get fog volume
@@ -319,7 +319,7 @@ static void ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 	surf->data = cv;
 }
 
-static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf ) {
+static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf ) {
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
 	// get fog volume
@@ -380,7 +380,7 @@ static void ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_s
 	FinishGenericSurface( ds, ( srfGeneric_t* )grid, grid->verts[ 0 ].xyz );
 }
 
-static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
+static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -434,7 +434,7 @@ static void ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush4
 	FinishGenericSurface( ds, ( srfGeneric_t* )tri, tri->verts[ 0 ].xyz );
 }
 
-static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
+static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -456,7 +456,7 @@ static void ParseFlare( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_
 	}
 }
 
-static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_surface_t* surf, int* indexes ) {
+static void ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, idSurfaceBrush46* surf, int* indexes ) {
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -609,7 +609,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 
 	for ( int j = start; j < s_worldData.numsurfaces; j++ ) {
 		//
-		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ].data;
+		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->data;
 		// if this surface is not a grid
 		if ( grid2->surfaceType != SF_GRID ) {
 			continue;
@@ -769,7 +769,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 // still do its job but won't fix the highest LoD cracks.
 static void R_FixSharedVertexLodError() {
 	for ( int i = 0; i < s_worldData.numsurfaces; i++ ) {
-		srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ].data;
+		srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->data;
 		// if this surface is not a grid
 		if ( grid1->surfaceType != SF_GRID ) {
 			continue;
@@ -785,8 +785,8 @@ static void R_FixSharedVertexLodError() {
 }
 
 static bool R_StitchPatches( int grid1num, int grid2num ) {
-	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ].data;
-	srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ grid2num ].data;
+	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->data;
+	srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ grid2num ]->data;
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
@@ -852,7 +852,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -909,7 +909,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -979,7 +979,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1036,7 +1036,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1106,7 +1106,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1166,7 +1166,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 						break;
 					}
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1236,7 +1236,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1293,7 +1293,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ].data = grid2;
+					s_worldData.surfaces[ grid2num ]->data = grid2;
 					return true;
 				}
 			}
@@ -1312,9 +1312,9 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 // be joined and cracks might still appear at that side.
 static int R_TryStitchingPatch( int grid1num ) {
 	int numstitches = 0;
-	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ].data;
+	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->data;
 	for ( int j = 0; j < s_worldData.numsurfaces; j++ ) {
-		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ].data;
+		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->data;
 		// if this surface is not a grid
 		if ( grid2->surfaceType != SF_GRID ) {
 			continue;
@@ -1346,7 +1346,7 @@ static void R_StitchAllPatches() {
 	do {
 		stitched = false;
 		for ( int i = 0; i < s_worldData.numsurfaces; i++ ) {
-			srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ].data;
+			srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->data;
 			// if this surface is not a grid
 			if ( grid1->surfaceType != SF_GRID ) {
 				continue;
@@ -1380,8 +1380,8 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 
-	mbrush46_surface_t* out = new mbrush46_surface_t[ count ];
-	Com_Memset( out, 0, sizeof ( mbrush46_surface_t ) * count );
+	idSurfaceBrush46** out = new idSurfaceBrush46*[ count ];
+	Com_Memset( out, 0, sizeof ( idSurfaceBrush46* ) * count );
 
 	s_worldData.surfaces = out;
 	s_worldData.numsurfaces = count;
@@ -1395,28 +1395,34 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 	for ( int i = 0; i < count; i++, in++, out++ ) {
 		switch ( LittleLong( in->surfaceType ) ) {
 		case BSP46MST_PATCH:
-			ParseMesh( in, dv, out );
+			*out = new idSurfaceBrush46;
+			ParseMesh( in, dv, *out );
 			numMeshes++;
 			break;
 		case BSP46MST_TRIANGLE_SOUP:
-			ParseTriSurf( in, dv, out, indexes );
+			*out = new idSurfaceBrush46;
+			ParseTriSurf( in, dv, *out, indexes );
 			numTriSurfs++;
 			break;
 		case BSP46MST_PLANAR:
 			if ( GGameType & GAME_ET ) {
 				// ydnar: faces and triangle surfaces are now homogenous
-				ParseTriSurf( in, dv, out, indexes );
+				*out = new idSurfaceBrush46;
+				ParseTriSurf( in, dv, *out, indexes );
 			} else {
-				ParseFace( in, dv, out, indexes );
+				*out = new idSurfaceBrush46;
+				ParseFace( in, dv, *out, indexes );
 			}
 			numFaces++;
 			break;
 		case BSP46MST_FLARE:
-			ParseFlare( in, dv, out, indexes );
+			*out = new idSurfaceBrush46;
+			ParseFlare( in, dv, *out, indexes );
 			numFlares++;
 			break;
 		case BSP47MST_FOLIAGE:	// ydnar
-			ParseFoliage( in, dv, out, indexes );
+			*out = new idSurfaceBrush46;
+			ParseFoliage( in, dv, *out, indexes );
 			numFoliage++;
 			break;
 		default:
@@ -1438,7 +1444,7 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 		// add node surfaces to bounds
 		if ( node->nummarksurfaces > 0 ) {
 			// add node surfaces to bounds
-			mbrush46_surface_t** mark = node->firstmarksurface;
+			idSurfaceBrush46** mark = node->firstmarksurface;
 			int c = node->nummarksurfaces;
 			while ( c-- ) {
 				srfGeneric_t* gen = ( srfGeneric_t* )( **mark ).data;
@@ -1563,14 +1569,14 @@ static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush46_surface_t** out = new mbrush46_surface_t*[ count ];
+	idSurfaceBrush46** out = new idSurfaceBrush46*[ count ];
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;
 
 	for ( int i = 0; i < count; i++ ) {
 		int j = LittleLong( in[ i ] );
-		out[ i ] = s_worldData.surfaces + j;
+		out[ i ] = s_worldData.surfaces[ j ];
 	}
 }
 
@@ -1938,25 +1944,26 @@ void R_FreeBsp46( world_t* mod ) {
 		delete[] mod->vis;
 	}
 	for ( int i = 0; i < mod->numsurfaces; i++ ) {
-		switch ( mod->surfaces[ i ].data->surfaceType ) {
+		switch ( mod->surfaces[ i ]->data->surfaceType ) {
 		case SF_GRID:
-			R_FreeSurfaceGridMesh( ( srfGridMesh_t* )mod->surfaces[ i ].data );
+			R_FreeSurfaceGridMesh( ( srfGridMesh_t* )mod->surfaces[ i ]->data );
 			break;
 		case SF_TRIANGLES:
-			Mem_Free( mod->surfaces[ i ].data );
+			Mem_Free( mod->surfaces[ i ]->data );
 			break;
 		case SF_FACE:
-			Mem_Free( mod->surfaces[ i ].data );
+			Mem_Free( mod->surfaces[ i ]->data );
 			break;
 		case SF_FLARE:
-			Mem_Free( mod->surfaces[ i ].data );
+			Mem_Free( mod->surfaces[ i ]->data );
 			break;
 		case SF_FOLIAGE:
-			Mem_Free( mod->surfaces[ i ].data );
+			Mem_Free( mod->surfaces[ i ]->data );
 			break;
 		default:
 			break;
 		}
+		delete mod->surfaces[ i ];
 	}
 	delete[] mod->surfaces;
 	delete[] mod->nodes;

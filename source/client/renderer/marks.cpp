@@ -140,13 +140,13 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 	}
 
 	// add the individual surfaces
-	mbrush46_surface_t** mark = node->firstmarksurface;
+	idSurfaceBrush46** mark = node->firstmarksurface;
 	int c = node->nummarksurfaces;
 	while ( c-- ) {
 		if ( *listlength >= listsize ) {
 			break;
 		}
-		mbrush46_surface_t* surf = *mark;
+		idSurfaceBrush46* surf = *mark;
 		// check if the surface has NOIMPACT or NOMARKS set
 		if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) ||
 			 ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {

@@ -14,7 +14,23 @@
 //**
 //**************************************************************************
 
-#include "Surface.h"
+#ifndef __idSurfaceBrush46__
+#define __idSurfaceBrush46__
 
-idSurface::~idSurface() {
-}
+#include "Surface.h"
+#include "shader.h"
+
+class idSurfaceBrush46 : public idSurface {
+public:
+	int viewCount;							// if == tr.viewCount, already added
+	shader_t* shader;
+	int fogIndex;
+
+	idSurfaceBrush46()
+	: viewCount(0)
+	, shader(NULL)
+	, fogIndex(0)
+	{}
+};
+
+#endif

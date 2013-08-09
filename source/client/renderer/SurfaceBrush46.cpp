@@ -14,7 +14,4 @@
 //**
 //**************************************************************************
 
-#include "Surface.h"
-
-idSurface::~idSurface() {
-}
+#include "SurfaceBrush46.h"
