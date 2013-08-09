@@ -637,7 +637,7 @@ int R_CullLocalPointAndRadius( vec3_t pt, float radius ) {
 	return R_CullPointAndRadius( transformed, radius );
 }
 
-void R_AddDrawSurf( surfaceType_t* surface, shader_t* shader, int fogIndex,
+void R_AddDrawSurfOld( surfaceType_t* surface, shader_t* shader, int fogIndex,
 	int dlightMap, int frontFace, int atiTess, int forcedSortIndex ) {
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around
@@ -652,6 +652,11 @@ void R_AddDrawSurf( surfaceType_t* surface, shader_t* shader, int fogIndex,
 		( GGameType & GAME_ET ? ( frontFace << QSORT_FRONTFACE_SHIFT ) : 0 );
 	tr.refdef.drawSurfs[ index ].surface = surface;
 	tr.refdef.numDrawSurfs++;
+}
+
+void R_AddDrawSurf( idSurface* surface, shader_t* shader, int fogIndex,
+	int dlightMap, int frontFace, int atiTess, int forcedSortIndex ) {
+	R_AddDrawSurfOld( &surface->data->surfaceType, shader, fogIndex, dlightMap, frontFace, atiTess, forcedSortIndex );
 }
 
 //	See if a sprite is inside a fog volume
@@ -683,7 +688,7 @@ static void R_AddBadModelSurface( trRefEntity_t* ent ) {
 	if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
-	R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
+	R_AddDrawSurfOld( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddModelSurfaces( idRenderModel* model, trRefEntity_t* ent, int forcedSortIndex ) {
@@ -792,7 +797,7 @@ static void R_AddEntitySurfaces() {
 			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 				continue;
 			}
-			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE, 0 );
+			R_AddDrawSurfOld( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE, 0 );
 			break;
 
 		case RT_MODEL:
@@ -801,7 +806,7 @@ static void R_AddEntitySurfaces() {
 
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
-				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
+				R_AddDrawSurfOld( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 			} else {
 				if ( GGameType & GAME_Hexen2 ) {
 					if ( ( ent->e.renderfx & RF_TRANSLUCENT ) || R_MdlHasHexen2Transparency( tr.currentModel ) ) {
@@ -861,7 +866,7 @@ static void R_AddPolygonSurfaces() {
 	srfPoly_t* poly = tr.refdef.polys;
 	for ( int i = 0; i < tr.refdef.numPolys; i++, poly++ ) {
 		shader_t* sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE, 0 );
+		R_AddDrawSurfOld( ( surfaceType_t* )poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE, 0 );
 	}
 }
 
@@ -872,7 +877,7 @@ static void R_AddPolygonBufferSurfaces() {
 	srfPolyBuffer_t* polybuffer = tr.refdef.polybuffers;
 	for ( int i = 0; i < tr.refdef.numPolyBuffers; i++, polybuffer++ ) {
 		shader_t* sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
-		R_AddDrawSurf( ( surfaceType_t* )polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE, 0 );
+		R_AddDrawSurfOld( ( surfaceType_t* )polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE, 0 );
 	}
 }
 
@@ -923,7 +928,7 @@ static void R_GenerateDrawSurfs() {
 	R_AddPolygonBufferSurfaces();
 
 	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_AddDrawSurf( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
+		R_AddDrawSurfOld( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
 	}
 
 	int forcedSortIndex = 3;

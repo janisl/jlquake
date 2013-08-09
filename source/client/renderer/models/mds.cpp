@@ -291,7 +291,7 @@ void R_AddMdsAnimSurfaces( trRefEntity_t* ent ) {
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
 			// GR - always tessellate these objects
-			R_AddDrawSurf( ( surfaceType_t* )surface, shader, fogNum, false, 0, ATI_TESS_TRUFORM, 0 );
+			R_AddDrawSurfOld( ( surfaceType_t* )surface, shader, fogNum, false, 0, ATI_TESS_TRUFORM, 0 );
 		}
 
 		surface = ( mdsSurface_t* )( ( byte* )surface + surface->ofsEnd );

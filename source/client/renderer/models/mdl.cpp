@@ -465,9 +465,9 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	} else {
 		shader = paliashdr->shaders[ e->e.skinNum ];
 	}
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( e->e.renderfx & RF_NOSHADOW ) ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 

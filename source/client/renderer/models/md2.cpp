@@ -233,9 +233,9 @@ void R_AddMd2Surfaces( trRefEntity_t* ent, int forcedSortIndex ) {
 			shader = tr.defaultShader;	// fallback...
 		}
 	}
-	R_AddDrawSurf( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_FIRST_PERSON ) ) ) {
-		R_AddDrawSurf( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 

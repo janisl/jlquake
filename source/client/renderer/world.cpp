@@ -385,7 +385,7 @@ static void R_AddWorldSurface( idSurfaceBrush46* surf, shader_t* shader, int dli
 		}
 	}
 
-	R_AddDrawSurf( &surf->data->surfaceType, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( surf, shader, surf->fogIndex, dlightBits, frontFace, ATI_TESS_NONE, 0 );
 }
 
 /*
@@ -946,7 +946,7 @@ void R_DrawWorldQ2() {
 
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
 
-	R_AddDrawSurf( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurfOld( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

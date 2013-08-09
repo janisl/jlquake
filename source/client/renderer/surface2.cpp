@@ -421,7 +421,7 @@ void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
 		R_UpdateSurfaceLightmap( surf );
 	}
 	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->surf.shaderInfo );
-	R_AddDrawSurf( &surf->surf.surfaceType, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {

@@ -82,7 +82,7 @@ void R_AddSprSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	msprite1_t* psprite = tr.currentModel->q1_spr;
 	msprite1frame_t* frame = R_GetSpriteFrame( psprite, backEnd.currentEntity );
 
-	R_AddDrawSurf( ( surfaceType_t* )psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurfOld( ( surfaceType_t* )psprite, frame->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSpr( msprite1_t* psprite ) {

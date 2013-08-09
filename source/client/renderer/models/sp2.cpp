@@ -35,7 +35,7 @@ void R_AddSp2Surfaces( trRefEntity_t* e, int forcedSortIndex ) {
 	dsprite2_t* psprite = tr.currentModel->q2_sp2;
 	e->e.frame %= psprite->numframes;
 
-	R_AddDrawSurf( ( surfaceType_t* )psprite, tr.currentModel->q2_skins_shader[ e->e.frame ], 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurfOld( ( surfaceType_t* )psprite, tr.currentModel->q2_skins_shader[ e->e.frame ], 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void RB_SurfaceSp2( dsprite2_t* psprite ) {

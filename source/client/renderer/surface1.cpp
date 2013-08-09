@@ -518,7 +518,7 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	} else {
 		shader = surf->surf.shader;
 	}
-	R_AddDrawSurf( &surf->surf.surfaceType, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 //	Systems that have fast state and texture changes can just do everything
