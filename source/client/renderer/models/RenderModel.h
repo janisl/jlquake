@@ -359,7 +359,6 @@ struct srfDecal_t : surface_base_t {
 	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
 
-// ydnar: normal map drawsurfaces must match this header
 struct srfGeneric_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
@@ -371,16 +370,7 @@ struct srfGeneric_t : surface_base_t {
 	cplane_t plane;
 };
 
-struct srfGridMesh_t : surface_base_t {
-	// dynamic lighting information
-	int dlightBits[ SMP_FRAMES ];
-
-	// culling information
-	vec3_t bounds[ 2 ];
-	vec3_t localOrigin;
-	float radius;
-	cplane_t plane;
-
+struct srfGridMesh_t : srfGeneric_t {
 	// lod information, which may be different
 	// than the culling information to allow for
 	// groups of curves that LOD as a unit
@@ -396,16 +386,7 @@ struct srfGridMesh_t : surface_base_t {
 	bsp46_drawVert_t verts[ 1 ];			// variable sized
 };
 
-struct srfSurfaceFace_t : surface_base_t {
-	// dynamic lighting information
-	int dlightBits[ SMP_FRAMES ];
-
-	// culling information
-	vec3_t bounds[ 2 ];
-	vec3_t localOrigin;
-	float radius;
-	cplane_t plane;
-
+struct srfSurfaceFace_t : srfGeneric_t {
 	// triangle definitions (no normals at points)
 	int numPoints;
 	int numIndices;
@@ -415,16 +396,7 @@ struct srfSurfaceFace_t : surface_base_t {
 };
 
 // misc_models in maps are turned into direct geometry by q3map
-struct srfTriangles_t : surface_base_t {
-	// dynamic lighting information
-	int dlightBits[ SMP_FRAMES ];
-
-	// culling information (FIXME: use this!)
-	vec3_t bounds[ 2 ];
-	vec3_t localOrigin;
-	float radius;
-	cplane_t plane;
-
+struct srfTriangles_t : srfGeneric_t {
 	// triangle definitions
 	int numIndexes;
 	int* indexes;
@@ -441,16 +413,7 @@ struct foliageInstance_t {
 	fcolor4ub_t color;
 };
 
-struct srfFoliage_t : surface_base_t {
-	// dynamic lighting information
-	int dlightBits[ SMP_FRAMES ];
-
-	// culling information
-	vec3_t bounds[ 2 ];
-	vec3_t localOrigin;
-	float radius;
-	cplane_t plane;
-
+struct srfFoliage_t : srfGeneric_t {
 	// triangle definitions
 	int numIndexes;
 	glIndex_t* indexes;
