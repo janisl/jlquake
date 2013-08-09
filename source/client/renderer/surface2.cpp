@@ -25,7 +25,7 @@
 
 gllightmapstate_t gl_lms;
 
-mbrush38_surface_t* r_alpha_surfaces;
+idSurfaceFaceQ2* r_alpha_surfaces;
 
 int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
@@ -96,25 +96,25 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-static void R_SetCacheState( mbrush38_surface_t* surf ) {
-	for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
-		surf->cached_light[ maps ] = tr.refdef.lightstyles[ surf->styles[ maps ] ].white;
+static void R_SetCacheState( idSurfaceFaceQ2* surf ) {
+	for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
+		surf->surf.cached_light[ maps ] = tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].white;
 	}
 }
 
-static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
-	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-	mbrush38_texinfo_t* tex = surf->texinfo;
+static void R_AddDynamicLightsQ2( idSurfaceFaceQ2* surf ) {
+	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
+	mbrush38_texinfo_t* tex = surf->surf.texinfo;
 
 	for ( int lnum = 0; lnum < tr.refdef.num_dlights; lnum++ ) {
-		if ( !( surf->dlightbits & ( 1 << lnum ) ) ) {
+		if ( !( surf->surf.dlightbits & ( 1 << lnum ) ) ) {
 			continue;		// not lit by this light
 		}
 
 		dlight_t* dl = &tr.refdef.dlights[ lnum ];
 		float frad = dl->radius;
-		float fdist = DotProduct( dl->origin, surf->plane->normal ) - surf->plane->dist;
+		float fdist = DotProduct( dl->origin, surf->surf.plane->normal ) - surf->surf.plane->dist;
 		frad -= fabs( fdist );
 		// rad is now the highest intensity on the plane
 
@@ -126,12 +126,12 @@ static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
 
 		vec3_t impact;
 		for ( int i = 0; i < 3; i++ ) {
-			impact[ i ] = dl->origin[ i ] - surf->plane->normal[ i ] * fdist;
+			impact[ i ] = dl->origin[ i ] - surf->surf.plane->normal[ i ] * fdist;
 		}
 
 		vec3_t local;
-		local[ 0 ] = DotProduct( impact, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ] - surf->texturemins[ 0 ];
-		local[ 1 ] = DotProduct( impact, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ] - surf->texturemins[ 1 ];
+		local[ 0 ] = DotProduct( impact, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ] - surf->surf.texturemins[ 0 ];
+		local[ 1 ] = DotProduct( impact, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ] - surf->surf.texturemins[ 1 ];
 
 		float* pfBL = s_blocklights_q2;
 		float ftacc = 0;
@@ -166,40 +166,40 @@ static void R_AddDynamicLightsQ2( mbrush38_surface_t* surf ) {
 }
 
 //	Combine and scale multiple lightmaps into the floating format in blocklights
-static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride ) {
-	if ( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+static void R_BuildLightMapQ2( idSurfaceFaceQ2* surf, byte* dest, int stride ) {
+	if ( surf->surf.texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
 		common->Error( "R_BuildLightMapQ2 called for non-lit surface" );
 	}
 
-	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 	int size = smax * tmax;
 	if ( size > ( ( int )sizeof ( s_blocklights_q2 ) >> 4 ) ) {
 		common->Error( "Bad s_blocklights_q2 size" );
 	}
 
 	// set to full bright if no light data
-	if ( !surf->samples ) {
+	if ( !surf->surf.samples ) {
 		for ( int i = 0; i < size * 3; i++ ) {
 			s_blocklights_q2[ i ] = 255;
 		}
 	} else {
 		// count the # of maps
 		int nummaps = 0;
-		while ( nummaps < BSP38_MAXLIGHTMAPS && surf->styles[ nummaps ] != 255 ) {
+		while ( nummaps < BSP38_MAXLIGHTMAPS && surf->surf.styles[ nummaps ] != 255 ) {
 			nummaps++;
 		}
 
-		byte* lightmap = surf->samples;
+		byte* lightmap = surf->surf.samples;
 
 		// add all the lightmaps
 		if ( nummaps == 1 ) {
-			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
+			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
 				float* bl = s_blocklights_q2;
 
 				float scale[ 4 ];
 				for ( int i = 0; i < 3; i++ ) {
-					scale[ i ] = r_modulate->value * tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ i ];
+					scale[ i ] = r_modulate->value * tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ i ];
 				}
 
 				if ( scale[ 0 ] == 1.0F && scale[ 1 ] == 1.0F && scale[ 2 ] == 1.0F ) {
@@ -220,12 +220,12 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 		} else {
 			Com_Memset( s_blocklights_q2, 0, sizeof ( s_blocklights_q2[ 0 ] ) * size * 3 );
 
-			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
+			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
 				float* bl = s_blocklights_q2;
 
 				float scale[ 4 ];
 				for ( int i = 0; i < 3; i++ ) {
-					scale[ i ] = r_modulate->value * tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ i ];
+					scale[ i ] = r_modulate->value * tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ i ];
 				}
 
 				if ( scale[ 0 ] == 1.0F && scale[ 1 ] == 1.0F && scale[ 2 ] == 1.0F ) {
@@ -246,7 +246,7 @@ static void R_BuildLightMapQ2( mbrush38_surface_t* surf, byte* dest, int stride 
 		}
 
 		// add all the dynamic lights
-		if ( surf->dlightframe == tr.frameCount ) {
+		if ( surf->surf.dlightframe == tr.frameCount ) {
 			R_AddDynamicLightsQ2( surf );
 		}
 	}
@@ -335,22 +335,22 @@ void GL_BeginBuildingLightmaps( idRenderModel* m ) {
 	gl_lms.current_lightmap_texture = 0;
 }
 
-void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf ) {
-	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+void GL_CreateSurfaceLightmapQ2( idSurfaceFaceQ2* surf ) {
+	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 
-	if ( !LM_AllocBlock( smax, tmax, &surf->light_s, &surf->light_t ) ) {
+	if ( !LM_AllocBlock( smax, tmax, &surf->surf.light_s, &surf->surf.light_t ) ) {
 		LM_UploadBlock();
 		LM_InitBlock();
-		if ( !LM_AllocBlock( smax, tmax, &surf->light_s, &surf->light_t ) ) {
+		if ( !LM_AllocBlock( smax, tmax, &surf->surf.light_s, &surf->surf.light_t ) ) {
 			common->FatalError( "Consecutive calls to LM_AllocBlock(%d,%d) failed\n", smax, tmax );
 		}
 	}
 
-	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
+	surf->surf.lightmaptexturenum = gl_lms.current_lightmap_texture;
 
 	byte* base = gl_lms.lightmap_buffer;
-	base += ( surf->light_t * BLOCK_WIDTH + surf->light_s ) * LIGHTMAP_BYTES;
+	base += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * LIGHTMAP_BYTES;
 
 	R_SetCacheState( surf );
 	R_BuildLightMapQ2( surf, base, BLOCK_WIDTH * LIGHTMAP_BYTES );
@@ -360,22 +360,22 @@ void GL_EndBuildingLightmaps() {
 	LM_UploadBlock();
 }
 
-static void R_UpdateSurfaceLightmap( mbrush38_surface_t* surf ) {
-	if ( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+static void R_UpdateSurfaceLightmap( idSurfaceFaceQ2* surf ) {
+	if ( surf->surf.texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
 		return;
 	}
 
 	bool is_dynamic = false;
 
 	int map;
-	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[ map ] != 255; map++ ) {
-		if ( tr.refdef.lightstyles[ surf->styles[ map ] ].white != surf->cached_light[ map ] ) {
+	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->surf.styles[ map ] != 255; map++ ) {
+		if ( tr.refdef.lightstyles[ surf->surf.styles[ map ] ].white != surf->surf.cached_light[ map ] ) {
 			goto dynamic;
 		}
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( surf->cached_dlight || surf->dlightframe == tr.frameCount ) {
+	if ( surf->surf.cached_dlight || surf->surf.dlightframe == tr.frameCount ) {
 dynamic:
 		if ( r_dynamic->value ) {
 			is_dynamic = true;
@@ -383,20 +383,20 @@ dynamic:
 	}
 
 	if ( is_dynamic ) {
-		int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-		int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+		int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+		int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 
 		unsigned temp[ 128 * 128 ];
 		R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
 
-		if ( ( surf->styles[ map ] >= 32 || surf->styles[ map ] == 0 ) && ( surf->dlightframe != tr.frameCount ) ) {
+		if ( ( surf->surf.styles[ map ] >= 32 || surf->surf.styles[ map ] == 0 ) && ( surf->surf.dlightframe != tr.frameCount ) ) {
 			R_SetCacheState( surf );
 		}
-		surf->cached_dlight = surf->dlightframe == tr.frameCount;
+		surf->surf.cached_dlight = surf->surf.dlightframe == tr.frameCount;
 
-		GL_Bind( tr.lightmaps[ surf->lightmaptexturenum ] );
+		GL_Bind( tr.lightmaps[ surf->surf.lightmaptexturenum ] );
 
-		qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->light_s, surf->light_t, smax, tmax,
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, surf->surf.light_s, surf->surf.light_t, smax, tmax,
 			GL_RGBA, GL_UNSIGNED_BYTE, temp );
 	}
 }
@@ -416,12 +416,12 @@ static mbrush38_shaderInfo_t* R_TextureAnimationQ2( mbrush38_shaderInfo_t* tex )
 	return tex;
 }
 
-void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex ) {
-	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
+void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
+	if ( !( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
 		R_UpdateSurfaceLightmap( surf );
 	}
-	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->shaderInfo );
-	R_AddDrawSurf( ( surfaceType_t* )surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->surf.shaderInfo );
+	R_AddDrawSurf( &surf->surf.surfaceType, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
@@ -468,7 +468,7 @@ void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
 void R_DrawAlphaSurfaces(int& forcedSortIndex) {
 	int savedShiftedEntityNum = tr.shiftedEntityNum;
 	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
-	for ( mbrush38_surface_t* s = r_alpha_surfaces; s; s = s->texturechain ) {
+	for ( idSurfaceFaceQ2* s = r_alpha_surfaces; s; s = s->texturechain ) {
 		R_AddWorldSurfaceBsp38( s, forcedSortIndex );
 	}
 	r_alpha_surfaces = NULL;

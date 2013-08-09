@@ -151,6 +151,7 @@ set(CLIENT_FILES
 	renderer/SurfaceBrush46.cpp
 	renderer/SurfaceFace.cpp
 	renderer/SurfaceFaceQ1.cpp
+	renderer/SurfaceFaceQ2.cpp
 	renderer/SurfaceFlare.cpp
 	renderer/SurfaceFoliage.cpp
 	renderer/SurfaceGeneric.cpp

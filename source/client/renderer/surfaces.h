@@ -45,9 +45,9 @@ void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
 
 void GL_BeginBuildingLightmaps( idRenderModel* m );
-void GL_CreateSurfaceLightmapQ2( mbrush38_surface_t* surf );
+void GL_CreateSurfaceLightmapQ2( idSurfaceFaceQ2* surf );
 void GL_EndBuildingLightmaps();
-void R_AddWorldSurfaceBsp38( mbrush38_surface_t* surf, int forcedSortIndex );
+void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex );
 void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces(int& forcedSortIndex);
 
@@ -62,7 +62,7 @@ extern idSurfaceFaceQ1* waterchain;
 extern int skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern gllightmapstate_t gl_lms;
-extern mbrush38_surface_t* r_alpha_surfaces;
+extern idSurfaceFaceQ2* r_alpha_surfaces;
 extern int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* );

@@ -69,7 +69,6 @@ public:
 
 /* Pending:
 	SF_BAD,
-	SF_FACE_Q2,
 	SF_SKYBOX_Q2,
 	SF_POLY,
 	SF_SPR,

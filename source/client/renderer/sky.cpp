@@ -352,9 +352,9 @@ void R_ClearSkyBox() {
 	}
 }
 
-void R_AddSkySurface( mbrush38_surface_t* fa ) {
+void R_AddSkySurface( idSurfaceFaceQ2* fa ) {
 	// calculate vertex values for sky box
-	for ( mbrush38_glpoly_t* p = fa->polys; p; p = p->next ) {
+	for ( mbrush38_glpoly_t* p = fa->surf.polys; p; p = p->next ) {
 		vec3_t verts[ MAX_CLIP_VERTS ];
 		for ( int i = 0; i < p->numverts; i++ ) {
 			VectorSubtract( p->verts[ i ], tr.viewParms.orient.origin, verts[ i ] );

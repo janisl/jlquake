@@ -19,7 +19,6 @@
 
 #include "../shader.h"
 #include "../../../common/math/Vec2.h"
-#include "../../../common/file_formats/bsp38.h"
 #include "../../../common/file_formats/bsp46.h"
 #include "../../../common/file_formats/mdl.h"
 #include "../../../common/file_formats/md2.h"
@@ -33,6 +32,7 @@
 #include "../../../common/file_formats/sp2.h"
 #include "../Surface.h"
 #include "../SurfaceFaceQ1.h"
+#include "../SurfaceFaceQ2.h"
 #include "../SurfaceBrush46.h"
 
 // everything that is needed by the backend needs
@@ -116,8 +116,6 @@ struct mbrush29_submodel_t {
 //
 //==============================================================================
 
-#define BRUSH38_VERTEXSIZE  7
-
 #define BRUSH38_SURF_PLANEBACK      2
 
 struct mbrush38_vertex_t {
@@ -127,57 +125,6 @@ struct mbrush38_vertex_t {
 struct mbrush38_edge_t {
 	unsigned short v[ 2 ];
 	unsigned int cachededgeoffset;
-};
-
-struct mbrush38_texinfo_t {
-	float vecs[ 2 ][ 4 ];
-	int flags;
-	int numframes;
-	mbrush38_texinfo_t* next;		// animation chain
-	image_t* image;
-};
-
-struct mbrush38_shaderInfo_t {
-	int numframes;
-	mbrush38_shaderInfo_t* next;	// animation chain
-	shader_t* shader;
-};
-
-struct mbrush38_glpoly_t {
-	mbrush38_glpoly_t* next;
-	int numverts;
-	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
-};
-
-struct mbrush38_surface_t : surface_base_t {
-	int visframe;				// should be drawn when node is crossed
-
-	cplane_t* plane;
-	int flags;
-
-	int firstedge;			// look up in model->surfedges[], negative numbers
-	int numedges;			// are backwards edges
-
-	short texturemins[ 2 ];
-	short extents[ 2 ];
-
-	int light_s, light_t;			// gl lightmap coordinates
-
-	mbrush38_glpoly_t* polys;				// multiple if warped
-	mbrush38_surface_t* texturechain;
-
-	mbrush38_texinfo_t* texinfo;
-	mbrush38_shaderInfo_t* shaderInfo;
-
-// lighting info
-	int dlightframe;
-	int dlightbits;
-
-	int lightmaptexturenum;
-	byte styles[ BSP38_MAXLIGHTMAPS ];
-	float cached_light[ BSP38_MAXLIGHTMAPS ];			// values currently used in lightmap
-	qboolean cached_dlight;					// true if dynamic light in cache
-	byte* samples;				// [numstyles*surfsize]
 };
 
 struct mbrush38_node_t {
@@ -210,7 +157,7 @@ struct mbrush38_leaf_t {
 	int cluster;
 	int area;
 
-	mbrush38_surface_t** firstmarksurface;
+	idSurfaceFaceQ2** firstmarksurface;
 	int nummarksurfaces;
 };
 
@@ -732,13 +679,13 @@ public:
 	mbrush38_shaderInfo_t* brush38_shaderInfo;
 
 	int brush38_numsurfaces;
-	mbrush38_surface_t* brush38_surfaces;
+	idSurfaceFaceQ2* brush38_surfaces;
 
 	int brush38_numsurfedges;
 	int* brush38_surfedges;
 
 	int brush38_nummarksurfaces;
-	mbrush38_surface_t** brush38_marksurfaces;
+	idSurfaceFaceQ2** brush38_marksurfaces;
 
 	bsp38_dvis_t* brush38_vis;
 

@@ -14,17 +14,11 @@
 //**
 //**************************************************************************
 
-#ifndef _R_SKY_H
-#define _R_SKY_H
+#include "SurfaceFaceQ2.h"
 
-#include "models/model.h"
-
-shader_t* R_InitSky( mbrush29_texture_t* mt );
-void R_ClearSkyBox();
-void R_AddSkySurface( idSurfaceFaceQ2* fa );
-void R_DrawSkyBoxQ2( surfaceType_t* dummy );
-void R_InitSkyTexCoords( float cloudLayerHeight );
-void RB_StageIteratorSky();
-void RB_DrawSun();
-
-#endif
+idSurfaceFaceQ2::idSurfaceFaceQ2()
+: texturechain(NULL)
+{
+	Com_Memset( &surf, 0, sizeof( surf ) );
+	data = &surf;
+}

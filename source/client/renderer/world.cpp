@@ -442,21 +442,21 @@ static void R_DrawInlineBModel(int forcedSortIndex) {
 		R_MarkLightsQ2( lt, 1 << k, tr.currentModel->brush38_nodes + tr.currentModel->brush38_firstnode );
 	}
 
-	mbrush38_surface_t* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
+	idSurfaceFaceQ2* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
 
 	//
 	// draw texture
 	//
 	for ( int i = 0; i < tr.currentModel->brush38_nummodelsurfaces; i++, psurf++ ) {
 		// find which side of the node we are on
-		cplane_t* pplane = psurf->plane;
+		cplane_t* pplane = psurf->surf.plane;
 
 		float dot = DotProduct( tr.orient.viewOrigin, pplane->normal ) - pplane->dist;
 
 		// draw the polygon
-		if ( ( ( psurf->flags & BRUSH38_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-			 ( !( psurf->flags & BRUSH38_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			if ( psurf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		if ( ( ( psurf->surf.flags & BRUSH38_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
+			 ( !( psurf->surf.flags & BRUSH38_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
+			if ( psurf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 				// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
@@ -757,12 +757,12 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 			return;		// not visible
 		}
 
-		mbrush38_surface_t** mark = pleaf->firstmarksurface;
+		idSurfaceFaceQ2** mark = pleaf->firstmarksurface;
 		int c = pleaf->nummarksurfaces;
 
 		if ( c ) {
 			do {
-				( *mark )->visframe = tr.viewCount;
+				( *mark )->surf.visframe = tr.viewCount;
 				mark++;
 			} while ( --c );
 		}
@@ -804,20 +804,20 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 	R_RecursiveWorldNodeQ2( node->children[ side ] );
 
 	// draw stuff
-	mbrush38_surface_t* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
+	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for ( int c = node->numsurfaces; c; c--, surf++ ) {
-		if ( surf->visframe != tr.viewCount ) {
+		if ( surf->surf.visframe != tr.viewCount ) {
 			continue;
 		}
 
-		if ( ( surf->flags & BRUSH38_SURF_PLANEBACK ) != sidebit ) {
+		if ( ( surf->surf.flags & BRUSH38_SURF_PLANEBACK ) != sidebit ) {
 			continue;		// wrong side
 		}
 
-		if ( surf->texinfo->flags & BSP38SURF_SKY ) {
+		if ( surf->surf.texinfo->flags & BSP38SURF_SKY ) {
 			// just adds to visible sky bounds
 			R_AddSkySurface( surf );
-		} else if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		} else if ( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 			// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
