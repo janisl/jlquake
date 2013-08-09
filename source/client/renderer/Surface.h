@@ -17,7 +17,7 @@
 #ifndef __idSurface__
 #define __idSurface__
 
-#include "../../../common/qcommon.h"
+#include "../../common/qcommon.h"
 
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
 enum surfaceType_t

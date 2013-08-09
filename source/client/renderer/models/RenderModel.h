@@ -32,7 +32,7 @@
 #include "../../../common/file_formats/mdx.h"
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/file_formats/sp2.h"
-#include "Surface.h"
+#include "../Surface.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
