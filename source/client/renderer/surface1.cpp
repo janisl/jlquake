@@ -27,7 +27,7 @@
 mbrush29_leaf_t* r_viewleaf;
 mbrush29_leaf_t* r_oldviewleaf;
 
-mbrush29_surface_t* waterchain = NULL;
+idSurfaceFaceQ1* waterchain = NULL;
 
 int skytexturenum;
 
@@ -218,33 +218,33 @@ store:
 	}
 }
 
-static void GL_CreateSurfaceLightmapQ1( mbrush29_surface_t* surf ) {
-	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+static void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf ) {
+	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 
-	surf->lightmaptexturenum = AllocBlock( smax, tmax, &surf->light_s, &surf->light_t );
-	byte* base = lightmaps + surf->lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
-	base += ( surf->light_t * BLOCK_WIDTH + surf->light_s ) * 4;
-	byte* overbrightBase = lightmaps + ( surf->lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
-	overbrightBase += ( surf->light_t * BLOCK_WIDTH + surf->light_s ) * 4;
-	R_BuildLightMapQ1( surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+	surf->surf.lightmaptexturenum = AllocBlock( smax, tmax, &surf->surf.light_s, &surf->surf.light_t );
+	byte* base = lightmaps + surf->surf.lightmaptexturenum * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
+	base += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
+	byte* overbrightBase = lightmaps + ( surf->surf.lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
+	overbrightBase += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
+	R_BuildLightMapQ1( &surf->surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 }
 
-static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
+static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	// reconstruct the polygon
 	mbrush29_edge_t* pedges = tr.currentModel->brush29_edges;
-	int lnumverts = fa->numedges;
+	int lnumverts = fa->surf.numedges;
 
 	//
 	// draw texture
 	//
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( lnumverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
-	poly->next = fa->polys;
-	fa->polys = poly;
+	poly->next = fa->surf.polys;
+	fa->surf.polys = poly;
 	poly->numverts = lnumverts;
 
 	for ( int i = 0; i < lnumverts; i++ ) {
-		int lindex = tr.currentModel->brush29_surfedges[ fa->firstedge + i ];
+		int lindex = tr.currentModel->brush29_surfedges[ fa->surf.firstedge + i ];
 
 		float* vec;
 		if ( lindex > 0 ) {
@@ -254,11 +254,11 @@ static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
 			mbrush29_edge_t* r_pedge = &pedges[ -lindex ];
 			vec = r_pcurrentvertbase[ r_pedge->v[ 1 ] ].position;
 		}
-		float s = DotProduct( vec, fa->texinfo->vecs[ 0 ] ) + fa->texinfo->vecs[ 0 ][ 3 ];
-		s /= fa->texinfo->texture->width;
+		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
+		s /= fa->surf.texinfo->texture->width;
 
-		float t = DotProduct( vec, fa->texinfo->vecs[ 1 ] ) + fa->texinfo->vecs[ 1 ][ 3 ];
-		t /= fa->texinfo->texture->height;
+		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
+		t /= fa->surf.texinfo->texture->height;
 
 		VectorCopy( vec, poly->verts[ i ] );
 		poly->verts[ i ][ 3 ] = s;
@@ -267,15 +267,15 @@ static void BuildSurfaceDisplayList( mbrush29_surface_t* fa ) {
 		//
 		// lightmap texture coordinates
 		//
-		s = DotProduct( vec, fa->texinfo->vecs[ 0 ] ) + fa->texinfo->vecs[ 0 ][ 3 ];
-		s -= fa->texturemins[ 0 ];
-		s += fa->light_s * 16;
+		s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
+		s -= fa->surf.texturemins[ 0 ];
+		s += fa->surf.light_s * 16;
 		s += 8;
 		s /= BLOCK_WIDTH * 16;	//fa->texinfo->texture->width;
 
-		t = DotProduct( vec, fa->texinfo->vecs[ 1 ] ) + fa->texinfo->vecs[ 1 ][ 3 ];
-		t -= fa->texturemins[ 1 ];
-		t += fa->light_t * 16;
+		t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
+		t -= fa->surf.texturemins[ 1 ];
+		t += fa->surf.light_t * 16;
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;	//fa->texinfo->texture->height;
 
@@ -353,21 +353,21 @@ void GL_BuildLightmaps() {
 		r_pcurrentvertbase = m->brush29_vertexes;
 		tr.currentModel = m;
 		for ( int i = 0; i < m->brush29_numsurfaces; i++ ) {
-			mbrush29_surface_t* surf = &m->brush29_surfaces[ i ];
-			if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
+			idSurfaceFaceQ1* surf = &m->brush29_surfaces[ i ];
+			if ( surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
 				continue;
 			}
-			if ( surf->flags & BRUSH29_SURF_DRAWSKY ) {
+			if ( surf->surf.flags & BRUSH29_SURF_DRAWSKY ) {
 				continue;
 			}
 			GL_CreateSurfaceLightmapQ1( surf );
 			BuildSurfaceDisplayList( surf );
 
-			surf->shader = R_BuildBsp29Shader( surf->texinfo->texture, surf->lightmaptexturenum );
-			if ( surf->texinfo->texture->alternate_anims ) {
-				surf->altShader = R_BuildBsp29Shader( surf->texinfo->texture->alternate_anims, surf->lightmaptexturenum );
+			surf->surf.shader = R_BuildBsp29Shader( surf->surf.texinfo->texture, surf->surf.lightmaptexturenum );
+			if ( surf->surf.texinfo->texture->alternate_anims ) {
+				surf->surf.altShader = R_BuildBsp29Shader( surf->surf.texinfo->texture->alternate_anims, surf->surf.lightmaptexturenum );
 			} else {
-				surf->altShader = surf->shader;
+				surf->surf.altShader = surf->surf.shader;
 			}
 		}
 	}
@@ -511,14 +511,14 @@ dynamic:
 	}
 }
 
-void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex ) {
+void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	shader_t* shader;
 	if ( backEnd.currentEntity->e.frame ) {
-		shader = surf->altShader;
+		shader = surf->surf.altShader;
 	} else {
-		shader = surf->shader;
+		shader = surf->surf.shader;
 	}
-	R_AddDrawSurf( ( surfaceType_t* )surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( &surf->surf.surfaceType, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
 //	Systems that have fast state and texture changes can just do everything
@@ -564,7 +564,7 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 }
 
 void R_DrawWaterSurfaces(int& forcedSortIndex) {
-	for ( mbrush29_surface_t* s = waterchain; s; s = s->texturechain ) {
+	for ( idSurfaceFaceQ1* s = waterchain; s; s = s->texturechain ) {
 		R_AddWorldSurfaceBsp29( s, forcedSortIndex++ );
 	}
 	waterchain = NULL;

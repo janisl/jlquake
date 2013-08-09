@@ -19,7 +19,6 @@
 
 #include "../shader.h"
 #include "../../../common/math/Vec2.h"
-#include "../../../common/file_formats/bsp29.h"
 #include "../../../common/file_formats/bsp38.h"
 #include "../../../common/file_formats/bsp46.h"
 #include "../../../common/file_formats/mdl.h"
@@ -33,6 +32,7 @@
 #include "../../../common/file_formats/spr.h"
 #include "../../../common/file_formats/sp2.h"
 #include "../Surface.h"
+#include "../SurfaceFaceQ1.h"
 #include "../SurfaceBrush46.h"
 
 // everything that is needed by the backend needs
@@ -49,8 +49,6 @@
 //
 //==============================================================================
 
-#define BRUSH29_VERTEXSIZE  7
-
 #define BRUSH29_SURF_PLANEBACK      2
 #define BRUSH29_SURF_DRAWSKY        4
 #define BRUSH29_SURF_DRAWTURB       0x10
@@ -62,67 +60,9 @@ struct mbrush29_vertex_t {
 	vec3_t position;
 };
 
-struct mbrush29_texture_t {
-	char name[ 16 ];
-	unsigned width, height;
-	shader_t* shader;
-	image_t* gl_texture;
-	image_t* fullBrightTexture;
-	int anim_total;						// total tenths in sequence ( 0 = no)
-	mbrush29_texture_t* anim_next;		// in the animation sequence
-	mbrush29_texture_t* anim_base;		// first frame of animation
-	mbrush29_texture_t* alternate_anims;	// bmodels in frmae 1 use these
-	unsigned offsets[ BSP29_MIPLEVELS ];			// four mip maps stored
-};
-
 struct mbrush29_edge_t {
 	unsigned short v[ 2 ];
 	unsigned int cachededgeoffset;
-};
-
-struct mbrush29_texinfo_t {
-	float vecs[ 2 ][ 4 ];
-	float mipadjust;
-	mbrush29_texture_t* texture;
-	int flags;
-};
-
-struct mbrush29_glpoly_t {
-	mbrush29_glpoly_t* next;
-	int numverts;
-	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
-};
-
-struct mbrush29_surface_t : surface_base_t {
-	int visframe;				// should be drawn when node is crossed
-
-	cplane_t* plane;
-	int flags;
-
-	int firstedge;			// look up in model->surfedges[], negative numbers
-	int numedges;			// are backwards edges
-
-	short texturemins[ 2 ];
-	short extents[ 2 ];
-
-	int light_s, light_t;			// gl lightmap coordinates
-
-	mbrush29_glpoly_t* polys;				// multiple if warped
-	mbrush29_surface_t* texturechain;
-
-	mbrush29_texinfo_t* texinfo;
-	shader_t* shader;
-	shader_t* altShader;
-
-// lighting info
-	int dlightframe;
-	int dlightbits;
-
-	int lightmaptexturenum;
-	byte styles[ BSP29_MAXLIGHTMAPS ];
-	int cached_light[ BSP29_MAXLIGHTMAPS ];				// values currently used in lightmap
-	qboolean cached_dlight;					// true if dynamic light in cache
-	byte* samples;				// [numstyles*surfsize]
 };
 
 struct mbrush29_node_t {
@@ -154,7 +94,7 @@ struct mbrush29_leaf_t {
 // leaf specific
 	byte* compressed_vis;
 
-	mbrush29_surface_t** firstmarksurface;
+	idSurfaceFaceQ1** firstmarksurface;
 	int nummarksurfaces;
 	int key;					// BSP sequence number for leaf's contents
 	byte ambient_sound_level[ BSP29_NUM_AMBIENTS ];
@@ -730,13 +670,13 @@ public:
 	mbrush29_texinfo_t* brush29_texinfo;
 
 	int brush29_numsurfaces;
-	mbrush29_surface_t* brush29_surfaces;
+	idSurfaceFaceQ1* brush29_surfaces;
 
 	int brush29_numsurfedges;
 	int* brush29_surfedges;
 
 	int brush29_nummarksurfaces;
-	mbrush29_surface_t** brush29_marksurfaces;
+	idSurfaceFaceQ1** brush29_marksurfaces;
 
 	int brush29_numtextures;
 	mbrush29_texture_t** brush29_textures;

@@ -74,44 +74,44 @@ static int RecursiveLightPointQ1( mbrush29_node_t* node, vec3_t start, vec3_t en
 	// check for impact on this node
 	VectorCopy( mid, lightspot );
 
-	mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
+	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->flags & BRUSH29_SURF_DRAWTILED ) {
+		if ( surf->surf.flags & BRUSH29_SURF_DRAWTILED ) {
 			continue;	// no lightmaps
 		}
 
-		mbrush29_texinfo_t* tex = surf->texinfo;
+		mbrush29_texinfo_t* tex = surf->surf.texinfo;
 
 		int s = DotProduct( mid, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ];
 		int t = DotProduct( mid, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ];;
 
-		if ( s < surf->texturemins[ 0 ] || t < surf->texturemins[ 1 ] ) {
+		if ( s < surf->surf.texturemins[ 0 ] || t < surf->surf.texturemins[ 1 ] ) {
 			continue;
 		}
 
-		int ds = s - surf->texturemins[ 0 ];
-		int dt = t - surf->texturemins[ 1 ];
+		int ds = s - surf->surf.texturemins[ 0 ];
+		int dt = t - surf->surf.texturemins[ 1 ];
 
-		if ( ds > surf->extents[ 0 ] || dt > surf->extents[ 1 ] ) {
+		if ( ds > surf->surf.extents[ 0 ] || dt > surf->surf.extents[ 1 ] ) {
 			continue;
 		}
 
-		if ( !surf->samples ) {
+		if ( !surf->surf.samples ) {
 			return 0;
 		}
 
 		ds >>= 4;
 		dt >>= 4;
 
-		byte* lightmap = surf->samples;
+		byte* lightmap = surf->surf.samples;
 		r = 0;
 		if ( lightmap ) {
 
-			lightmap += dt * ( ( surf->extents[ 0 ] >> 4 ) + 1 ) + ds;
+			lightmap += dt * ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) + ds;
 
-			for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
-				r += *lightmap * tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ 0 ];
-				lightmap += ( ( surf->extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->extents[ 1 ] >> 4 ) + 1 );
+			for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
+				r += *lightmap * tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ 0 ];
+				lightmap += ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->surf.extents[ 1 ] >> 4 ) + 1 );
 			}
 		}
 
@@ -603,13 +603,13 @@ void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
 	}
 
 	// mark the polygons
-	mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
+	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->dlightframe != tr.frameCount ) {
-			surf->dlightbits = 0;
-			surf->dlightframe = tr.frameCount;
+		if ( surf->surf.dlightframe != tr.frameCount ) {
+			surf->surf.dlightbits = 0;
+			surf->surf.dlightframe = tr.frameCount;
 		}
-		surf->dlightbits |= bit;
+		surf->surf.dlightbits |= bit;
 	}
 
 	R_MarkLightsQ1( light, bit, node->children[ 0 ] );

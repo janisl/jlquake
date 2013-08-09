@@ -39,7 +39,7 @@ void GL_BuildLightmaps();
 void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
-void R_AddWorldSurfaceBsp29( mbrush29_surface_t* surf, int forcedSortIndex );
+void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex );
 void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
@@ -58,7 +58,7 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, flo
 
 extern mbrush29_leaf_t* r_viewleaf;
 extern mbrush29_leaf_t* r_oldviewleaf;
-extern mbrush29_surface_t* waterchain;
+extern idSurfaceFaceQ1* waterchain;
 extern int skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern gllightmapstate_t gl_lms;

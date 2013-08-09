@@ -27,7 +27,7 @@
 
 static byte* mod_base;
 
-static mbrush29_surface_t* warpface;
+static idSurfaceFaceQ1* warpface;
 
 static byte mod_novis[ BSP29_MAX_MAP_LEAFS / 8 ];
 
@@ -316,15 +316,15 @@ static void Mod_LoadTexinfo( bsp29_lump_t* l ) {
 }
 
 //	Fills in s->texturemins[] and s->extents[]
-static void CalcSurfaceExtents( mbrush29_surface_t* s ) {
+static void CalcSurfaceExtents( idSurfaceFaceQ1* s ) {
 	float mins[ 2 ], maxs[ 2 ];
 	mins[ 0 ] = mins[ 1 ] = 999999;
 	maxs[ 0 ] = maxs[ 1 ] = -99999;
 
-	mbrush29_texinfo_t* tex = s->texinfo;
+	mbrush29_texinfo_t* tex = s->surf.texinfo;
 
-	for ( int i = 0; i < s->numedges; i++ ) {
-		int e = loadmodel->brush29_surfedges[ s->firstedge + i ];
+	for ( int i = 0; i < s->surf.numedges; i++ ) {
+		int e = loadmodel->brush29_surfedges[ s->surf.firstedge + i ];
 		mbrush29_vertex_t* v;
 		if ( e >= 0 ) {
 			v = &loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ e ].v[ 0 ] ];
@@ -351,9 +351,9 @@ static void CalcSurfaceExtents( mbrush29_surface_t* s ) {
 		bmins[ i ] = floor( mins[ i ] / 16 );
 		bmaxs[ i ] = ceil( maxs[ i ] / 16 );
 
-		s->texturemins[ i ] = bmins[ i ] * 16;
-		s->extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
-		if ( !( tex->flags & BSP29TEX_SPECIAL ) && s->extents[ i ] > 512 ) {
+		s->surf.texturemins[ i ] = bmins[ i ] * 16;
+		s->surf.extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
+		if ( !( tex->flags & BSP29TEX_SPECIAL ) && s->surf.extents[ i ] > 512 ) {
 			common->FatalError( "Bad surface extents" );
 		}
 	}
@@ -431,13 +431,13 @@ static void SubdividePolygon( int numverts, float* verts ) {
 	}
 
 	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( numverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
-	poly->next = warpface->polys;
-	warpface->polys = poly;
+	poly->next = warpface->surf.polys;
+	warpface->surf.polys = poly;
 	poly->numverts = numverts;
 	for ( int i = 0; i < numverts; i++, verts += 3 ) {
 		VectorCopy( verts, poly->verts[ i ] );
-		float s = DotProduct( verts, warpface->texinfo->vecs[ 0 ] ) / 64.0f;
-		float t = DotProduct( verts, warpface->texinfo->vecs[ 1 ] ) / 64.0f;
+		float s = DotProduct( verts, warpface->surf.texinfo->vecs[ 0 ] ) / 64.0f;
+		float t = DotProduct( verts, warpface->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 		poly->verts[ i ][ 3 ] = s;
 		poly->verts[ i ][ 4 ] = t;
 	}
@@ -445,7 +445,7 @@ static void SubdividePolygon( int numverts, float* verts ) {
 
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
-static void GL_SubdivideSurface( mbrush29_surface_t* fa ) {
+static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 	warpface = fa;
 
 	//
@@ -453,8 +453,8 @@ static void GL_SubdivideSurface( mbrush29_surface_t* fa ) {
 	//
 	vec3_t verts[ 64 ];
 	int numverts = 0;
-	for ( int i = 0; i < fa->numedges; i++ ) {
-		int lindex = loadmodel->brush29_surfedges[ fa->firstedge + i ];
+	for ( int i = 0; i < fa->surf.numedges; i++ ) {
+		int lindex = loadmodel->brush29_surfedges[ fa->surf.firstedge + i ];
 
 		float* vec;
 		if ( lindex > 0 ) {
@@ -475,59 +475,58 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush29_surface_t* out = new mbrush29_surface_t[ count ];
-	Com_Memset( out, 0, sizeof ( mbrush29_surface_t ) * count );
+	idSurfaceFaceQ1* out = new idSurfaceFaceQ1[ count ];
 
 	loadmodel->brush29_surfaces = out;
 	loadmodel->brush29_numsurfaces = count;
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
-		out->surfaceType = SF_FACE_Q1;
-		out->firstedge = LittleLong( in->firstedge );
-		out->numedges = LittleShort( in->numedges );
-		out->flags = 0;
+		out->surf.surfaceType = SF_FACE_Q1;
+		out->surf.firstedge = LittleLong( in->firstedge );
+		out->surf.numedges = LittleShort( in->numedges );
+		out->surf.flags = 0;
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );
 		if ( side ) {
-			out->flags |= BRUSH29_SURF_PLANEBACK;
+			out->surf.flags |= BRUSH29_SURF_PLANEBACK;
 		}
 
-		out->plane = loadmodel->brush29_planes + planenum;
+		out->surf.plane = loadmodel->brush29_planes + planenum;
 
-		out->texinfo = loadmodel->brush29_texinfo + LittleShort( in->texinfo );
+		out->surf.texinfo = loadmodel->brush29_texinfo + LittleShort( in->texinfo );
 
 		CalcSurfaceExtents( out );
 
 		// lighting info
 
 		for ( int i = 0; i < BSP29_MAXLIGHTMAPS; i++ ) {
-			out->styles[ i ] = in->styles[ i ];
+			out->surf.styles[ i ] = in->styles[ i ];
 		}
 		int lightofs = LittleLong( in->lightofs );
 		if ( lightofs == -1 ) {
-			out->samples = NULL;
+			out->surf.samples = NULL;
 		} else {
-			out->samples = loadmodel->brush29_lightdata + lightofs;
+			out->surf.samples = loadmodel->brush29_lightdata + lightofs;
 		}
 
 		// set the drawing flags flag
 
-		if ( !String::NCmp( out->texinfo->texture->name, "sky", 3 ) ) {	// sky
-			out->flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
-			out->shader = out->texinfo->texture->shader;
-			out->altShader = out->texinfo->texture->shader;
+		if ( !String::NCmp( out->surf.texinfo->texture->name, "sky", 3 ) ) {	// sky
+			out->surf.flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
+			out->surf.shader = out->surf.texinfo->texture->shader;
+			out->surf.altShader = out->surf.texinfo->texture->shader;
 			GL_SubdivideSurface( out );		// cut up polygon for warps
 			continue;
 		}
 
-		if ( out->texinfo->texture->name[ 0 ] == '*' ) {	// turbulent
-			out->flags |= ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED );
-			out->shader = out->texinfo->texture->shader;
-			out->altShader = out->texinfo->texture->shader;
+		if ( out->surf.texinfo->texture->name[ 0 ] == '*' ) {	// turbulent
+			out->surf.flags |= ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED );
+			out->surf.shader = out->surf.texinfo->texture->shader;
+			out->surf.altShader = out->surf.texinfo->texture->shader;
 			for ( int i = 0; i < 2; i++ ) {
-				out->extents[ i ] = 16384;
-				out->texturemins[ i ] = -8192;
+				out->surf.extents[ i ] = 16384;
+				out->surf.texturemins[ i ] = -8192;
 			}
 			GL_SubdivideSurface( out );		// cut up polygon for warps
 
@@ -626,7 +625,7 @@ static void Mod_LoadMarksurfaces( bsp29_lump_t* l ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush29_surface_t** out = new mbrush29_surface_t*[ count ];
+	idSurfaceFaceQ1** out = new idSurfaceFaceQ1*[ count ];
 
 	loadmodel->brush29_marksurfaces = out;
 	loadmodel->brush29_nummarksurfaces = count;

@@ -407,7 +407,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 		return;
 	}
 
-	mbrush29_surface_t* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
+	idSurfaceFaceQ1* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
 
 	// calculate dynamic lighting for bmodel if it's not an
 	// instanced model
@@ -423,13 +423,13 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 	//
 	for ( int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
 		// find which side of the node we are on
-		cplane_t* pplane = psurf->plane;
+		cplane_t* pplane = psurf->surf.plane;
 
 		float dot = DotProduct( tr.orient.viewOrigin, pplane->normal ) - pplane->dist;
 
 		// draw the polygon
-		if ( ( ( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-			 ( !( psurf->flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
+		if ( ( ( psurf->surf.flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
+			 ( !( psurf->surf.flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
 			R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
 		}
 	}
@@ -609,12 +609,12 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 	if ( node->contents < 0 ) {
 		mbrush29_leaf_t* pleaf = ( mbrush29_leaf_t* )node;
 
-		mbrush29_surface_t** mark = pleaf->firstmarksurface;
+		idSurfaceFaceQ1** mark = pleaf->firstmarksurface;
 		int c = pleaf->nummarksurfaces;
 
 		if ( c ) {
 			do {
-				( *mark )->visframe = tr.viewCount;
+				( *mark )->surf.visframe = tr.viewCount;
 				mark++;
 			} while ( --c );
 		}
@@ -657,7 +657,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 	int c = node->numsurfaces;
 
 	if ( c ) {
-		mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
+		idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 
 		if ( dot < 0 - BACKFACE_EPSILON ) {
 			side = BRUSH29_SURF_PLANEBACK;
@@ -665,17 +665,17 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 			side = 0;
 		}
 		for (; c; c--, surf++ ) {
-			if ( surf->visframe != tr.viewCount ) {
+			if ( surf->surf.visframe != tr.viewCount ) {
 				continue;
 			}
 
 			// don't backface underwater surfaces, because they warp
-			if ( ( dot < 0 ) ^ !!( surf->flags & BRUSH29_SURF_PLANEBACK ) ) {
+			if ( ( dot < 0 ) ^ !!( surf->surf.flags & BRUSH29_SURF_PLANEBACK ) ) {
 				continue;		// wrong side
 			}
 
 			// if sorting by texture, just store it out
-			if ( surf->flags & BRUSH29_SURF_DRAWTURB ) {
+			if ( surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
 			} else {
