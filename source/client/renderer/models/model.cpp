@@ -557,11 +557,11 @@ void R_CalculateModelScaleOffset( qhandle_t Handle, float ScaleX, float ScaleY, 
 		return;
 	}
 
-	mesh1hdr_t* AliasHdr = Model->q1_mdl;
+	idSurfaceMDL* AliasHdr = Model->q1_mdl;
 
-	Out[ 0 ] = -( ScaleX - 1.0 ) * ( AliasHdr->scale[ 0 ] * 127.95 + AliasHdr->scale_origin[ 0 ] );
-	Out[ 1 ] = -( ScaleY - 1.0 ) * ( AliasHdr->scale[ 1 ] * 127.95 + AliasHdr->scale_origin[ 1 ] );
-	Out[ 2 ] = -( ScaleZ - 1.0 ) * ( ScaleZOrigin * 2.0 * AliasHdr->scale[ 2 ] * 127.95 + AliasHdr->scale_origin[ 2 ] );
+	Out[ 0 ] = -( ScaleX - 1.0 ) * ( AliasHdr->header.scale[ 0 ] * 127.95 + AliasHdr->header.scale_origin[ 0 ] );
+	Out[ 1 ] = -( ScaleY - 1.0 ) * ( AliasHdr->header.scale[ 1 ] * 127.95 + AliasHdr->header.scale_origin[ 1 ] );
+	Out[ 2 ] = -( ScaleZ - 1.0 ) * ( ScaleZOrigin * 2.0 * AliasHdr->header.scale[ 2 ] * 127.95 + AliasHdr->header.scale_origin[ 2 ] );
 }
 
 static md3Tag_t* R_GetTag( md3Header_t* mod, int frame, const char* tagName ) {

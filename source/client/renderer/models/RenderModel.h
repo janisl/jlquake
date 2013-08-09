@@ -18,9 +18,7 @@
 #define __idRenderModel__
 
 #include "../shader.h"
-#include "../../../common/math/Vec2.h"
 #include "../../../common/file_formats/bsp46.h"
-#include "../../../common/file_formats/mdl.h"
 #include "../../../common/file_formats/md2.h"
 #include "../../../common/file_formats/md3.h"
 #include "../../../common/file_formats/md4.h"
@@ -34,6 +32,7 @@
 #include "../SurfaceFaceQ1.h"
 #include "../SurfaceFaceQ2.h"
 #include "../SurfaceBrush46.h"
+#include "../SurfaceMDL.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -451,46 +450,7 @@ struct world_t {
 //
 //==============================================================================
 
-#define MAX_MESH1_SKINS     32
-
 #define H2EF_FACE_VIEW      65536		// Poly Model always faces you
-
-struct mmesh1framedesc_t {
-	int firstpose;
-	int numposes;
-	float interval;
-	dmdl_trivertx_t bboxmin;
-	dmdl_trivertx_t bboxmax;
-	int frame;
-	char name[ 16 ];
-};
-
-struct mesh1hdr_t {
-	int ident;
-	int version;
-	vec3_t scale;
-	vec3_t scale_origin;
-	float boundingradius;
-	vec3_t eyeposition;
-	int numskins;
-	int skinwidth;
-	int skinheight;
-	int numverts;
-	int numtris;
-	int numframes;
-	synctype_t synctype;
-	int flags;
-	float size;
-
-	int numposes;
-	int poseverts;
-	int numIndexes;
-	dmdl_trivertx_t* posedata;		// numposes*poseverts trivert_t
-	idVec2* texCoords;
-	glIndex_t* indexes;
-	shader_t* shaders[ MAX_MESH1_SKINS ];
-	mmesh1framedesc_t frames[ 1 ];		// variable sized
-};
 
 //==============================================================================
 //
@@ -635,7 +595,7 @@ public:
 //
 // additional model data
 //
-	mesh1hdr_t* q1_mdl;
+	idSurfaceMDL* q1_mdl;
 	msprite1_t* q1_spr;			// only access through Mod_Extradata
 
 	int q2_numframes;

@@ -73,7 +73,6 @@ public:
 	SF_POLY,
 	SF_SPR,
 	SF_SP2,
-	SF_MDL,
 	SF_MD2,
 	SF_MD3,
 	SF_MD4,

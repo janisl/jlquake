@@ -39,7 +39,7 @@ vec3_t mdl_mins;
 vec3_t mdl_maxs;
 
 int mdl_posenum;
-mesh1hdr_t* mdl_pheader;
+idSurfaceMDL* mdl_pheader;
 
 // a pose is a single set of vertexes.  a frame may be
 // an animating sequence of poses
@@ -48,7 +48,6 @@ dmdl_stvert_t mdl_stverts[ MAXALIASVERTS ];
 mmesh1triangle_t mdl_triangles[ MAXALIASTRIS ];
 
 static idRenderModel* aliasmodel;
-static mesh1hdr_t* paliashdr;
 
 // all frames will have their vertexes rearranged and expanded
 // so they are in the order expected by the command list
@@ -77,14 +76,14 @@ const void* Mod_LoadAliasFrame( const void* pin, mmesh1framedesc_t* frame ) {
 
 	const dmdl_trivertx_t* pinframe = ( const dmdl_trivertx_t* )( pdaliasframe + 1 );
 
-	aliastransform[ 0 ][ 0 ] = mdl_pheader->scale[ 0 ];
-	aliastransform[ 1 ][ 1 ] = mdl_pheader->scale[ 1 ];
-	aliastransform[ 2 ][ 2 ] = mdl_pheader->scale[ 2 ];
-	aliastransform[ 0 ][ 3 ] = mdl_pheader->scale_origin[ 0 ];
-	aliastransform[ 1 ][ 3 ] = mdl_pheader->scale_origin[ 1 ];
-	aliastransform[ 2 ][ 3 ] = mdl_pheader->scale_origin[ 2 ];
+	aliastransform[ 0 ][ 0 ] = mdl_pheader->header.scale[ 0 ];
+	aliastransform[ 1 ][ 1 ] = mdl_pheader->header.scale[ 1 ];
+	aliastransform[ 2 ][ 2 ] = mdl_pheader->header.scale[ 2 ];
+	aliastransform[ 0 ][ 3 ] = mdl_pheader->header.scale_origin[ 0 ];
+	aliastransform[ 1 ][ 3 ] = mdl_pheader->header.scale_origin[ 1 ];
+	aliastransform[ 2 ][ 3 ] = mdl_pheader->header.scale_origin[ 2 ];
 
-	for ( int j = 0; j < mdl_pheader->numverts; j++ ) {
+	for ( int j = 0; j < mdl_pheader->header.numverts; j++ ) {
 		vec3_t in;
 		in[ 0 ] = pinframe[ j ].v[ 0 ];
 		in[ 1 ] = pinframe[ j ].v[ 1 ];
@@ -103,7 +102,7 @@ const void* Mod_LoadAliasFrame( const void* pin, mmesh1framedesc_t* frame ) {
 	poseverts[ mdl_posenum ] = pinframe;
 	mdl_posenum++;
 
-	pinframe += mdl_pheader->numverts;
+	pinframe += mdl_pheader->header.numverts;
 
 	return ( const void* )pinframe;
 }
@@ -130,17 +129,17 @@ const void* Mod_LoadAliasGroup( const void* pin, mmesh1framedesc_t* frame ) {
 
 	const void* ptemp = ( const void* )pin_intervals;
 
-	aliastransform[ 0 ][ 0 ] = mdl_pheader->scale[ 0 ];
-	aliastransform[ 1 ][ 1 ] = mdl_pheader->scale[ 1 ];
-	aliastransform[ 2 ][ 2 ] = mdl_pheader->scale[ 2 ];
-	aliastransform[ 0 ][ 3 ] = mdl_pheader->scale_origin[ 0 ];
-	aliastransform[ 1 ][ 3 ] = mdl_pheader->scale_origin[ 1 ];
-	aliastransform[ 2 ][ 3 ] = mdl_pheader->scale_origin[ 2 ];
+	aliastransform[ 0 ][ 0 ] = mdl_pheader->header.scale[ 0 ];
+	aliastransform[ 1 ][ 1 ] = mdl_pheader->header.scale[ 1 ];
+	aliastransform[ 2 ][ 2 ] = mdl_pheader->header.scale[ 2 ];
+	aliastransform[ 0 ][ 3 ] = mdl_pheader->header.scale_origin[ 0 ];
+	aliastransform[ 1 ][ 3 ] = mdl_pheader->header.scale_origin[ 1 ];
+	aliastransform[ 2 ][ 3 ] = mdl_pheader->header.scale_origin[ 2 ];
 
 	for ( int i = 0; i < numframes; i++ ) {
 		poseverts[ mdl_posenum ] = ( const dmdl_trivertx_t* )( ( const dmdl_frame_t* )ptemp + 1 );
 
-		for ( int j = 0; j < mdl_pheader->numverts; j++ ) {
+		for ( int j = 0; j < mdl_pheader->header.numverts; j++ ) {
 			vec3_t in;
 			in[ 0 ] = poseverts[ mdl_posenum ][ j ].v[ 0 ];
 			in[ 1 ] = poseverts[ mdl_posenum ][ j ].v[ 1 ];
@@ -159,7 +158,7 @@ const void* Mod_LoadAliasGroup( const void* pin, mmesh1framedesc_t* frame ) {
 
 		mdl_posenum++;
 
-		ptemp = ( const dmdl_trivertx_t* )( ( const dmdl_frame_t* )ptemp + 1 ) + mdl_pheader->numverts;
+		ptemp = ( const dmdl_trivertx_t* )( ( const dmdl_frame_t* )ptemp + 1 ) + mdl_pheader->header.numverts;
 	}
 
 	return ptemp;
@@ -170,7 +169,7 @@ void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags,
 		common->FatalError( "Mod_LoadAllSkins: Invalid # of skins: %d\n", numskins );
 	}
 
-	int s = mdl_pheader->skinwidth * mdl_pheader->skinheight;
+	int s = mdl_pheader->header.skinwidth * mdl_pheader->header.skinheight;
 
 	int texture_mode = IMG8MODE_Skin;
 	if ( GGameType & GAME_Hexen2 ) {
@@ -194,37 +193,37 @@ void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags,
 				picTop.SetNum( s * 4 );
 				idList<byte> picBottom;
 				picBottom.SetNum( s * 4 );
-				R_ExtractTranslatedImages( *skinTranslation, pic, picTop.Ptr(), picBottom.Ptr(), mdl_pheader->skinwidth, mdl_pheader->skinheight );
+				R_ExtractTranslatedImages( *skinTranslation, pic, picTop.Ptr(), picBottom.Ptr(), mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight );
 				char topName[ 32 ];
 				sprintf( topName, "%s_%i_top", loadmodel->name, i );
-				topTexture = R_CreateImage( topName, picTop.Ptr(), mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+				topTexture = R_CreateImage( topName, picTop.Ptr(), mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 				char bottomName[ 32 ];
 				sprintf( bottomName, "%s_%i_bottom", loadmodel->name, i );
-				bottomTexture = R_CreateImage( bottomName, picBottom.Ptr(), mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+				bottomTexture = R_CreateImage( bottomName, picBottom.Ptr(), mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 			} else {
 				topTexture = NULL;
 				bottomTexture = NULL;
 			}
 
-			byte* pic32 = R_ConvertImage8To32( pic, mdl_pheader->skinwidth, mdl_pheader->skinheight, texture_mode );
-			byte* picFullBright = R_GetFullBrightImage( pic, pic32, mdl_pheader->skinwidth, mdl_pheader->skinheight );
+			byte* pic32 = R_ConvertImage8To32( pic, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, texture_mode );
+			byte* picFullBright = R_GetFullBrightImage( pic, pic32, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight );
 
 			char name[ 32 ];
 			sprintf( name, "%s_%i", loadmodel->name, i );
 
-			image_t* gl_texture = R_CreateImage( name, pic32, mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+			image_t* gl_texture = R_CreateImage( name, pic32, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 			delete[] pic32;
 			image_t* fullBrightTexture;
 			if ( picFullBright ) {
 				char fbname[ 32 ];
 				sprintf( fbname, "%s_%i_fb", loadmodel->name, i );
-				fullBrightTexture = R_CreateImage( fbname, picFullBright, mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+				fullBrightTexture = R_CreateImage( fbname, picFullBright, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 				delete[] picFullBright;
 			} else {
 				fullBrightTexture = NULL;
 			}
 			pskintype = ( dmdl_skintype_t* )( ( byte* )( pskintype + 1 ) + s );
-			mdl_pheader->shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 1, &gl_texture,
+			mdl_pheader->header.shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 1, &gl_texture,
 				&fullBrightTexture, topTexture, bottomTexture, loadmodel->q1_flags );
 		} else {
 			// animating skin group.  yuck.
@@ -243,14 +242,14 @@ void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags,
 				char name[ 32 ];
 				sprintf( name, "%s_%i_%i", loadmodel->name, i, j );
 
-				byte* pic32 = R_ConvertImage8To32( ( byte* )pskintype, mdl_pheader->skinwidth, mdl_pheader->skinheight, texture_mode );
-				byte* picFullBright = R_GetFullBrightImage( ( byte* )pskintype, pic32, mdl_pheader->skinwidth, mdl_pheader->skinheight );
-				gl_texture[ j & 3 ] = R_CreateImage( name, pic32, mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+				byte* pic32 = R_ConvertImage8To32( ( byte* )pskintype, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, texture_mode );
+				byte* picFullBright = R_GetFullBrightImage( ( byte* )pskintype, pic32, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight );
+				gl_texture[ j & 3 ] = R_CreateImage( name, pic32, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 				delete[] pic32;
 				if ( picFullBright ) {
 					char fbname[ 32 ];
 					sprintf( fbname, "%s_%i_%i_fb", loadmodel->name, i, j );
-					fullBrightTexture[ j & 3 ] = R_CreateImage( fbname, picFullBright, mdl_pheader->skinwidth, mdl_pheader->skinheight, true, true, GL_REPEAT );
+					fullBrightTexture[ j & 3 ] = R_CreateImage( fbname, picFullBright, mdl_pheader->header.skinwidth, mdl_pheader->header.skinheight, true, true, GL_REPEAT );
 					delete[] picFullBright;
 					haveFullBrightFrame = true;
 				} else {
@@ -272,7 +271,7 @@ void* Mod_LoadAllSkins( int numskins, dmdl_skintype_t* pskintype, int mdl_flags,
 					}
 				}
 			}
-			mdl_pheader->shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 4, gl_texture,
+			mdl_pheader->header.shaders[ i ] = R_BuildMdlShader( loadmodel->name, i, 4, gl_texture,
 				fullBrightTexture, NULL, NULL, loadmodel->q1_flags );
 		}
 	}
@@ -294,17 +293,16 @@ static int AddMdlVertex( int xyzIndex, int stIndex, bool onBackSide ) {
 	return numorder++;
 }
 
-void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr ) {
+void GL_MakeAliasModelDisplayLists( idRenderModel* m, idSurfaceMDL* hdr ) {
 	aliasmodel = m;
-	paliashdr = hdr;	// (mesh1hdr_t *)Mod_Extradata (m);
 
 	common->Printf( "meshing %s...\n",m->name );
 
 	numorder = 0;
-	paliashdr->numIndexes = mdl_pheader->numtris * 3;
-	paliashdr->indexes = new glIndex_t[ paliashdr->numIndexes ];
-	glIndex_t* indexes = paliashdr->indexes;
-	for ( int i = 0; i < mdl_pheader->numtris; i++ ) {
+	hdr->header.numIndexes = mdl_pheader->header.numtris * 3;
+	hdr->header.indexes = new glIndex_t[ hdr->header.numIndexes ];
+	glIndex_t* indexes = hdr->header.indexes;
+	for ( int i = 0; i < mdl_pheader->header.numtris; i++ ) {
 		mmesh1triangle_t* triangle = &mdl_triangles[ i ];
 		for ( int j = 0; j < 3; j++ ) {
 			*indexes++ = AddMdlVertex( triangle->vertindex[ j ], triangle->stindex[ j ],
@@ -314,19 +312,19 @@ void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr ) {
 
 	// save the data out
 
-	paliashdr->poseverts = numorder;
+	hdr->header.poseverts = numorder;
 
-	dmdl_trivertx_t* verts = new dmdl_trivertx_t[ paliashdr->numposes * paliashdr->poseverts ];
-	paliashdr->posedata = verts;
-	for ( int i = 0; i < paliashdr->numposes; i++ ) {
+	dmdl_trivertx_t* verts = new dmdl_trivertx_t[ hdr->header.numposes * hdr->header.poseverts ];
+	hdr->header.posedata = verts;
+	for ( int i = 0; i < hdr->header.numposes; i++ ) {
 		for ( int j = 0; j < numorder; j++ ) {
 			*verts++ = poseverts[ i ][ vertexorder[ j ].xyzIndex ];
 		}
 	}
 
-	idVec2* texCoords = new idVec2[ paliashdr->poseverts ];
-	paliashdr->texCoords = texCoords;
-	for ( int i = 0; i < paliashdr->poseverts; i++, texCoords++ ) {
+	idVec2* texCoords = new idVec2[ hdr->header.poseverts ];
+	hdr->header.texCoords = texCoords;
+	for ( int i = 0; i < hdr->header.poseverts; i++, texCoords++ ) {
 		int k = vertexorder[ i ].stIndex;
 
 		// emit s/t coords into the commands stream
@@ -334,19 +332,20 @@ void GL_MakeAliasModelDisplayLists( idRenderModel* m, mesh1hdr_t* hdr ) {
 		float t = mdl_stverts[ k ].t;
 
 		if ( vertexorder[ i ].onBackSide ) {
-			s += mdl_pheader->skinwidth / 2;	// on back side
+			s += mdl_pheader->header.skinwidth / 2;	// on back side
 		}
-		texCoords->x = ( s + 0.5f ) / mdl_pheader->skinwidth;
-		texCoords->y = ( t + 0.5f ) / mdl_pheader->skinheight;
+		texCoords->x = ( s + 0.5f ) / mdl_pheader->header.skinwidth;
+		texCoords->y = ( t + 0.5f ) / mdl_pheader->header.skinheight;
 	}
 }
 
 void Mod_FreeMdlModel( idRenderModel* mod ) {
-	mesh1hdr_t* mdl_pheader = mod->q1_mdl;
-	delete[] mdl_pheader->indexes;
-	delete[] mdl_pheader->posedata;
-	delete[] mdl_pheader->texCoords;
-	Mem_Free( mdl_pheader );
+	idSurfaceMDL* mdl_pheader = mod->q1_mdl;
+	delete[] mdl_pheader->header.indexes;
+	delete[] mdl_pheader->header.posedata;
+	delete[] mdl_pheader->header.texCoords;
+	delete[] mdl_pheader->header.frames;
+	delete mdl_pheader;
 }
 
 float R_CalcEntityLight( refEntity_t* e ) {
@@ -456,18 +455,18 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 
 	R_MdlSetupEntityLighting( e );
 
-	mesh1hdr_t* paliashdr = tr.currentModel->q1_mdl;
+	idSurfaceMDL* paliashdr = tr.currentModel->q1_mdl;
 	shader_t* shader;
 	if ( e->e.renderfx & RF_COLORSHADE ) {
 		shader = tr.colorShadeShader;
 	} else if ( e->e.customShader ) {
 		shader = R_GetShaderByHandle( e->e.customShader );
 	} else {
-		shader = paliashdr->shaders[ e->e.skinNum ];
+		shader = paliashdr->header.shaders[ e->e.skinNum ];
 	}
-	R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
+	R_AddDrawSurf( paliashdr, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	if ( r_shadows->value && !( e->e.renderfx & RF_NOSHADOW ) ) {
-		R_AddDrawSurfOld( ( surfaceType_t* )paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
+		R_AddDrawSurf( paliashdr, tr.projectionShadowShader, 0, false, false, ATI_TESS_NONE, 1 );
 	}
 }
 
