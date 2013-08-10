@@ -222,10 +222,6 @@ struct drawSurf_t {
 	surfaceType_t* surface;				// any of surface*_t
 };
 
-struct srfDisplayList_t : surface_base_t {
-	int listNum;
-};
-
 struct srfFlare_t : surface_base_t {
 	vec3_t origin;
 	vec3_t normal;

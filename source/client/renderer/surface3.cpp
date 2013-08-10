@@ -969,12 +969,6 @@ static void RB_SurfaceEntity( surfaceType_t* surfType ) {
 	}
 }
 
-static void RB_SurfaceDisplayList( srfDisplayList_t* surf ) {
-	// all apropriate state must be set in RB_BeginSurface
-	// this isn't implemented yet...
-	qglCallList( surf->listNum );
-}
-
 static void RB_SurfacePolyBuffer( srfPolyBuffer_t* surf ) {
 	RB_EndSurface();
 
@@ -1044,7 +1038,6 @@ void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* ) =
 	( void ( * )( void* ) )RB_MDM_SurfaceAnim,		// SF_MDM,
 	( void ( * )( void* ) )RB_SurfaceFlare,			// SF_FLARE,
 	( void ( * )( void* ) )RB_SurfaceEntity,		// SF_ENTITY
-	( void ( * )( void* ) )RB_SurfaceDisplayList,	// SF_DISPLAY_LIST
 	( void ( * )( void* ) )RB_SurfacePolyBuffer,	// SF_POLYBUFFER
 	( void ( * )( void* ) )RB_SurfaceDecal,			// SF_DECAL
 	( void ( * )( void* ) )R_DrawParticles,			// SF_PARTICLES,

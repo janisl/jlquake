@@ -43,7 +43,6 @@ enum surfaceType_t
 	SF_MDM,
 	SF_FLARE,
 	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_DISPLAY_LIST,
 	SF_POLYBUFFER,
 	SF_DECAL,				// ydnar: decal surfaces
 	SF_PARTICLES,
@@ -69,7 +68,6 @@ public:
 
 /* Pending:
 	SF_BAD,
-	SF_DISPLAY_LIST,
 	SF_DECAL,				// ydnar: decal surfaces
  */
 #endif
