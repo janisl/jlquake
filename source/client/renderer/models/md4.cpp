@@ -34,18 +34,21 @@ frame.
 #include "../../../common/endian.h"
 
 void R_FreeMd4( idRenderModel* mod ) {
+	for ( int i = 0; i < mod->q3_md4->numLODs; i++ ) {
+		delete[] mod->q3_md4Lods[ i ].surfaces;
+	}
+	delete[] mod->q3_md4Lods;
 	Mem_Free( mod->q3_md4 );
 }
 
 void R_AddAnimSurfaces( trRefEntity_t* ent ) {
-	md4Header_t* header = tr.currentModel->q3_md4;
-	md4LOD_t* lod = ( md4LOD_t* )( ( byte* )header + header->ofsLODs );
+	mmd4Lod_t* lod = tr.currentModel->q3_md4Lods;
 
-	md4Surface_t* surface = ( md4Surface_t* )( ( byte* )lod + lod->ofsSurfaces );
+	idSurfaceMD4* surface = lod->surfaces;
 	for ( int i = 0; i < lod->numSurfaces; i++ ) {
-		shader_t* shader = R_GetShaderByHandle( surface->shaderIndex );
-		R_AddDrawSurfOld( ( surfaceType_t* )surface, shader, 0	/*fogNum*/, false, 0, 0, 0 );
-		surface = ( md4Surface_t* )( ( byte* )surface + surface->ofsEnd );
+		shader_t* shader = R_GetShaderByHandle( ( ( md4Surface_t* )surface->data )->shaderIndex );
+		R_AddDrawSurf( surface, shader, 0	/*fogNum*/, false, 0, 0, 0 );
+		surface++;
 	}
 }
 

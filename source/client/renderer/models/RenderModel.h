@@ -21,7 +21,6 @@
 #include "../../../common/file_formats/bsp46.h"
 #include "../../../common/file_formats/md2.h"
 #include "../../../common/file_formats/md3.h"
-#include "../../../common/file_formats/md4.h"
 #include "../../../common/file_formats/mdc.h"
 #include "../../../common/file_formats/mds.h"
 #include "../../../common/file_formats/mdm.h"
@@ -36,6 +35,7 @@
 #include "../SurfaceSP2.h"
 #include "../SurfaceMD3.h"
 #include "../SurfaceMDC.h"
+#include "../SurfaceMD4.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -465,6 +465,11 @@ struct mdcLod_t {
 	idSurfaceMDC* surfaces;
 };
 
+struct mmd4Lod_t {
+	int numSurfaces;
+	idSurfaceMD4* surfaces;
+};
+
 //==============================================================================
 //
 //	Whole model
@@ -621,6 +626,7 @@ public:
 	mbrush46_model_t* q3_bmodel;			// only if type == MOD_BRUSH
 	md3Lod_t q3_md3[ MD3_MAX_LODS ];	// only if type == MOD_MESH
 	md4Header_t* q3_md4;				// only if type == MOD_MD4
+	mmd4Lod_t* q3_md4Lods;
 	mdsHeader_t* q3_mds;				// only if type == MOD_MDS
 	mdcLod_t q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC
 	mdmHeader_t* q3_mdm;				// only if type == MOD_MDM

@@ -97,6 +97,7 @@ idRenderModel::idRenderModel() {
 	q3_bmodel = NULL;
 	Com_Memset( q3_md3, 0, sizeof( q3_md3 ) );
 	q3_md4 = NULL;
+	q3_md4Lods = NULL;
 	q3_mds = NULL;
 	Com_Memset( q3_mdc, 0, sizeof( q3_mdc ) );
 	q3_mdm = NULL;

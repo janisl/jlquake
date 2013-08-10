@@ -71,8 +71,6 @@ public:
 	SF_BAD,
 	SF_SKYBOX_Q2,
 	SF_POLY,
-	SF_MD4,
-	SF_MDC,
 	SF_MDS,
 	SF_MDM,
 	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity

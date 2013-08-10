@@ -21,6 +21,9 @@
 #ifndef _MD4FILE_H
 #define _MD4FILE_H
 
+#include "../mathlib.h"
+#include "../files.h"
+
 #define MD4_IDENT           ( ( '4' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MD4_VERSION         1
 
