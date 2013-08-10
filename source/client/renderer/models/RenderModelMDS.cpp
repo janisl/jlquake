@@ -101,8 +101,10 @@ bool idRenderModelMDS::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 	}
 
 	// swap all the surfaces
+	q3_mdsSurfaces = new idSurfaceMDS[ mds->numSurfaces ];
 	mdsSurface_t* surf = ( mdsSurface_t* )( ( byte* )mds + mds->ofsSurfaces );
 	for ( int i = 0; i < mds->numSurfaces; i++ ) {
+		q3_mdsSurfaces[ i ].data = ( surface_base_t* )surf;
 		if ( LittleLong( 1 ) != 1 ) {
 			LL( surf->ident );
 			LL( surf->shaderIndex );

@@ -99,6 +99,7 @@ idRenderModel::idRenderModel() {
 	q3_md4 = NULL;
 	q3_md4Lods = NULL;
 	q3_mds = NULL;
+	q3_mdsSurfaces = NULL;
 	Com_Memset( q3_mdc, 0, sizeof( q3_mdc ) );
 	q3_mdm = NULL;
 	q3_mdx = NULL;
