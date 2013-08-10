@@ -279,13 +279,13 @@ void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts,
 			return;
 		}
 
-		srfPoly_t* poly = &backEndData[ tr.smpFrame ]->polys[ r_numpolys ];
-		poly->surfaceType = SF_POLY;
-		poly->hShader = hShader;
-		poly->numVerts = numVerts;
-		poly->verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numpolyverts ];
+		idSurfacePoly* poly = &backEndData[ tr.smpFrame ]->polys[ r_numpolys ];
+		poly->surf.surfaceType = SF_POLY;
+		poly->surf.hShader = hShader;
+		poly->surf.numVerts = numVerts;
+		poly->surf.verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numpolyverts ];
 
-		Com_Memcpy( poly->verts, &verts[ numVerts * j ], numVerts * sizeof ( *verts ) );
+		Com_Memcpy( poly->surf.verts, &verts[ numVerts * j ], numVerts * sizeof ( *verts ) );
 
 		// done.
 		r_numpolys++;
@@ -302,10 +302,10 @@ void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts,
 		} else {
 			// find which fog volume the poly is in
 			vec3_t bounds[ 2 ];
-			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 0 ] );
-			VectorCopy( poly->verts[ 0 ].xyz, bounds[ 1 ] );
-			for ( int i = 1; i < poly->numVerts; i++ ) {
-				AddPointToBounds( poly->verts[ i ].xyz, bounds[ 0 ], bounds[ 1 ] );
+			VectorCopy( poly->surf.verts[ 0 ].xyz, bounds[ 0 ] );
+			VectorCopy( poly->surf.verts[ 0 ].xyz, bounds[ 1 ] );
+			for ( int i = 1; i < poly->surf.numVerts; i++ ) {
+				AddPointToBounds( poly->surf.verts[ i ].xyz, bounds[ 0 ], bounds[ 1 ] );
 			}
 			for ( fogIndex = 1; fogIndex < tr.world->numfogs; fogIndex++ ) {
 				mbrush46_fog_t* fog = &tr.world->fogs[ fogIndex ];
@@ -322,7 +322,7 @@ void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts,
 				fogIndex = 0;
 			}
 		}
-		poly->fogIndex = fogIndex;
+		poly->surf.fogIndex = fogIndex;
 	}
 }
 
@@ -332,11 +332,11 @@ void R_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer ) {
 		return;
 	}
 
-	srfPolyBuffer_t* pPolySurf = &backEndData[ tr.smpFrame ]->polybuffers[ r_numpolybuffers ];
+	idSurfacePolyBuffer* pPolySurf = &backEndData[ tr.smpFrame ]->polybuffers[ r_numpolybuffers ];
 	r_numpolybuffers++;
 
-	pPolySurf->surfaceType = SF_POLYBUFFER;
-	pPolySurf->pPolyBuffer = pPolyBuffer;
+	pPolySurf->surf.surfaceType = SF_POLYBUFFER;
+	pPolySurf->surf.pPolyBuffer = pPolyBuffer;
 
 	vec3_t bounds[ 2 ];
 	VectorCopy( pPolyBuffer->xyz[ 0 ], bounds[ 0 ] );
@@ -360,7 +360,7 @@ void R_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer ) {
 		fogIndex = 0;
 	}
 
-	pPolySurf->fogIndex = fogIndex;
+	pPolySurf->surf.fogIndex = fogIndex;
 }
 
 void R_AddLightStyleToScene( int style, float r, float g, float b ) {

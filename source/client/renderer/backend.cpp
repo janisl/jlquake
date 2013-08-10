@@ -50,15 +50,15 @@ void R_InitBackEndData() {
 		max_polyverts = MAX_POLYVERTS;
 	}
 
-	byte* ptr = ( byte* )Mem_ClearedAlloc( sizeof ( *backEndData[ 0 ] ) + sizeof ( srfPoly_t ) * max_polys + sizeof ( polyVert_t ) * max_polyverts );
-	backEndData[ 0 ] = ( backEndData_t* )ptr;
-	backEndData[ 0 ]->polys = ( srfPoly_t* )( ( char* )ptr + sizeof ( *backEndData[ 0 ] ) );
-	backEndData[ 0 ]->polyVerts = ( polyVert_t* )( ( char* )ptr + sizeof ( *backEndData[ 0 ] ) + sizeof ( srfPoly_t ) * max_polys );
+	backEndData[ 0 ] = ( backEndData_t* )Mem_ClearedAlloc( sizeof ( *backEndData[ 0 ] ) );
+	backEndData[ 0 ]->polys = new idSurfacePoly[ max_polys ];
+	backEndData[ 0 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
+	backEndData[ 0 ]->polyVerts = ( polyVert_t* )Mem_ClearedAlloc( sizeof ( polyVert_t ) * max_polyverts );
 	if ( r_smp->integer ) {
-		ptr = ( byte* )Mem_ClearedAlloc( sizeof ( *backEndData[ 1 ] ) + sizeof ( srfPoly_t ) * max_polys + sizeof ( polyVert_t ) * max_polyverts );
-		backEndData[ 1 ] = ( backEndData_t* )ptr;
-		backEndData[ 1 ]->polys = ( srfPoly_t* )( ( char* )ptr + sizeof ( *backEndData[ 1 ] ) );
-		backEndData[ 1 ]->polyVerts = ( polyVert_t* )( ( char* )ptr + sizeof ( *backEndData[ 1 ] ) + sizeof ( srfPoly_t ) * max_polys );
+		backEndData[ 1 ] = ( backEndData_t* )Mem_ClearedAlloc( sizeof ( *backEndData[ 1 ] ) );
+		backEndData[ 1 ]->polys = new idSurfacePoly[ max_polys ];
+		backEndData[ 1 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
+		backEndData[ 1 ]->polyVerts = ( polyVert_t* )Mem_ClearedAlloc( sizeof ( polyVert_t ) * max_polyverts );
 	} else {
 		backEndData[ 1 ] = NULL;
 	}
@@ -66,10 +66,14 @@ void R_InitBackEndData() {
 }
 
 void R_FreeBackEndData() {
+	delete[] backEndData[ 0 ]->polys;
+	delete[] backEndData[ 0 ]->polybuffers;
 	Mem_Free( backEndData[ 0 ] );
 	backEndData[ 0 ] = NULL;
 
 	if ( backEndData[ 1 ] ) {
+		delete[] backEndData[ 1 ]->polys;
+		delete[] backEndData[ 1 ]->polybuffers;
 		Mem_Free( backEndData[ 1 ] );
 		backEndData[ 1 ] = NULL;
 	}

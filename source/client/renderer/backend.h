@@ -80,12 +80,12 @@ struct backEndData_t {
 	drawSurf_t drawSurfs[ MAX_DRAWSURFS ];
 	dlight_t dlights[ MAX_DLIGHTS ];
 	trRefEntity_t entities[ MAX_ENTITIES ];
-	srfPoly_t* polys;			//[MAX_POLYS];
+	idSurfacePoly* polys;			//[MAX_POLYS];
 	polyVert_t* polyVerts;			//[MAX_POLYVERTS];
 	lightstyle_t lightstyles[ MAX_LIGHTSTYLES ];
 	particle_t particles[ MAX_REF_PARTICLES ];
 	corona_t coronas[ MAX_CORONAS ];
-	srfPolyBuffer_t polybuffers[ MAX_POLYS ];
+	idSurfacePolyBuffer* polybuffers;
 	decalProjector_t decalProjectors[ MAX_DECAL_PROJECTORS ];
 	srfDecal_t decals[ MAX_DECALS ];
 	renderCommandList_t commands;

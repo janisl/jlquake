@@ -222,20 +222,6 @@ struct drawSurf_t {
 	surfaceType_t* surface;				// any of surface*_t
 };
 
-// when cgame directly specifies a polygon, it becomes a srfPoly_t
-// as soon as it is called
-struct srfPoly_t : surface_base_t {
-	qhandle_t hShader;
-	int fogIndex;
-	int numVerts;
-	polyVert_t* verts;
-};
-
-struct srfPolyBuffer_t : surface_base_t {
-	int fogIndex;
-	polyBuffer_t* pPolyBuffer;
-};
-
 struct srfDisplayList_t : surface_base_t {
 	int listNum;
 };

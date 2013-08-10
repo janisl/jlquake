@@ -69,9 +69,7 @@ public:
 
 /* Pending:
 	SF_BAD,
-	SF_POLY,
 	SF_DISPLAY_LIST,
-	SF_POLYBUFFER,
 	SF_DECAL,				// ydnar: decal surfaces
  */
 #endif

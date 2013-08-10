@@ -860,10 +860,10 @@ static void R_AddPolygonSurfaces() {
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-	srfPoly_t* poly = tr.refdef.polys;
+	idSurfacePoly* poly = tr.refdef.polys;
 	for ( int i = 0; i < tr.refdef.numPolys; i++, poly++ ) {
-		shader_t* sh = R_GetShaderByHandle( poly->hShader );
-		R_AddDrawSurfOld( ( surfaceType_t* )poly, sh, poly->fogIndex, false, 0, ATI_TESS_NONE, 0 );
+		shader_t* sh = R_GetShaderByHandle( poly->surf.hShader );
+		R_AddDrawSurf( poly, sh, poly->surf.fogIndex, false, 0, ATI_TESS_NONE, 0 );
 	}
 }
 
@@ -871,10 +871,10 @@ static void R_AddPolygonBufferSurfaces() {
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-	srfPolyBuffer_t* polybuffer = tr.refdef.polybuffers;
+	idSurfacePolyBuffer* polybuffer = tr.refdef.polybuffers;
 	for ( int i = 0; i < tr.refdef.numPolyBuffers; i++, polybuffer++ ) {
-		shader_t* sh = R_GetShaderByHandle( polybuffer->pPolyBuffer->shader );
-		R_AddDrawSurfOld( ( surfaceType_t* )polybuffer, sh, polybuffer->fogIndex, 0, 0, ATI_TESS_NONE, 0 );
+		shader_t* sh = R_GetShaderByHandle( polybuffer->surf.pPolyBuffer->shader );
+		R_AddDrawSurf( polybuffer, sh, polybuffer->surf.fogIndex, 0, 0, ATI_TESS_NONE, 0 );
 	}
 }
 

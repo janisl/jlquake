@@ -18,6 +18,8 @@
 #define _R_MAIN_H
 
 #include "models/model.h"
+#include "SurfacePoly.h"
+#include "SurfacePolyBuffer.h"
 
 struct skin_t;
 
@@ -177,7 +179,7 @@ struct trRefdef_t {
 	int dlightBits;					// ydnar: optimization
 
 	int numPolys;
-	srfPoly_t* polys;
+	idSurfacePoly* polys;
 
 	int numDrawSurfs;
 	drawSurf_t* drawSurfs;
@@ -192,7 +194,7 @@ struct trRefdef_t {
 	corona_t* coronas;
 
 	int numPolyBuffers;
-	srfPolyBuffer_t* polybuffers;
+	idSurfacePolyBuffer* polybuffers;
 
 	int decalBits;					// ydnar: optimization
 	int numDecalProjectors;
