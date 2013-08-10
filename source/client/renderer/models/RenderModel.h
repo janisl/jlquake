@@ -34,6 +34,7 @@
 #include "../SurfaceSPR.h"
 #include "../SurfaceMD2.h"
 #include "../SurfaceSP2.h"
+#include "../SurfaceMD3.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -453,6 +454,11 @@ struct world_t {
 
 #define H2EF_FACE_VIEW      65536		// Poly Model always faces you
 
+struct md3Lod_t {
+	md3Header_t* header;
+	idSurfaceMD3* surfaces;
+};
+
 //==============================================================================
 //
 //	Whole model
@@ -607,7 +613,7 @@ public:
 
 	int q3_dataSize;					// just for listing purposes
 	mbrush46_model_t* q3_bmodel;			// only if type == MOD_BRUSH
-	md3Header_t* q3_md3[ MD3_MAX_LODS ];	// only if type == MOD_MESH
+	md3Lod_t q3_md3[ MD3_MAX_LODS ];	// only if type == MOD_MESH
 	md4Header_t* q3_md4;				// only if type == MOD_MD4
 	mdsHeader_t* q3_mds;				// only if type == MOD_MDS
 	mdcHeader_t* q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC

@@ -41,21 +41,21 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 	mod->type = MOD_MESH3;
 	int size = LittleLong( pinmodel->ofsEnd );
 	mod->q3_dataSize += size;
-	mod->q3_md3[ lod ] = ( md3Header_t* )Mem_Alloc( size );
+	mod->q3_md3[ lod ].header = ( md3Header_t* )Mem_Alloc( size );
 
-	Com_Memcpy( mod->q3_md3[ lod ], buffer, LittleLong( pinmodel->ofsEnd ) );
+	Com_Memcpy( mod->q3_md3[ lod ].header, buffer, LittleLong( pinmodel->ofsEnd ) );
 
-	LL( mod->q3_md3[ lod ]->ident );
-	LL( mod->q3_md3[ lod ]->version );
-	LL( mod->q3_md3[ lod ]->numFrames );
-	LL( mod->q3_md3[ lod ]->numTags );
-	LL( mod->q3_md3[ lod ]->numSurfaces );
-	LL( mod->q3_md3[ lod ]->ofsFrames );
-	LL( mod->q3_md3[ lod ]->ofsTags );
-	LL( mod->q3_md3[ lod ]->ofsSurfaces );
-	LL( mod->q3_md3[ lod ]->ofsEnd );
+	LL( mod->q3_md3[ lod ].header->ident );
+	LL( mod->q3_md3[ lod ].header->version );
+	LL( mod->q3_md3[ lod ].header->numFrames );
+	LL( mod->q3_md3[ lod ].header->numTags );
+	LL( mod->q3_md3[ lod ].header->numSurfaces );
+	LL( mod->q3_md3[ lod ].header->ofsFrames );
+	LL( mod->q3_md3[ lod ].header->ofsTags );
+	LL( mod->q3_md3[ lod ].header->ofsSurfaces );
+	LL( mod->q3_md3[ lod ].header->ofsEnd );
 
-	if ( mod->q3_md3[ lod ]->numFrames < 1 ) {
+	if ( mod->q3_md3[ lod ].header->numFrames < 1 ) {
 		common->Printf( S_COLOR_YELLOW "R_LoadMD3: %s has no frames\n", mod_name );
 		return false;
 	}
@@ -67,8 +67,8 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 	}
 
 	// swap all the frames
-	md3Frame_t* frame = ( md3Frame_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsFrames );
-	for ( int i = 0; i < mod->q3_md3[ lod ]->numFrames; i++, frame++ ) {
+	md3Frame_t* frame = ( md3Frame_t* )( ( byte* )mod->q3_md3[ lod ].header + mod->q3_md3[ lod ].header->ofsFrames );
+	for ( int i = 0; i < mod->q3_md3[ lod ].header->numFrames; i++, frame++ ) {
 		frame->radius = LittleFloat( frame->radius );
 		if ( fixRadius ) {
 			frame->radius = 256;
@@ -96,8 +96,8 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 	}
 
 	// swap all the tags
-	md3Tag_t* tag = ( md3Tag_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsTags );
-	for ( int i = 0; i < mod->q3_md3[ lod ]->numTags * mod->q3_md3[ lod ]->numFrames; i++, tag++ ) {
+	md3Tag_t* tag = ( md3Tag_t* )( ( byte* )mod->q3_md3[ lod ].header + mod->q3_md3[ lod ].header->ofsTags );
+	for ( int i = 0; i < mod->q3_md3[ lod ].header->numTags * mod->q3_md3[ lod ].header->numFrames; i++, tag++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			tag->origin[ j ] = LittleFloat( tag->origin[ j ] );
 			tag->axis[ 0 ][ j ] = LittleFloat( tag->axis[ 0 ][ j ] );
@@ -107,8 +107,10 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 	}
 
 	// swap all the surfaces
-	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ] + mod->q3_md3[ lod ]->ofsSurfaces );
-	for ( int i = 0; i < mod->q3_md3[ lod ]->numSurfaces; i++ ) {
+	mod->q3_md3[ lod ].surfaces = new idSurfaceMD3[ mod->q3_md3[ lod ].header->numSurfaces ];
+	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ].header + mod->q3_md3[ lod ].header->ofsSurfaces );
+	for ( int i = 0; i < mod->q3_md3[ lod ].header->numSurfaces; i++ ) {
+		mod->q3_md3[ lod ].surfaces[ i ].data = ( surface_base_t* )surf;
 		LL( surf->ident );
 		LL( surf->flags );
 		LL( surf->numFrames );

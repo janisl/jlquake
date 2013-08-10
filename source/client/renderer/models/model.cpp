@@ -454,7 +454,7 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 
 	case MOD_MESH3:
 	{
-		md3Header_t* header = model->q3_md3[ 0 ];
+		md3Header_t* header = model->q3_md3[ 0 ].header;
 
 		md3Frame_t* frame = ( md3Frame_t* )( ( byte* )header + header->ofsFrames );
 
@@ -496,7 +496,7 @@ int R_ModelNumFrames( qhandle_t Handle ) {
 		return 1;
 
 	case MOD_MESH3:
-		return Model->q3_md3[ 0 ]->numFrames;
+		return Model->q3_md3[ 0 ].header->numFrames;
 
 	case MOD_MD4:
 		return Model->q3_md4->numFrames;
@@ -589,14 +589,14 @@ bool R_LerpTag( orientation_t* tag, qhandle_t handle, int startFrame, int endFra
 	float frontLerp, backLerp;
 
 	idRenderModel* model = R_GetModelByHandle( handle );
-	if ( !model->q3_md3[ 0 ] ) {
+	if ( !model->q3_md3[ 0 ].header ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
 		return false;
 	}
 
-	md3Tag_t* start = R_GetTag( model->q3_md3[ 0 ], startFrame, tagName );
-	md3Tag_t* end = R_GetTag( model->q3_md3[ 0 ], endFrame, tagName );
+	md3Tag_t* start = R_GetTag( model->q3_md3[ 0 ].header, startFrame, tagName );
+	md3Tag_t* end = R_GetTag( model->q3_md3[ 0 ].header, endFrame, tagName );
 	if ( !start || !end ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
@@ -678,7 +678,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 	float frac = 1.0 - refent->backlerp;
 
 	idRenderModel* model = R_GetModelByHandle( handle );
-	if ( !model->q3_md3[ 0 ] && !model->q3_mdc[ 0 ] && !model->q3_mds && !model->q3_mdm ) {
+	if ( !model->q3_md3[ 0 ].header && !model->q3_mdc[ 0 ] && !model->q3_mds && !model->q3_mdm ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
 		return -1;
@@ -693,8 +693,8 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 	md3Tag_t ustart, uend;
 	if ( model->type == MOD_MESH3 ) {
 		// old MD3 style
-		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ], startFrame, tagName, startIndex, &start );
-		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ], endFrame, tagName, startIndex, &end );
+		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ].header, startFrame, tagName, startIndex, &start );
+		retval = R_GetTag( ( byte* )model->q3_md3[ 0 ].header, endFrame, tagName, startIndex, &end );
 
 	} else if ( model->type == MOD_MDS ) {
 		// use bone lerping
@@ -789,7 +789,7 @@ void R_Modellist_f() {
 		case MOD_MESH3:
 			DataSize = mod->q3_dataSize;
 			for ( int j = 1; j < MD3_MAX_LODS; j++ ) {
-				if ( mod->q3_md3[ j ] && mod->q3_md3[ j ] != mod->q3_md3[ j - 1 ] ) {
+				if ( mod->q3_md3[ j ].header && mod->q3_md3[ j ].header != mod->q3_md3[ j - 1 ].header ) {
 					lods++;
 				}
 			}
