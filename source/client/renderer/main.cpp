@@ -28,6 +28,7 @@
 #include "../../common/strings.h"
 #include "../../common/content_types.h"
 #include "SurfaceEntity.h"
+#include "SurfaceParticles.h"
 
 struct sortedent_t {
 	trRefEntity_t* ent;
@@ -65,8 +66,6 @@ bool fogIsOn = false;
 
 static sortedent_t cl_transvisedicts[ MAX_ENTITIES ];
 static sortedent_t cl_transwateredicts[ MAX_ENTITIES ];
-
-static surfaceType_t particlesSurface = SF_PARTICLES;
 
 void myGlMultMatrix( const float* a, const float* b, float* out ) {
 	for ( int i = 0; i < 4; i++ ) {
@@ -926,7 +925,7 @@ static void R_GenerateDrawSurfs() {
 	R_AddPolygonBufferSurfaces();
 
 	if ( !( GGameType & GAME_Tech3 ) ) {
-		R_AddDrawSurfOld( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
+		R_AddDrawSurf( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
 	}
 
 	int forcedSortIndex = 3;

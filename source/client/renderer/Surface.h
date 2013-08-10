@@ -73,6 +73,5 @@ public:
 	SF_DISPLAY_LIST,
 	SF_POLYBUFFER,
 	SF_DECAL,				// ydnar: decal surfaces
-	SF_PARTICLES,
  */
 #endif
