@@ -41,32 +41,32 @@ static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char*
 	mod->type = MOD_MDC;
 	int size = LittleLong( pinmodel->ofsEnd );
 	mod->q3_dataSize += size;
-	mod->q3_mdc[ lod ] = ( mdcHeader_t* )Mem_Alloc( size );
+	mod->q3_mdc[ lod ].header = ( mdcHeader_t* )Mem_Alloc( size );
 
-	memcpy( mod->q3_mdc[ lod ], buffer, LittleLong( pinmodel->ofsEnd ) );
+	memcpy( mod->q3_mdc[ lod ].header, buffer, LittleLong( pinmodel->ofsEnd ) );
 
-	LL( mod->q3_mdc[ lod ]->ident );
-	LL( mod->q3_mdc[ lod ]->version );
-	LL( mod->q3_mdc[ lod ]->numFrames );
-	LL( mod->q3_mdc[ lod ]->numTags );
-	LL( mod->q3_mdc[ lod ]->numSurfaces );
-	LL( mod->q3_mdc[ lod ]->ofsFrames );
-	LL( mod->q3_mdc[ lod ]->ofsTagNames );
-	LL( mod->q3_mdc[ lod ]->ofsTags );
-	LL( mod->q3_mdc[ lod ]->ofsSurfaces );
-	LL( mod->q3_mdc[ lod ]->ofsEnd );
-	LL( mod->q3_mdc[ lod ]->flags );
-	LL( mod->q3_mdc[ lod ]->numSkins );
+	LL( mod->q3_mdc[ lod ].header->ident );
+	LL( mod->q3_mdc[ lod ].header->version );
+	LL( mod->q3_mdc[ lod ].header->numFrames );
+	LL( mod->q3_mdc[ lod ].header->numTags );
+	LL( mod->q3_mdc[ lod ].header->numSurfaces );
+	LL( mod->q3_mdc[ lod ].header->ofsFrames );
+	LL( mod->q3_mdc[ lod ].header->ofsTagNames );
+	LL( mod->q3_mdc[ lod ].header->ofsTags );
+	LL( mod->q3_mdc[ lod ].header->ofsSurfaces );
+	LL( mod->q3_mdc[ lod ].header->ofsEnd );
+	LL( mod->q3_mdc[ lod ].header->flags );
+	LL( mod->q3_mdc[ lod ].header->numSkins );
 
 
-	if ( mod->q3_mdc[ lod ]->numFrames < 1 ) {
+	if ( mod->q3_mdc[ lod ].header->numFrames < 1 ) {
 		common->Printf( S_COLOR_YELLOW "R_LoadMdcLod: %s has no frames\n", mod_name );
 		return false;
 	}
 
 	// swap all the frames
-	md3Frame_t* frame = ( md3Frame_t* )( ( byte* )mod->q3_mdc[ lod ] + mod->q3_mdc[ lod ]->ofsFrames );
-	for ( int i = 0; i < mod->q3_mdc[ lod ]->numFrames; i++, frame++ ) {
+	md3Frame_t* frame = ( md3Frame_t* )( ( byte* )mod->q3_mdc[ lod ].header + mod->q3_mdc[ lod ].header->ofsFrames );
+	for ( int i = 0; i < mod->q3_mdc[ lod ].header->numFrames; i++, frame++ ) {
 		frame->radius = LittleFloat( frame->radius );
 		if ( strstr( mod->name, "sherman" ) || strstr( mod->name, "mg42" ) ) {
 			frame->radius = 256;
@@ -85,9 +85,9 @@ static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char*
 	}
 
 	// swap all the tags
-	mdcTag_t* tag = ( mdcTag_t* )( ( byte* )mod->q3_mdc[ lod ] + mod->q3_mdc[ lod ]->ofsTags );
+	mdcTag_t* tag = ( mdcTag_t* )( ( byte* )mod->q3_mdc[ lod ].header + mod->q3_mdc[ lod ].header->ofsTags );
 	if ( LittleLong( 1 ) != 1 ) {
-		for ( int i = 0; i < mod->q3_mdc[ lod ]->numTags * mod->q3_mdc[ lod ]->numFrames; i++, tag++ ) {
+		for ( int i = 0; i < mod->q3_mdc[ lod ].header->numTags * mod->q3_mdc[ lod ].header->numFrames; i++, tag++ ) {
 			for ( int j = 0; j < 3; j++ ) {
 				tag->xyz[ j ] = LittleShort( tag->xyz[ j ] );
 				tag->angles[ j ] = LittleShort( tag->angles[ j ] );
@@ -96,8 +96,10 @@ static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char*
 	}
 
 	// swap all the surfaces
-	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ] + mod->q3_mdc[ lod ]->ofsSurfaces );
-	for ( int i = 0; i < mod->q3_mdc[ lod ]->numSurfaces; i++ ) {
+	mod->q3_mdc[ lod ].surfaces = new idSurfaceMDC[ mod->q3_mdc[ lod ].header->numSurfaces ];
+	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ].header + mod->q3_mdc[ lod ].header->ofsSurfaces );
+	for ( int i = 0; i < mod->q3_mdc[ lod ].header->numSurfaces; i++ ) {
+		mod->q3_mdc[ lod ].surfaces[ i ].data = ( surface_base_t* )surf;
 
 		LL( surf->ident );
 		LL( surf->flags );
@@ -186,13 +188,13 @@ static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char*
 
 			// swap the frameBaseFrames
 			short* ps = ( short* )( ( byte* )surf + surf->ofsFrameBaseFrames );
-			for ( j = 0; j < mod->q3_mdc[ lod ]->numFrames; j++, ps++ ) {
+			for ( j = 0; j < mod->q3_mdc[ lod ].header->numFrames; j++, ps++ ) {
 				*ps = LittleShort( *ps );
 			}
 
 			// swap the frameCompFrames
 			ps = ( short* )( ( byte* )surf + surf->ofsFrameCompFrames );
-			for ( j = 0; j < mod->q3_mdc[ lod ]->numFrames; j++, ps++ ) {
+			for ( j = 0; j < mod->q3_mdc[ lod ].header->numFrames; j++, ps++ ) {
 				*ps = LittleShort( *ps );
 			}
 		}

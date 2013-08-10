@@ -465,7 +465,7 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 
 	case MOD_MDC:
 	{
-		md3Frame_t* frame = ( md3Frame_t* )( ( byte* )model->q3_mdc[ 0 ] + model->q3_mdc[ 0 ]->ofsFrames );
+		md3Frame_t* frame = ( md3Frame_t* )( ( byte* )model->q3_mdc[ 0 ].header + model->q3_mdc[ 0 ].header->ofsFrames );
 
 		VectorCopy( frame->bounds[ 0 ], mins );
 		VectorCopy( frame->bounds[ 1 ], maxs );
@@ -502,7 +502,7 @@ int R_ModelNumFrames( qhandle_t Handle ) {
 		return Model->q3_md4->numFrames;
 
 	case MOD_MDC:
-		return Model->q3_mdc[ 0 ]->numFrames;
+		return Model->q3_mdc[ 0 ].header->numFrames;
 
 	case MOD_MDS:
 		return Model->q3_mds->numFrames;
@@ -678,7 +678,7 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 	float frac = 1.0 - refent->backlerp;
 
 	idRenderModel* model = R_GetModelByHandle( handle );
-	if ( !model->q3_md3[ 0 ].header && !model->q3_mdc[ 0 ] && !model->q3_mds && !model->q3_mdm ) {
+	if ( !model->q3_md3[ 0 ].header && !model->q3_mdc[ 0 ].header && !model->q3_mds && !model->q3_mdm ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
 		return -1;
@@ -721,8 +721,8 @@ int R_LerpTag( orientation_t* tag, const refEntity_t* refent, const char* tagNam
 		mdcTag_t* cstart;
 		mdcTag_t* cend;
 
-		retval = R_GetMDCTag( ( byte* )model->q3_mdc[ 0 ], startFrame, tagName, startIndex, &cstart );
-		retval = R_GetMDCTag( ( byte* )model->q3_mdc[ 0 ], endFrame, tagName, startIndex, &cend );
+		retval = R_GetMDCTag( ( byte* )model->q3_mdc[ 0 ].header, startFrame, tagName, startIndex, &cstart );
+		retval = R_GetMDCTag( ( byte* )model->q3_mdc[ 0 ].header, endFrame, tagName, startIndex, &cend );
 
 		// uncompress the MDC tags into MD3 style tags
 		if ( cstart && cend ) {
@@ -798,7 +798,7 @@ void R_Modellist_f() {
 		case MOD_MDC:
 			DataSize = mod->q3_dataSize;
 			for ( int j = 1; j < MD3_MAX_LODS; j++ ) {
-				if ( mod->q3_mdc[ j ] && mod->q3_mdc[ j ] != mod->q3_mdc[ j - 1 ] ) {
+				if ( mod->q3_mdc[ j ].header && mod->q3_mdc[ j ].header != mod->q3_mdc[ j - 1 ].header ) {
 					lods++;
 				}
 			}

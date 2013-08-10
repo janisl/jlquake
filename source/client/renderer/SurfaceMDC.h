@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
-#ifndef __idSurfaceMD3__
-#define __idSurfaceMD3__
+#ifndef __idSurfaceMDC__
+#define __idSurfaceMDC__
 
 #include "Surface.h"
 
-class idSurfaceMD3 : public idSurface {
+class idSurfaceMDC : public idSurface {
 public:
 };
 

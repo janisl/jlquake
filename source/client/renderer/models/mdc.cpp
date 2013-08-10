@@ -46,18 +46,20 @@ static float r_anormals[ NUMMDCVERTEXNORMALS ][ 3 ] =
 };
 
 void R_FreeMdc( idRenderModel* mod ) {
-	Mem_Free( mod->q3_mdc[ 0 ] );
+	Mem_Free( mod->q3_mdc[ 0 ].header );
+	delete[] mod->q3_mdc[ 0 ].surfaces;
 	for ( int lod = 1; lod < MD3_MAX_LODS; lod++ ) {
-		if ( mod->q3_mdc[ lod ] != mod->q3_mdc[ lod - 1 ] ) {
-			Mem_Free( mod->q3_mdc[ lod ] );
+		if ( mod->q3_mdc[ lod ].header != mod->q3_mdc[ lod - 1 ].header ) {
+			Mem_Free( mod->q3_mdc[ lod ].header );
+			delete[] mod->q3_mdc[ lod ].surfaces;
 		}
 	}
 }
 
 void R_RegisterMdcShaders( idRenderModel* mod, int lod ) {
 	// swap all the surfaces
-	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ] + mod->q3_mdc[ lod ]->ofsSurfaces );
-	for ( int i = 0; i < mod->q3_mdc[ lod ]->numSurfaces; i++ ) {
+	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ].header + mod->q3_mdc[ lod ].header->ofsSurfaces );
+	for ( int i = 0; i < mod->q3_mdc[ lod ].header->numSurfaces; i++ ) {
 		// register the shaders
 		md3Shader_t* shader = ( md3Shader_t* )( ( byte* )surf + surf->ofsShaders );
 		for ( int j = 0; j < surf->numShaders; j++, shader++ ) {
@@ -196,7 +198,7 @@ static int R_ComputeLOD( trRefEntity_t* ent ) {
 			return ( tr.currentModel->q3_numLods - 1 );
 		}
 
-		md3Frame_t* frame = ( md3Frame_t* )( ( ( unsigned char* )tr.currentModel->q3_mdc[ 0 ] ) + tr.currentModel->q3_mdc[ 0 ]->ofsFrames );
+		md3Frame_t* frame = ( md3Frame_t* )( ( ( unsigned char* )tr.currentModel->q3_mdc[ 0 ].header ) + tr.currentModel->q3_mdc[ 0 ].header->ofsFrames );
 
 		frame += ent->e.frame;
 
@@ -279,8 +281,8 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 	bool personalModel = ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal;
 
 	if ( ent->e.renderfx & RF_WRAP_FRAMES ) {
-		ent->e.frame %= tr.currentModel->q3_mdc[ 0 ]->numFrames;
-		ent->e.oldframe %= tr.currentModel->q3_mdc[ 0 ]->numFrames;
+		ent->e.frame %= tr.currentModel->q3_mdc[ 0 ].header->numFrames;
+		ent->e.oldframe %= tr.currentModel->q3_mdc[ 0 ].header->numFrames;
 	}
 
 	//
@@ -289,9 +291,9 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	//
-	if ( ( ent->e.frame >= tr.currentModel->q3_mdc[ 0 ]->numFrames ) ||
+	if ( ( ent->e.frame >= tr.currentModel->q3_mdc[ 0 ].header->numFrames ) ||
 		 ( ent->e.frame < 0 ) ||
-		 ( ent->e.oldframe >= tr.currentModel->q3_mdc[ 0 ]->numFrames ) ||
+		 ( ent->e.oldframe >= tr.currentModel->q3_mdc[ 0 ].header->numFrames ) ||
 		 ( ent->e.oldframe < 0 ) ) {
 		common->DPrintf( S_COLOR_RED "R_AddMDCSurfaces: no such frame %d to %d for '%s'\n",
 			ent->e.oldframe, ent->e.frame, tr.currentModel->name );
@@ -304,7 +306,7 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 	//
 	int lod = ent->e.renderfx & RF_FORCENOLOD ? 0 : R_ComputeLOD( ent );
 
-	mdcHeader_t* header = tr.currentModel->q3_mdc[ lod ];
+	mdcHeader_t* header = tr.currentModel->q3_mdc[ lod ].header;
 
 	//
 	// cull the entire model if merged bounding box of both frames
@@ -330,15 +332,15 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 	//
 	// draw all surfaces
 	//
-	mdcSurface_t* surface = ( mdcSurface_t* )( ( byte* )header + header->ofsSurfaces );
 	for ( int i = 0; i < header->numSurfaces; i++ ) {
+		idSurfaceMDC* surface = &tr.currentModel->q3_mdc[ lod ].surfaces[ i ];
+		mdcSurface_t* surfaceData = ( mdcSurface_t* )surface->data;
 		//	blink will change to be an overlay rather than replacing the head texture.
 		// think of it like batman's mask.  the polygons that have eye texture are duplicated
 		// and the 'lids' rendered with polygonoffset over the top of the open eyes.  this gives
 		// minimal overdraw/alpha blending/texture use without breaking the model and causing seams
-		if ( GGameType & GAME_WolfSP && !String::ICmp( surface->name, "h_blink" ) ) {
+		if ( GGameType & GAME_WolfSP && !String::ICmp( surfaceData->name, "h_blink" ) ) {
 			if ( !( ent->e.renderfx & RF_BLINK ) ) {
-				surface = ( mdcSurface_t* )( ( byte* )surface + surface->ofsEnd );
 				continue;
 			}
 		}
@@ -353,7 +355,7 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 			shader = tr.defaultShader;
 			//----(SA)	added blink
 			if ( GGameType & ( GAME_WolfMP | GAME_ET ) && ent->e.renderfx & RF_BLINK ) {
-				const char* s = va( "%s_b", surface->name );	// append '_b' for 'blink'
+				const char* s = va( "%s_b", surfaceData->name );	// append '_b' for 'blink'
 				int hash = Com_HashKey( s, String::Length( s ) );
 				for ( int j = 0; j < skin->numSurfaces; j++ ) {
 					if ( GGameType & GAME_ET && hash != skin->surfaces[ j ]->hash ) {
@@ -367,23 +369,23 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 			}
 
 			if ( shader == tr.defaultShader ) {			// blink reference in skin was not found
-				int hash = Com_HashKey( surface->name, sizeof ( surface->name ) );
+				int hash = Com_HashKey( surfaceData->name, sizeof ( surfaceData->name ) );
 				for ( int j = 0; j < skin->numSurfaces; j++ ) {
 					// the names have both been lowercased
 					if ( GGameType & GAME_ET && hash != skin->surfaces[ j ]->hash ) {
 						continue;
 					}
-					if ( !String::Cmp( skin->surfaces[ j ]->name, surface->name ) ) {
+					if ( !String::Cmp( skin->surfaces[ j ]->name, surfaceData->name ) ) {
 						shader = skin->surfaces[ j ]->shader;
 						break;
 					}
 				}
 			}
-		} else if ( surface->numShaders <= 0 ) {
+		} else if ( surfaceData->numShaders <= 0 ) {
 			shader = tr.defaultShader;
 		} else {
-			md3Shader_t* md3Shader = ( md3Shader_t* )( ( byte* )surface + surface->ofsShaders );
-			md3Shader += ent->e.skinNum % surface->numShaders;
+			md3Shader_t* md3Shader = ( md3Shader_t* )( ( byte* ) surfaceData + surfaceData->ofsShaders );
+			md3Shader += ent->e.skinNum % surfaceData->numShaders;
 			shader = tr.shaders[ md3Shader->shaderIndex ];
 		}
 
@@ -396,7 +398,7 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 			 !( ent->e.renderfx & ( RF_NOSHADOW | RF_DEPTHHACK ) ) &&
 			 shader->sort == SS_OPAQUE ) {
 			// GR - tessellate according to model capabilities
-			R_AddDrawSurfOld( ( surfaceType_t* )surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess, 0 );
+			R_AddDrawSurf( surface, tr.shadowShader, 0, false, 0, tr.currentModel->q3_ATI_tess, 0 );
 		}
 
 		// projection shadows work fine with personal models
@@ -405,21 +407,19 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 			 fogNum == 0 &&
 			 ( ent->e.renderfx & RF_SHADOW_PLANE ) &&
 			 shader->sort == SS_OPAQUE ) {
-			R_AddDrawSurfOld( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, false, 0, 0, 0 );
+			R_AddDrawSurf( surface, tr.projectionShadowShader, 0, false, 0, 0, 0 );
 		}
 
 		//----(SA)	for testing polygon shadows (on /all/ models)
 		if ( GGameType & ( GAME_WolfMP | GAME_ET ) && r_shadows->integer == 4 ) {
-			R_AddDrawSurfOld( ( surfaceType_t* )surface, tr.projectionShadowShader, 0, false, 0, 0, 0 );
+			R_AddDrawSurf( surface, tr.projectionShadowShader, 0, false, 0, 0, 0 );
 		}
 
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
 			// GR - tessellate according to model capabilities
-			R_AddDrawSurfOld( ( surfaceType_t* )surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess, 0 );
+			R_AddDrawSurf( surface, shader, fogNum, false, 0, tr.currentModel->q3_ATI_tess, 0 );
 		}
-
-		surface = ( mdcSurface_t* )( ( byte* )surface + surface->ofsEnd );
 	}
 }
 

@@ -35,6 +35,7 @@
 #include "../SurfaceMD2.h"
 #include "../SurfaceSP2.h"
 #include "../SurfaceMD3.h"
+#include "../SurfaceMDC.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -459,6 +460,11 @@ struct md3Lod_t {
 	idSurfaceMD3* surfaces;
 };
 
+struct mdcLod_t {
+	mdcHeader_t* header;
+	idSurfaceMDC* surfaces;
+};
+
 //==============================================================================
 //
 //	Whole model
@@ -616,7 +622,7 @@ public:
 	md3Lod_t q3_md3[ MD3_MAX_LODS ];	// only if type == MOD_MESH
 	md4Header_t* q3_md4;				// only if type == MOD_MD4
 	mdsHeader_t* q3_mds;				// only if type == MOD_MDS
-	mdcHeader_t* q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC
+	mdcLod_t q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC
 	mdmHeader_t* q3_mdm;				// only if type == MOD_MDM
 	mdxHeader_t* q3_mdx;				// only if type == MOD_MDX
 

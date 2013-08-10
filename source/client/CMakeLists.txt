@@ -158,6 +158,7 @@ set(CLIENT_FILES
 	renderer/SurfaceGrid.cpp
 	renderer/SurfaceMD2.cpp
 	renderer/SurfaceMD3.cpp
+	renderer/SurfaceMDC.cpp
 	renderer/SurfaceMDL.cpp
 	renderer/SurfaceSkip.cpp
 	renderer/SurfaceSP2.cpp
