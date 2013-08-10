@@ -20,6 +20,7 @@
 #include "models/model.h"
 #include "SurfacePoly.h"
 #include "SurfacePolyBuffer.h"
+#include "SurfaceDecal.h"
 
 struct skin_t;
 
@@ -201,7 +202,7 @@ struct trRefdef_t {
 	decalProjector_t* decalProjectors;
 
 	int numDecals;
-	srfDecal_t* decals;
+	idSurfaceDecal* decals;
 };
 
 struct frontEndCounters_t {
@@ -363,7 +364,6 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 int R_CullLocalBox( vec3_t bounds[ 2 ] );
 int R_CullPointAndRadius( vec3_t origin, float radius );
 int R_CullLocalPointAndRadius( vec3_t origin, float radius );
-void R_AddDrawSurfOld( surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap, int frontFace, int atiTess, int forcedSortIndex );
 void R_AddDrawSurf( idSurface* surface, shader_t* shader, int fogIndex, int dlightMap, int frontFace, int atiTess, int forcedSortIndex );
 void R_RenderView( viewParms_t* parms );
 

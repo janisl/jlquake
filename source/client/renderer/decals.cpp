@@ -713,13 +713,13 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	}
 
 	//	get decal surface
-	srfDecal_t* srf = &tr.refdef.decals[ tr.refdef.numDecals ];
+	idSurfaceDecal* srf = &tr.refdef.decals[ tr.refdef.numDecals ];
 	tr.refdef.numDecals++;
 
 	//	set it up
-	srf->surfaceType = SF_DECAL;
-	srf->numVerts = decal->numVerts;
-	Com_Memcpy( srf->verts, decal->verts, srf->numVerts * sizeof ( *srf->verts ) );
+	srf->surf.surfaceType = SF_DECAL;
+	srf->surf.numVerts = decal->numVerts;
+	Com_Memcpy( srf->surf.verts, decal->verts, srf->surf.numVerts * sizeof ( *srf->surf.verts ) );
 
 	//	fade colors
 	if ( decal->fadeStartTime < tr.refdef.time && decal->fadeStartTime < decal->fadeEndTime ) {
@@ -743,7 +743,7 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	}
 
 	//	add surface to scene
-	R_AddDrawSurfOld( ( surfaceType_t* )srf, decal->shader, decal->fogIndex, dlightMap, 0, 0, 0 );
+	R_AddDrawSurf( srf, decal->shader, decal->fogIndex, dlightMap, 0, 0, 0 );
 	tr.pc.c_decalSurfaces++;
 
 	//	free temporary decal

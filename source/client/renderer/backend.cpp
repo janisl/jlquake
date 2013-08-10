@@ -52,13 +52,15 @@ void R_InitBackEndData() {
 
 	backEndData[ 0 ] = ( backEndData_t* )Mem_ClearedAlloc( sizeof ( *backEndData[ 0 ] ) );
 	backEndData[ 0 ]->polys = new idSurfacePoly[ max_polys ];
-	backEndData[ 0 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
 	backEndData[ 0 ]->polyVerts = ( polyVert_t* )Mem_ClearedAlloc( sizeof ( polyVert_t ) * max_polyverts );
+	backEndData[ 0 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
+	backEndData[ 0 ]->decals = new idSurfaceDecal[ MAX_DECALS ];
 	if ( r_smp->integer ) {
 		backEndData[ 1 ] = ( backEndData_t* )Mem_ClearedAlloc( sizeof ( *backEndData[ 1 ] ) );
 		backEndData[ 1 ]->polys = new idSurfacePoly[ max_polys ];
-		backEndData[ 1 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
 		backEndData[ 1 ]->polyVerts = ( polyVert_t* )Mem_ClearedAlloc( sizeof ( polyVert_t ) * max_polyverts );
+		backEndData[ 1 ]->polybuffers = new idSurfacePolyBuffer[ MAX_POLYS ];
+		backEndData[ 1 ]->decals = new idSurfaceDecal[ MAX_DECALS ];
 	} else {
 		backEndData[ 1 ] = NULL;
 	}
@@ -67,13 +69,17 @@ void R_InitBackEndData() {
 
 void R_FreeBackEndData() {
 	delete[] backEndData[ 0 ]->polys;
+	Mem_Free( backEndData[ 0 ]->polyVerts );
 	delete[] backEndData[ 0 ]->polybuffers;
+	delete[] backEndData[ 0 ]->decals;
 	Mem_Free( backEndData[ 0 ] );
 	backEndData[ 0 ] = NULL;
 
 	if ( backEndData[ 1 ] ) {
 		delete[] backEndData[ 1 ]->polys;
+		Mem_Free( backEndData[ 1 ]->polyVerts );
 		delete[] backEndData[ 1 ]->polybuffers;
+		delete[] backEndData[ 1 ]->decals;
 		Mem_Free( backEndData[ 1 ] );
 		backEndData[ 1 ] = NULL;
 	}

@@ -66,8 +66,4 @@ public:
 	virtual ~idSurface();
 };
 
-/* Pending:
-	SF_BAD,
-	SF_DECAL,				// ydnar: decal surfaces
- */
 #endif

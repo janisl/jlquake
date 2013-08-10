@@ -87,7 +87,7 @@ struct backEndData_t {
 	corona_t coronas[ MAX_CORONAS ];
 	idSurfacePolyBuffer* polybuffers;
 	decalProjector_t decalProjectors[ MAX_DECAL_PROJECTORS ];
-	srfDecal_t decals[ MAX_DECALS ];
+	idSurfaceDecal* decals;
 	renderCommandList_t commands;
 };
 

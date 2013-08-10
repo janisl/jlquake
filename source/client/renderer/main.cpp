@@ -634,7 +634,7 @@ int R_CullLocalPointAndRadius( vec3_t pt, float radius ) {
 	return R_CullPointAndRadius( transformed, radius );
 }
 
-void R_AddDrawSurfOld( surfaceType_t* surface, shader_t* shader, int fogIndex,
+void R_AddDrawSurf( idSurface* surface, shader_t* shader, int fogIndex,
 	int dlightMap, int frontFace, int atiTess, int forcedSortIndex ) {
 	// instead of checking for overflow, we just mask the index
 	// so it wraps around
@@ -647,13 +647,8 @@ void R_AddDrawSurfOld( surfaceType_t* surface, shader_t* shader, int fogIndex,
 		tr.shiftedEntityNum | ( atiTess << QSORT_ATI_TESS_SHIFT ) |
 		( fogIndex << QSORT_FOGNUM_SHIFT ) | dlightMap |
 		( GGameType & GAME_ET ? ( frontFace << QSORT_FRONTFACE_SHIFT ) : 0 );
-	tr.refdef.drawSurfs[ index ].surface = surface;
+	tr.refdef.drawSurfs[ index ].surface = &surface->data->surfaceType;
 	tr.refdef.numDrawSurfs++;
-}
-
-void R_AddDrawSurf( idSurface* surface, shader_t* shader, int fogIndex,
-	int dlightMap, int frontFace, int atiTess, int forcedSortIndex ) {
-	R_AddDrawSurfOld( &surface->data->surfaceType, shader, fogIndex, dlightMap, frontFace, atiTess, forcedSortIndex );
 }
 
 //	See if a sprite is inside a fog volume

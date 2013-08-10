@@ -38,6 +38,7 @@
 #include "../SurfaceMD4.h"
 #include "../SurfaceMDS.h"
 #include "../SurfaceMDM.h"
+#include "../SurfaceDecal.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -215,8 +216,6 @@ the bits are allocated as follows:
 #define MAX_PATCH_SIZE      32			// max dimensions of a patch mesh in map file
 #define MAX_GRID_SIZE       65			// max dimensions of a grid mesh in memory
 
-#define MAX_DECAL_VERTS     10	// worst case is triangle clipped by 6 planes
-
 struct drawSurf_t {
 	unsigned long long sort;						// bit combination for fast compares
 	surfaceType_t* surface;				// any of surface*_t
@@ -226,11 +225,6 @@ struct srfFlare_t : surface_base_t {
 	vec3_t origin;
 	vec3_t normal;
 	vec3_t color;
-};
-
-struct srfDecal_t : surface_base_t {
-	int numVerts;
-	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
 
 struct srfGeneric_t : surface_base_t {
