@@ -102,6 +102,7 @@ idRenderModel::idRenderModel() {
 	q3_mdsSurfaces = NULL;
 	Com_Memset( q3_mdc, 0, sizeof( q3_mdc ) );
 	q3_mdm = NULL;
+	q3_mdmSurfaces = NULL;
 	q3_mdx = NULL;
 	q3_numLods = 0;
 	q3_shadowShader = 0;

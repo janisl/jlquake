@@ -108,6 +108,7 @@ static int totalrv, totalrt, totalv, totalt;				//----(SA)
 //-----------------------------------------------------------------------------
 
 void R_FreeMdm( idRenderModel* mod ) {
+	delete[] mod->q3_mdmSurfaces;
 	Mem_Free( mod->q3_mdm );
 }
 
@@ -253,8 +254,9 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 	//
 	int fogNum = R_ComputeFogNum( ent );
 
-	mdmSurface_t* surface = ( mdmSurface_t* )( ( byte* )header + header->ofsSurfaces );
 	for ( int i = 0; i < header->numSurfaces; i++ ) {
+		idSurfaceMDM* surface = &tr.currentModel->q3_mdmSurfaces[ i ];
+		mdmSurface_t* surfaceData = ( mdmSurface_t* )surface->data;
 		shader_t* shader;
 		if ( ent->e.customShader ) {
 			shader = R_GetShaderByHandle( ent->e.customShader );
@@ -265,7 +267,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 			shader = tr.defaultShader;
 
 			if ( ent->e.renderfx & RF_BLINK ) {
-				char* s = va( "%s_b", surface->name );		// append '_b' for 'blink'
+				char* s = va( "%s_b", surfaceData->name );		// append '_b' for 'blink'
 				int hash = Com_HashKey( s, String::Length( s ) );
 				for ( int j = 0; j < skin->numSurfaces; j++ ) {
 					if ( hash != skin->surfaces[ j ]->hash ) {
@@ -279,13 +281,13 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 			}
 
 			if ( shader == tr.defaultShader ) {		// blink reference in skin was not found
-				int hash = Com_HashKey( surface->name, sizeof ( surface->name ) );
+				int hash = Com_HashKey( surfaceData->name, sizeof ( surfaceData->name ) );
 				for ( int j = 0; j < skin->numSurfaces; j++ ) {
 					// the names have both been lowercased
 					if ( hash != skin->surfaces[ j ]->hash ) {
 						continue;
 					}
-					if ( !String::Cmp( skin->surfaces[ j ]->name, surface->name ) ) {
+					if ( !String::Cmp( skin->surfaces[ j ]->name, surfaceData->name ) ) {
 						shader = skin->surfaces[ j ]->shader;
 						break;
 					}
@@ -293,20 +295,18 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 			}
 
 			if ( shader == tr.defaultShader ) {
-				common->DPrintf( S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surface->name, skin->name );
+				common->DPrintf( S_COLOR_RED "WARNING: no shader for surface %s in skin %s\n", surfaceData->name, skin->name );
 			} else if ( shader->defaultShader ) {
 				common->DPrintf( S_COLOR_RED "WARNING: shader %s in skin %s not found\n", shader->name, skin->name );
 			}
 		} else {
-			shader = R_GetShaderByHandle( surface->shaderIndex );
+			shader = R_GetShaderByHandle( surfaceData->shaderIndex );
 		}
 
 		// don't add third_person objects if not viewing through a portal
 		if ( !personalModel ) {
-			R_AddDrawSurfOld( ( surfaceType_t* )surface, shader, fogNum, 0, 0, 0, 0 );
+			R_AddDrawSurf( surface, shader, fogNum, 0, 0, 0, 0 );
 		}
-
-		surface = ( mdmSurface_t* )( ( byte* )surface + surface->ofsEnd );
 	}
 }
 

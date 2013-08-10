@@ -37,6 +37,7 @@
 #include "../SurfaceMDC.h"
 #include "../SurfaceMD4.h"
 #include "../SurfaceMDS.h"
+#include "../SurfaceMDM.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -632,6 +633,7 @@ public:
 	idSurfaceMDS* q3_mdsSurfaces;
 	mdcLod_t q3_mdc[ MD3_MAX_LODS ];	// only if type == MOD_MDC
 	mdmHeader_t* q3_mdm;				// only if type == MOD_MDM
+	idSurfaceMDM* q3_mdmSurfaces;
 	mdxHeader_t* q3_mdx;				// only if type == MOD_MDX
 
 	int q3_numLods;
