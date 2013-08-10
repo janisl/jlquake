@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
-#include "SurfaceSkyBoxQ2.h"
+#include "SurfaceEntity.h"
 
-idSurfaceSkyBoxQ2 skyBoxQ2Surface;
+static surface_base_t entitySurfaceOld = { SF_ENTITY };
 
-static surface_base_t q2SkySurface = { SF_SKYBOX_Q2 };
+idSurfaceEntity entitySurface;
 
-idSurfaceSkyBoxQ2::idSurfaceSkyBoxQ2() {
-	data = &q2SkySurface;
+idSurfaceEntity::idSurfaceEntity() {
+	data = &entitySurfaceOld;
 }

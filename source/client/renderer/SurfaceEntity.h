@@ -14,12 +14,18 @@
 //**
 //**************************************************************************
 
-#include "SurfaceSkyBoxQ2.h"
+#ifndef __idSurfaceEntity__
+#define __idSurfaceEntity__
 
-idSurfaceSkyBoxQ2 skyBoxQ2Surface;
+#include "Surface.h"
 
-static surface_base_t q2SkySurface = { SF_SKYBOX_Q2 };
+// entities that will have procedurally generated surfaces will just
+// point at this for their sorting surface
+class idSurfaceEntity : public idSurface {
+public:
+	idSurfaceEntity();
+};
 
-idSurfaceSkyBoxQ2::idSurfaceSkyBoxQ2() {
-	data = &q2SkySurface;
-}
+extern idSurfaceEntity entitySurface;
+
+#endif

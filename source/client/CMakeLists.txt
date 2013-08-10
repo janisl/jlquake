@@ -149,6 +149,7 @@ set(CLIENT_FILES
 	renderer/surface2.cpp
 	renderer/surface3.cpp
 	renderer/SurfaceBrush46.cpp
+	renderer/SurfaceEntity.cpp
 	renderer/SurfaceFace.cpp
 	renderer/SurfaceFaceQ1.cpp
 	renderer/SurfaceFaceQ2.cpp

@@ -27,6 +27,7 @@
 #include "../../common/common_defs.h"
 #include "../../common/strings.h"
 #include "../../common/content_types.h"
+#include "SurfaceEntity.h"
 
 struct sortedent_t {
 	trRefEntity_t* ent;
@@ -65,9 +66,6 @@ bool fogIsOn = false;
 static sortedent_t cl_transvisedicts[ MAX_ENTITIES ];
 static sortedent_t cl_transwateredicts[ MAX_ENTITIES ];
 
-// entities that will have procedurally generated surfaces will just
-// point at this for their sorting surface
-static surfaceType_t entitySurface = SF_ENTITY;
 static surfaceType_t particlesSurface = SF_PARTICLES;
 
 void myGlMultMatrix( const float* a, const float* b, float* out ) {
@@ -688,7 +686,7 @@ static void R_AddBadModelSurface( trRefEntity_t* ent ) {
 	if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 		return;
 	}
-	R_AddDrawSurfOld( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddModelSurfaces( idRenderModel* model, trRefEntity_t* ent, int forcedSortIndex ) {
@@ -797,7 +795,7 @@ static void R_AddEntitySurfaces() {
 			if ( ( ent->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
 				continue;
 			}
-			R_AddDrawSurfOld( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE, 0 );
+			R_AddDrawSurf( &entitySurface, R_GetShaderByHandle( ent->e.customShader ), R_SpriteFogNum( ent ), 0, 0, ATI_TESS_NONE, 0 );
 			break;
 
 		case RT_MODEL:
@@ -806,7 +804,7 @@ static void R_AddEntitySurfaces() {
 
 			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
 			if ( !tr.currentModel ) {
-				R_AddDrawSurfOld( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
+				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0, 0, ATI_TESS_NONE, 0 );
 			} else {
 				if ( GGameType & GAME_Hexen2 ) {
 					if ( ( ent->e.renderfx & RF_TRANSLUCENT ) || R_MdlHasHexen2Transparency( tr.currentModel ) ) {

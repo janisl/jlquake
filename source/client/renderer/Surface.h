@@ -70,7 +70,6 @@ public:
 /* Pending:
 	SF_BAD,
 	SF_POLY,
-	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
 	SF_DISPLAY_LIST,
 	SF_POLYBUFFER,
 	SF_DECAL,				// ydnar: decal surfaces
