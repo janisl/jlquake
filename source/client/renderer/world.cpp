@@ -25,10 +25,9 @@
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
+#include "SurfaceSkyBoxQ2.h"
 
 #define BACKFACE_EPSILON    0.01
-
-static surfaceType_t q2SkySurface = SF_SKYBOX_Q2;
 
 static bool R_CullTriSurf( srfTriangles_t* cv ) {
 	int boxCull = R_CullLocalBox( cv->bounds );
@@ -946,7 +945,7 @@ void R_DrawWorldQ2() {
 
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
 
-	R_AddDrawSurfOld( &q2SkySurface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
+	R_AddDrawSurf( &skyBoxQ2Surface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

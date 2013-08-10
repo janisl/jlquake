@@ -69,7 +69,6 @@ public:
 
 /* Pending:
 	SF_BAD,
-	SF_SKYBOX_Q2,
 	SF_POLY,
 	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
 	SF_DISPLAY_LIST,
