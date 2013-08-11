@@ -22,7 +22,7 @@
 shader_t* R_InitSky( mbrush29_texture_t* mt );
 void R_ClearSkyBox();
 void R_AddSkySurface( idSurfaceFaceQ2* fa );
-void R_DrawSkyBoxQ2( surfaceType_t* dummy );
+void R_DrawSkyBoxQ2();
 void R_InitSkyTexCoords( float cloudLayerHeight );
 void RB_StageIteratorSky();
 void RB_DrawSun();

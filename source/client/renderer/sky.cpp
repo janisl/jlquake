@@ -433,7 +433,7 @@ static void EmitSkyVertex( float s, float t, int axis ) {
 	qglVertex3fv( v );
 }
 
-void R_DrawSkyBoxQ2( surfaceType_t* dummy ) {
+void R_DrawSkyBoxQ2() {
 	if ( skyrotate ) {
 		// check for no sky at all
 		int i;
