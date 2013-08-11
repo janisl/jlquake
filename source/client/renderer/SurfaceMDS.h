@@ -24,8 +24,13 @@ class idSurfaceMDS : public idSurface {
 public:
 	virtual void Draw();
 
+	mdsSurface_t* GetMdsData() const;
 	void SetMdsData( mdsSurface_t* data );
 };
+
+inline mdsSurface_t* idSurfaceMDS::GetMdsData() const {
+	return ( mdsSurface_t* )data;
+}
 
 inline void idSurfaceMDS::SetMdsData( mdsSurface_t* data ) {
 	this->data = ( surface_base_t* )data;

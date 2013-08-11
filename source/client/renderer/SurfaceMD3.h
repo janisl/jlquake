@@ -24,8 +24,13 @@ class idSurfaceMD3 : public idSurface {
 public:
 	virtual void Draw();
 
+	md3Surface_t* GetMd3Data() const;
 	void SetMd3Data( md3Surface_t* data );
 };
+
+inline md3Surface_t* idSurfaceMD3::GetMd3Data() const {
+	return ( md3Surface_t* )data;
+}
 
 inline void idSurfaceMD3::SetMd3Data( md3Surface_t* data ) {
 	this->data = ( surface_base_t* )data;

@@ -256,7 +256,7 @@ void R_MDM_AddAnimSurfaces( trRefEntity_t* ent ) {
 
 	for ( int i = 0; i < header->numSurfaces; i++ ) {
 		idSurfaceMDM* surface = &tr.currentModel->q3_mdmSurfaces[ i ];
-		mdmSurface_t* surfaceData = ( mdmSurface_t* )surface->GetData();
+		mdmSurface_t* surfaceData = surface->GetMdmData();
 		shader_t* shader;
 		if ( ent->e.customShader ) {
 			shader = R_GetShaderByHandle( ent->e.customShader );
