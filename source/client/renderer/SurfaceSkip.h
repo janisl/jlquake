@@ -17,9 +17,9 @@
 #ifndef __idSurfaceSkip__
 #define __idSurfaceSkip__
 
-#include "SurfaceBrush46.h"
+#include "WorldSurface.h"
 
-class idSurfaceSkip : public idSurfaceBrush46 {
+class idSurfaceSkip : public idWorldSurface {
 public:
 	virtual void Draw();
 };

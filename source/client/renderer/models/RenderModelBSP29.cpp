@@ -514,7 +514,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 
 		if ( !String::NCmp( out->surf.texinfo->texture->name, "sky", 3 ) ) {	// sky
 			out->surf.flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
-			out->surf.shader = out->surf.texinfo->texture->shader;
+			out->shader = out->surf.texinfo->texture->shader;
 			out->surf.altShader = out->surf.texinfo->texture->shader;
 			GL_SubdivideSurface( out );		// cut up polygon for warps
 			continue;
@@ -522,7 +522,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 
 		if ( out->surf.texinfo->texture->name[ 0 ] == '*' ) {	// turbulent
 			out->surf.flags |= ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED );
-			out->surf.shader = out->surf.texinfo->texture->shader;
+			out->shader = out->surf.texinfo->texture->shader;
 			out->surf.altShader = out->surf.texinfo->texture->shader;
 			for ( int i = 0; i < 2; i++ ) {
 				out->surf.extents[ i ] = 16384;

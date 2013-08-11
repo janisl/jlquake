@@ -24,7 +24,7 @@
 #include "../Surface.h"
 #include "../SurfaceFaceQ1.h"
 #include "../SurfaceFaceQ2.h"
-#include "../SurfaceBrush46.h"
+#include "../WorldSurface.h"
 #include "../SurfaceMDL.h"
 #include "../SurfaceSPR.h"
 #include "../SurfaceMD2.h"
@@ -320,13 +320,13 @@ struct mbrush46_node_t {
 	int cluster;
 	int area;
 
-	idSurfaceBrush46** firstmarksurface;
+	idWorldSurface** firstmarksurface;
 	int nummarksurfaces;
 };
 
 // ydnar: bsp model decal surfaces
 struct mbrush46_decal_t {
-	idSurfaceBrush46* parent;
+	idWorldSurface* parent;
 	shader_t* shader;
 	float fadeStartTime, fadeEndTime;
 	int fogIndex;
@@ -336,7 +336,7 @@ struct mbrush46_decal_t {
 
 struct mbrush46_model_t {
 	vec3_t bounds[ 2 ];							// for culling
-	idSurfaceBrush46** firstSurface;
+	idWorldSurface** firstSurface;
 	int numSurfaces;
 
 	// ydnar: decals
@@ -382,10 +382,10 @@ struct world_t {
 	mbrush46_node_t* nodes;
 
 	int numsurfaces;
-	idSurfaceBrush46** surfaces;
+	idWorldSurface** surfaces;
 
 	int nummarksurfaces;
-	idSurfaceBrush46** marksurfaces;
+	idWorldSurface** marksurfaces;
 
 	int numfogs;
 	mbrush46_fog_t* fogs;

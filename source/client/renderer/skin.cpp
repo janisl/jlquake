@@ -414,7 +414,7 @@ qhandle_t R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap
 				surfnum = 0;
 			}
 
-			idSurfaceBrush46* surf = bmodel->firstSurface[ surfnum ];
+			idWorldSurface* surf = bmodel->firstSurface[ surfnum ];
 			// RF, check for null shader (can happen on func_explosive's with botclips attached)
 			if ( !surf->shader ) {
 				return 0;

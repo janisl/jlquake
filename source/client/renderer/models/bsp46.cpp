@@ -268,7 +268,7 @@ static void FinishGenericSurface( bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_
 	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
 }
 
-static idSurfaceBrush46* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
 	idSurfaceFace* surf = new idSurfaceFace;
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
@@ -327,7 +327,7 @@ static idSurfaceBrush46* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 	return surf;
 }
 
-static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts ) {
+static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts ) {
 	// we may have a nodraw surface, because they might still need to
 	// be around for movement clipping
 	if ( s_worldData.shaders[ LittleLong( ds->shaderNum ) ].surfaceFlags & BSP46SURF_NODRAW ) {
@@ -402,7 +402,7 @@ static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 	return surf;
 }
 
-static idSurfaceBrush46* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
 	idSurfaceTriangles* surf = new idSurfaceTriangles;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
@@ -458,7 +458,7 @@ static idSurfaceBrush46* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* v
 	return surf;
 }
 
-static idSurfaceBrush46* ParseFlare( bsp46_dsurface_t* ds ) {
+static idWorldSurface* ParseFlare( bsp46_dsurface_t* ds ) {
 	idSurfaceFlare* surf = new idSurfaceFlare;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
@@ -482,7 +482,7 @@ static idSurfaceBrush46* ParseFlare( bsp46_dsurface_t* ds ) {
 	return surf;
 }
 
-static idSurfaceBrush46* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
+static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
 	idSurfaceFoliage* surf = new idSurfaceFoliage;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
@@ -1408,8 +1408,8 @@ static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 
-	idSurfaceBrush46** out = new idSurfaceBrush46*[ count ];
-	Com_Memset( out, 0, sizeof ( idSurfaceBrush46* ) * count );
+	idWorldSurface** out = new idWorldSurface*[ count ];
+	Com_Memset( out, 0, sizeof ( idWorldSurface* ) * count );
 
 	s_worldData.surfaces = out;
 	s_worldData.numsurfaces = count;
@@ -1466,7 +1466,7 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 		// add node surfaces to bounds
 		if ( node->nummarksurfaces > 0 ) {
 			// add node surfaces to bounds
-			idSurfaceBrush46** mark = node->firstmarksurface;
+			idWorldSurface** mark = node->firstmarksurface;
 			int c = node->nummarksurfaces;
 			while ( c-- ) {
 				srfGeneric_t* gen = ( srfGeneric_t* )( **mark ).GetBrush46Data();
@@ -1591,7 +1591,7 @@ static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	idSurfaceBrush46** out = new idSurfaceBrush46*[ count ];
+	idWorldSurface** out = new idWorldSurface*[ count ];
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;

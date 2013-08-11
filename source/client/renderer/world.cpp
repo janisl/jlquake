@@ -258,7 +258,7 @@ static int R_DlightTrisurf( srfTriangles_t* surf, int dlightBits ) {
 }
 
 // ydnar: made this use generic surface
-static int R_DlightSurfaceET( idSurfaceBrush46* surface, int dlightBits ) {
+static int R_DlightSurfaceET( idWorldSurface* surface, int dlightBits ) {
 	int i;
 	vec3_t origin;
 	float radius;
@@ -332,7 +332,7 @@ static int R_DlightSurfaceET( idSurfaceBrush46* surface, int dlightBits ) {
 
 //	The given surface is going to be drawn, and it touches a leaf that is
 // touched by one or more dlights, so try to throw out more dlights if possible.
-static int R_DlightSurface( idSurfaceBrush46* surf, int dlightBits ) {
+static int R_DlightSurface( idWorldSurface* surf, int dlightBits ) {
 	if ( GGameType & GAME_ET ) {
 		return R_DlightSurfaceET( surf, dlightBits );
 	}
@@ -354,7 +354,7 @@ static int R_DlightSurface( idSurfaceBrush46* surf, int dlightBits ) {
 	return dlightBits;
 }
 
-static void R_AddWorldSurface( idSurfaceBrush46* surf, shader_t* shader, int dlightBits, int decalBits ) {
+static void R_AddWorldSurface( idWorldSurface* surf, shader_t* shader, int dlightBits, int decalBits ) {
 	if ( surf->viewCount == tr.viewCount ) {
 		return;		// already in this view
 	}
@@ -973,12 +973,12 @@ static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int deca
 	}
 
 	// add the individual surfaces
-	idSurfaceBrush46** mark = node->firstmarksurface;
+	idWorldSurface** mark = node->firstmarksurface;
 	int c = node->nummarksurfaces;
 	while ( c-- ) {
 		// the surface may have already been added if it
 		// spans multiple leafs
-		idSurfaceBrush46* surf = *mark;
+		idWorldSurface* surf = *mark;
 		R_AddWorldSurface( surf, surf->shader, dlightBits, decalBits );
 		mark++;
 	}

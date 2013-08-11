@@ -64,7 +64,6 @@ struct mbrush29_surface_t : surface_base_t {
 	mbrush29_glpoly_t* polys;				// multiple if warped
 
 	mbrush29_texinfo_t* texinfo;
-	shader_t* shader;
 	shader_t* altShader;
 
 	// lighting info

@@ -17,9 +17,9 @@
 #ifndef __idSurfaceFlare__
 #define __idSurfaceFlare__
 
-#include "SurfaceBrush46.h"
+#include "WorldSurface.h"
 
-class idSurfaceFlare : public idSurfaceBrush46 {
+class idSurfaceFlare : public idWorldSurface {
 public:
 	virtual void Draw();
 };

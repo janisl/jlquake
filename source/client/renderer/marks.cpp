@@ -113,7 +113,7 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 }
 
 static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
-	idSurfaceBrush46** list, int listsize, int* listlength, vec3_t dir ) {
+	idWorldSurface** list, int listsize, int* listlength, vec3_t dir ) {
 	// RF, if this node hasn't been rendered recently, ignore it
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) &&
 		 node->visframe < tr.visCount - 2 ) {	// allow us to be a few frames behind
@@ -140,13 +140,13 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 	}
 
 	// add the individual surfaces
-	idSurfaceBrush46** mark = node->firstmarksurface;
+	idWorldSurface** mark = node->firstmarksurface;
 	int c = node->nummarksurfaces;
 	while ( c-- ) {
 		if ( *listlength >= listsize ) {
 			break;
 		}
-		idSurfaceBrush46* surf = *mark;
+		idWorldSurface* surf = *mark;
 		// check if the surface has NOIMPACT or NOMARKS set
 		if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) ||
 			 ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {
@@ -270,7 +270,7 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 	int numPlanes = numPoints + 2;
 
 	int numsurfaces = 0;
-	idSurfaceBrush46* surfaces[ 64 ];
+	idWorldSurface* surfaces[ 64 ];
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 64, &numsurfaces, projectionDir );
 	//assert(numsurfaces <= 64);
 	//assert(numsurfaces != 64);
@@ -472,7 +472,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 	numPlanes = numPoints + 2;
 
 	int numsurfaces = 0;
-	idSurfaceBrush46* surfaces[ 4096 ];
+	idWorldSurface* surfaces[ 4096 ];
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 4096, &numsurfaces, projectionDir );
 
 	returnedPoints = 0;

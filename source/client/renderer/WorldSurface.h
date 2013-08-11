@@ -18,6 +18,7 @@
 #define __idWorldSurface__
 
 #include "Surface.h"
+#include "shader.h"
 
 enum surfaceType_t
 {
@@ -41,15 +42,31 @@ public:
 	// Q1, Q2 - should be drawn when node is crossed
 	// Q3 - if == tr.viewCount, already added
 	int viewCount;
-
-	surface_base_t* data;		// any of srf*_t
+	shader_t* shader;
+	int fogIndex;
 
 	idWorldSurface();
+
+	surface_base_t* GetBrush46Data();
+	void SetBrush46Data( surface_base_t* data );
+
+protected:
+	surface_base_t* data;		// any of srf*_t
 };
 
 inline idWorldSurface::idWorldSurface() {
 	viewCount = 0;
 	data = NULL;
+	fogIndex = 0;
+	shader = NULL;
+}
+
+inline surface_base_t* idWorldSurface::GetBrush46Data() {
+	return data;
+}
+
+inline void idWorldSurface::SetBrush46Data( surface_base_t* data ) {
+	this->data = data;
 }
 
 #endif

@@ -472,7 +472,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 
 //	projects decal onto a polygon
 static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
-	idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
+	idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	make a plane from the winding
 	vec4_t plane;
 	if ( !PlaneFromPoints( plane, points[ 0 ][ 0 ], points[ 0 ][ 1 ], points[ 0 ][ 2 ] ) ) {
@@ -597,7 +597,7 @@ static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t
 }
 
 //	projects a decal onto a triangle surface (brush faces, misc_models, metasurfaces)
-static void ProjectDecalOntoTriangles( decalProjector_t* dp, idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
+static void ProjectDecalOntoTriangles( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	get surface
 	srfTriangles_t* srf = ( srfTriangles_t* )surf->GetBrush46Data();
 
@@ -615,7 +615,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t* dp, idSurfaceBrush46* s
 }
 
 //	projects a decal onto a grid (patch) surface
-static void ProjectDecalOntoGrid( decalProjector_t* dp, idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
+static void ProjectDecalOntoGrid( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	get surface
 	srfGridMesh_t* srf = ( srfGridMesh_t* )surf->GetBrush46Data();
 
@@ -643,7 +643,7 @@ static void ProjectDecalOntoGrid( decalProjector_t* dp, idSurfaceBrush46* surf, 
 }
 
 //	projects a decal onto a world surface
-void R_ProjectDecalOntoSurface( decalProjector_t* dp, idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
+void R_ProjectDecalOntoSurface( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	early outs
 	if ( dp->shader == NULL ) {
 		return;

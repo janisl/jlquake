@@ -708,7 +708,7 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 
 	// set the dlight bits in all the surfaces
 	for ( int i = 0; i < bmodel->numSurfaces; i++ ) {
-		idSurfaceBrush46* surf = bmodel->firstSurface[ i ];
+		idWorldSurface* surf = bmodel->firstSurface[ i ];
 
 		if ( surf->GetBrush46Data()->surfaceType == SF_FACE ||
 			surf->GetBrush46Data()->surfaceType == SF_GRID ||

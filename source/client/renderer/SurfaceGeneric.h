@@ -17,9 +17,9 @@
 #ifndef __idSurfaceGeneric__
 #define __idSurfaceGeneric__
 
-#include "SurfaceBrush46.h"
+#include "WorldSurface.h"
 
-class idSurfaceGeneric : public idSurfaceBrush46 {
+class idSurfaceGeneric : public idWorldSurface {
 public:
 };
 

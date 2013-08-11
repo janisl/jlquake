@@ -530,6 +530,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	out = loadmodel->brush38_surfaces;
 	for ( int surfnum = 0; surfnum < count; surfnum++, out++ ) {
 		out->surf.shaderInfo = &loadmodel->brush38_shaderInfo[ loadTimeInfo[ surfnum ].shaderInfoIndex ];
+		out->shader = out->surf.shaderInfo->shader;
 	}
 }
 

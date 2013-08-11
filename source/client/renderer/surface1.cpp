@@ -363,11 +363,11 @@ void GL_BuildLightmaps() {
 			GL_CreateSurfaceLightmapQ1( surf );
 			BuildSurfaceDisplayList( surf );
 
-			surf->surf.shader = R_BuildBsp29Shader( surf->surf.texinfo->texture, surf->surf.lightmaptexturenum );
+			surf->shader = R_BuildBsp29Shader( surf->surf.texinfo->texture, surf->surf.lightmaptexturenum );
 			if ( surf->surf.texinfo->texture->alternate_anims ) {
 				surf->surf.altShader = R_BuildBsp29Shader( surf->surf.texinfo->texture->alternate_anims, surf->surf.lightmaptexturenum );
 			} else {
-				surf->surf.altShader = surf->surf.shader;
+				surf->surf.altShader = surf->shader;
 			}
 		}
 	}
@@ -516,7 +516,7 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	if ( backEnd.currentEntity->e.frame ) {
 		shader = surf->surf.altShader;
 	} else {
-		shader = surf->surf.shader;
+		shader = surf->shader;
 	}
 	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
