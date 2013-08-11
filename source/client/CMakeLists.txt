@@ -175,6 +175,7 @@ set(CLIENT_FILES
 	renderer/SurfaceTriangles.cpp
 	renderer/wad.cpp
 	renderer/world.cpp
+	renderer/WorldSurface.cpp
 	sound/audiocd/linux.cpp
 	sound/midi/null.cpp
 	sound/driver_alsa.cpp

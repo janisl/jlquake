@@ -14,15 +14,37 @@
 //**
 //**************************************************************************
 
-#include "SurfaceFaceQ1.h"
-#include "surfaces.h"
+#ifndef __idWorldSurface__
+#define __idWorldSurface__
 
-idSurfaceFaceQ1::idSurfaceFaceQ1() {
-	Com_Memset( &surf, 0, sizeof( surf ) );
-	data = &surf;
-	texturechain = NULL;
+#include "Surface.h"
+
+enum surfaceType_t
+{
+	SF_BAD,
+	SF_SKIP,				// ignore
+	SF_FACE,
+	SF_FACE_Q1,
+	SF_FACE_Q2,
+	SF_GRID,
+	SF_TRIANGLES,
+	SF_FOLIAGE,
+	SF_FLARE,
+};
+
+struct surface_base_t {
+	surfaceType_t surfaceType;
+};
+
+class idWorldSurface : public idSurface {
+public:
+	surface_base_t* data;					// any of srf*_t
+
+	idWorldSurface();
+};
+
+inline idWorldSurface::idWorldSurface() {
+	data = NULL;
 }
 
-void idSurfaceFaceQ1::Draw() {
-	R_DrawSequentialPoly( &surf );
-}
+#endif

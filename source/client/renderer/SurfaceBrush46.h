@@ -17,36 +17,19 @@
 #ifndef __idSurfaceBrush46__
 #define __idSurfaceBrush46__
 
-#include "Surface.h"
+#include "WorldSurface.h"
 #include "shader.h"
 
-enum surfaceType_t
-{
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-	SF_FLARE,
-};
-
-struct surface_base_t {
-	surfaceType_t surfaceType;
-};
-
-class idSurfaceBrush46 : public idSurface {
+class idSurfaceBrush46 : public idWorldSurface {
 public:
 	int viewCount;							// if == tr.viewCount, already added
 	shader_t* shader;
 	int fogIndex;
-	surface_base_t* data;					// any of srf*_t
 
 	idSurfaceBrush46()
 	: viewCount( 0 )
 	, shader( NULL )
 	, fogIndex( 0 )
-	, data( NULL )
 	{}
 
 	surface_base_t* GetBrush46Data();

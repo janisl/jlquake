@@ -17,7 +17,7 @@
 #ifndef __idSurfaceFaceQ2__
 #define __idSurfaceFaceQ2__
 
-#include "Surface.h"
+#include "WorldSurface.h"
 #include "../../common/file_formats/bsp38.h"
 #include "shader.h"
 
@@ -43,7 +43,7 @@ struct mbrush38_glpoly_t {
 	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush38_surface_t {
+struct mbrush38_surface_t : surface_base_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -73,7 +73,7 @@ struct mbrush38_surface_t {
 	byte* samples;				// [numstyles*surfsize]
 };
 
-class idSurfaceFaceQ2 : public idSurface {
+class idSurfaceFaceQ2 : public idWorldSurface {
 public:
 	mbrush38_surface_t surf;
 	idSurfaceFaceQ2* texturechain;

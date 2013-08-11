@@ -14,15 +14,4 @@
 //**
 //**************************************************************************
 
-#include "SurfaceFaceQ1.h"
-#include "surfaces.h"
-
-idSurfaceFaceQ1::idSurfaceFaceQ1() {
-	Com_Memset( &surf, 0, sizeof( surf ) );
-	data = &surf;
-	texturechain = NULL;
-}
-
-void idSurfaceFaceQ1::Draw() {
-	R_DrawSequentialPoly( &surf );
-}
+#include "WorldSurface.h"

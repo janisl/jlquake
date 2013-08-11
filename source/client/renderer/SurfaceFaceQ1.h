@@ -17,7 +17,7 @@
 #ifndef __idSurfaceFaceQ1__
 #define __idSurfaceFaceQ1__
 
-#include "Surface.h"
+#include "WorldSurface.h"
 #include "../../common/file_formats/bsp29.h"
 #include "shader.h"
 
@@ -49,7 +49,7 @@ struct mbrush29_glpoly_t {
 	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush29_surface_t {
+struct mbrush29_surface_t : surface_base_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;
@@ -80,7 +80,7 @@ struct mbrush29_surface_t {
 	byte* samples;				// [numstyles*surfsize]
 };
 
-class idSurfaceFaceQ1 : public idSurface {
+class idSurfaceFaceQ1 : public idWorldSurface {
 public:
 	mbrush29_surface_t surf;
 	idSurfaceFaceQ1* texturechain;
