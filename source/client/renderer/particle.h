@@ -18,6 +18,5 @@
 #define _R_PARTICLE_H
 
 void R_InitParticleTexture();
-void R_DrawParticles(void*);
 
 #endif

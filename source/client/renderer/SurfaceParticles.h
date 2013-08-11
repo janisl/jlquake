@@ -18,12 +18,22 @@
 #define __idSurfaceParticles__
 
 #include "Surface.h"
+#include "main.h"
 
 class idSurfaceParticles : public idSurface {
 public:
 	idSurfaceParticles();
 
 	virtual void Draw();
+
+private:
+	vec3_t up;
+	vec3_t right;
+	vec3_t normal;
+
+	void DrawParticle( const particle_t* p, float s1, float t1, float s2, float t2 ) const;
+	void DrawParticleTriangles();
+	static void DrawParticlePoints();
 };
 
 extern idSurfaceParticles particlesSurface;
