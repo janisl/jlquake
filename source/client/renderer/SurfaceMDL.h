@@ -65,6 +65,8 @@ public:
 	mesh1hdr_t header;
 	
 	idSurfaceMDL();
+
+	virtual void Draw();
 };
 
 #endif

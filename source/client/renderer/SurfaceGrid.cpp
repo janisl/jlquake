@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceGrid.h"
+#include "surfaces.h"
+
+void idSurfaceGrid::Draw() {
+	RB_SurfaceGrid( ( srfGridMesh_t* )data );
+}

@@ -126,10 +126,10 @@ static void RB_SurfaceBad( surfaceType_t* surfType ) {
 	common->Printf( "Bad surface tesselated.\n" );
 }
 
-static void RB_SurfaceSkip( void* ) {
+void RB_SurfaceSkip( void* ) {
 }
 
-static void RB_SurfaceFace( srfSurfaceFace_t* surf ) {
+void RB_SurfaceFace( srfSurfaceFace_t* surf ) {
 	RB_CHECKOVERFLOW( surf->numPoints, surf->numIndices );
 
 	int dlightBits = surf->dlightBits[ backEnd.smpFrame ];
@@ -199,7 +199,7 @@ static float LodErrorForVolume( vec3_t local, float radius ) {
 }
 
 //	Just copy the grid of points and triangulate
-static void RB_SurfaceGrid( srfGridMesh_t* cv ) {
+void RB_SurfaceGrid( srfGridMesh_t* cv ) {
 	int dlightBits = cv->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
@@ -326,7 +326,7 @@ static void RB_SurfaceGrid( srfGridMesh_t* cv ) {
 	}
 }
 
-static void RB_SurfaceTriangles( srfTriangles_t* srf ) {
+void RB_SurfaceTriangles( srfTriangles_t* srf ) {
 	// ydnar: moved before overflow so dlights work properly
 	RB_CHECKOVERFLOW( srf->numVerts, srf->numIndexes );
 
@@ -374,7 +374,7 @@ static void RB_SurfaceTriangles( srfTriangles_t* srf ) {
 	tess.numVertexes += srf->numVerts;
 }
 
-static void RB_SurfaceFoliage( srfFoliage_t* srf ) {
+void RB_SurfaceFoliage( srfFoliage_t* srf ) {
 	// basic setup
 	int numVerts = srf->numVerts;
 	int numIndexes = srf->numIndexes;
@@ -494,7 +494,7 @@ static void RB_SurfaceFoliage( srfFoliage_t* srf ) {
 	}
 }
 
-static void RB_SurfacePolychain( srfPoly_t* p ) {
+void RB_SurfacePolychain( srfPoly_t* p ) {
 	RB_CHECKOVERFLOW( p->numVerts, 3 * ( p->numVerts - 2 ) );
 
 	// fan triangles into the tess array
@@ -519,7 +519,7 @@ static void RB_SurfacePolychain( srfPoly_t* p ) {
 	tess.numVertexes = numv;
 }
 
-static void RB_SurfaceFlare( srfFlare_t* surf ) {
+void RB_SurfaceFlare( srfFlare_t* surf ) {
 #if 0
 	// calculate the xyz locations for the four corners
 	float radius = 30;
@@ -933,7 +933,7 @@ static void RB_SurfaceAxis() {
 }
 
 //	Entities that have a single procedurally generated surface
-static void RB_SurfaceEntity( surfaceType_t* surfType ) {
+void RB_SurfaceEntity( surfaceType_t* surfType ) {
 	switch ( backEnd.currentEntity->e.reType ) {
 	case RT_SPRITE:
 		RB_SurfaceSprite();
@@ -969,7 +969,7 @@ static void RB_SurfaceEntity( surfaceType_t* surfType ) {
 	}
 }
 
-static void RB_SurfacePolyBuffer( srfPolyBuffer_t* surf ) {
+void RB_SurfacePolyBuffer( srfPolyBuffer_t* surf ) {
 	RB_EndSurface();
 
 	RB_BeginSurface( tess.shader, tess.fogNum );
@@ -991,7 +991,7 @@ static void RB_SurfacePolyBuffer( srfPolyBuffer_t* surf ) {
 	RB_EndSurface();
 }
 
-static void RB_SurfaceDecal( srfDecal_t* srf ) {
+void RB_SurfaceDecal( srfDecal_t* srf ) {
 	RB_CHECKOVERFLOW( srf->numVerts, 3 * ( srf->numVerts - 2 ) );
 
 	// fan triangles into the tess array
@@ -1014,31 +1014,3 @@ static void RB_SurfaceDecal( srfDecal_t* srf ) {
 
 	tess.numVertexes = numv;
 }
-
-void( *rb_surfaceTable[ SF_NUM_SURFACE_TYPES ] ) ( void* ) =
-{
-	( void ( * )( void* ) )RB_SurfaceBad,			// SF_BAD,
-	( void ( * )( void* ) )RB_SurfaceSkip,			// SF_SKIP,
-	( void ( * )( void* ) )R_DrawSequentialPoly,	// SF_FACE_Q1,
-	( void ( * )( void* ) )GL_RenderLightmappedPoly,// SF_FACE_Q2,
-	( void ( * )( void* ) )R_DrawSkyBoxQ2,			// SF_SKYBOX_Q2,
-	( void ( * )( void* ) )RB_SurfaceFace,			// SF_FACE,
-	( void ( * )( void* ) )RB_SurfaceGrid,			// SF_GRID,
-	( void ( * )( void* ) )RB_SurfaceTriangles,		// SF_TRIANGLES,
-	( void ( * )( void* ) )RB_SurfaceFoliage,		// SF_FOLIAGE,
-	( void ( * )( void* ) )RB_SurfacePolychain,		// SF_POLY,
-	( void ( * )( void* ) )RB_SurfaceSpr,			// SF_SPR,
-	( void ( * )( void* ) )RB_SurfaceSp2,			// SF_SP2,
-	( void ( * )( void* ) )RB_SurfaceMdl,			// SF_MDL,
-	( void ( * )( void* ) )RB_SurfaceMd2,			// SF_MD2,
-	( void ( * )( void* ) )RB_SurfaceMesh,			// SF_MD3,
-	( void ( * )( void* ) )RB_SurfaceAnim,			// SF_MD4,
-	( void ( * )( void* ) )RB_SurfaceCMesh,			// SF_MDC,
-	( void ( * )( void* ) )RB_SurfaceAnimMds,		// SF_MDS,
-	( void ( * )( void* ) )RB_MDM_SurfaceAnim,		// SF_MDM,
-	( void ( * )( void* ) )RB_SurfaceFlare,			// SF_FLARE,
-	( void ( * )( void* ) )RB_SurfaceEntity,		// SF_ENTITY
-	( void ( * )( void* ) )RB_SurfacePolyBuffer,	// SF_POLYBUFFER
-	( void ( * )( void* ) )RB_SurfaceDecal,			// SF_DECAL
-	( void ( * )( void* ) )R_DrawParticles,			// SF_PARTICLES,
-};

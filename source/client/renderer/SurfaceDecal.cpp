@@ -15,7 +15,12 @@
 //**************************************************************************
 
 #include "SurfaceDecal.h"
+#include "surfaces.h"
 
 idSurfaceDecal::idSurfaceDecal() {
 	data = &surf;
+}
+
+void idSurfaceDecal::Draw() {
+	RB_SurfaceDecal( &surf );
 }

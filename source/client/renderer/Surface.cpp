@@ -19,7 +19,3 @@
 
 idSurface::~idSurface() {
 }
-
-void idSurface::Draw() {
-	rb_surfaceTable[ data->surfaceType ]( data );
-}

@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceFace.h"
+#include "surfaces.h"
+
+void idSurfaceFace::Draw() {
+	RB_SurfaceFace( ( srfSurfaceFace_t* )data );
+}

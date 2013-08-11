@@ -15,8 +15,13 @@
 //**************************************************************************
 
 #include "SurfaceSPR.h"
+#include "models/model.h"
 
 idSurfaceSPR::idSurfaceSPR() {
 	Com_Memset( &header, 0, sizeof( header ) );
 	data = &header;
+}
+
+void idSurfaceSPR::Draw() {
+	RB_SurfaceSpr( &header );
 }

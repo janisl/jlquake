@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceMDS.h"
+#include "models/model.h"
+
+void idSurfaceMDS::Draw() {
+	RB_SurfaceAnimMds( ( mdsSurface_t* )data );
+}

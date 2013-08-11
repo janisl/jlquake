@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceSP2.h"
+#include "models/model.h"
+
+void idSurfaceSP2::Draw() {
+	RB_SurfaceSp2( GetSp2() );
+}

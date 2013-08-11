@@ -21,6 +21,7 @@
 
 class idSurfaceSkip : public idSurfaceBrush46 {
 public:
+	virtual void Draw();
 };
 
 #endif

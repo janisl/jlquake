@@ -30,6 +30,8 @@ public:
 	srfPolyBuffer_t surf;
 
 	idSurfacePolyBuffer();
+
+	virtual void Draw();
 };
 
 #endif

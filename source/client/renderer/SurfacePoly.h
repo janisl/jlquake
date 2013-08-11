@@ -34,6 +34,8 @@ public:
 	srfPoly_t surf;
 
 	idSurfacePoly();
+
+	virtual void Draw();
 };
 
 #endif

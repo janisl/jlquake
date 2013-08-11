@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceFlare.h"
+#include "surfaces.h"
+
+void idSurfaceFlare::Draw() {
+	RB_SurfaceFlare( ( srfFlare_t* )data );
+}

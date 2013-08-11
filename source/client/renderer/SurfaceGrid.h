@@ -21,6 +21,7 @@
 
 class idSurfaceGrid : public idSurfaceGeneric {
 public:
+	virtual void Draw();
 };
 
 #endif

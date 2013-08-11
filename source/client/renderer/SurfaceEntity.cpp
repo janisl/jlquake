@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "SurfaceEntity.h"
+#include "surfaces.h"
 
 static surface_base_t entitySurfaceOld = { SF_ENTITY };
 
@@ -22,4 +23,8 @@ idSurfaceEntity entitySurface;
 
 idSurfaceEntity::idSurfaceEntity() {
 	data = &entitySurfaceOld;
+}
+
+void idSurfaceEntity::Draw() {
+	RB_SurfaceEntity( &data->surfaceType );
 }

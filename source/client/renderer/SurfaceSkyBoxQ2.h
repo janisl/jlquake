@@ -22,6 +22,8 @@
 class idSurfaceSkyBoxQ2 : public idSurface {
 public:
 	idSurfaceSkyBoxQ2();
+
+	virtual void Draw();
 };
 
 extern idSurfaceSkyBoxQ2 skyBoxQ2Surface;

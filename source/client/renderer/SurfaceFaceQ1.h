@@ -86,6 +86,8 @@ public:
 	idSurfaceFaceQ1* texturechain;
 	
     idSurfaceFaceQ1();
+
+	virtual void Draw();
 };
 
 #endif

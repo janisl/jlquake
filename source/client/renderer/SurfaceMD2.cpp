@@ -15,8 +15,13 @@
 //**************************************************************************
 
 #include "SurfaceMD2.h"
+#include "models/model.h"
 
 idSurfaceMD2::idSurfaceMD2() {
 	Com_Memset( &header, 0, sizeof ( header ) );
 	data = &header;
+}
+
+void idSurfaceMD2::Draw() {
+	RB_SurfaceMd2( &header );
 }

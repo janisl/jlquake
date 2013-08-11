@@ -53,6 +53,8 @@ public:
 	msprite1_t header;
 
 	idSurfaceSPR();
+
+	virtual void Draw();
 };
 
 #endif

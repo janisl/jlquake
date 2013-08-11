@@ -22,6 +22,8 @@
 class idSurfaceParticles : public idSurface {
 public:
 	idSurfaceParticles();
+
+	virtual void Draw();
 };
 
 extern idSurfaceParticles particlesSurface;

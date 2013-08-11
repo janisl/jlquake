@@ -15,7 +15,12 @@
 //**************************************************************************
 
 #include "SurfacePoly.h"
+#include "surfaces.h"
 
 idSurfacePoly::idSurfacePoly() {
 	data = &surf;
+}
+
+void idSurfacePoly::Draw() {
+	RB_SurfacePolychain( &surf );
 }

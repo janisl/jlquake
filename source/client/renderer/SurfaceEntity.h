@@ -24,6 +24,8 @@
 class idSurfaceEntity : public idSurface {
 public:
 	idSurfaceEntity();
+
+	virtual void Draw();
 };
 
 extern idSurfaceEntity entitySurface;

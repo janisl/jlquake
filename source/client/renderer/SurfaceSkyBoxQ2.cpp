@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "SurfaceSkyBoxQ2.h"
+#include "sky.h"
 
 idSurfaceSkyBoxQ2 skyBoxQ2Surface;
 
@@ -22,4 +23,8 @@ static surface_base_t q2SkySurface = { SF_SKYBOX_Q2 };
 
 idSurfaceSkyBoxQ2::idSurfaceSkyBoxQ2() {
 	data = &q2SkySurface;
+}
+
+void idSurfaceSkyBoxQ2::Draw() {
+	R_DrawSkyBoxQ2( &data->surfaceType );
 }

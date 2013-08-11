@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceFoliage.h"
+#include "surfaces.h"
+
+void idSurfaceFoliage::Draw() {
+	RB_SurfaceFoliage( ( srfFoliage_t* )data );
+}

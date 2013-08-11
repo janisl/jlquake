@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceMDC.h"
+#include "models/model.h"
+
+void idSurfaceMDC::Draw() {
+	RB_SurfaceCMesh( ( mdcSurface_t* )data );
+}

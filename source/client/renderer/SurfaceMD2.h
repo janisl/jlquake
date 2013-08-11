@@ -39,6 +39,8 @@ public:
 	mmd2_t header;
 
 	idSurfaceMD2();
+
+	virtual void Draw();
 };
 
 #endif

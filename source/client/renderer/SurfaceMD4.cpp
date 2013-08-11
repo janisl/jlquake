@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceMD4.h"
+#include "models/model.h"
+
+void idSurfaceMD4::Draw() {
+	RB_SurfaceAnim( ( md4Surface_t* )data );
+}

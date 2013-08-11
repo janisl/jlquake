@@ -15,8 +15,13 @@
 //**************************************************************************
 
 #include "SurfaceMDL.h"
+#include "models/model.h"
 
 idSurfaceMDL::idSurfaceMDL() {
 	Com_Memset( &header, 0, sizeof( header ) );
 	data = &header;
+}
+
+void idSurfaceMDL::Draw() {
+	RB_SurfaceMdl( &header );
 }

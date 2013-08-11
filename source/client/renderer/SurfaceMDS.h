@@ -21,6 +21,7 @@
 
 class idSurfaceMDS : public idSurface {
 public:
+	virtual void Draw();
 };
 
 #endif

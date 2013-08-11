@@ -19,7 +19,6 @@
 
 #include "../../common/qcommon.h"
 
-// any changes in surfaceType must be mirrored in rb_surfaceTable[]
 enum surfaceType_t
 {
 	SF_BAD,
@@ -64,7 +63,7 @@ public:
 	{
 	}
 	virtual ~idSurface();
-	virtual void Draw();
+	virtual void Draw() = 0;
 };
 
 #endif

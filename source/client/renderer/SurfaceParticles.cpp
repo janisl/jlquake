@@ -15,6 +15,7 @@
 //**************************************************************************
 
 #include "SurfaceParticles.h"
+#include "particle.h"
 
 idSurfaceParticles particlesSurface;
 
@@ -22,4 +23,8 @@ static surface_base_t particlesSurfaceOld = { SF_PARTICLES };
 
 idSurfaceParticles::idSurfaceParticles() {
 	data = &particlesSurfaceOld;
+}
+
+void idSurfaceParticles::Draw() {
+	R_DrawParticles( data );
 }

@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceMDM.h"
+#include "models/model.h"
+
+void idSurfaceMDM::Draw() {
+	RB_MDM_SurfaceAnim( ( mdmSurface_t* )data );
+}

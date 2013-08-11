@@ -32,6 +32,8 @@ public:
 	srfDecal_t surf;
 
 	idSurfaceDecal();
+
+	virtual void Draw();
 };
 
 #endif

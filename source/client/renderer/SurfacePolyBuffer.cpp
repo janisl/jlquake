@@ -15,7 +15,12 @@
 //**************************************************************************
 
 #include "SurfacePolyBuffer.h"
+#include "surfaces.h"
 
 idSurfacePolyBuffer::idSurfacePolyBuffer() {
 	data = &surf;
+}
+
+void idSurfacePolyBuffer::Draw() {
+	RB_SurfacePolyBuffer( &surf );
 }

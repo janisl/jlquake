@@ -15,3 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceMD3.h"
+#include "models/model.h"
+
+void idSurfaceMD3::Draw() {
+	RB_SurfaceMesh( ( md3Surface_t* )data );
+}

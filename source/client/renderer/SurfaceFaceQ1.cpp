@@ -15,9 +15,14 @@
 //**************************************************************************
 
 #include "SurfaceFaceQ1.h"
+#include "surfaces.h"
 
 idSurfaceFaceQ1::idSurfaceFaceQ1()
 : texturechain(NULL) {
 	Com_Memset( &surf, 0, sizeof( surf ) );
 	data = &surf;
+}
+
+void idSurfaceFaceQ1::Draw() {
+	R_DrawSequentialPoly( &surf );
 }

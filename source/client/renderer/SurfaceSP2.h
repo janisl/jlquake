@@ -22,6 +22,8 @@
 
 class idSurfaceSP2 : public idSurface {
 public:
+	virtual void Draw();
+
 	dsprite2_t* GetSp2() const {
 		return ( dsprite2_t* )data;
 	}

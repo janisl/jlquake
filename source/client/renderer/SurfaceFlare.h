@@ -21,6 +21,7 @@
 
 class idSurfaceFlare : public idSurfaceBrush46 {
 public:
+	virtual void Draw();
 };
 
 #endif
