@@ -24,3 +24,13 @@ idSurfacePoly::idSurfacePoly() {
 void idSurfacePoly::Draw() {
 	RB_SurfacePolychain( &surf );
 }
+
+cplane_t idSurfacePoly::GetPlane() const {
+	srfPoly_t* poly = ( srfPoly_t* )data;
+	vec4_t plane4;
+	PlaneFromPoints( plane4, poly->verts[ 0 ].xyz, poly->verts[ 1 ].xyz, poly->verts[ 2 ].xyz );
+	cplane_t plane;
+	VectorCopy( plane4, plane.normal );
+	plane.dist = plane4[ 3 ];
+	return plane;
+}

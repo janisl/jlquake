@@ -17,7 +17,7 @@
 #ifndef __idSurface__
 #define __idSurface__
 
-#include "../../common/qcommon.h"
+#include "../../common/mathlib.h"
 
 enum surfaceType_t
 {
@@ -62,15 +62,10 @@ public:
 	}
 	virtual ~idSurface();
 	virtual void Draw() = 0;
-
-	surface_base_t* GetData();
+	virtual cplane_t GetPlane() const;
 
 protected:
 	surface_base_t* data;					// any of srf*_t
 };
-
-inline surface_base_t* idSurface::GetData() {
-	return data;
-}
 
 #endif

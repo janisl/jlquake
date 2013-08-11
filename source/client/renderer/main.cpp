@@ -937,51 +937,9 @@ static void R_GenerateDrawSurfs() {
 	}
 }
 
-static void R_PlaneForSurface( surface_base_t* surface, cplane_t* plane ) {
-	if ( !surface ) {
-		Com_Memset( plane, 0, sizeof ( *plane ) );
-		plane->normal[ 0 ] = 1;
-		return;
-	}
-	switch ( surface->surfaceType ) {
-	case SF_FACE:
-		*plane = ( ( srfSurfaceFace_t* )surface )->plane;
-		return;
-
-	case SF_TRIANGLES:
-	{
-		srfTriangles_t* tri = ( srfTriangles_t* )surface;
-		bsp46_drawVert_t* v1 = tri->verts + tri->indexes[ 0 ];
-		bsp46_drawVert_t* v2 = tri->verts + tri->indexes[ 1 ];
-		bsp46_drawVert_t* v3 = tri->verts + tri->indexes[ 2 ];
-		vec4_t plane4;
-		PlaneFromPoints( plane4, v1->xyz, v2->xyz, v3->xyz );
-		VectorCopy( plane4, plane->normal );
-		plane->dist = plane4[ 3 ];
-	}
-		return;
-
-	case SF_POLY:
-	{
-		srfPoly_t* poly = ( srfPoly_t* )surface;
-		vec4_t plane4;
-		PlaneFromPoints( plane4, poly->verts[ 0 ].xyz, poly->verts[ 1 ].xyz, poly->verts[ 2 ].xyz );
-		VectorCopy( plane4, plane->normal );
-		plane->dist = plane4[ 3 ];
-	}
-		return;
-
-	default:
-		Com_Memset( plane, 0, sizeof ( *plane ) );
-		plane->normal[ 0 ] = 1;
-		return;
-	}
-}
-
 static bool IsMirror( const drawSurf_t* drawSurf, int entityNum ) {
 	// create plane axis for the portal we are seeing
-	cplane_t originalPlane;
-	R_PlaneForSurface( drawSurf->surface->GetData(), &originalPlane );
+	cplane_t originalPlane = drawSurf->surface->GetPlane();
 
 	// rotate the plane if necessary
 	cplane_t plane;
@@ -1119,8 +1077,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 	orientation_t* surface, orientation_t* camera,
 	vec3_t pvsOrigin, bool* mirror ) {
 	// create plane axis for the portal we are seeing
-	cplane_t originalPlane;
-	R_PlaneForSurface( drawSurf->surface->GetData(), &originalPlane );
+	cplane_t originalPlane = drawSurf->surface->GetPlane();
 
 	// rotate the plane if necessary
 	cplane_t plane;

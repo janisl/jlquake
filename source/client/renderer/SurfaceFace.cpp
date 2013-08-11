@@ -20,3 +20,7 @@
 void idSurfaceFace::Draw() {
 	RB_SurfaceFace( ( srfSurfaceFace_t* )data );
 }
+
+cplane_t idSurfaceFace::GetPlane() const {
+	return ( ( srfSurfaceFace_t* )data )->plane;
+}

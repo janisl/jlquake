@@ -19,3 +19,9 @@
 
 idSurface::~idSurface() {
 }
+
+cplane_t idSurface::GetPlane() const {
+	cplane_t plane = {};
+	plane.normal[ 0 ] = 1;
+	return plane;
+}
