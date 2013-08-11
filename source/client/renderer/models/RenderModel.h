@@ -217,8 +217,8 @@ the bits are allocated as follows:
 #define MAX_GRID_SIZE       65			// max dimensions of a grid mesh in memory
 
 struct drawSurf_t {
-	unsigned long long sort;						// bit combination for fast compares
-	surfaceType_t* surface;				// any of surface*_t
+	unsigned long long sort;			// bit combination for fast compares
+	idSurface* surface;					// any of surface*_t
 };
 
 struct srfFlare_t : surface_base_t {

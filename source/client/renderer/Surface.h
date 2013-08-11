@@ -64,6 +64,7 @@ public:
 	{
 	}
 	virtual ~idSurface();
+	virtual void Draw();
 };
 
 #endif

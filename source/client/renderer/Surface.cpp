@@ -15,6 +15,11 @@
 //**************************************************************************
 
 #include "Surface.h"
+#include "surfaces.h"
 
 idSurface::~idSurface() {
+}
+
+void idSurface::Draw() {
+	rb_surfaceTable[ data->surfaceType ]( data );
 }
