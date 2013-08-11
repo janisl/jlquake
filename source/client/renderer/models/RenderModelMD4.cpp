@@ -101,9 +101,6 @@ bool idRenderModelMD4::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 					name, SHADER_MAX_INDEXES / 3, surf->numTriangles );
 			}
 
-			// change to surface identifier
-			surf->ident = SF_MD4;
-
 			// lowercase the surface name so skin compares are faster
 			String::ToLower( surf->name );
 

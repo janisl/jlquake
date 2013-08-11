@@ -20,6 +20,21 @@
 #include "Surface.h"
 #include "shader.h"
 
+enum surfaceType_t
+{
+	SF_BAD,
+	SF_SKIP,				// ignore
+	SF_FACE,
+	SF_GRID,
+	SF_TRIANGLES,
+	SF_FOLIAGE,
+	SF_FLARE,
+};
+
+struct surface_base_t {
+	surfaceType_t surfaceType;
+};
+
 class idSurfaceBrush46 : public idSurface {
 public:
 	int viewCount;							// if == tr.viewCount, already added

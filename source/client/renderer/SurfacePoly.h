@@ -22,7 +22,7 @@
 
 // when cgame directly specifies a polygon, it becomes a srfPoly_t
 // as soon as it is called
-struct srfPoly_t : surface_base_t {
+struct srfPoly_t {
 	qhandle_t hShader;
 	int fogIndex;
 	int numVerts;

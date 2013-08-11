@@ -280,7 +280,6 @@ void R_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t* verts,
 		}
 
 		idSurfacePoly* poly = &backEndData[ tr.smpFrame ]->polys[ r_numpolys ];
-		poly->surf.surfaceType = SF_POLY;
 		poly->surf.hShader = hShader;
 		poly->surf.numVerts = numVerts;
 		poly->surf.verts = &backEndData[ tr.smpFrame ]->polyVerts[ r_numpolyverts ];
@@ -335,7 +334,6 @@ void R_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer ) {
 	idSurfacePolyBuffer* pPolySurf = &backEndData[ tr.smpFrame ]->polybuffers[ r_numpolybuffers ];
 	r_numpolybuffers++;
 
-	pPolySurf->surf.surfaceType = SF_POLYBUFFER;
 	pPolySurf->surf.pPolyBuffer = pPolyBuffer;
 
 	vec3_t bounds[ 2 ];

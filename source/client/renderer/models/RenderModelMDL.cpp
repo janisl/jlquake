@@ -39,7 +39,6 @@ bool idRenderModelMDL::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 	// skin and group info
 	//
 	mdl_pheader = new idSurfaceMDL;
-	mdl_pheader->header.surfaceType = SF_MDL;
 
 	q1_flags = LittleLong( pinmodel->flags );
 

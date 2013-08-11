@@ -39,7 +39,7 @@ struct msprite1framedesc_t {
 	msprite1frame_t* frameptr;
 };
 
-struct msprite1_t : surface_base_t {
+struct msprite1_t {
 	int type;
 	int maxwidth;
 	int maxheight;

@@ -19,41 +19,6 @@
 
 #include "../../common/mathlib.h"
 
-enum surfaceType_t
-{
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE_Q1,
-	SF_FACE_Q2,
-	SF_SKYBOX_Q2,
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-	SF_POLY,
-	SF_SPR,
-	SF_SP2,
-	SF_MDL,
-	SF_MD2,
-	SF_MD3,
-	SF_MD4,
-	SF_MDC,
-	SF_MDS,
-	SF_MDM,
-	SF_FLARE,
-	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_POLYBUFFER,
-	SF_DECAL,				// ydnar: decal surfaces
-	SF_PARTICLES,
-
-	SF_NUM_SURFACE_TYPES,
-	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
-};
-
-struct surface_base_t {
-	surfaceType_t surfaceType;
-};
-
 class idSurface {
 public:
 	idSurface()

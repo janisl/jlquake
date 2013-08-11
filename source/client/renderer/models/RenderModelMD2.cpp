@@ -143,7 +143,6 @@ bool idRenderModelMD2::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 
 	idSurfaceMD2* pheader = q2_md2;
 
-	pheader->header.surfaceType = SF_MD2;
 	pheader->header.framesize = frameSize;
 	pheader->header.num_skins = pinmodel.num_skins;
 	pheader->header.num_frames = pinmodel.num_frames;

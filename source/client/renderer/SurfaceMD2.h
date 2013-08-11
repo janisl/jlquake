@@ -21,7 +21,7 @@
 #include "../../common/math/Vec2.h"
 #include "shader.h"
 
-struct mmd2_t : surface_base_t {
+struct mmd2_t {
 	int framesize;				// byte size of each frame
 
 	int num_skins;

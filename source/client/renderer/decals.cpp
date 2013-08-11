@@ -717,7 +717,6 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	tr.refdef.numDecals++;
 
 	//	set it up
-	srf->surf.surfaceType = SF_DECAL;
 	srf->surf.numVerts = decal->numVerts;
 	Com_Memcpy( srf->surf.verts, decal->verts, srf->surf.numVerts * sizeof ( *srf->surf.verts ) );
 

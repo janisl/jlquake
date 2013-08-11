@@ -104,9 +104,6 @@ bool idRenderModelMDM::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 			LL( surf->ofsEnd );
 		}
 
-		// change to surface identifier
-		surf->ident = SF_MDM;
-
 		if ( surf->numVerts > SHADER_MAX_VERTEXES ) {
 			common->Error( "R_LoadMdm: %s has more than %i verts on a surface (%i)",
 				name, SHADER_MAX_VERTEXES, surf->numVerts );

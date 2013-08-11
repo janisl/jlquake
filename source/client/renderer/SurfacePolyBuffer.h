@@ -20,7 +20,7 @@
 #include "Surface.h"
 #include "public.h"
 
-struct srfPolyBuffer_t : surface_base_t {
+struct srfPolyBuffer_t {
 	int fogIndex;
 	polyBuffer_t* pPolyBuffer;
 };

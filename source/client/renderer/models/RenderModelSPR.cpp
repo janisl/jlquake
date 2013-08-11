@@ -114,7 +114,6 @@ bool idRenderModelSPR::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 
 	q1_spr = psprite;
 
-	psprite->header.surfaceType = SF_SPR;
 	psprite->header.type = LittleLong( pin->type );
 	psprite->header.maxwidth = LittleLong( pin->width );
 	psprite->header.maxheight = LittleLong( pin->height );

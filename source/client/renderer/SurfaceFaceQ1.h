@@ -49,7 +49,7 @@ struct mbrush29_glpoly_t {
 	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
 };
 
-struct mbrush29_surface_t : surface_base_t {
+struct mbrush29_surface_t {
 	int visframe;				// should be drawn when node is crossed
 
 	cplane_t* plane;

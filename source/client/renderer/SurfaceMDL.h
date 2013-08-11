@@ -34,7 +34,7 @@ struct mmesh1framedesc_t {
 	char name[ 16 ];
 };
 
-struct mesh1hdr_t : surface_base_t {
+struct mesh1hdr_t {
 	int version;
 	vec3_t scale;
 	vec3_t scale_origin;

@@ -132,9 +132,6 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 				mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles );
 		}
 
-		// change to surface identifier
-		surf->ident = SF_MD3;
-
 		// lowercase the surface name so skin compares are faster
 		String::ToLower( surf->name );
 

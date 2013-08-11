@@ -22,7 +22,7 @@
 
 #define MAX_DECAL_VERTS     10	// worst case is triangle clipped by 6 planes
 
-struct srfDecal_t : surface_base_t {
+struct srfDecal_t {
 	int numVerts;
 	polyVert_t verts[ MAX_DECAL_VERTS ];
 };
