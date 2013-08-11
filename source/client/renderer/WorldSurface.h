@@ -38,12 +38,17 @@ struct surface_base_t {
 
 class idWorldSurface : public idSurface {
 public:
-	surface_base_t* data;					// any of srf*_t
+	// Q1, Q2 - should be drawn when node is crossed
+	// Q3 - if == tr.viewCount, already added
+	int viewCount;
+
+	surface_base_t* data;		// any of srf*_t
 
 	idWorldSurface();
 };
 
 inline idWorldSurface::idWorldSurface() {
+	viewCount = 0;
 	data = NULL;
 }
 

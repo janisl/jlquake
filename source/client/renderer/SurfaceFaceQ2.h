@@ -44,8 +44,6 @@ struct mbrush38_glpoly_t {
 };
 
 struct mbrush38_surface_t : surface_base_t {
-	int visframe;				// should be drawn when node is crossed
-
 	cplane_t* plane;
 	int flags;
 

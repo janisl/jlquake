@@ -22,13 +22,11 @@
 
 class idSurfaceBrush46 : public idWorldSurface {
 public:
-	int viewCount;							// if == tr.viewCount, already added
 	shader_t* shader;
 	int fogIndex;
 
 	idSurfaceBrush46()
-	: viewCount( 0 )
-	, shader( NULL )
+	: shader( NULL )
 	, fogIndex( 0 )
 	{}
 

@@ -613,7 +613,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 
 		if ( c ) {
 			do {
-				( *mark )->surf.visframe = tr.viewCount;
+				( *mark )->viewCount = tr.viewCount;
 				mark++;
 			} while ( --c );
 		}
@@ -664,7 +664,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 			side = 0;
 		}
 		for (; c; c--, surf++ ) {
-			if ( surf->surf.visframe != tr.viewCount ) {
+			if ( surf->viewCount != tr.viewCount ) {
 				continue;
 			}
 
@@ -761,7 +761,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 
 		if ( c ) {
 			do {
-				( *mark )->surf.visframe = tr.viewCount;
+				( *mark )->viewCount = tr.viewCount;
 				mark++;
 			} while ( --c );
 		}
@@ -805,7 +805,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 	// draw stuff
 	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for ( int c = node->numsurfaces; c; c--, surf++ ) {
-		if ( surf->surf.visframe != tr.viewCount ) {
+		if ( surf->viewCount != tr.viewCount ) {
 			continue;
 		}
 
