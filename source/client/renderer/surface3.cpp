@@ -122,10 +122,6 @@ void RB_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, byte* color ) {
 	RB_AddQuadStampExt( origin, left, up, color, 0, 0, 1, 1 );
 }
 
-static void RB_SurfaceBad( surfaceType_t* surfType ) {
-	common->Printf( "Bad surface tesselated.\n" );
-}
-
 void RB_SurfaceSkip( void* ) {
 }
 
