@@ -321,7 +321,7 @@ static idSurfaceBrush46* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, ( srfGeneric_t* )cv, cv->points[ 0 ] );
+	FinishGenericSurface( ds, cv, cv->points[ 0 ] );
 
 	surf->SetBrush46Data(cv);
 	return surf;
@@ -398,7 +398,7 @@ static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 	grid->lodRadius = VectorLength( tmpVec );
 
 	// finish surface
-	FinishGenericSurface( ds, ( srfGeneric_t* )grid, grid->verts[ 0 ].xyz );
+	FinishGenericSurface( ds, grid, grid->verts[ 0 ].xyz );
 	return surf;
 }
 
@@ -587,7 +587,7 @@ static idSurfaceBrush46* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* v
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, ( srfGeneric_t* )foliage, foliage->xyz[ 0 ] );
+	FinishGenericSurface( ds, foliage, foliage->xyz[ 0 ] );
 	return surf;
 }
 
