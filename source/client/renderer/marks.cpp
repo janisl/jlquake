@@ -113,7 +113,7 @@ static void R_ChopPolyBehindPlane( int numInPoints, vec3_t inPoints[ MAX_VERTS_O
 }
 
 static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
-	surfaceType_t** list, int listsize, int* listlength, vec3_t dir ) {
+	idSurfaceBrush46** list, int listsize, int* listlength, vec3_t dir ) {
 	// RF, if this node hasn't been rendered recently, ignore it
 	if ( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) &&
 		 node->visframe < tr.visCount - 2 ) {	// allow us to be a few frames behind
@@ -154,7 +154,7 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 		}
 		// extra check for surfaces to avoid list overflows
 		else if ( surf->GetBrush46Data()->surfaceType == SF_FACE ) {
-			if ( !( GGameType & GAME_ET ) || ( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane.type != PLANE_NON_PLANAR ) {
+			if ( ( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane.type != PLANE_NON_PLANAR ) {
 				// the face plane should go through the box
 				int s = BoxOnPlaneSide( mins, maxs, &( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane );
 				if ( s == 1 || s == 2 ) {
@@ -167,15 +167,15 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 					surf->viewCount = tr.viewCount;
 				}
 			}
-		} else if ( *( surfaceType_t* )( surf->GetBrush46Data() ) != SF_GRID &&
-					( !( GGameType & GAME_ET ) || *( surfaceType_t* )( surf->GetBrush46Data() ) != SF_TRIANGLES ) ) {
+		} else if ( surf->GetBrush46Data()->surfaceType != SF_GRID &&
+					( !( GGameType & GAME_ET ) || surf->GetBrush46Data()->surfaceType != SF_TRIANGLES ) ) {
 			surf->viewCount = tr.viewCount;
 		}
 		// check the viewCount because the surface may have
 		// already been added if it spans multiple leafs
 		if ( surf->viewCount != tr.viewCount ) {
 			surf->viewCount = tr.viewCount;
-			list[ *listlength ] = ( surfaceType_t* )surf->GetBrush46Data();
+			list[ *listlength ] = surf;
 			( *listlength )++;
 		}
 		mark++;
@@ -270,7 +270,7 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 	int numPlanes = numPoints + 2;
 
 	int numsurfaces = 0;
-	surfaceType_t* surfaces[ 64 ];
+	idSurfaceBrush46* surfaces[ 64 ];
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 64, &numsurfaces, projectionDir );
 	//assert(numsurfaces <= 64);
 	//assert(numsurfaces != 64);
@@ -279,8 +279,8 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 	int returnedFragments = 0;
 
 	for ( int i = 0; i < numsurfaces; i++ ) {
-		if ( *surfaces[ i ] == SF_GRID ) {
-			srfGridMesh_t* cv = ( srfGridMesh_t* )surfaces[ i ];
+		if ( surfaces[ i ]->GetBrush46Data()->surfaceType == SF_GRID ) {
+			srfGridMesh_t* cv = ( srfGridMesh_t* )surfaces[ i ]->GetBrush46Data();
 			for ( int m = 0; m < cv->height - 1; m++ ) {
 				for ( int n = 0; n < cv->width - 1; n++ ) {
 					// We triangulate the grid and chop all triangles within
@@ -360,8 +360,8 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 					}
 				}
 			}
-		} else if ( *surfaces[ i ] == SF_FACE ) {
-			srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )surfaces[ i ];
+		} else if ( surfaces[ i ]->GetBrush46Data()->surfaceType == SF_FACE ) {
+			srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )surfaces[ i ]->GetBrush46Data();
 			// check the normal of this face
 			if ( DotProduct( surf->plane.normal, projectionDir ) > -0.5 ) {
 				continue;
@@ -398,9 +398,8 @@ int R_MarkFragments( int numPoints, const vec3_t* points, const vec3_t projectio
 
 int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t projection,
 	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t* fragmentBuffer ) {
-	int numsurfaces, numPlanes;
+	int numPlanes;
 	int i, j, k, m, n;
-	surfaceType_t* surfaces[ 4096 ];
 	vec3_t mins, maxs;
 	int returnedFragments;
 	int returnedPoints;
@@ -472,7 +471,8 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 	dists[ numPoints + 1 ] = DotProduct( normals[ numPoints + 1 ], points[ 0 ] ) - radius * ( 1 + oldMapping * 10 );
 	numPlanes = numPoints + 2;
 
-	numsurfaces = 0;
+	int numsurfaces = 0;
+	idSurfaceBrush46* surfaces[ 4096 ];
 	R_BoxSurfaces_r( tr.world->nodes, mins, maxs, surfaces, 4096, &numsurfaces, projectionDir );
 
 	returnedPoints = 0;
@@ -485,9 +485,9 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 
 	for ( i = 0; i < numsurfaces; i++ ) {
 
-		if ( *surfaces[ i ] == SF_GRID ) {
+		if ( surfaces[ i ]->GetBrush46Data()->surfaceType == SF_GRID ) {
 
-			cv = ( srfGridMesh_t* )surfaces[ i ];
+			cv = ( srfGridMesh_t* )surfaces[ i ]->GetBrush46Data();
 			for ( m = 0; m < cv->height - 1; m++ ) {
 				for ( n = 0; n < cv->width - 1; n++ ) {
 					// We triangulate the grid and chop all triangles within
@@ -564,7 +564,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 					}
 				}
 			}
-		} else if ( *surfaces[ i ] == SF_FACE ) {
+		} else if ( surfaces[ i ]->GetBrush46Data()->surfaceType == SF_FACE ) {
 			vec3_t axis[ 3 ];
 			float texCoordScale, dot;
 			vec3_t originalPoints[ 4 ];
@@ -577,13 +577,9 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 			vec3_t lmins, lmaxs;
 			vec3_t surfnormal;
 
-			surf = ( srfSurfaceFace_t* )surfaces[ i ];
+			surf = ( srfSurfaceFace_t* )surfaces[ i ]->GetBrush46Data();
 
-			if ( GGameType & GAME_ET && surf->plane.type == PLANE_NON_PLANAR ) {
-				VectorCopy( bestnormal, surfnormal );
-			} else {
-				VectorCopy( surf->plane.normal, surfnormal );
-			}
+			VectorCopy( surf->plane.normal, surfnormal );
 
 			if ( !oldMapping ) {
 
@@ -592,21 +588,17 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 				// we project the center of the original impact center out along the projection vector,
 				// onto the current surface
 
-				if ( GGameType & GAME_ET && surf->plane.type == PLANE_NON_PLANAR ) {
-					VectorCopy( center, newCenter );
-				} else {
-					// find the center of the new decal
-					dot = DotProduct( center, surfnormal );
-					dot -= surf->plane.dist;
-					// check the normal of this face
-					if ( dot < -epsilon && DotProduct( surfnormal, projectionDir ) >= 0.01 ) {
-						continue;
-					} else if ( idMath::Fabs( dot ) > radius ) {
-						continue;
-					}
-					// if the impact point is behind the surface, subtract the projection, otherwise add it
-					VectorMA( center, -dot, bestnormal, newCenter );
+				// find the center of the new decal
+				dot = DotProduct( center, surfnormal );
+				dot -= surf->plane.dist;
+				// check the normal of this face
+				if ( dot < -epsilon && DotProduct( surfnormal, projectionDir ) >= 0.01 ) {
+					continue;
+				} else if ( idMath::Fabs( dot ) > radius ) {
+					continue;
 				}
+				// if the impact point is behind the surface, subtract the projection, otherwise add it
+				VectorMA( center, -dot, bestnormal, newCenter );
 
 				// recalc dot from the offset position
 				dot = DotProduct( newCenter, surfnormal );
@@ -704,7 +696,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 			continue;
 		}
 		// Arnout: projection on models (mainly for terrain though)
-		else if ( *surfaces[ i ] == SF_TRIANGLES ) {
+		else if ( surfaces[ i ]->GetBrush46Data()->surfaceType == SF_TRIANGLES ) {
 
 			// duplicated so we don't mess with the original clips for the curved surfaces
 			vec3_t lnormals[ MAX_VERTS_ON_POLY + 2 ];
@@ -712,7 +704,7 @@ int R_MarkFragmentsWolf( int orientation, const vec3_t* points, const vec3_t pro
 			//vec3_t			lprojection, lprojectionDir;
 
 			srfTriangles_t* cts;
-			cts = ( srfTriangles_t* )surfaces[ i ];
+			cts = ( srfTriangles_t* )surfaces[ i ]->GetBrush46Data();
 			if ( !oldMapping ) {
 				for ( k = 0; k < numPoints; k++ ) {
 					VectorNegate( normals[ k ], lnormals[ k ] );
