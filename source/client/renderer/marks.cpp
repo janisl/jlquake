@@ -153,29 +153,29 @@ static void R_BoxSurfaces_r( mbrush46_node_t* node, vec3_t mins, vec3_t maxs,
 			surf->viewCount = tr.viewCount;
 		}
 		// extra check for surfaces to avoid list overflows
-		else if ( surf->data->surfaceType == SF_FACE ) {
-			if ( !( GGameType & GAME_ET ) || ( ( srfSurfaceFace_t* )surf->data )->plane.type != PLANE_NON_PLANAR ) {
+		else if ( surf->GetBrush46Data()->surfaceType == SF_FACE ) {
+			if ( !( GGameType & GAME_ET ) || ( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane.type != PLANE_NON_PLANAR ) {
 				// the face plane should go through the box
-				int s = BoxOnPlaneSide( mins, maxs, &( ( srfSurfaceFace_t* )surf->data )->plane );
+				int s = BoxOnPlaneSide( mins, maxs, &( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane );
 				if ( s == 1 || s == 2 ) {
 					surf->viewCount = tr.viewCount;
 				} else if ( ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) &&
-							  DotProduct( ( ( srfSurfaceFace_t* )surf->data )->plane.normal, dir ) > -0.5 ) ||
+							  DotProduct( ( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane.normal, dir ) > -0.5 ) ||
 							( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) &&
-							  DotProduct( ( ( srfSurfaceFace_t* )surf->data )->plane.normal, dir ) < -0.5 ) ) {
+							  DotProduct( ( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->plane.normal, dir ) < -0.5 ) ) {
 					// don't add faces that make sharp angles with the projection direction
 					surf->viewCount = tr.viewCount;
 				}
 			}
-		} else if ( *( surfaceType_t* )( surf->data ) != SF_GRID &&
-					( !( GGameType & GAME_ET ) || *( surfaceType_t* )( surf->data ) != SF_TRIANGLES ) ) {
+		} else if ( *( surfaceType_t* )( surf->GetBrush46Data() ) != SF_GRID &&
+					( !( GGameType & GAME_ET ) || *( surfaceType_t* )( surf->GetBrush46Data() ) != SF_TRIANGLES ) ) {
 			surf->viewCount = tr.viewCount;
 		}
 		// check the viewCount because the surface may have
 		// already been added if it spans multiple leafs
 		if ( surf->viewCount != tr.viewCount ) {
 			surf->viewCount = tr.viewCount;
-			list[ *listlength ] = ( surfaceType_t* )surf->data;
+			list[ *listlength ] = ( surfaceType_t* )surf->GetBrush46Data();
 			( *listlength )++;
 		}
 		mark++;

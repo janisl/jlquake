@@ -323,7 +323,7 @@ static idSurfaceBrush46* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 	// finish surface
 	FinishGenericSurface( ds, ( srfGeneric_t* )cv, cv->points[ 0 ] );
 
-	surf->data = cv;
+	surf->SetBrush46Data(cv);
 	return surf;
 }
 
@@ -345,7 +345,7 @@ static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 			surf->shader = tr.defaultShader;
 		}
 
-		surf->data = &skipData;
+		surf->SetBrush46Data(&skipData);
 		return surf;
 	}
 
@@ -381,7 +381,7 @@ static idSurfaceBrush46* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* vert
 
 	// pre-tesseleate
 	srfGridMesh_t* grid = R_SubdividePatchToGrid( width, height, points );
-	surf->data = grid;
+	surf->SetBrush46Data(grid);
 
 	// copy the level of detail origin, which is the center
 	// of the group of all curves that must subdivide the same
@@ -425,7 +425,7 @@ static idSurfaceBrush46* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* v
 	tri->verts = ( bsp46_drawVert_t* )( tri + 1 );
 	tri->indexes = ( int* )( tri->verts + tri->numVerts );
 
-	surf->data = tri;
+	surf->SetBrush46Data(tri);
 
 	// copy vertexes
 	ClearBounds( tri->bounds[ 0 ], tri->bounds[ 1 ] );
@@ -472,7 +472,7 @@ static idSurfaceBrush46* ParseFlare( bsp46_dsurface_t* ds ) {
 	srfFlare_t* flare = new srfFlare_t();
 	flare->surfaceType = SF_FLARE;
 
-	surf->data = flare;
+	surf->SetBrush46Data(flare);
 
 	for ( int i = 0; i < 3; i++ ) {
 		flare->origin[ i ] = LittleFloat( ds->lightmapOrigin[ i ] );
@@ -524,7 +524,7 @@ static idSurfaceBrush46* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* v
 	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
 
-	surf->data = foliage;
+	surf->SetBrush46Data(foliage);
 
 	// get foliage drawscale
 	float scale = r_drawfoliage->value;
@@ -637,7 +637,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 
 	for ( int j = start; j < s_worldData.numsurfaces; j++ ) {
 		//
-		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->data;
+		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->GetBrush46Data();
 		// if this surface is not a grid
 		if ( grid2->surfaceType != SF_GRID ) {
 			continue;
@@ -797,7 +797,7 @@ static void R_FixSharedVertexLodError_r( int start, srfGridMesh_t* grid1 ) {
 // still do its job but won't fix the highest LoD cracks.
 static void R_FixSharedVertexLodError() {
 	for ( int i = 0; i < s_worldData.numsurfaces; i++ ) {
-		srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->data;
+		srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->GetBrush46Data();
 		// if this surface is not a grid
 		if ( grid1->surfaceType != SF_GRID ) {
 			continue;
@@ -813,8 +813,8 @@ static void R_FixSharedVertexLodError() {
 }
 
 static bool R_StitchPatches( int grid1num, int grid2num ) {
-	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->data;
-	srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ grid2num ]->data;
+	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->GetBrush46Data();
+	srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ grid2num ]->GetBrush46Data();
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
@@ -880,7 +880,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -937,7 +937,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1007,7 +1007,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1064,7 +1064,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1134,7 +1134,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1194,7 +1194,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 						break;
 					}
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1264,7 +1264,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertColumn( grid2, l + 1, row,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1321,7 +1321,7 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 					grid2 = R_GridInsertRow( grid2, l + 1, column,
 						grid1->verts[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					grid2->lodStitched = false;
-					s_worldData.surfaces[ grid2num ]->data = grid2;
+					s_worldData.surfaces[ grid2num ]->SetBrush46Data(grid2);
 					return true;
 				}
 			}
@@ -1340,9 +1340,9 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 // be joined and cracks might still appear at that side.
 static int R_TryStitchingPatch( int grid1num ) {
 	int numstitches = 0;
-	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->data;
+	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->GetBrush46Data();
 	for ( int j = 0; j < s_worldData.numsurfaces; j++ ) {
-		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->data;
+		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->GetBrush46Data();
 		// if this surface is not a grid
 		if ( grid2->surfaceType != SF_GRID ) {
 			continue;
@@ -1374,7 +1374,7 @@ static void R_StitchAllPatches() {
 	do {
 		stitched = false;
 		for ( int i = 0; i < s_worldData.numsurfaces; i++ ) {
-			srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->data;
+			srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ i ]->GetBrush46Data();
 			// if this surface is not a grid
 			if ( grid1->surfaceType != SF_GRID ) {
 				continue;
@@ -1469,7 +1469,7 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 			idSurfaceBrush46** mark = node->firstmarksurface;
 			int c = node->nummarksurfaces;
 			while ( c-- ) {
-				srfGeneric_t* gen = ( srfGeneric_t* )( **mark ).data;
+				srfGeneric_t* gen = ( srfGeneric_t* )( **mark ).GetBrush46Data();
 				if ( gen->surfaceType != SF_FACE &&
 					 gen->surfaceType != SF_GRID &&
 					 gen->surfaceType != SF_TRIANGLES &&
@@ -1966,21 +1966,21 @@ void R_FreeBsp46( world_t* mod ) {
 		delete[] mod->vis;
 	}
 	for ( int i = 0; i < mod->numsurfaces; i++ ) {
-		switch ( mod->surfaces[ i ]->data->surfaceType ) {
+		switch ( mod->surfaces[ i ]->GetBrush46Data()->surfaceType ) {
 		case SF_GRID:
-			R_FreeSurfaceGridMesh( ( srfGridMesh_t* )mod->surfaces[ i ]->data );
+			R_FreeSurfaceGridMesh( ( srfGridMesh_t* )mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_TRIANGLES:
-			Mem_Free( mod->surfaces[ i ]->data );
+			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_FACE:
-			Mem_Free( mod->surfaces[ i ]->data );
+			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_FLARE:
-			Mem_Free( mod->surfaces[ i ]->data );
+			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_FOLIAGE:
-			Mem_Free( mod->surfaces[ i ]->data );
+			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		default:
 			break;

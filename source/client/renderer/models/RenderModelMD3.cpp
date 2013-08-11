@@ -110,7 +110,7 @@ static bool R_LoadMd3Lod( idRenderModel* mod, int lod, const void* buffer, const
 	mod->q3_md3[ lod ].surfaces = new idSurfaceMD3[ mod->q3_md3[ lod ].header->numSurfaces ];
 	md3Surface_t* surf = ( md3Surface_t* )( ( byte* )mod->q3_md3[ lod ].header + mod->q3_md3[ lod ].header->ofsSurfaces );
 	for ( int i = 0; i < mod->q3_md3[ lod ].header->numSurfaces; i++ ) {
-		mod->q3_md3[ lod ].surfaces[ i ].data = ( surface_base_t* )surf;
+		mod->q3_md3[ lod ].surfaces[ i ].SetMd3Data( surf );
 		LL( surf->ident );
 		LL( surf->flags );
 		LL( surf->numFrames );

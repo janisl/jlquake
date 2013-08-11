@@ -99,7 +99,7 @@ static bool R_LoadMdcLod( idRenderModel* mod, int lod, void* buffer, const char*
 	mod->q3_mdc[ lod ].surfaces = new idSurfaceMDC[ mod->q3_mdc[ lod ].header->numSurfaces ];
 	mdcSurface_t* surf = ( mdcSurface_t* )( ( byte* )mod->q3_mdc[ lod ].header + mod->q3_mdc[ lod ].header->ofsSurfaces );
 	for ( int i = 0; i < mod->q3_mdc[ lod ].header->numSurfaces; i++ ) {
-		mod->q3_mdc[ lod ].surfaces[ i ].data = ( surface_base_t* )surf;
+		mod->q3_mdc[ lod ].surfaces[ i ].SetMdcData( surf );
 
 		LL( surf->ident );
 		LL( surf->flags );

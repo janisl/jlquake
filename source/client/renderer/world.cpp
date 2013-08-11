@@ -266,10 +266,10 @@ static int R_DlightSurfaceET( idSurfaceBrush46* surface, int dlightBits ) {
 
 
 	// get generic surface
-	gen = ( srfGeneric_t* )surface->data;
+	gen = ( srfGeneric_t* )surface->GetBrush46Data();
 
 	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
-	switch ( surface->data->surfaceType ) {
+	switch ( surface->GetBrush46Data()->surfaceType ) {
 	case SF_FACE:
 	case SF_TRIANGLES:
 	case SF_GRID:
@@ -337,12 +337,12 @@ static int R_DlightSurface( idSurfaceBrush46* surf, int dlightBits ) {
 		return R_DlightSurfaceET( surf, dlightBits );
 	}
 
-	if ( surf->data->surfaceType == SF_FACE ) {
-		dlightBits = R_DlightFace( ( srfSurfaceFace_t* )surf->data, dlightBits );
-	} else if ( surf->data->surfaceType == SF_GRID ) {
-		dlightBits = R_DlightGrid( ( srfGridMesh_t* )surf->data, dlightBits );
-	} else if ( surf->data->surfaceType == SF_TRIANGLES ) {
-		dlightBits = R_DlightTrisurf( ( srfTriangles_t* )surf->data, dlightBits );
+	if ( surf->GetBrush46Data()->surfaceType == SF_FACE ) {
+		dlightBits = R_DlightFace( ( srfSurfaceFace_t* )surf->GetBrush46Data(), dlightBits );
+	} else if ( surf->GetBrush46Data()->surfaceType == SF_GRID ) {
+		dlightBits = R_DlightGrid( ( srfGridMesh_t* )surf->GetBrush46Data(), dlightBits );
+	} else if ( surf->GetBrush46Data()->surfaceType == SF_TRIANGLES ) {
+		dlightBits = R_DlightTrisurf( ( srfTriangles_t* )surf->GetBrush46Data(), dlightBits );
 	} else {
 		dlightBits = 0;
 	}
@@ -364,7 +364,7 @@ static void R_AddWorldSurface( idSurfaceBrush46* surf, shader_t* shader, int dli
 
 	// try to cull before dlighting or adding
 	int frontFace;
-	if ( R_CullSurface( surf->data, shader, &frontFace ) ) {
+	if ( R_CullSurface( surf->GetBrush46Data(), shader, &frontFace ) ) {
 		return;
 	}
 

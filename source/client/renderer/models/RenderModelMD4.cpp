@@ -84,7 +84,7 @@ bool idRenderModelMD4::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 		q3_md4Lods[ lodindex ].surfaces = new idSurfaceMD4[ lod->numSurfaces ];
 		md4Surface_t* surf = ( md4Surface_t* )( ( byte* )lod + lod->ofsSurfaces );
 		for ( int i = 0; i < lod->numSurfaces; i++ ) {
-			q3_md4Lods[ lodindex ].surfaces[ i ].data = ( surface_base_t* )surf;
+			q3_md4Lods[ lodindex ].surfaces[ i ].SetMd4Data( surf );
 			LL( surf->ident );
 			LL( surf->numTriangles );
 			LL( surf->ofsTriangles );

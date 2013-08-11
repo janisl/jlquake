@@ -21,6 +21,9 @@
 #ifndef _MD3FILE_H
 #define _MD3FILE_H
 
+#include "../mathlib.h"
+#include "../files.h"
+
 #define MD3_IDENT           ( ( '3' << 24 ) + ( 'P' << 16 ) + ( 'D' << 8 ) + 'I' )
 #define MD3_VERSION         15
 

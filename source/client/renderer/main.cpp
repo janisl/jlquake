@@ -981,7 +981,7 @@ static void R_PlaneForSurface( surface_base_t* surface, cplane_t* plane ) {
 static bool IsMirror( const drawSurf_t* drawSurf, int entityNum ) {
 	// create plane axis for the portal we are seeing
 	cplane_t originalPlane;
-	R_PlaneForSurface( drawSurf->surface->data, &originalPlane );
+	R_PlaneForSurface( drawSurf->surface->GetData(), &originalPlane );
 
 	// rotate the plane if necessary
 	cplane_t plane;
@@ -1120,7 +1120,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 	vec3_t pvsOrigin, bool* mirror ) {
 	// create plane axis for the portal we are seeing
 	cplane_t originalPlane;
-	R_PlaneForSurface( drawSurf->surface->data, &originalPlane );
+	R_PlaneForSurface( drawSurf->surface->GetData(), &originalPlane );
 
 	// rotate the plane if necessary
 	cplane_t plane;

@@ -334,7 +334,7 @@ void R_AddMDCSurfaces( trRefEntity_t* ent ) {
 	//
 	for ( int i = 0; i < header->numSurfaces; i++ ) {
 		idSurfaceMDC* surface = &tr.currentModel->q3_mdc[ lod ].surfaces[ i ];
-		mdcSurface_t* surfaceData = ( mdcSurface_t* )surface->data;
+		mdcSurface_t* surfaceData = ( mdcSurface_t* )surface->GetData();
 		//	blink will change to be an overlay rather than replacing the head texture.
 		// think of it like batman's mask.  the polygons that have eye texture are duplicated
 		// and the 'lids' rendered with polygonoffset over the top of the open eyes.  this gives

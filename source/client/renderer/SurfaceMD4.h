@@ -23,6 +23,12 @@
 class idSurfaceMD4 : public idSurface {
 public:
 	virtual void Draw();
+
+	void SetMd4Data( md4Surface_t* data );
 };
+
+inline void idSurfaceMD4::SetMd4Data( md4Surface_t* data ) {
+	this->data = ( surface_base_t* )data;
+}
 
 #endif

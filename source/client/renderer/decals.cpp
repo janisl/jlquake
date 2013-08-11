@@ -599,7 +599,7 @@ static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t
 //	projects a decal onto a triangle surface (brush faces, misc_models, metasurfaces)
 static void ProjectDecalOntoTriangles( decalProjector_t* dp, idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
 	//	get surface
-	srfTriangles_t* srf = ( srfTriangles_t* )surf->data;
+	srfTriangles_t* srf = ( srfTriangles_t* )surf->GetBrush46Data();
 
 	//	walk triangle list
 	for ( int i = 0; i < srf->numIndexes; i += 3 ) {
@@ -617,7 +617,7 @@ static void ProjectDecalOntoTriangles( decalProjector_t* dp, idSurfaceBrush46* s
 //	projects a decal onto a grid (patch) surface
 static void ProjectDecalOntoGrid( decalProjector_t* dp, idSurfaceBrush46* surf, mbrush46_model_t* bmodel ) {
 	//	get surface
-	srfGridMesh_t* srf = ( srfGridMesh_t* )surf->data;
+	srfGridMesh_t* srf = ( srfGridMesh_t* )surf->GetBrush46Data();
 
 	//	walk mesh rows
 	for ( int y = 0; y < ( srf->height - 1 ); y++ ) {
@@ -657,7 +657,7 @@ void R_ProjectDecalOntoSurface( decalProjector_t* dp, idSurfaceBrush46* surf, mb
 	tr.pc.c_decalTestSurfaces++;
 
 	//	get generic surface
-	srfGeneric_t* gen = ( srfGeneric_t* )surf->data;
+	srfGeneric_t* gen = ( srfGeneric_t* )surf->GetBrush46Data();
 
 	//	ignore certain surfacetypes
 	if ( gen->surfaceType != SF_FACE &&
@@ -736,7 +736,7 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	//	dynamic lights?
 	int dlightMap;
 	if ( decal->parent != NULL ) {
-		srfGeneric_t* gen = ( srfGeneric_t* )decal->parent->data;
+		srfGeneric_t* gen = ( srfGeneric_t* )decal->parent->GetBrush46Data();
 		dlightMap = ( gen->dlightBits[ tr.smpFrame ] != 0 );
 	} else {
 		dlightMap = 0;

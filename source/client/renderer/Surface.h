@@ -56,14 +56,21 @@ struct surface_base_t {
 
 class idSurface {
 public:
-	surface_base_t* data;					// any of srf*_t
-	
 	idSurface()
-	: data(NULL)
+	: data( NULL )
 	{
 	}
 	virtual ~idSurface();
 	virtual void Draw() = 0;
+
+	surface_base_t* GetData();
+
+protected:
+	surface_base_t* data;					// any of srf*_t
 };
+
+inline surface_base_t* idSurface::GetData() {
+	return data;
+}
 
 #endif

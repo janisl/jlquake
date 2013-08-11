@@ -18,10 +18,17 @@
 #define __idSurfaceMD3__
 
 #include "Surface.h"
+#include "../../common/file_formats/md3.h"
 
 class idSurfaceMD3 : public idSurface {
 public:
 	virtual void Draw();
+
+	void SetMd3Data( md3Surface_t* data );
 };
+
+inline void idSurfaceMD3::SetMd3Data( md3Surface_t* data ) {
+	this->data = ( surface_base_t* )data;
+}
 
 #endif

@@ -54,7 +54,7 @@ bool idRenderModelSP2::Load( idList<byte>& buffer, idSkinTranslation* skinTransl
 	}
 
 	q2_sp2 = new idSurfaceSP2;
-	q2_sp2->data = ( surface_base_t* )sprout;
+	q2_sp2->SetSp2Data( sprout );
 	q2_extradatasize = buffer.Num();
 	type = MOD_SPRITE2;
 	return true;

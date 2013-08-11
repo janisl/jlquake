@@ -27,10 +27,21 @@ public:
 	int fogIndex;
 
 	idSurfaceBrush46()
-	: viewCount(0)
-	, shader(NULL)
-	, fogIndex(0)
+	: viewCount( 0 )
+	, shader( NULL )
+	, fogIndex( 0 )
 	{}
+
+	surface_base_t* GetBrush46Data();
+	void SetBrush46Data( surface_base_t* data );
 };
+
+inline surface_base_t* idSurfaceBrush46::GetBrush46Data() {
+	return data;
+}
+
+inline void idSurfaceBrush46::SetBrush46Data( surface_base_t* data ) {
+	this->data = data;
+}
 
 #endif

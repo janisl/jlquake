@@ -18,6 +18,9 @@
 //**
 //**************************************************************************
 
+#include "../mathlib.h"
+#include "../files.h"
+
 #define MDM_IDENT           ( ( 'W' << 24 ) + ( 'M' << 16 ) + ( 'D' << 8 ) + 'M' )
 #define MDM_VERSION         3
 #define MDM_MAX_VERTS       6000

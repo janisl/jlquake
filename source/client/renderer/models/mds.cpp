@@ -227,7 +227,7 @@ void R_AddMdsAnimSurfaces( trRefEntity_t* ent ) {
 
 	for ( i = 0; i < header->numSurfaces; i++ ) {
 		idSurfaceMDS* surface = &tr.currentModel->q3_mdsSurfaces[ i ];
-		mdsSurface_t* surfaceData = ( mdsSurface_t* )surface->data;
+		mdsSurface_t* surfaceData = ( mdsSurface_t* )surface->GetData();
 		//----(SA)	blink will change to be an overlay rather than replacing the head texture.
 		//		think of it like batman's mask.  the polygons that have eye texture are duplicated
 		//		and the 'lids' rendered with polygonoffset over the top of the open eyes.  this gives

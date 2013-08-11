@@ -18,6 +18,9 @@
 //**
 //**************************************************************************
 
+#include "../mathlib.h"
+#include "../files.h"
+
 #define MDS_IDENT           ( ( 'W' << 24 ) + ( 'S' << 16 ) + ( 'D' << 8 ) + 'M' )
 #define MDS_VERSION         4
 #define MDS_MAX_VERTS       6000

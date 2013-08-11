@@ -18,10 +18,17 @@
 #define __idSurfaceMDS__
 
 #include "Surface.h"
+#include "../../common/file_formats/mds.h"
 
 class idSurfaceMDS : public idSurface {
 public:
 	virtual void Draw();
+
+	void SetMdsData( mdsSurface_t* data );
 };
+
+inline void idSurfaceMDS::SetMdsData( mdsSurface_t* data ) {
+	this->data = ( surface_base_t* )data;
+}
 
 #endif

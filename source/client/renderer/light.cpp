@@ -710,14 +710,14 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 	for ( int i = 0; i < bmodel->numSurfaces; i++ ) {
 		idSurfaceBrush46* surf = bmodel->firstSurface[ i ];
 
-		if ( surf->data->surfaceType == SF_FACE ) {
-			( ( srfSurfaceFace_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( surf->data->surfaceType == SF_GRID ) {
-			( ( srfGridMesh_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( surf->data->surfaceType == SF_TRIANGLES ) {
-			( ( srfTriangles_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
-		} else if ( surf->data->surfaceType == SF_FOLIAGE ) {
-			( ( srfFoliage_t* )surf->data )->dlightBits[ tr.smpFrame ] = mask;
+		if ( surf->GetBrush46Data()->surfaceType == SF_FACE ) {
+			( ( srfSurfaceFace_t* )surf->GetBrush46Data() )->dlightBits[ tr.smpFrame ] = mask;
+		} else if ( surf->GetBrush46Data()->surfaceType == SF_GRID ) {
+			( ( srfGridMesh_t* )surf->GetBrush46Data() )->dlightBits[ tr.smpFrame ] = mask;
+		} else if ( surf->GetBrush46Data()->surfaceType == SF_TRIANGLES ) {
+			( ( srfTriangles_t* )surf->GetBrush46Data() )->dlightBits[ tr.smpFrame ] = mask;
+		} else if ( surf->GetBrush46Data()->surfaceType == SF_FOLIAGE ) {
+			( ( srfFoliage_t* )surf->GetBrush46Data() )->dlightBits[ tr.smpFrame ] = mask;
 		}
 	}
 }
