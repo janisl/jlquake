@@ -62,7 +62,6 @@ void RB_SurfaceTriangles( srfTriangles_t* srf );
 void RB_SurfaceFoliage( srfFoliage_t* srf );
 void RB_SurfacePolychain( struct srfPoly_t* p );
 void RB_SurfaceFlare( srfFlare_t* surf );
-void RB_SurfaceEntity( surfaceType_t* surfType );
 void RB_SurfacePolyBuffer( struct srfPolyBuffer_t* surf );
 void RB_SurfaceDecal( srfDecal_t* srf );
 

@@ -26,6 +26,18 @@ public:
 	idSurfaceEntity();
 
 	virtual void Draw();
+
+private:
+	static void RB_SurfaceSprite();
+	static void RB_SurfaceBeam();
+	static void RB_SurfaceBeamQ2();
+	static void DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth );
+	static void RB_SurfaceRailCore();
+	static void DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up );
+	static void RB_SurfaceRailRings();
+	static void RB_SurfaceLightningBolt();
+	static void RB_SurfaceSplash();
+	static void RB_SurfaceAxis();
 };
 
 extern idSurfaceEntity entitySurface;
