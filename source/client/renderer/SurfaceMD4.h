@@ -26,14 +26,17 @@ public:
 
 	md4Surface_t* GetMd4Data() const;
 	void SetMd4Data( md4Surface_t* data );
+
+private:
+	md4Surface_t* data;
 };
 
 inline md4Surface_t* idSurfaceMD4::GetMd4Data() const {
-	return ( md4Surface_t* )data;
+	return data;
 }
 
 inline void idSurfaceMD4::SetMd4Data( md4Surface_t* data ) {
-	this->data = ( surface_base_t* )data;
+	this->data = data;
 }
 
 #endif

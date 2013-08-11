@@ -25,11 +25,13 @@ public:
 	int viewCount;							// if == tr.viewCount, already added
 	shader_t* shader;
 	int fogIndex;
+	surface_base_t* data;					// any of srf*_t
 
 	idSurfaceBrush46()
 	: viewCount( 0 )
 	, shader( NULL )
 	, fogIndex( 0 )
+	, data( NULL )
 	{}
 
 	surface_base_t* GetBrush46Data();

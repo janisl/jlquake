@@ -18,7 +18,6 @@
 #include "surfaces.h"
 
 idSurfacePolyBuffer::idSurfacePolyBuffer() {
-	data = &surf;
 }
 
 void idSurfacePolyBuffer::Draw() {

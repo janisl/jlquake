@@ -19,7 +19,6 @@
 
 idSurfaceMDL::idSurfaceMDL() {
 	Com_Memset( &header, 0, sizeof( header ) );
-	data = &header;
 }
 
 void idSurfaceMDL::Draw() {

@@ -26,14 +26,17 @@ public:
 
 	dsprite2_t* GetSp2() const;
 	void SetSp2Data( dsprite2_t* data );
+
+private:
+	dsprite2_t* data;
 };
 
 inline dsprite2_t* idSurfaceSP2::GetSp2() const {
-	return ( dsprite2_t* )data;
+	return data;
 }
 
 inline void idSurfaceSP2::SetSp2Data( dsprite2_t* data ) {
-	this->data = ( surface_base_t* )data;
+	this->data = data;
 }
 
 #endif

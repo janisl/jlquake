@@ -57,15 +57,11 @@ struct surface_base_t {
 class idSurface {
 public:
 	idSurface()
-	: data( NULL )
 	{
 	}
 	virtual ~idSurface();
 	virtual void Draw() = 0;
 	virtual cplane_t GetPlane() const;
-
-protected:
-	surface_base_t* data;					// any of srf*_t
 };
 
 #endif

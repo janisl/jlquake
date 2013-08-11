@@ -18,7 +18,6 @@
 #include "surfaces.h"
 
 idSurfaceDecal::idSurfaceDecal() {
-	data = &surf;
 }
 
 void idSurfaceDecal::Draw() {

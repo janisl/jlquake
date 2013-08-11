@@ -26,14 +26,17 @@ public:
 
 	mdcSurface_t* GetMdcData() const;
 	void SetMdcData( mdcSurface_t* data );
+
+private:
+	mdcSurface_t* data;
 };
 
 inline mdcSurface_t* idSurfaceMDC::GetMdcData() const {
-	return ( mdcSurface_t* )data;
+	return data;
 }
 
 inline void idSurfaceMDC::SetMdcData( mdcSurface_t* data ) {
-	this->data = ( surface_base_t* )data;
+	this->data = data;
 }
 
 #endif

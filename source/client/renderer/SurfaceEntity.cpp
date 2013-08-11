@@ -22,9 +22,8 @@ static surface_base_t entitySurfaceOld = { SF_ENTITY };
 idSurfaceEntity entitySurface;
 
 idSurfaceEntity::idSurfaceEntity() {
-	data = &entitySurfaceOld;
 }
 
 void idSurfaceEntity::Draw() {
-	RB_SurfaceEntity( &data->surfaceType );
+	RB_SurfaceEntity( &entitySurfaceOld.surfaceType );
 }
