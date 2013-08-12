@@ -28,12 +28,14 @@
 struct mbrush29_glpoly_t {
 	mbrush29_glpoly_t* next;
 	int numverts;
-	float verts[ 4 ][ BRUSH29_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
+	int indexes[ 4 ];		// variable sized
 };
 
 static byte* mod_base;
 
 static idSurfaceFaceQ1* warpface;
+static int numWarpVerts;
+static vec3_t warpverts[ 1024 ];
 static mbrush29_glpoly_t* warppolys;
 
 static byte mod_novis[ BSP29_MAX_MAP_LEAFS / 8 ];
@@ -366,22 +368,22 @@ static void CalcSurfaceExtents( idSurfaceFaceQ1* s ) {
 	}
 }
 
-static void BoundPoly( int numverts, float* verts, vec3_t mins, vec3_t maxs ) {
+static void BoundPoly( int numverts, int* vertIndexes, vec3_t mins, vec3_t maxs ) {
 	ClearBounds( mins, maxs );
-	float* v = verts;
-	for ( int i = 0; i < numverts; i++, v += 3 ) {
-		AddPointToBounds( v, mins, maxs );
+	int* v = vertIndexes;
+	for ( int i = 0; i < numverts; i++, v++ ) {
+		AddPointToBounds( warpverts[ *v ], mins, maxs );
 	}
 }
 
-static void SubdividePolygon( int numverts, float* verts ) {
+static void SubdividePolygon( int numverts, int* vertIndexes ) {
 
 	if ( numverts > 60 ) {
 		common->FatalError( "numverts = %i", numverts );
 	}
 
 	vec3_t mins, maxs;
-	BoundPoly( numverts, verts, mins, maxs );
+	BoundPoly( numverts, vertIndexes, mins, maxs );
 
 	for ( int i = 0; i < 3; i++ ) {
 		float m = ( mins[ i ] + maxs[ i ] ) * 0.5;
@@ -394,28 +396,27 @@ static void SubdividePolygon( int numverts, float* verts ) {
 		}
 
 		// cut it
-		float* v = verts + i;
+		int* v = vertIndexes;
 		float dist[ 64 ];
-		for ( int j = 0; j < numverts; j++, v += 3 ) {
-			dist[ j ] = *v - m;
+		for ( int j = 0; j < numverts; j++, v++ ) {
+			dist[ j ] = warpverts[ *v ][ i ] - m;
 		}
 
 		// wrap cases
 		dist[ numverts ] = dist[ 0 ];
-		v -= i;
-		VectorCopy( verts, v );
+		*v = vertIndexes[ 0 ];
 
 		int f = 0;
 		int b = 0;
-		v = verts;
-		vec3_t front[ 64 ], back[ 64 ];
-		for ( int j = 0; j < numverts; j++, v += 3 ) {
+		v = vertIndexes;
+		int front[ 64 ], back[ 64 ];
+		for ( int j = 0; j < numverts; j++, v++ ) {
 			if ( dist[ j ] >= 0 ) {
-				VectorCopy( v, front[ f ] );
+				front[ f ] = *v;
 				f++;
 			}
 			if ( dist[ j ] <= 0 ) {
-				VectorCopy( v, back[ b ] );
+				back[ b ] = *v;
 				b++;
 			}
 			if ( dist[ j ] == 0 || dist[ j + 1 ] == 0 ) {
@@ -423,30 +424,30 @@ static void SubdividePolygon( int numverts, float* verts ) {
 			}
 			if ( ( dist[ j ] > 0 ) != ( dist[ j + 1 ] > 0 ) ) {
 				// clip point
+				if ( numWarpVerts >= 1024 ) {
+					common->FatalError( "Out of wapr vers" );
+				}
 				float frac = dist[ j ] / ( dist[ j ] - dist[ j + 1 ] );
 				for ( int k = 0; k < 3; k++ ) {
-					front[ f ][ k ] = back[ b ][ k ] = v[ k ] + frac * ( v[ 3 + k ] - v[ k ] );
+					warpverts[ numWarpVerts ][ k ] = warpverts[ *v ][ k ] + frac * ( warpverts[ v[ 1 ] ][ k ] - warpverts[ *v ][ k ] );
 				}
+				front[ f ] = back[ b ] = numWarpVerts++;
 				f++;
 				b++;
 			}
 		}
 
-		SubdividePolygon( f, front[ 0 ] );
-		SubdividePolygon( b, back[ 0 ] );
+		SubdividePolygon( f, front );
+		SubdividePolygon( b, back );
 		return;
 	}
 
-	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( numverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
+	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( numverts - 4 ) * sizeof ( int ) );
 	poly->next = warppolys;
 	warppolys = poly;
 	poly->numverts = numverts;
-	for ( int i = 0; i < numverts; i++, verts += 3 ) {
-		VectorCopy( verts, poly->verts[ i ] );
-		float s = DotProduct( verts, warpface->surf.texinfo->vecs[ 0 ] ) / 64.0f;
-		float t = DotProduct( verts, warpface->surf.texinfo->vecs[ 1 ] ) / 64.0f;
-		poly->verts[ i ][ 3 ] = s;
-		poly->verts[ i ][ 4 ] = t;
+	for ( int i = 0; i < numverts; i++ ) {
+		poly->indexes[ i ] = vertIndexes[ i ];
 	}
 }
 
@@ -459,8 +460,8 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 	//
 	// convert edges back to a normal polygon
 	//
-	vec3_t verts[ 64 ];
 	int numverts = 0;
+	int verts[ 64 ];
 	for ( int i = 0; i < fa->surf.numedges; i++ ) {
 		int lindex = loadmodel->brush29_surfedges[ fa->surf.firstedge + i ];
 
@@ -470,37 +471,37 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 		} else {
 			vec = loadmodel->brush29_vertexes[ loadmodel->brush29_edges[ -lindex ].v[ 1 ] ].position;
 		}
-		VectorCopy( vec, verts[ numverts ] );
+		VectorCopy( vec, warpverts[ numverts ] );
+		verts[ i ] = i;
 		numverts++;
 	}
+	numWarpVerts = numverts;
 
-	SubdividePolygon( numverts, verts[ 0 ] );
+	SubdividePolygon( numverts, verts );
 
+	fa->surf.numVerts = numWarpVerts;
+	fa->surf.verts = new mbrush29_glvert_t[ numWarpVerts ];
+	float* v = warpverts[ 0 ];
+	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
+		float s = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
+		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
+		fa->surf.verts[ i ].v[ 0 ] = v[ 0 ];
+		fa->surf.verts[ i ].v[ 1 ] = v[ 1 ];
+		fa->surf.verts[ i ].v[ 2 ] = v[ 2 ];
+		fa->surf.verts[ i ].v[ 3 ] = s;
+		fa->surf.verts[ i ].v[ 4 ] = t;
+	}
 	for ( mbrush29_glpoly_t* p = warppolys; p; p = p->next ) {
-		fa->surf.numVerts += p->numverts;
 		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;
 	}
-	fa->surf.verts = new mbrush29_glvert_t[ fa->surf.numVerts ];
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
-	int numVerts = 0;
 	int numIndexes = 0;
 	for ( mbrush29_glpoly_t* p = warppolys; p; p = p->next ) {
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			fa->surf.verts[ numVerts + i ].v[ 0 ] = v[ 0 ];
-			fa->surf.verts[ numVerts + i ].v[ 1 ] = v[ 1 ];
-			fa->surf.verts[ numVerts + i ].v[ 2 ] = v[ 2 ];
-			fa->surf.verts[ numVerts + i ].v[ 3 ] = v[ 3 ];
-			fa->surf.verts[ numVerts + i ].v[ 4 ] = v[ 4 ];
-			fa->surf.verts[ numVerts + i ].v[ 5 ] = v[ 5 ];
-			fa->surf.verts[ numVerts + i ].v[ 6 ] = v[ 6 ];
-		}
 		for ( int i = 0; i < p->numverts - 2; i++ ) {
-			fa->surf.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
-			fa->surf.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
-			fa->surf.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
+			fa->surf.indexes[ numIndexes + i * 3 + 0 ] = p->indexes[ 0 ];
+			fa->surf.indexes[ numIndexes + i * 3 + 1 ] = p->indexes[ i + 1 ];
+			fa->surf.indexes[ numIndexes + i * 3 + 2 ] = p->indexes[ i + 2 ];
 		}
-		numVerts += p->numverts;
 		numIndexes += ( p->numverts - 2 ) * 3;
 	}
 	mbrush29_glpoly_t* poly = warppolys;
