@@ -76,12 +76,8 @@ void Mod_FreeBsp29( idRenderModel* mod ) {
 	delete[] mod->brush29_edges;
 	delete[] mod->brush29_texinfo;
 	for ( int i = 0; i < mod->brush29_numsurfaces; i++ ) {
-		mbrush29_glpoly_t* poly = mod->brush29_surfaces[ i ].surf.polys;
-		while ( poly ) {
-			mbrush29_glpoly_t* tmp = poly;
-			poly = poly->next;
-			Mem_Free( tmp );
-		}
+		delete[] mod->brush29_surfaces[ i ].surf.verts;
+		delete[] mod->brush29_surfaces[ i ].surf.indexes;
 	}
 	delete[] mod->brush29_surfaces;
 	delete[] mod->brush29_nodes;

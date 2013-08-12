@@ -354,12 +354,12 @@ void R_ClearSkyBox() {
 
 void R_AddSkySurface( idSurfaceFaceQ2* fa ) {
 	// calculate vertex values for sky box
-	for ( mbrush38_glpoly_t* p = fa->surf.polys; p; p = p->next ) {
+	for ( int i = 0; i < fa->surf.numIndexes; i += 3 ) {
 		vec3_t verts[ MAX_CLIP_VERTS ];
-		for ( int i = 0; i < p->numverts; i++ ) {
-			VectorSubtract( p->verts[ i ], tr.viewParms.orient.origin, verts[ i ] );
+		for ( int j = 0; j < 3; j++ ) {
+			VectorSubtract( fa->surf.verts[ fa->surf.indexes[ i + j ] ].v, tr.viewParms.orient.origin, verts[ j ] );
 		}
-		ClipSkyPolygon( p->numverts, verts[ 0 ], 0 );
+		ClipSkyPolygon( 3, verts[ 0 ], 0 );
 	}
 }
 

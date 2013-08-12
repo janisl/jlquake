@@ -138,7 +138,6 @@ Cvar* r_lodCurveError;
 
 Cvar* r_ignore;
 
-Cvar* r_keeptjunctions;
 Cvar* r_dynamic;
 Cvar* r_fullBrightColours;
 Cvar* r_drawOverBrights;
@@ -464,7 +463,6 @@ static void R_Register() {
 	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_drawSun = Cvar_Get( "r_drawSun", GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ? "1" : "0", CVAR_ARCHIVE );
 	r_lodCurveError = Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE | CVAR_CHEAT );
-	r_keeptjunctions = Cvar_Get( "r_keeptjunctions", "1", CVAR_ARCHIVE );
 	r_facePlaneCull = Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
 	r_railCoreWidth = Cvar_Get( "r_railCoreWidth", GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ? "1" : "6", CVAR_ARCHIVE );

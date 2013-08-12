@@ -120,7 +120,6 @@ extern Cvar* r_lodCurveError;
 
 extern Cvar* r_ignore;					// used for debugging anything
 
-extern Cvar* r_keeptjunctions;
 extern Cvar* r_dynamic;
 extern Cvar* r_fullBrightColours;
 extern Cvar* r_drawOverBrights;

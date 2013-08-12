@@ -238,10 +238,10 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	//
 	// draw texture
 	//
-	mbrush29_glpoly_t* poly = ( mbrush29_glpoly_t* )Mem_Alloc( sizeof ( mbrush29_glpoly_t ) + ( lnumverts - 4 ) * BRUSH29_VERTEXSIZE * sizeof ( float ) );
-	poly->next = fa->surf.polys;
-	fa->surf.polys = poly;
-	poly->numverts = lnumverts;
+	fa->surf.numVerts = lnumverts;
+	fa->surf.verts = new mbrush29_glvert_t[ lnumverts ];
+	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
+	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
 	for ( int i = 0; i < lnumverts; i++ ) {
 		int lindex = tr.currentModel->brush29_surfedges[ fa->surf.firstedge + i ];
@@ -260,9 +260,9 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
 		t /= fa->surf.texinfo->texture->height;
 
-		VectorCopy( vec, poly->verts[ i ] );
-		poly->verts[ i ][ 3 ] = s;
-		poly->verts[ i ][ 4 ] = t;
+		VectorCopy( vec, fa->surf.verts[ i ].v );
+		fa->surf.verts[ i ].v[ 3 ] = s;
+		fa->surf.verts[ i ].v[ 4 ] = t;
 
 		//
 		// lightmap texture coordinates
@@ -271,52 +271,23 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		s -= fa->surf.texturemins[ 0 ];
 		s += fa->surf.light_s * 16;
 		s += 8;
-		s /= BLOCK_WIDTH * 16;	//fa->texinfo->texture->width;
+		s /= BLOCK_WIDTH * 16;
 
 		t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
 		t -= fa->surf.texturemins[ 1 ];
 		t += fa->surf.light_t * 16;
 		t += 8;
-		t /= BLOCK_HEIGHT * 16;	//fa->texinfo->texture->height;
+		t /= BLOCK_HEIGHT * 16;
 
-		poly->verts[ i ][ 5 ] = s;
-		poly->verts[ i ][ 6 ] = t;
+		fa->surf.verts[ i ].v[ 5 ] = s;
+		fa->surf.verts[ i ].v[ 6 ] = t;
 	}
 
-	//
-	// remove co-linear points - Ed
-	//
-	if ( !r_keeptjunctions->value ) {
-		for ( int i = 0; i < lnumverts; ++i ) {
-			vec3_t v1, v2;
-			float* prev, * thisv, * next;
-
-			prev = poly->verts[ ( i + lnumverts - 1 ) % lnumverts ];
-			thisv = poly->verts[ i ];
-			next = poly->verts[ ( i + 1 ) % lnumverts ];
-
-			VectorSubtract( thisv, prev, v1 );
-			VectorNormalize( v1 );
-			VectorSubtract( next, prev, v2 );
-			VectorNormalize( v2 );
-
-			// skip co-linear points
-			#define COLINEAR_EPSILON 0.001
-			if ( ( idMath::Fabs( v1[ 0 ] - v2[ 0 ] ) <= COLINEAR_EPSILON ) &&
-				 ( idMath::Fabs( v1[ 1 ] - v2[ 1 ] ) <= COLINEAR_EPSILON ) &&
-				 ( idMath::Fabs( v1[ 2 ] - v2[ 2 ] ) <= COLINEAR_EPSILON ) ) {
-				for ( int j = i + 1; j < lnumverts; ++j ) {
-					for ( int k = 0; k < BRUSH29_VERTEXSIZE; ++k ) {
-						poly->verts[ j - 1 ][ k ] = poly->verts[ j ][ k ];
-					}
-				}
-				--lnumverts;
-				// retry next vertex next time, which is now current vertex
-				--i;
-			}
-		}
+	for ( int i = 0; i < lnumverts - 2; i++ ) {
+		fa->surf.indexes[ i * 3 + 0 ] = 0;
+		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
+		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
 	}
-	poly->numverts = lnumverts;
 }
 
 //	Builds the lightmap texture with all the surfaces from all brush models
@@ -529,37 +500,33 @@ void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
 		R_RenderDynamicLightmaps( s );
 	}
 
-	for ( mbrush29_glpoly_t* p = s->polys; p; p = p->next ) {
-		int numVerts = tess.numVertexes;
-		int numIndexes = tess.numIndexes;
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
 
-		tess.numVertexes += p->numverts;
-		tess.numIndexes += ( p->numverts - 2 ) * 3;
+	tess.numVertexes += s->numVerts;
+	tess.numIndexes += s->numIndexes;
 
-		float* v = p->verts[ 0 ];
-		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
-			tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-			tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-			tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-			tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-			tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
-			tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
-			if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
-				tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
-				tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
-				tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
-			} else {
-				tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
-				tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
-				tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
-			}
+	float* v = s->verts[ 0 ].v;
+	for ( int i = 0; i < s->numVerts; i++, v += BRUSH29_VERTEXSIZE ) {
+		tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
+		tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
+		tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
+		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
+		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
+		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
+		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
+		if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
+			tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
+			tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
+			tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
+		} else {
+			tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
+			tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
+			tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
 		}
-		for ( int i = 0; i < p->numverts - 2; i++ ) {
-			tess.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
-			tess.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
-			tess.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
-		}
+	}
+	for ( int i = 0; i < s->numIndexes; i++ ) {
+		tess.indexes[ numIndexes + i ] = numVerts + s->indexes[ i ];
 	}
 }
 

@@ -38,9 +38,16 @@ struct idSurface2LoadTimeInfo
 	int shaderInfoIndex;
 };
 
+struct mbrush38_glpoly_t {
+	mbrush38_glpoly_t* next;
+	int numverts;
+	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
+};
+
 static byte* mod_base;
 
 static idSurfaceFaceQ2* warpface;
+static mbrush38_glpoly_t* warppolys;
 
 static byte mod_novis[ BSP38MAX_MAP_LEAFS / 8 ];
 
@@ -263,8 +270,8 @@ static void SubdividePolygon( int numverts, float* verts ) {
 	// add a point in the center to help keep warp valid
 	mbrush38_glpoly_t* poly = ( mbrush38_glpoly_t* )Mem_Alloc( sizeof ( mbrush38_glpoly_t ) + ( ( numverts - 4 ) + 2 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
 	Com_Memset( poly, 0, sizeof ( mbrush38_glpoly_t ) + ( ( numverts - 4 ) + 2 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
-	poly->next = warpface->surf.polys;
-	warpface->surf.polys = poly;
+	poly->next = warppolys;
+	warppolys = poly;
 	poly->numverts = numverts + 2;
 	vec3_t total;
 	VectorClear( total );
@@ -295,6 +302,7 @@ static void SubdividePolygon( int numverts, float* verts ) {
 // sky warps can be done reasonably.
 static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	warpface = fa;
+	warppolys = NULL;
 
 	//
 	// convert edges back to a normal polygon
@@ -315,6 +323,40 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	}
 
 	SubdividePolygon( numverts, verts[ 0 ] );
+
+	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
+		fa->surf.numVerts += p->numverts;
+		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;
+	}
+	fa->surf.verts = new mbrush38_glvert_t[ fa->surf.numVerts ];
+	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
+	int numVerts = 0;
+	int numIndexes = 0;
+	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
+		float* v = p->verts[ 0 ];
+		for ( int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE ) {
+			fa->surf.verts[ numVerts + i ].v[ 0 ] = v[ 0 ];
+			fa->surf.verts[ numVerts + i ].v[ 1 ] = v[ 1 ];
+			fa->surf.verts[ numVerts + i ].v[ 2 ] = v[ 2 ];
+			fa->surf.verts[ numVerts + i ].v[ 3 ] = v[ 3 ];
+			fa->surf.verts[ numVerts + i ].v[ 4 ] = v[ 4 ];
+			fa->surf.verts[ numVerts + i ].v[ 5 ] = v[ 5 ];
+			fa->surf.verts[ numVerts + i ].v[ 6 ] = v[ 6 ];
+		}
+		for ( int i = 0; i < p->numverts - 2; i++ ) {
+			fa->surf.indexes[ numIndexes + i * 3 + 0 ] = numVerts;
+			fa->surf.indexes[ numIndexes + i * 3 + 1 ] = numVerts + i + 1;
+			fa->surf.indexes[ numIndexes + i * 3 + 2 ] = numVerts + i + 2;
+		}
+		numVerts += p->numverts;
+		numIndexes += ( p->numverts - 2 ) * 3;
+	}
+	mbrush38_glpoly_t* poly = warppolys;
+	while ( poly ) {
+		mbrush38_glpoly_t* tmp = poly;
+		poly = poly->next;
+		Mem_Free( tmp );
+	}
 }
 
 static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
@@ -322,16 +364,13 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
 	int lnumverts = fa->surf.numedges;
 
-	vec3_t total;
-	VectorClear( total );
 	//
 	// draw texture
 	//
-	mbrush38_glpoly_t* poly = ( mbrush38_glpoly_t* )Mem_Alloc( sizeof ( mbrush38_glpoly_t ) + ( lnumverts - 4 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
-	Com_Memset( poly, 0, sizeof ( mbrush38_glpoly_t ) + ( lnumverts - 4 ) * BRUSH38_VERTEXSIZE * sizeof ( float ) );
-	poly->next = fa->surf.polys;
-	fa->surf.polys = poly;
-	poly->numverts = lnumverts;
+	fa->surf.numVerts = lnumverts;
+	fa->surf.verts = new mbrush38_glvert_t[ lnumverts ];
+	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
+	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
 	mbrush38_texinfo_t* texinfo = fa->surf.texinfo;
 	for ( int i = 0; i < lnumverts; i++ ) {
@@ -352,10 +391,9 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		float t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
 		t /= texinfo->image->height;
 
-		VectorAdd( total, vec, total );
-		VectorCopy( vec, poly->verts[ i ] );
-		poly->verts[ i ][ 3 ] = s;
-		poly->verts[ i ][ 4 ] = t;
+		VectorCopy( vec, fa->surf.verts[ i ].v );
+		fa->surf.verts[ i ].v[ 3 ] = s;
+		fa->surf.verts[ i ].v[ 4 ] = t;
 
 		//
 		// lightmap texture coordinates
@@ -372,12 +410,15 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		poly->verts[ i ][ 5 ] = s;
-		poly->verts[ i ][ 6 ] = t;
+		fa->surf.verts[ i ].v[ 5 ] = s;
+		fa->surf.verts[ i ].v[ 6 ] = t;
 	}
 
-	poly->numverts = lnumverts;
-
+	for ( int i = 0; i < lnumverts - 2; i++ ) {
+		fa->surf.indexes[ i * 3 + 0 ] = 0;
+		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
+		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
+	}
 }
 
 //	We need to duplicate texinfos for different lightmap indexes.
@@ -471,7 +512,6 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 		out->surf.firstedge = LittleLong( in->firstedge );
 		out->surf.numedges = LittleShort( in->numedges );
 		out->surf.flags = 0;
-		out->surf.polys = NULL;
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );
@@ -786,12 +826,8 @@ void Mod_FreeBsp38( idRenderModel* mod ) {
 	delete[] mod->brush38_edges;
 	delete[] mod->brush38_texinfo;
 	for ( int i = 0; i < mod->brush38_numsurfaces; i++ ) {
-		mbrush38_glpoly_t* poly = mod->brush38_surfaces[ i ].surf.polys;
-		while ( poly ) {
-			mbrush38_glpoly_t* tmp = poly;
-			poly = poly->next;
-			Mem_Free( tmp );
-		}
+		delete[] mod->brush38_surfaces[ i ].surf.verts;
+		delete[] mod->brush38_surfaces[ i ].surf.indexes;
 	}
 	delete[] mod->brush38_surfaces;
 	delete[] mod->brush38_shaderInfo;

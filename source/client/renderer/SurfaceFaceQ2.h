@@ -37,10 +37,8 @@ struct mbrush38_shaderInfo_t {
 	shader_t* shader;
 };
 
-struct mbrush38_glpoly_t {
-	mbrush38_glpoly_t* next;
-	int numverts;
-	float verts[ 4 ][ BRUSH38_VERTEXSIZE ];		// variable sized (xyz s1t1 s2t2)
+struct mbrush38_glvert_t {
+	float v[ BRUSH38_VERTEXSIZE ];		// (xyz s1t1 s2t2)
 };
 
 struct mbrush38_surface_t : surface_base_t {
@@ -55,8 +53,6 @@ struct mbrush38_surface_t : surface_base_t {
 
 	int light_s, light_t;			// gl lightmap coordinates
 
-	mbrush38_glpoly_t* polys;				// multiple if warped
-
 	mbrush38_texinfo_t* texinfo;
 	mbrush38_shaderInfo_t* shaderInfo;
 
@@ -69,6 +65,11 @@ struct mbrush38_surface_t : surface_base_t {
 	float cached_light[ BSP38_MAXLIGHTMAPS ];			// values currently used in lightmap
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
+
+	mbrush38_glvert_t* verts;
+	int numVerts;
+	glIndex_t* indexes;
+	int numIndexes;
 };
 
 class idSurfaceFaceQ2 : public idSurfaceGeneric {
