@@ -51,7 +51,7 @@ void idSurfaceFoliage::Draw() {
 	}
 
 	// set dlight bits
-	int dlightBits = srf->dlightBits[ backEnd.smpFrame ];
+	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
 	// iterate through origin list

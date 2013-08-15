@@ -19,6 +19,7 @@
 #include "cvars.h"
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
+#include "backend.h"
 
 #define DLIGHT_AT_RADIUS        16
 // at the edge of a dlight's influence, this amount of light will be added
@@ -606,10 +607,10 @@ void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
 	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
 		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->surf.dlightbits = 0;
+			surf->dlightBits[ backEnd.smpFrame ] = 0;
 			surf->surf.dlightframe = tr.frameCount;
 		}
-		surf->surf.dlightbits |= bit;
+		surf->dlightBits[ backEnd.smpFrame ] |= bit;
 	}
 
 	R_MarkLightsQ1( light, bit, node->children[ 0 ] );
@@ -645,10 +646,10 @@ void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node ) {
 	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
 		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->surf.dlightbits = 0;
+			surf->dlightBits[ backEnd.smpFrame ] = 0;
 			surf->surf.dlightframe = tr.frameCount;
 		}
-		surf->surf.dlightbits |= bit;
+		surf->dlightBits[ backEnd.smpFrame ] |= bit;
 	}
 
 	R_MarkLightsQ2( light, bit, node->children[ 0 ] );
@@ -708,14 +709,7 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 
 	// set the dlight bits in all the surfaces
 	for ( int i = 0; i < bmodel->numSurfaces; i++ ) {
-		idWorldSurface* surf = bmodel->firstSurface[ i ];
-
-		if ( surf->GetBrush46Data()->surfaceType == SF_FACE ||
-			surf->GetBrush46Data()->surfaceType == SF_GRID ||
-			surf->GetBrush46Data()->surfaceType == SF_TRIANGLES ||
-			surf->GetBrush46Data()->surfaceType == SF_FOLIAGE ) {
-			( ( srfGeneric_t* )surf->GetBrush46Data() )->dlightBits[ tr.smpFrame ] = mask;
-		}
+		bmodel->firstSurface[ i ]->dlightBits[ tr.smpFrame ] = mask;
 	}
 }
 

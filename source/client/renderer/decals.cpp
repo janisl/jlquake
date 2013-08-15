@@ -735,8 +735,7 @@ static void R_AddDecalSurface( mbrush46_decal_t* decal ) {
 	//	dynamic lights?
 	int dlightMap;
 	if ( decal->parent != NULL ) {
-		srfGeneric_t* gen = ( srfGeneric_t* )decal->parent->GetBrush46Data();
-		dlightMap = ( gen->dlightBits[ tr.smpFrame ] != 0 );
+		dlightMap = decal->parent->dlightBits[ tr.smpFrame ] != 0;
 	} else {
 		dlightMap = 0;
 	}

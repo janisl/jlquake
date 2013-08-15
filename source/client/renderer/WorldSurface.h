@@ -20,6 +20,11 @@
 #include "Surface.h"
 #include "shader.h"
 
+// everything that is needed by the backend needs
+// to be double buffered to allow it to run in
+// parallel on a dual cpu machine
+#define SMP_FRAMES      2
+
 enum surfaceType_t
 {
 	SF_BAD,
@@ -44,6 +49,9 @@ public:
 	shader_t* shader;
 	int fogIndex;
 
+	// dynamic lighting information
+	int dlightBits[ SMP_FRAMES ];
+
 	idWorldSurface();
 
 	surface_base_t* GetBrush46Data();
@@ -55,9 +63,11 @@ protected:
 
 inline idWorldSurface::idWorldSurface() {
 	viewCount = 0;
-	data = NULL;
 	fogIndex = 0;
 	shader = NULL;
+	dlightBits[ 0 ] = 0;
+	dlightBits[ 1 ] = 0;
+	data = NULL;
 }
 
 inline surface_base_t* idWorldSurface::GetBrush46Data() {

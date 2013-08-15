@@ -90,18 +90,18 @@ static int AllocBlock( int w, int h, int* x, int* y ) {
 	return 0;
 }
 
-static void R_AddDynamicLightsQ1( mbrush29_surface_t* surf ) {
-	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
-	mbrush29_texinfo_t* tex = surf->texinfo;
+static void R_AddDynamicLightsQ1( idSurfaceFaceQ1* surf ) {
+	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
+	mbrush29_texinfo_t* tex = surf->surf.texinfo;
 
 	for ( int lnum = 0; lnum < tr.refdef.num_dlights; lnum++ ) {
-		if ( !( surf->dlightbits & ( 1 << lnum ) ) ) {
+		if ( !( surf->dlightBits[ backEnd.smpFrame ] & ( 1 << lnum ) ) ) {
 			continue;		// not lit by this light
 		}
 
 		float rad = tr.refdef.dlights[ lnum ].radius;
-		float dist = DotProduct( tr.refdef.dlights[ lnum ].origin, surf->plane->normal ) - surf->plane->dist;
+		float dist = DotProduct( tr.refdef.dlights[ lnum ].origin, surf->surf.plane->normal ) - surf->surf.plane->dist;
 		rad -= idMath::Fabs( dist );
 		float minlight = 0;	//tr.refdef.dlights[lnum].minlight;
 		if ( rad < minlight ) {
@@ -111,15 +111,15 @@ static void R_AddDynamicLightsQ1( mbrush29_surface_t* surf ) {
 
 		vec3_t impact;
 		for ( int i = 0; i < 3; i++ ) {
-			impact[ i ] = tr.refdef.dlights[ lnum ].origin[ i ] - surf->plane->normal[ i ] * dist;
+			impact[ i ] = tr.refdef.dlights[ lnum ].origin[ i ] - surf->surf.plane->normal[ i ] * dist;
 		}
 
 		vec3_t local;
 		local[ 0 ] = DotProduct( impact, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ];
 		local[ 1 ] = DotProduct( impact, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ];
 
-		local[ 0 ] -= surf->texturemins[ 0 ];
-		local[ 1 ] -= surf->texturemins[ 1 ];
+		local[ 0 ] -= surf->surf.texturemins[ 0 ];
+		local[ 1 ] -= surf->surf.texturemins[ 1 ];
 
 		for ( int t = 0; t < tmax; t++ ) {
 			int td = local[ 1 ] - t * 16;
@@ -145,7 +145,7 @@ static void R_AddDynamicLightsQ1( mbrush29_surface_t* surf ) {
 }
 
 //	Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-static void R_BuildLightMapQ1( mbrush29_surface_t* surf, byte* dest, byte* overbrightDest, int stride ) {
+static void R_BuildLightMapQ1( idSurfaceFaceQ1* surf, byte* dest, byte* overbrightDest, int stride ) {
 	int smax, tmax;
 	int t;
 	int i, j, size;
@@ -154,12 +154,12 @@ static void R_BuildLightMapQ1( mbrush29_surface_t* surf, byte* dest, byte* overb
 	int maps;
 	unsigned* bl;
 
-	surf->cached_dlight = ( surf->dlightframe == tr.frameCount );
+	surf->surf.cached_dlight = ( surf->surf.dlightframe == tr.frameCount );
 
-	smax = ( surf->extents[ 0 ] >> 4 ) + 1;
-	tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
+	smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
+	tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 	size = smax * tmax;
-	lightmap = surf->samples;
+	lightmap = surf->surf.samples;
 
 // set to full bright if no light data
 	if ( !tr.worldModel->brush29_lightdata ) {
@@ -174,10 +174,10 @@ static void R_BuildLightMapQ1( mbrush29_surface_t* surf, byte* dest, byte* overb
 
 // add all the lightmaps
 	if ( lightmap ) {
-		for ( maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[ maps ] != 255;
+		for ( maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255;
 			  maps++ ) {
-			scale = tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ 0 ] * 256;
-			surf->cached_light[ maps ] = scale;		// 8.8 fraction
+			scale = tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ 0 ] * 256;
+			surf->surf.cached_light[ maps ] = scale;		// 8.8 fraction
 			for ( i = 0; i < size; i++ )
 				blocklights_q1[ i ] += lightmap[ i ] * scale;
 			lightmap += size;	// skip to next lightmap
@@ -185,7 +185,7 @@ static void R_BuildLightMapQ1( mbrush29_surface_t* surf, byte* dest, byte* overb
 	}
 
 // add all the dynamic lights
-	if ( surf->dlightframe == tr.frameCount ) {
+	if ( surf->surf.dlightframe == tr.frameCount ) {
 		R_AddDynamicLightsQ1( surf );
 	}
 
@@ -227,7 +227,7 @@ static void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf ) {
 	base += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
 	byte* overbrightBase = lightmaps + ( surf->surf.lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 	overbrightBase += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
-	R_BuildLightMapQ1( &surf->surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+	R_BuildLightMapQ1( surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 }
 
 static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
@@ -452,7 +452,7 @@ dynamic:
 			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
 			byte* overbrightBase = lightmaps + ( fa->lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			R_BuildLightMapQ1( fa, base, overbrightBase, BLOCK_WIDTH * 4 );
+			R_BuildLightMapQ1( surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 		}
 	}
 

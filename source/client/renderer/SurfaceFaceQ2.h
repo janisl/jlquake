@@ -58,7 +58,6 @@ struct mbrush38_surface_t : surface_base_t {
 
 	// lighting info
 	int dlightframe;
-	int dlightbits;
 
 	int lightmaptexturenum;
 	byte styles[ BSP38_MAXLIGHTMAPS ];

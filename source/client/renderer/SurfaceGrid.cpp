@@ -22,7 +22,7 @@
 //	Just copy the grid of points and triangulate
 void idSurfaceGrid::Draw() {
 	srfGridMesh_t* cv = ( srfGridMesh_t* )data;
-	int dlightBits = cv->dlightBits[ backEnd.smpFrame ];
+	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
 	// determine the allowable discrepance

@@ -205,7 +205,7 @@ static bool R_CullSurface( surface_base_t* surface, shader_t* shader, int* front
 	return false;
 }
 
-static int R_DlightFace( srfSurfaceFace_t* face, int dlightBits ) {
+static int R_DlightFace( idWorldSurface* surf, srfSurfaceFace_t* face, int dlightBits ) {
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {
 			continue;
@@ -222,11 +222,11 @@ static int R_DlightFace( srfSurfaceFace_t* face, int dlightBits ) {
 		tr.pc.c_dlightSurfacesCulled++;
 	}
 
-	face->dlightBits[ tr.smpFrame ] = dlightBits;
+	surf->dlightBits[ tr.smpFrame ] = dlightBits;
 	return dlightBits;
 }
 
-static int R_DlightGrid( srfGridMesh_t* grid, int dlightBits ) {
+static int R_DlightGrid( idWorldSurface* surf, srfGridMesh_t* grid, int dlightBits ) {
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {
 			continue;
@@ -247,11 +247,11 @@ static int R_DlightGrid( srfGridMesh_t* grid, int dlightBits ) {
 		tr.pc.c_dlightSurfacesCulled++;
 	}
 
-	grid->dlightBits[ tr.smpFrame ] = dlightBits;
+	surf->dlightBits[ tr.smpFrame ] = dlightBits;
 	return dlightBits;
 }
 
-static int R_DlightTrisurf( srfTriangles_t* surf, int dlightBits ) {
+static int R_DlightTrisurf( idWorldSurface* surf, int dlightBits ) {
 	// FIXME: more dlight culling to trisurfs...
 	surf->dlightBits[ tr.smpFrame ] = dlightBits;
 	return dlightBits;
@@ -277,7 +277,7 @@ static int R_DlightSurfaceET( idWorldSurface* surface, int dlightBits ) {
 		break;
 
 	default:
-		gen->dlightBits[ tr.smpFrame ] = 0;
+		surface->dlightBits[ tr.smpFrame ] = 0;
 		return 0;
 	}
 
@@ -326,7 +326,7 @@ static int R_DlightSurfaceET( idWorldSurface* surface, int dlightBits ) {
 	}
 
 	// set surface dlight bits and return
-	gen->dlightBits[ tr.smpFrame ] = dlightBits;
+	surface->dlightBits[ tr.smpFrame ] = dlightBits;
 	return dlightBits;
 }
 
@@ -338,11 +338,11 @@ static int R_DlightSurface( idWorldSurface* surf, int dlightBits ) {
 	}
 
 	if ( surf->GetBrush46Data()->surfaceType == SF_FACE ) {
-		dlightBits = R_DlightFace( ( srfSurfaceFace_t* )surf->GetBrush46Data(), dlightBits );
+		dlightBits = R_DlightFace( surf, ( srfSurfaceFace_t* )surf->GetBrush46Data(), dlightBits );
 	} else if ( surf->GetBrush46Data()->surfaceType == SF_GRID ) {
-		dlightBits = R_DlightGrid( ( srfGridMesh_t* )surf->GetBrush46Data(), dlightBits );
+		dlightBits = R_DlightGrid( surf, ( srfGridMesh_t* )surf->GetBrush46Data(), dlightBits );
 	} else if ( surf->GetBrush46Data()->surfaceType == SF_TRIANGLES ) {
-		dlightBits = R_DlightTrisurf( ( srfTriangles_t* )surf->GetBrush46Data(), dlightBits );
+		dlightBits = R_DlightTrisurf( surf, dlightBits );
 	} else {
 		dlightBits = 0;
 	}

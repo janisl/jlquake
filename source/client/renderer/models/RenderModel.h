@@ -36,11 +36,6 @@
 #include "../SurfaceMDM.h"
 #include "../SurfaceDecal.h"
 
-// everything that is needed by the backend needs
-// to be double buffered to allow it to run in
-// parallel on a dual cpu machine
-#define SMP_FRAMES      2
-
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
 
@@ -218,9 +213,6 @@ struct drawSurf_t {
 };
 
 struct srfGeneric_t : surface_base_t {
-	// dynamic lighting information
-	int dlightBits[ SMP_FRAMES ];
-
 	// culling information
 	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;

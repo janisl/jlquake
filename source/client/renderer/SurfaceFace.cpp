@@ -26,7 +26,7 @@ void idSurfaceFace::Draw() {
 	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )data;
 	RB_CHECKOVERFLOW( surf->numPoints, surf->numIndices );
 
-	int dlightBits = surf->dlightBits[ backEnd.smpFrame ];
+	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
 	unsigned* indices = ( unsigned* )( ( ( char* )surf ) + surf->ofsIndices );
