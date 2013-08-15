@@ -38,9 +38,8 @@ struct gllightmapstate_t {
 void GL_BuildLightmaps();
 void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
-void R_RenderBrushPolyQ1( mbrush29_surface_t* fa, bool override );
+void R_RenderDynamicLightmaps( idSurfaceFaceQ1* fa );
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex );
-void R_DrawSequentialPoly( mbrush29_surface_t* s );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
 
@@ -48,22 +47,12 @@ void GL_BeginBuildingLightmaps( idRenderModel* m );
 void GL_CreateSurfaceLightmapQ2( idSurfaceFaceQ2* surf );
 void GL_EndBuildingLightmaps();
 void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex );
-void GL_RenderLightmappedPoly( mbrush38_surface_t* surf );
 void R_DrawAlphaSurfaces(int& forcedSortIndex);
 
 void RB_CheckOverflow( int verts, int indexes );
 #define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= SHADER_MAX_VERTEXES || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i ); }
 void RB_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, byte* color );
 void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2 );
-void RB_SurfaceSkip( void* );
-void RB_SurfaceFace( srfSurfaceFace_t* surf );
-void RB_SurfaceGrid( srfGridMesh_t* cv );
-void RB_SurfaceTriangles( srfTriangles_t* srf );
-void RB_SurfaceFoliage( srfFoliage_t* srf );
-void RB_SurfacePolychain( struct srfPoly_t* p );
-void RB_SurfaceFlare( srfFlare_t* surf );
-void RB_SurfacePolyBuffer( struct srfPolyBuffer_t* surf );
-void RB_SurfaceDecal( srfDecal_t* srf );
 
 extern mbrush29_leaf_t* r_viewleaf;
 extern mbrush29_leaf_t* r_oldviewleaf;

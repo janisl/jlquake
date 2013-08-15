@@ -21,8 +21,8 @@
 
 class idSurfaceFace : public idSurfaceGeneric {
 public:
-	virtual void Draw();
 	virtual cplane_t GetPlane() const;
+	virtual void Draw();
 };
 
 #endif

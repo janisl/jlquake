@@ -22,6 +22,9 @@
 class idSurfaceGrid : public idSurfaceGeneric {
 public:
 	virtual void Draw();
+
+private:
+	static float LodErrorForVolume( vec3_t local, float radius );
 };
 
 #endif

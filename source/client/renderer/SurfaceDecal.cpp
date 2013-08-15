@@ -21,5 +21,25 @@ idSurfaceDecal::idSurfaceDecal() {
 }
 
 void idSurfaceDecal::Draw() {
-	RB_SurfaceDecal( &surf );
+	RB_CHECKOVERFLOW( surf.numVerts, 3 * ( surf.numVerts - 2 ) );
+
+	// fan triangles into the tess array
+	int numv = tess.numVertexes;
+	for ( int i = 0; i < surf.numVerts; i++ ) {
+		VectorCopy( surf.verts[ i ].xyz, tess.xyz[ numv ] );
+		tess.texCoords[ numv ][ 0 ][ 0 ] = surf.verts[ i ].st[ 0 ];
+		tess.texCoords[ numv ][ 0 ][ 1 ] = surf.verts[ i ].st[ 1 ];
+		*( int* )&tess.vertexColors[ numv ] = *( int* )surf.verts[ i ].modulate;
+		numv++;
+	}
+
+	//	generate fan indexes into the tess array
+	for ( int i = 0; i < surf.numVerts - 2; i++ ) {
+		tess.indexes[ tess.numIndexes + 0 ] = tess.numVertexes;
+		tess.indexes[ tess.numIndexes + 1 ] = tess.numVertexes + i + 1;
+		tess.indexes[ tess.numIndexes + 2 ] = tess.numVertexes + i + 2;
+		tess.numIndexes += 3;
+	}
+
+	tess.numVertexes = numv;
 }

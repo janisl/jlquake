@@ -35,8 +35,8 @@ public:
 
 	idSurfacePoly();
 
-	virtual void Draw();
 	virtual cplane_t GetPlane() const;
+	virtual void Draw();
 };
 
 #endif

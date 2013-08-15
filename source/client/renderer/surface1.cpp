@@ -410,7 +410,8 @@ bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* 
 }
 
 //	Multitexture
-static void R_RenderDynamicLightmaps( mbrush29_surface_t* fa ) {
+void R_RenderDynamicLightmaps( idSurfaceFaceQ1* surf ) {
+	mbrush29_surface_t* fa = &surf->surf;
 	c_brush_polys++;
 
 	// check for lightmap modification
@@ -490,44 +491,6 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 		shader = surf->shader;
 	}
 	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-}
-
-//	Systems that have fast state and texture changes can just do everything
-// as it passes with no need to sort
-void R_DrawSequentialPoly( mbrush29_surface_t* s ) {
-	if ( !( s->flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
-		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
-		R_RenderDynamicLightmaps( s );
-	}
-
-	int numVerts = tess.numVertexes;
-	int numIndexes = tess.numIndexes;
-
-	tess.numVertexes += s->numVerts;
-	tess.numIndexes += s->numIndexes;
-
-	float* v = s->verts[ 0 ].v;
-	for ( int i = 0; i < s->numVerts; i++, v += BRUSH29_VERTEXSIZE ) {
-		tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-		tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-		tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
-		if ( s->flags & BRUSH29_SURF_PLANEBACK ) {
-			tess.normal[ numVerts + i ][ 0 ] = -s->plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = -s->plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = -s->plane->normal[ 2 ];
-		} else {
-			tess.normal[ numVerts + i ][ 0 ] = s->plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = s->plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = s->plane->normal[ 2 ];
-		}
-	}
-	for ( int i = 0; i < s->numIndexes; i++ ) {
-		tess.indexes[ numIndexes + i ] = numVerts + s->indexes[ i ];
-	}
 }
 
 void R_DrawWaterSurfaces(int& forcedSortIndex) {

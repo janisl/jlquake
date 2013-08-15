@@ -25,8 +25,8 @@ public:
 	{
 	}
 	virtual ~idSurface();
-	virtual void Draw() = 0;
 	virtual cplane_t GetPlane() const;
+	virtual void Draw() = 0;
 };
 
 #endif

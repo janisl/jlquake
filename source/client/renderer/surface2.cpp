@@ -424,40 +424,6 @@ void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
 	R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
-void GL_RenderLightmappedPoly( mbrush38_surface_t* surf ) {
-	RB_CHECKOVERFLOW( surf->numVerts, surf->numIndexes );
-
-	int numVerts = tess.numVertexes;
-	int numIndexes = tess.numIndexes;
-
-	tess.numVertexes += surf->numVerts;
-	tess.numIndexes += surf->numIndexes;
-
-	float* v = surf->verts[ 0 ].v;
-	for ( int i = 0; i < surf->numVerts; i++, v += BRUSH38_VERTEXSIZE ) {
-		tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-		tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-		tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
-		if ( surf->flags & BRUSH38_SURF_PLANEBACK ) {
-			tess.normal[ numVerts + i ][ 0 ] = -surf->plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = -surf->plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = -surf->plane->normal[ 2 ];
-		} else {
-			tess.normal[ numVerts + i ][ 0 ] = surf->plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = surf->plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = surf->plane->normal[ 2 ];
-		}
-	}
-	for ( int i = 0; i < surf->numIndexes; i++ ) {
-		tess.indexes[ numIndexes + i ] = numVerts + surf->indexes[ i ];
-	}
-	c_brush_polys++;
-}
-
 //	Draw water surfaces and windows.
 //	The BSP tree is waled front to back, so unwinding the chain of
 // alpha_surfaces will draw back to front, giving proper ordering.

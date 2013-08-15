@@ -21,5 +21,23 @@ idSurfacePolyBuffer::idSurfacePolyBuffer() {
 }
 
 void idSurfacePolyBuffer::Draw() {
-	RB_SurfacePolyBuffer( &surf );
+	RB_EndSurface();
+
+	RB_BeginSurface( tess.shader, tess.fogNum );
+
+	// ===================================================
+	//	Originally tess was pointed to different arrays.
+	tess.numIndexes =   surf.pPolyBuffer->numIndicies;
+	tess.numVertexes =  surf.pPolyBuffer->numVerts;
+
+	Com_Memcpy( tess.xyz, surf.pPolyBuffer->xyz, tess.numVertexes * sizeof ( vec4_t ) );
+	for ( int i = 0; i < tess.numVertexes; i++ ) {
+		tess.texCoords[ i ][ 0 ][ 0 ] = surf.pPolyBuffer->st[ i ][ 0 ];
+		tess.texCoords[ i ][ 0 ][ 1 ] = surf.pPolyBuffer->st[ i ][ 1 ];
+	}
+	Com_Memcpy( tess.indexes, surf.pPolyBuffer->indicies, tess.numIndexes * sizeof ( glIndex_t ) );
+	Com_Memcpy( tess.vertexColors, surf.pPolyBuffer->color, tess.numVertexes * sizeof ( color4ub_t ) );
+	// ===================================================
+
+	RB_EndSurface();
 }

@@ -18,5 +18,4 @@
 #include "surfaces.h"
 
 void idSurfaceSkip::Draw() {
-	RB_SurfaceSkip( data );
 }
