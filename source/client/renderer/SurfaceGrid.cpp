@@ -19,6 +19,7 @@
 #include "backend.h"
 #include "cvars.h"
 #include "decals.h"
+#include "marks.h"
 
 //	Just copy the grid of points and triangulate
 void idSurfaceGrid::Draw() {
@@ -206,4 +207,108 @@ void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel
 			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
 		}
 	}
+}
+
+bool idSurfaceGrid::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) {
+	// check if the surface has NOIMPACT or NOMARKS set
+	return R_ShaderCanHaveMarks( shader );
+}
+
+void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
+	int numPlanes, const vec3_t* normals, const float* dists,
+	int maxPoints, vec3_t pointBuffer,
+	int maxFragments, markFragment_t* fragmentBuffer,
+	int* returnedPoints, int* returnedFragments,
+	const vec3_t mins, const vec3_t maxs ) {
+	srfGridMesh_t* cv = ( srfGridMesh_t* )GetBrush46Data();
+	for ( int m = 0; m < cv->height - 1; m++ ) {
+		for ( int n = 0; n < cv->width - 1; n++ ) {
+			// We triangulate the grid and chop all triangles within
+			// the bounding planes of the to be projected polygon.
+			// LOD is not taken into account, not such a big deal though.
+			//
+			// It's probably much nicer to chop the grid itself and deal
+			// with this grid as a normal SF_GRID surface so LOD will
+			// be applied. However the LOD of that chopped grid must
+			// be synced with the LOD of the original curve.
+			// One way to do this; the chopped grid shares vertices with
+			// the original curve. When LOD is applied to the original
+			// curve the unused vertices are flagged. Now the chopped curve
+			// should skip the flagged vertices. This still leaves the
+			// problems with the vertices at the chopped grid edges.
+			//
+			// To avoid issues when LOD applied to "hollow curves" (like
+			// the ones around many jump pads) we now just add a 2 unit
+			// offset to the triangle vertices.
+			// The offset is added in the vertex normal vector direction
+			// so all triangles will still fit together.
+			// The 2 unit offset should avoid pretty much all LOD problems.
+
+			int numClipPoints = 3;
+
+			bsp46_drawVert_t* dv = cv->verts + m * cv->width + n;
+
+			vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
+			VectorCopy( dv[ 0 ].xyz, clipPoints[ 0 ][ 0 ] );
+			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, dv[ 0 ].normal, clipPoints[ 0 ][ 0 ] );
+			VectorCopy( dv[ cv->width ].xyz, clipPoints[ 0 ][ 1 ] );
+			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, dv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
+			VectorCopy( dv[ 1 ].xyz, clipPoints[ 0 ][ 2 ] );
+			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, dv[ 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			// check the normal of this triangle
+			vec3_t v1, v2;
+			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
+			VectorSubtract( clipPoints[ 0 ][ 2 ], clipPoints[ 0 ][ 1 ], v2 );
+			vec3_t normal;
+			CrossProduct( v1, v2, normal );
+			VectorNormalizeFast( normal );
+			if ( DotProduct( normal, projectionDir ) < -0.1 ) {
+				// add the fragments of this triangle
+				R_AddMarkFragments( numClipPoints, clipPoints,
+					numPlanes, normals, dists,
+					maxPoints, pointBuffer,
+					maxFragments, fragmentBuffer,
+					returnedPoints, returnedFragments, mins, maxs );
+
+				if ( *returnedFragments == maxFragments ) {
+					return;	// not enough space for more fragments
+				}
+			}
+
+			VectorCopy( dv[ 1 ].xyz, clipPoints[ 0 ][ 0 ] );
+			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, dv[ 1 ].normal, clipPoints[ 0 ][ 0 ] );
+			VectorCopy( dv[ cv->width ].xyz, clipPoints[ 0 ][ 1 ] );
+			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, dv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
+			VectorCopy( dv[ cv->width + 1 ].xyz, clipPoints[ 0 ][ 2 ] );
+			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, dv[ cv->width + 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			// check the normal of this triangle
+			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
+			VectorSubtract( clipPoints[ 0 ][ 2 ], clipPoints[ 0 ][ 1 ], v2 );
+			CrossProduct( v1, v2, normal );
+			VectorNormalizeFast( normal );
+			if ( DotProduct( normal, projectionDir ) < -0.05 ) {
+				// add the fragments of this triangle
+				R_AddMarkFragments( numClipPoints, clipPoints,
+					numPlanes, normals, dists,
+					maxPoints, pointBuffer,
+					maxFragments, fragmentBuffer,
+					returnedPoints, returnedFragments, mins, maxs );
+
+				if ( *returnedFragments == maxFragments ) {
+					return;	// not enough space for more fragments
+				}
+			}
+		}
+	}
+}
+
+void idSurfaceGrid::MarkFragmentsWolf( const vec3_t projectionDir,
+	int numPlanes, const vec3_t* normals, const float* dists,
+	int maxPoints, vec3_t pointBuffer,
+	int maxFragments, markFragment_t* fragmentBuffer,
+	int* returnedPoints, int* returnedFragments,
+	const vec3_t mins, const vec3_t maxs,
+	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+	MarkFragments( projectionDir, numPlanes, normals, dists, maxPoints, pointBuffer,
+		maxFragments, fragmentBuffer, returnedPoints, returnedFragments, mins, maxs );
 }

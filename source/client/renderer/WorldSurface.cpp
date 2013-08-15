@@ -62,3 +62,24 @@ bool idWorldSurface::ClipDecal( struct decalProjector_t* dp )
 	tr.pc.c_decalClipSurfaces++;
 	return true;
 }
+
+bool idWorldSurface::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) {
+	return false;
+}
+
+void idWorldSurface::MarkFragments( const vec3_t projectionDir,
+	int numPlanes, const vec3_t* normals, const float* dists,
+	int maxPoints, vec3_t pointBuffer,
+	int maxFragments, markFragment_t* fragmentBuffer,
+	int* returnedPoints, int* returnedFragments,
+	const vec3_t mins, const vec3_t maxs ) {
+}
+
+void idWorldSurface::MarkFragmentsWolf( const vec3_t projectionDir,
+	int numPlanes, const vec3_t* normals, const float* dists,
+	int maxPoints, vec3_t pointBuffer,
+	int maxFragments, markFragment_t* fragmentBuffer,
+	int* returnedPoints, int* returnedFragments,
+	const vec3_t mins, const vec3_t maxs,
+	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+}

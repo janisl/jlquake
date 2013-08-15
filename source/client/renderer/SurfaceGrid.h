@@ -23,6 +23,20 @@ class idSurfaceGrid : public idWorldSurface {
 public:
 	virtual void Draw();
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel );
+	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir );
+	virtual void MarkFragments( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs );
+	virtual void MarkFragmentsWolf( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs,
+		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints );
 
 private:
 	static float LodErrorForVolume( vec3_t local, float radius );
