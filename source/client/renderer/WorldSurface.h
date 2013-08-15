@@ -71,6 +71,9 @@ public:
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 	virtual bool AddToNodeBounds() const;
 	bool Cull( shader_t* shader, int* frontFace );
+	int Dlight( int dlightBits );
+	virtual int DoDlight( int dlightBits );
+	virtual int DoDlightET( int dlightBits );
 
 	surface_base_t* GetBrush46Data() const;
 	void SetBrush46Data( surface_base_t* data );

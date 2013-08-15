@@ -360,3 +360,29 @@ bool idSurfaceGrid::DoCullET( shader_t* shader, int* frontFace ) const {
 	}
 	return idWorldSurface::DoCullET( shader, frontFace );
 }
+
+int idSurfaceGrid::DoDlight( int dlightBits ) {
+	srfGridMesh_t* grid = ( srfGridMesh_t* )GetBrush46Data();
+	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
+		if ( !( dlightBits & ( 1 << i ) ) ) {
+			continue;
+		}
+		dlight_t* dl = &tr.refdef.dlights[ i ];
+		if ( dl->origin[ 0 ] - dl->radius > grid->bounds[ 1 ][ 0 ] ||
+			 dl->origin[ 0 ] + dl->radius <grid->bounds[ 0 ][ 0 ] ||
+										   dl->origin[ 1 ] - dl->radius> grid->bounds[ 1 ][ 1 ] ||
+			 dl->origin[ 1 ] + dl->radius <grid->bounds[ 0 ][ 1 ] ||
+										   dl->origin[ 2 ] - dl->radius> grid->bounds[ 1 ][ 2 ] ||
+			 dl->origin[ 2 ] + dl->radius < grid->bounds[ 0 ][ 2 ] ) {
+			// dlight doesn't reach the bounds
+			dlightBits &= ~( 1 << i );
+		}
+	}
+
+	if ( !dlightBits ) {
+		tr.pc.c_dlightSurfacesCulled++;
+	}
+
+	this->dlightBits[ tr.smpFrame ] = dlightBits;
+	return dlightBits;
+}

@@ -292,3 +292,25 @@ bool idSurfaceFaceQ3::DoCull( shader_t* shader ) const {
 
 	return false;
 }
+
+int idSurfaceFaceQ3::DoDlight( int dlightBits ) {
+	srfSurfaceFace_t* face = ( srfSurfaceFace_t* )GetBrush46Data();
+	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
+		if ( !( dlightBits & ( 1 << i ) ) ) {
+			continue;
+		}
+		dlight_t* dl = &tr.refdef.dlights[ i ];
+		float d = DotProduct( dl->origin, face->plane.normal ) - face->plane.dist;
+		if ( d < -dl->radius || d > dl->radius ) {
+			// dlight doesn't reach the plane
+			dlightBits &= ~( 1 << i );
+		}
+	}
+
+	if ( !dlightBits ) {
+		tr.pc.c_dlightSurfacesCulled++;
+	}
+
+	this->dlightBits[ tr.smpFrame ] = dlightBits;
+	return dlightBits;
+}

@@ -160,3 +160,96 @@ bool idWorldSurface::DoCullET( shader_t* shader, int* frontFace ) const {
 	// must be visible
 	return false;
 }
+
+//	The given surface is going to be drawn, and it touches a leaf that is
+// touched by one or more dlights, so try to throw out more dlights if possible.
+int idWorldSurface::Dlight( int dlightBits ) {
+	if ( GGameType & GAME_ET ) {
+		return DoDlightET( dlightBits );
+	}
+
+	dlightBits = DoDlight( dlightBits );
+
+	if ( dlightBits ) {
+		tr.pc.c_dlightSurfaces++;
+	}
+
+	return dlightBits;
+}
+
+int idWorldSurface::DoDlight( int dlightBits ) {
+	return 0;
+}
+
+// ydnar: made this use generic surface
+int idWorldSurface::DoDlightET( int dlightBits ) {
+	int i;
+	vec3_t origin;
+	float radius;
+	srfGeneric_t* gen;
+
+
+	// get generic surface
+	gen = ( srfGeneric_t* )GetBrush46Data();
+
+	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
+	switch ( GetBrush46Data()->surfaceType ) {
+	case SF_FACE:
+	case SF_TRIANGLES:
+	case SF_GRID:
+	case SF_FOLIAGE:
+		break;
+
+	default:
+		this->dlightBits[ tr.smpFrame ] = 0;
+		return 0;
+	}
+
+	// debug code
+	//%	gen->dlightBits[ tr.smpFrame ] = dlightBits;
+	//%	return dlightBits;
+
+	// try to cull out dlights
+	for ( i = 0; i < tr.refdef.num_dlights; i++ ) {
+		if ( !( dlightBits & ( 1 << i ) ) ) {
+			continue;
+		}
+
+		// junior dlights don't affect world surfaces
+		if ( tr.refdef.dlights[ i ].flags & REF_JUNIOR_DLIGHT ) {
+			dlightBits &= ~( 1 << i );
+			continue;
+		}
+
+		// lightning dlights affect all surfaces
+		if ( tr.refdef.dlights[ i ].flags & REF_DIRECTED_DLIGHT ) {
+			continue;
+		}
+
+		// test surface bounding sphere against dlight bounding sphere
+		VectorCopy( tr.refdef.dlights[ i ].transformed, origin );
+		radius = tr.refdef.dlights[ i ].radius;
+
+		if ( ( gen->localOrigin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
+			 ( gen->localOrigin[ 0 ] - gen->radius ) > ( origin[ 0 ] + radius ) ||
+			 ( gen->localOrigin[ 1 ] + gen->radius ) < ( origin[ 1 ] - radius ) ||
+			 ( gen->localOrigin[ 1 ] - gen->radius ) > ( origin[ 1 ] + radius ) ||
+			 ( gen->localOrigin[ 2 ] + gen->radius ) < ( origin[ 2 ] - radius ) ||
+			 ( gen->localOrigin[ 2 ] - gen->radius ) > ( origin[ 2 ] + radius ) ) {
+			dlightBits &= ~( 1 << i );
+		}
+	}
+
+	// common->Printf( "Surf: 0x%08X dlightBits: 0x%08X\n", srf, dlightBits );
+
+	// set counters
+	if ( dlightBits == 0 ) {
+		tr.pc.c_dlightSurfacesCulled++;
+	} else {
+		tr.pc.c_dlightSurfaces++;
+	}
+
+	// set surface dlight bits and return
+	this->dlightBits[ tr.smpFrame ] = dlightBits;
+	return dlightBits;
+}
