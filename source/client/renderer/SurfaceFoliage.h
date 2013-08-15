@@ -17,9 +17,9 @@
 #ifndef __idSurfaceFoliage__
 #define __idSurfaceFoliage__
 
-#include "SurfaceGeneric.h"
+#include "WorldSurface.h"
 
-class idSurfaceFoliage : public idSurfaceGeneric {
+class idSurfaceFoliage : public idWorldSurface {
 public:
 	virtual void Draw();
 };

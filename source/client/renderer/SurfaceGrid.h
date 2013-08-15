@@ -17,9 +17,9 @@
 #ifndef __idSurfaceGrid__
 #define __idSurfaceGrid__
 
-#include "SurfaceGeneric.h"
+#include "WorldSurface.h"
 
-class idSurfaceGrid : public idSurfaceGeneric {
+class idSurfaceGrid : public idWorldSurface {
 public:
 	virtual void Draw();
 

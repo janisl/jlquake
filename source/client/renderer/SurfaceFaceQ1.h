@@ -17,7 +17,7 @@
 #ifndef __idSurfaceFaceQ1__
 #define __idSurfaceFaceQ1__
 
-#include "SurfaceGeneric.h"
+#include "WorldSurface.h"
 #include "../../common/file_formats/bsp29.h"
 #include "shader.h"
 
@@ -78,7 +78,7 @@ struct mbrush29_surface_t : surface_base_t {
 	int numIndexes;
 };
 
-class idSurfaceFaceQ1 : public idSurfaceGeneric {
+class idSurfaceFaceQ1 : public idWorldSurface {
 public:
 	mbrush29_surface_t surf;
 	idSurfaceFaceQ1* texturechain;

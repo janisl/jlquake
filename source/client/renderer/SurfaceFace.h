@@ -17,9 +17,9 @@
 #ifndef __idSurfaceFace__
 #define __idSurfaceFace__
 
-#include "SurfaceGeneric.h"
+#include "WorldSurface.h"
 
-class idSurfaceFace : public idSurfaceGeneric {
+class idSurfaceFace : public idWorldSurface {
 public:
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();
