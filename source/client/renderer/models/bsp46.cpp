@@ -31,7 +31,6 @@
 #include "../SurfaceGrid.h"
 #include "../SurfaceTriangles.h"
 #include "../SurfaceFoliage.h"
-#include "../SurfaceFlare.h"
 
 #define LIGHTMAP_SIZE       128
 
@@ -459,7 +458,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 }
 
 static idWorldSurface* ParseFlare( bsp46_dsurface_t* ds ) {
-	idSurfaceFlare* surf = new idSurfaceFlare;
+	idSurfaceSkip* surf = new idSurfaceSkip;
 	// get fog volume
 	surf->fogIndex = LittleLong( ds->fogNum ) + 1;
 
@@ -469,16 +468,10 @@ static idWorldSurface* ParseFlare( bsp46_dsurface_t* ds ) {
 		surf->shader = tr.defaultShader;
 	}
 
-	srfFlare_t* flare = new srfFlare_t();
-	flare->surfaceType = SF_FLARE;
+	static surface_base_t flare = { SF_SKIP };
 
-	surf->SetBrush46Data(flare);
+	surf->SetBrush46Data(&flare);
 
-	for ( int i = 0; i < 3; i++ ) {
-		flare->origin[ i ] = LittleFloat( ds->lightmapOrigin[ i ] );
-		flare->color[ i ] = LittleFloat( ds->lightmapVecs[ 0 ][ i ] );
-		flare->normal[ i ] = LittleFloat( ds->lightmapVecs[ 2 ][ i ] );
-	}
 	return surf;
 }
 
@@ -1974,9 +1967,6 @@ void R_FreeBsp46( world_t* mod ) {
 			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_FACE:
-			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
-			break;
-		case SF_FLARE:
 			Mem_Free( mod->surfaces[ i ]->GetBrush46Data() );
 			break;
 		case SF_FOLIAGE:

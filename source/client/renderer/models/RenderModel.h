@@ -217,12 +217,6 @@ struct drawSurf_t {
 	idSurface* surface;					// any of surface*_t
 };
 
-struct srfFlare_t : surface_base_t {
-	vec3_t origin;
-	vec3_t normal;
-	vec3_t color;
-};
-
 struct srfGeneric_t : surface_base_t {
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];

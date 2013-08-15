@@ -30,7 +30,6 @@ enum surfaceType_t
 	SF_GRID,
 	SF_TRIANGLES,
 	SF_FOLIAGE,
-	SF_FLARE,
 };
 
 struct surface_base_t {
