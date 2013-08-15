@@ -21,8 +21,6 @@
 
 class idSurfaceFace : public idWorldSurface {
 public:
-	virtual cplane_t GetPlane() const;
-	virtual void Draw();
 };
 
 #endif

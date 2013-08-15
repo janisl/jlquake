@@ -14,4 +14,15 @@
 //**
 //**************************************************************************
 
+#ifndef __idSurfaceFaceQ3__
+#define __idSurfaceFaceQ3__
+
 #include "SurfaceFace.h"
+
+class idSurfaceFaceQ3 : public idSurfaceFace {
+public:
+	virtual cplane_t GetPlane() const;
+	virtual void Draw();
+};
+
+#endif
