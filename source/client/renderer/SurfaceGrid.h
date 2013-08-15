@@ -22,6 +22,7 @@
 class idSurfaceGrid : public idWorldSurface {
 public:
 	virtual void Draw();
+	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel );
 
 private:
 	static float LodErrorForVolume( vec3_t local, float radius );

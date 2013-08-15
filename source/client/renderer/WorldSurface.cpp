@@ -15,3 +15,50 @@
 //**************************************************************************
 
 #include "WorldSurface.h"
+#include "decals.h"
+#include "../../common/content_types.h"
+
+void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) {
+}
+
+bool idWorldSurface::ClipDecal( struct decalProjector_t* dp )
+{
+	//	early outs
+	if ( dp->shader == NULL ) {
+		return false;
+	}
+	if ( ( shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) ||
+		 ( shader->contentFlags & BSP46CONTENTS_FOG ) ) {
+		return false;
+	}
+
+	//	add to counts
+	tr.pc.c_decalTestSurfaces++;
+
+	//	get generic surface
+	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
+
+	//	test bounding sphere
+	if ( !R_TestDecalBoundingSphere( dp, gen->localOrigin, ( gen->radius * gen->radius ) ) ) {
+		return false;
+	}
+
+	//	planar surface
+	if ( gen->plane.normal[ 0 ] || gen->plane.normal[ 1 ] || gen->plane.normal[ 2 ] ) {
+		//	backface check
+		float d = DotProduct( dp->planes[ 0 ], gen->plane.normal );
+		if ( d < -0.0001 ) {
+			return false;
+		}
+
+		//	plane-sphere check
+		d = DotProduct( dp->center, gen->plane.normal ) - gen->plane.dist;
+		if ( fabs( d ) >= dp->radius ) {
+			return false;
+		}
+	}
+
+	//	add to counts
+	tr.pc.c_decalClipSurfaces++;
+	return true;
+}

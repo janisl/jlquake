@@ -26,8 +26,10 @@
 void R_AddModelShadow( const refEntity_t* ent );
 void R_TransformDecalProjector( decalProjector_t * in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t * out );
 bool R_TestDecalBoundingBox( decalProjector_t* dp, vec3_t mins, vec3_t maxs );
-void R_ProjectDecalOntoSurface( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel );
 void R_AddDecalSurfaces( mbrush46_model_t* bmodel );
 void R_CullDecalProjectors();
+void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
+	idWorldSurface* surf, mbrush46_model_t* bmodel );
+bool R_TestDecalBoundingSphere( decalProjector_t* dp, vec3_t center, float radius2 );
 
 #endif

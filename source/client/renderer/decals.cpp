@@ -21,7 +21,6 @@
 #include "scene.h"
 #include "backend.h"
 #include "../../common/Common.h"
-#include "../../common/content_types.h"
 #include "../../common/strings.h"
 
 #define SIDE_FRONT  0
@@ -381,7 +380,7 @@ bool R_TestDecalBoundingBox( decalProjector_t* dp, vec3_t mins, vec3_t maxs ) {
 }
 
 //	return true if the decal projector intersects the bounding sphere
-static bool R_TestDecalBoundingSphere( decalProjector_t* dp, vec3_t center, float radius2 ) {
+bool R_TestDecalBoundingSphere( decalProjector_t* dp, vec3_t center, float radius2 ) {
 	vec3_t delta;
 	VectorSubtract( center, dp->center, delta );
 	float distance2 = DotProduct( delta, delta );
@@ -471,7 +470,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 }
 
 //	projects decal onto a polygon
-static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
+void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
 	idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	make a plane from the winding
 	vec4_t plane;
@@ -593,115 +592,6 @@ static void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t
 		vert->modulate[ 1 ] = idMath::FtoiFast( pd * alpha * dp->color[ 1 ] );
 		vert->modulate[ 2 ] = idMath::FtoiFast( pd * alpha * dp->color[ 2 ] );
 		vert->modulate[ 3 ] = idMath::FtoiFast( alpha * dp->color[ 3 ] );
-	}
-}
-
-//	projects a decal onto a triangle surface (brush faces, misc_models, metasurfaces)
-static void ProjectDecalOntoTriangles( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
-	//	get surface
-	srfTriangles_t* srf = ( srfTriangles_t* )surf->GetBrush46Data();
-
-	//	walk triangle list
-	for ( int i = 0; i < srf->numIndexes; i += 3 ) {
-		//	make triangle
-		vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
-		VectorCopy( srf->verts[ srf->indexes[ i ] ].xyz, points[ 0 ][ 0 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 1 ] ].xyz, points[ 0 ][ 1 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 2 ] ].xyz, points[ 0 ][ 2 ] );
-
-		//	chop it
-		ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
-	}
-}
-
-//	projects a decal onto a grid (patch) surface
-static void ProjectDecalOntoGrid( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
-	//	get surface
-	srfGridMesh_t* srf = ( srfGridMesh_t* )surf->GetBrush46Data();
-
-	//	walk mesh rows
-	for ( int y = 0; y < ( srf->height - 1 ); y++ ) {
-		//	walk mesh cols
-		for ( int x = 0; x < ( srf->width - 1 ); x++ ) {
-			//	get vertex
-			bsp46_drawVert_t* dv = srf->verts + y * srf->width + x;
-
-			vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
-			//	first triangle
-			VectorCopy( dv[ 0 ].xyz, points[ 0 ][ 0 ] );
-			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
-			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 2 ] );
-			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
-
-			//	second triangle
-			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 0 ] );
-			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
-			VectorCopy( dv[ srf->width + 1 ].xyz, points[ 0 ][ 2 ] );
-			ProjectDecalOntoWinding( dp, 3, points, surf, bmodel );
-		}
-	}
-}
-
-//	projects a decal onto a world surface
-void R_ProjectDecalOntoSurface( decalProjector_t* dp, idWorldSurface* surf, mbrush46_model_t* bmodel ) {
-	//	early outs
-	if ( dp->shader == NULL ) {
-		return;
-	}
-	if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) ) ||
-		 ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {
-		return;
-	}
-
-	//	add to counts
-	tr.pc.c_decalTestSurfaces++;
-
-	//	get generic surface
-	srfGeneric_t* gen = ( srfGeneric_t* )surf->GetBrush46Data();
-
-	//	ignore certain surfacetypes
-	if ( gen->surfaceType != SF_FACE &&
-		 gen->surfaceType != SF_TRIANGLES &&
-		 gen->surfaceType != SF_GRID ) {
-		return;
-	}
-
-	//	test bounding sphere
-	if ( !R_TestDecalBoundingSphere( dp, gen->localOrigin, ( gen->radius * gen->radius ) ) ) {
-		return;
-	}
-
-	//	planar surface
-	if ( gen->plane.normal[ 0 ] || gen->plane.normal[ 1 ] || gen->plane.normal[ 2 ] ) {
-		//	backface check
-		float d = DotProduct( dp->planes[ 0 ], gen->plane.normal );
-		if ( d < -0.0001 ) {
-			return;
-		}
-
-		//	plane-sphere check
-		d = DotProduct( dp->center, gen->plane.normal ) - gen->plane.dist;
-		if ( fabs( d ) >= dp->radius ) {
-			return;
-		}
-	}
-
-	//	add to counts
-	tr.pc.c_decalClipSurfaces++;
-
-	//	switch on type
-	switch ( gen->surfaceType ) {
-	case SF_FACE:
-	case SF_TRIANGLES:
-		ProjectDecalOntoTriangles( dp, surf, bmodel );
-		break;
-
-	case SF_GRID:
-		ProjectDecalOntoGrid( dp, surf, bmodel );
-		break;
-
-	default:
-		break;
 	}
 }
 

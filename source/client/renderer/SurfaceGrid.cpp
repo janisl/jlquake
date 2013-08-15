@@ -18,6 +18,7 @@
 #include "surfaces.h"
 #include "backend.h"
 #include "cvars.h"
+#include "decals.h"
 
 //	Just copy the grid of points and triangulate
 void idSurfaceGrid::Draw() {
@@ -174,4 +175,35 @@ float idSurfaceGrid::LodErrorForVolume( vec3_t local, float radius ) {
 	}
 
 	return r_lodCurveError->value / d;
+}
+
+void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) {
+	if ( !ClipDecal( dp ) ) {
+		return;
+	}
+
+	//	get surface
+	srfGridMesh_t* srf = ( srfGridMesh_t* )GetBrush46Data();
+
+	//	walk mesh rows
+	for ( int y = 0; y < ( srf->height - 1 ); y++ ) {
+		//	walk mesh cols
+		for ( int x = 0; x < ( srf->width - 1 ); x++ ) {
+			//	get vertex
+			bsp46_drawVert_t* dv = srf->verts + y * srf->width + x;
+
+			vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
+			//	first triangle
+			VectorCopy( dv[ 0 ].xyz, points[ 0 ][ 0 ] );
+			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
+			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 2 ] );
+			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
+
+			//	second triangle
+			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 0 ] );
+			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
+			VectorCopy( dv[ srf->width + 1 ].xyz, points[ 0 ][ 2 ] );
+			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
+		}
+	}
 }

@@ -379,7 +379,7 @@ static void R_AddWorldSurface( idWorldSurface* surf, shader_t* shader, int dligh
 		// ydnar: project any decals
 		for ( int i = 0; i < tr.refdef.numDecalProjectors; i++ ) {
 			if ( decalBits & ( 1 << i ) ) {
-				R_ProjectDecalOntoSurface( &tr.refdef.decalProjectors[ i ], surf, tr.currentBModel );
+				surf->ProjectDecal( &tr.refdef.decalProjectors[ i ], tr.currentBModel );
 			}
 		}
 	}

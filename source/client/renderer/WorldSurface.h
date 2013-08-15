@@ -54,11 +54,15 @@ public:
 
 	idWorldSurface();
 
+	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel );
+
 	surface_base_t* GetBrush46Data();
 	void SetBrush46Data( surface_base_t* data );
 
 protected:
 	surface_base_t* data;		// any of srf*_t
+
+	bool ClipDecal( struct decalProjector_t* dp );
 };
 
 inline idWorldSurface::idWorldSurface() {
