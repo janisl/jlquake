@@ -18,6 +18,7 @@
 #include "surfaces.h"
 #include "backend.h"
 #include "marks.h"
+#include "cvars.h"
 #include "../../common/common_defs.h"
 
 cplane_t idSurfaceFaceQ3::GetPlane() const {
@@ -261,4 +262,33 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 			return;	// not enough space for more fragments
 		}
 	}
+}
+
+bool idSurfaceFaceQ3::DoCull( shader_t* shader ) const {
+	if ( shader->cullType == CT_TWO_SIDED ) {
+		return false;
+	}
+
+	// face culling
+	if ( !r_facePlaneCull->integer ) {
+		return false;
+	}
+
+	srfSurfaceFace_t* sface = ( srfSurfaceFace_t* )GetBrush46Data();
+	float d = DotProduct( tr.orient.viewOrigin, sface->plane.normal );
+
+	// don't cull exactly on the plane, because there are levels of rounding
+	// through the BSP, ICD, and hardware that may cause pixel gaps if an
+	// epsilon isn't allowed here
+	if ( shader->cullType == CT_FRONT_SIDED ) {
+		if ( d < sface->plane.dist - 8 ) {
+			return true;
+		}
+	} else {
+		if ( d > sface->plane.dist + 8 ) {
+			return true;
+		}
+	}
+
+	return false;
 }

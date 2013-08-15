@@ -23,3 +23,7 @@ void idSurfaceSkip::Draw() {
 bool idSurfaceSkip::AddToNodeBounds() const {
 	return false;
 }
+
+bool idSurfaceSkip::DoCullET( shader_t* shader, int* frontFace ) const {
+	return true;
+}

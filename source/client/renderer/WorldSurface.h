@@ -70,6 +70,7 @@ public:
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 	virtual bool AddToNodeBounds() const;
+	bool Cull( shader_t* shader, int* frontFace );
 
 	surface_base_t* GetBrush46Data() const;
 	void SetBrush46Data( surface_base_t* data );
@@ -77,6 +78,8 @@ public:
 protected:
 	surface_base_t* data;		// any of srf*_t
 
+	virtual bool DoCull( shader_t* shader ) const;
+	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
 	bool ClipDecal( struct decalProjector_t* dp ) const;
 };
 

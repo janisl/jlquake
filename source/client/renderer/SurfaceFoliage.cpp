@@ -17,6 +17,7 @@
 #include "SurfaceFoliage.h"
 #include "surfaces.h"
 #include "backend.h"
+#include "cvars.h"
 
 void idSurfaceFoliage::Draw() {
 	srfFoliage_t* srf = ( srfFoliage_t* )data;
@@ -137,4 +138,11 @@ void idSurfaceFoliage::Draw() {
 		tess.numIndexes += numIndexes;
 		tess.numVertexes += numVerts;
 	}
+}
+
+bool idSurfaceFoliage::DoCullET( shader_t* shader, int* frontFace ) const {
+	if ( !r_drawfoliage->value ) {
+		return true;
+	}
+	return idWorldSurface::DoCullET( shader, frontFace );
 }

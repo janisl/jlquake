@@ -23,6 +23,9 @@ class idSurfaceSkip : public idWorldSurface {
 public:
 	virtual void Draw();
 	virtual bool AddToNodeBounds() const;
+
+protected:
+	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
 };
 
 #endif

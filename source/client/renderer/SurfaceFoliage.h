@@ -22,6 +22,9 @@
 class idSurfaceFoliage : public idWorldSurface {
 public:
 	virtual void Draw();
+
+protected:
+	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
 };
 
 #endif

@@ -38,6 +38,10 @@ public:
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
+protected:
+	virtual bool DoCull( shader_t* shader ) const;
+	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
+
 private:
 	static float LodErrorForVolume( vec3_t local, float radius );
 };

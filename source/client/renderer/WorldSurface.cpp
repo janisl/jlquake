@@ -16,7 +16,10 @@
 
 #include "WorldSurface.h"
 #include "decals.h"
+#include "cvars.h"
+#include "backend.h"
 #include "../../common/content_types.h"
+#include "../../common/common_defs.h"
 
 void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {
 }
@@ -85,4 +88,75 @@ void idWorldSurface::MarkFragmentsWolf( const vec3_t projectionDir,
 
 bool idWorldSurface::AddToNodeBounds() const {
 	return true;
+}
+
+//	Tries to back face cull surfaces before they are lighted or added to the
+// sorting list.
+//
+//	This will also allow mirrors on both sides of a model without recursion.
+bool idWorldSurface::Cull( shader_t* shader, int* frontFace ) {
+	// force to non-front facing
+	*frontFace = 0;
+
+	if ( r_nocull->integer ) {
+		return false;
+	}
+
+	if ( GGameType & GAME_ET ) {
+		return DoCullET( shader, frontFace );
+	}
+
+	return DoCull( shader );
+}
+
+bool idWorldSurface::DoCull( shader_t* shader ) const {
+	return false;
+}
+
+bool idWorldSurface::DoCullET( shader_t* shader, int* frontFace ) const {
+	// ydnar: made surface culling generic, inline with q3map2 surface classification
+	// get generic surface
+	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
+
+	// plane cull
+	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer ) {
+		float d = DotProduct( tr.orient.viewOrigin, gen->plane.normal ) - gen->plane.dist;
+		if ( d > 0.0f ) {
+			*frontFace = 1;
+		}
+
+		// don't cull exactly on the plane, because there are levels of rounding
+		// through the BSP, ICD, and hardware that may cause pixel gaps if an
+		// epsilon isn't allowed here
+		if ( shader->cullType == CT_FRONT_SIDED ) {
+			if ( d < -8.0f ) {
+				tr.pc.c_plane_cull_out++;
+				return true;
+			}
+		} else if ( shader->cullType == CT_BACK_SIDED ) {
+			if ( d > 8.0f ) {
+				tr.pc.c_plane_cull_out++;
+				return true;
+			}
+		}
+
+		tr.pc.c_plane_cull_in++;
+	}
+
+	// try sphere cull
+	int cull;
+	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
+		cull = R_CullLocalPointAndRadius( gen->localOrigin, gen->radius );
+	} else {
+		cull = R_CullPointAndRadius( gen->localOrigin, gen->radius );
+	}
+	if ( cull == CULL_OUT ) {
+		tr.pc.c_sphere_cull_out++;
+		return true;
+	}
+
+	tr.pc.c_sphere_cull_in++;
+
+	// must be visible
+	return false;
 }

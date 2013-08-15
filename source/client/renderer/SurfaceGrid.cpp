@@ -312,3 +312,51 @@ void idSurfaceGrid::MarkFragmentsWolf( const vec3_t projectionDir,
 	MarkFragments( projectionDir, numPlanes, normals, dists, maxPoints, pointBuffer,
 		maxFragments, fragmentBuffer, returnedPoints, returnedFragments, mins, maxs );
 }
+
+//	Returns true if the grid is completely culled away.
+//	Also sets the clipped hint bit in tess
+bool idSurfaceGrid::DoCull( shader_t* shader ) const {
+	if ( r_nocurves->integer ) {
+		return true;
+	}
+
+	srfGridMesh_t* cv = ( srfGridMesh_t* )GetBrush46Data();
+	int sphereCull;
+	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
+		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->radius );
+	} else {
+		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->radius );
+	}
+
+	// check for trivial reject
+	if ( sphereCull == CULL_OUT ) {
+		tr.pc.c_sphere_cull_patch_out++;
+		return true;
+	}
+	// check bounding box if necessary
+	else if ( sphereCull == CULL_CLIP ) {
+		tr.pc.c_sphere_cull_patch_clip++;
+
+		int boxCull = R_CullLocalBox( cv->bounds );
+
+		if ( boxCull == CULL_OUT ) {
+			tr.pc.c_box_cull_patch_out++;
+			return true;
+		} else if ( boxCull == CULL_IN ) {
+			tr.pc.c_box_cull_patch_in++;
+		} else {
+			tr.pc.c_box_cull_patch_clip++;
+		}
+	} else {
+		tr.pc.c_sphere_cull_patch_in++;
+	}
+
+	return false;
+}
+
+bool idSurfaceGrid::DoCullET( shader_t* shader, int* frontFace ) const {
+	if ( r_nocurves->integer ) {
+		return true;
+	}
+	return idWorldSurface::DoCullET( shader, frontFace );
+}

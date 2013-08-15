@@ -38,6 +38,9 @@ public:
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
+protected:
+	virtual bool DoCull( shader_t* shader ) const;
+
 private:
 	void MarkFragmentsOldMapping( const vec3_t projectionDir,
 		int numPlanes, const vec3_t* normals, const float* dists,
