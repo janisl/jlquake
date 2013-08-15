@@ -490,6 +490,12 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	} else {
 		shader = surf->shader;
 	}
+
+	int frontFace;
+	if ( surf->Cull( shader, &frontFace ) ) {
+		return;
+	}
+
 	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 

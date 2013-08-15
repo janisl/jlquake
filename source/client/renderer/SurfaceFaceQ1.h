@@ -85,6 +85,9 @@ public:
     idSurfaceFaceQ1();
 
 	virtual void Draw();
+
+protected:
+	virtual bool DoCull( shader_t* shader ) const;
 };
 
 #endif

@@ -27,8 +27,6 @@
 #include "../../common/content_types.h"
 #include "SurfaceSkyBoxQ2.h"
 
-#define BACKFACE_EPSILON    0.01
-
 static int R_DlightFace( idWorldSurface* surf, srfSurfaceFace_t* face, int dlightBits ) {
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {
@@ -245,16 +243,7 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 	// draw texture
 	//
 	for ( int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
-		// find which side of the node we are on
-		cplane_t* pplane = psurf->surf.plane;
-
-		float dot = DotProduct( tr.orient.viewOrigin, pplane->normal ) - pplane->dist;
-
-		// draw the polygon
-		if ( ( ( psurf->surf.flags & BRUSH29_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-			 ( !( psurf->surf.flags & BRUSH29_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
-		}
+		R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
 	}
 }
 
@@ -271,21 +260,13 @@ static void R_DrawInlineBModel(int forcedSortIndex) {
 	// draw texture
 	//
 	for ( int i = 0; i < tr.currentModel->brush38_nummodelsurfaces; i++, psurf++ ) {
-		// find which side of the node we are on
-		cplane_t* pplane = psurf->surf.plane;
-
-		float dot = DotProduct( tr.orient.viewOrigin, pplane->normal ) - pplane->dist;
-
 		// draw the polygon
-		if ( ( ( psurf->surf.flags & BRUSH38_SURF_PLANEBACK ) && ( dot < -BACKFACE_EPSILON ) ) ||
-			 ( !( psurf->surf.flags & BRUSH38_SURF_PLANEBACK ) && ( dot > BACKFACE_EPSILON ) ) ) {
-			if ( psurf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-				// add to the translucent chain
-				psurf->texturechain = r_alpha_surfaces;
-				r_alpha_surfaces = psurf;
-			} else {
-				R_AddWorldSurfaceBsp38( psurf, forcedSortIndex );
-			}
+		if ( psurf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+			// add to the translucent chain
+			psurf->texturechain = r_alpha_surfaces;
+			r_alpha_surfaces = psurf;
+		} else {
+			R_AddWorldSurfaceBsp38( psurf, forcedSortIndex );
 		}
 	}
 }
@@ -482,22 +463,11 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 	if ( c ) {
 		idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 
-		if ( dot < 0 - BACKFACE_EPSILON ) {
-			side = BRUSH29_SURF_PLANEBACK;
-		} else if ( dot > BACKFACE_EPSILON ) {
-			side = 0;
-		}
 		for (; c; c--, surf++ ) {
 			if ( surf->viewCount != tr.viewCount ) {
 				continue;
 			}
 
-			// don't backface underwater surfaces, because they warp
-			if ( ( dot < 0 ) ^ !!( surf->surf.flags & BRUSH29_SURF_PLANEBACK ) ) {
-				continue;		// wrong side
-			}
-
-			// if sorting by texture, just store it out
 			if ( surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
 				surf->texturechain = waterchain;
 				waterchain = surf;
@@ -614,13 +584,11 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 		break;
 	}
 
-	int side, sidebit;
+	int side;
 	if ( dot >= 0 ) {
 		side = 0;
-		sidebit = 0;
 	} else {
 		side = 1;
-		sidebit = BRUSH38_SURF_PLANEBACK;
 	}
 
 	// recurse down the children, front side first
@@ -631,10 +599,6 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 	for ( int c = node->numsurfaces; c; c--, surf++ ) {
 		if ( surf->viewCount != tr.viewCount ) {
 			continue;
-		}
-
-		if ( ( surf->surf.flags & BRUSH38_SURF_PLANEBACK ) != sidebit ) {
-			continue;		// wrong side
 		}
 
 		if ( surf->surf.texinfo->flags & BSP38SURF_SKY ) {

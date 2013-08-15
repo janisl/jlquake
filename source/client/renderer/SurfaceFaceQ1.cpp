@@ -18,6 +18,8 @@
 #include "surfaces.h"
 #include "backend.h"
 
+#define BACKFACE_EPSILON    0.01
+
 idSurfaceFaceQ1::idSurfaceFaceQ1() {
 	Com_Memset( &surf, 0, sizeof( surf ) );
 	data = &surf;
@@ -58,4 +60,33 @@ void idSurfaceFaceQ1::Draw() {
 	for ( int i = 0; i < surf.numIndexes; i++ ) {
 		tess.indexes[ numIndexes + i ] = numVerts + surf.indexes[ i ];
 	}
+}
+
+bool idSurfaceFaceQ1::DoCull( shader_t* shader ) const {
+	cplane_t* plane = surf.plane;
+
+	double dot;
+	switch ( plane->type ) {
+	case PLANE_X:
+		dot = tr.orient.viewOrigin[ 0 ] - plane->dist;
+		break;
+	case PLANE_Y:
+		dot = tr.orient.viewOrigin[ 1 ] - plane->dist;
+		break;
+	case PLANE_Z:
+		dot = tr.orient.viewOrigin[ 2 ] - plane->dist;
+		break;
+	default:
+		dot = DotProduct( tr.orient.viewOrigin, plane->normal ) - plane->dist;
+		break;
+	}
+
+	if ( surf.flags & BRUSH29_SURF_PLANEBACK ) {
+		dot = -dot;
+	}
+
+	if ( dot < BACKFACE_EPSILON ) {
+		return true;		// wrong side
+	}
+	return false;
 }

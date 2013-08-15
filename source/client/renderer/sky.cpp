@@ -353,6 +353,11 @@ void R_ClearSkyBox() {
 }
 
 void R_AddSkySurface( idSurfaceFaceQ2* fa ) {
+	int frontFace;
+	if ( fa->Cull( fa->shader, &frontFace ) ) {
+		return;
+	}
+
 	// calculate vertex values for sky box
 	for ( int i = 0; i < fa->surf.numIndexes; i += 3 ) {
 		vec3_t verts[ MAX_CLIP_VERTS ];

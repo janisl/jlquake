@@ -417,10 +417,16 @@ static mbrush38_shaderInfo_t* R_TextureAnimationQ2( mbrush38_shaderInfo_t* tex )
 }
 
 void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
+	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->surf.shaderInfo );
+
+	int frontFace;
+	if ( surf->Cull( texinfo->shader, &frontFace ) ) {
+		return;
+	}
+
 	if ( !( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
 		R_UpdateSurfaceLightmap( surf );
 	}
-	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->surf.shaderInfo );
 	R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }
 
