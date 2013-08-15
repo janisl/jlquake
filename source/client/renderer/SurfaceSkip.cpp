@@ -16,6 +16,7 @@
 
 #include "SurfaceSkip.h"
 #include "surfaces.h"
+#include "main.h"
 
 void idSurfaceSkip::Draw() {
 }
@@ -26,4 +27,9 @@ bool idSurfaceSkip::AddToNodeBounds() const {
 
 bool idSurfaceSkip::DoCullET( shader_t* shader, int* frontFace ) const {
 	return true;
+}
+
+int idSurfaceSkip::DoMarkDynamicLightsET( int dlightBits ) {
+	this->dlightBits[ tr.smpFrame ] = 0;
+	return 0;
 }

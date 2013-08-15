@@ -26,6 +26,7 @@ public:
 
 protected:
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
+	virtual int DoMarkDynamicLightsET( int dlightBits );
 };
 
 #endif

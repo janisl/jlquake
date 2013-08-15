@@ -607,10 +607,10 @@ void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
 	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
 		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->dlightBits[ backEnd.smpFrame ] = 0;
+			surf->dlightBits[ tr.smpFrame ] = 0;
 			surf->surf.dlightframe = tr.frameCount;
 		}
-		surf->dlightBits[ backEnd.smpFrame ] |= bit;
+		surf->dlightBits[ tr.smpFrame ] |= bit;
 	}
 
 	R_MarkLightsQ1( light, bit, node->children[ 0 ] );
@@ -646,10 +646,10 @@ void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node ) {
 	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
 		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->dlightBits[ backEnd.smpFrame ] = 0;
+			surf->dlightBits[ tr.smpFrame ] = 0;
 			surf->surf.dlightframe = tr.frameCount;
 		}
-		surf->dlightBits[ backEnd.smpFrame ] |= bit;
+		surf->dlightBits[ tr.smpFrame ] |= bit;
 	}
 
 	R_MarkLightsQ2( light, bit, node->children[ 0 ] );

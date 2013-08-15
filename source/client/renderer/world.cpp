@@ -43,7 +43,7 @@ static void R_AddWorldSurface( idWorldSurface* surf, shader_t* shader, int dligh
 
 	// check for dlighting
 	if ( dlightBits ) {
-		dlightBits = surf->Dlight( dlightBits );
+		dlightBits = surf->MarkDynamicLights( dlightBits );
 		dlightBits = ( dlightBits != 0 );
 	}
 

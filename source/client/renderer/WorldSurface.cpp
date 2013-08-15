@@ -163,12 +163,12 @@ bool idWorldSurface::DoCullET( shader_t* shader, int* frontFace ) const {
 
 //	The given surface is going to be drawn, and it touches a leaf that is
 // touched by one or more dlights, so try to throw out more dlights if possible.
-int idWorldSurface::Dlight( int dlightBits ) {
+int idWorldSurface::MarkDynamicLights( int dlightBits ) {
 	if ( GGameType & GAME_ET ) {
-		return DoDlightET( dlightBits );
+		return DoMarkDynamicLightsET( dlightBits );
 	}
 
-	dlightBits = DoDlight( dlightBits );
+	dlightBits = DoMarkDynamicLights( dlightBits );
 
 	if ( dlightBits ) {
 		tr.pc.c_dlightSurfaces++;
@@ -177,40 +177,19 @@ int idWorldSurface::Dlight( int dlightBits ) {
 	return dlightBits;
 }
 
-int idWorldSurface::DoDlight( int dlightBits ) {
+int idWorldSurface::DoMarkDynamicLights( int dlightBits ) {
 	return 0;
 }
 
 // ydnar: made this use generic surface
-int idWorldSurface::DoDlightET( int dlightBits ) {
-	int i;
-	vec3_t origin;
-	float radius;
-	srfGeneric_t* gen;
-
-
+int idWorldSurface::DoMarkDynamicLightsET( int dlightBits ) {
 	// get generic surface
-	gen = ( srfGeneric_t* )GetBrush46Data();
+	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
 
 	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
-	switch ( GetBrush46Data()->surfaceType ) {
-	case SF_FACE:
-	case SF_TRIANGLES:
-	case SF_GRID:
-	case SF_FOLIAGE:
-		break;
-
-	default:
-		this->dlightBits[ tr.smpFrame ] = 0;
-		return 0;
-	}
-
-	// debug code
-	//%	gen->dlightBits[ tr.smpFrame ] = dlightBits;
-	//%	return dlightBits;
 
 	// try to cull out dlights
-	for ( i = 0; i < tr.refdef.num_dlights; i++ ) {
+	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {
 			continue;
 		}
@@ -227,8 +206,9 @@ int idWorldSurface::DoDlightET( int dlightBits ) {
 		}
 
 		// test surface bounding sphere against dlight bounding sphere
+		vec3_t origin;
 		VectorCopy( tr.refdef.dlights[ i ].transformed, origin );
-		radius = tr.refdef.dlights[ i ].radius;
+		float radius = tr.refdef.dlights[ i ].radius;
 
 		if ( ( gen->localOrigin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
 			 ( gen->localOrigin[ 0 ] - gen->radius ) > ( origin[ 0 ] + radius ) ||
@@ -239,8 +219,6 @@ int idWorldSurface::DoDlightET( int dlightBits ) {
 			dlightBits &= ~( 1 << i );
 		}
 	}
-
-	// common->Printf( "Surf: 0x%08X dlightBits: 0x%08X\n", srf, dlightBits );
 
 	// set counters
 	if ( dlightBits == 0 ) {

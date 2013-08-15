@@ -293,7 +293,7 @@ bool idSurfaceFaceQ3::DoCull( shader_t* shader ) const {
 	return false;
 }
 
-int idSurfaceFaceQ3::DoDlight( int dlightBits ) {
+int idSurfaceFaceQ3::DoMarkDynamicLights( int dlightBits ) {
 	srfSurfaceFace_t* face = ( srfSurfaceFace_t* )GetBrush46Data();
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {

@@ -96,7 +96,7 @@ static void R_AddDynamicLightsQ1( idSurfaceFaceQ1* surf ) {
 	mbrush29_texinfo_t* tex = surf->surf.texinfo;
 
 	for ( int lnum = 0; lnum < tr.refdef.num_dlights; lnum++ ) {
-		if ( !( surf->dlightBits[ backEnd.smpFrame ] & ( 1 << lnum ) ) ) {
+		if ( !( surf->dlightBits[ tr.smpFrame ] & ( 1 << lnum ) ) ) {
 			continue;		// not lit by this light
 		}
 

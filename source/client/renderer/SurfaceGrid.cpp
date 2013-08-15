@@ -361,7 +361,7 @@ bool idSurfaceGrid::DoCullET( shader_t* shader, int* frontFace ) const {
 	return idWorldSurface::DoCullET( shader, frontFace );
 }
 
-int idSurfaceGrid::DoDlight( int dlightBits ) {
+int idSurfaceGrid::DoMarkDynamicLights( int dlightBits ) {
 	srfGridMesh_t* grid = ( srfGridMesh_t* )GetBrush46Data();
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {

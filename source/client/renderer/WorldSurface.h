@@ -71,9 +71,7 @@ public:
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 	virtual bool AddToNodeBounds() const;
 	bool Cull( shader_t* shader, int* frontFace );
-	int Dlight( int dlightBits );
-	virtual int DoDlight( int dlightBits );
-	virtual int DoDlightET( int dlightBits );
+	int MarkDynamicLights( int dlightBits );
 
 	surface_base_t* GetBrush46Data() const;
 	void SetBrush46Data( surface_base_t* data );
@@ -83,6 +81,9 @@ protected:
 
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
+	virtual int DoMarkDynamicLights( int dlightBits );
+	virtual int DoMarkDynamicLightsET( int dlightBits );
+
 	bool ClipDecal( struct decalProjector_t* dp ) const;
 };
 

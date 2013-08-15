@@ -37,11 +37,11 @@ public:
 		int* returnedPoints, int* returnedFragments,
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
-	virtual int DoDlight( int dlightBits );
 
 protected:
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
+	virtual int DoMarkDynamicLights( int dlightBits );
 
 private:
 	static float LodErrorForVolume( vec3_t local, float radius );
