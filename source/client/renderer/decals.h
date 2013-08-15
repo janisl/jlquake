@@ -29,7 +29,7 @@ bool R_TestDecalBoundingBox( decalProjector_t* dp, vec3_t mins, vec3_t maxs );
 void R_AddDecalSurfaces( mbrush46_model_t* bmodel );
 void R_CullDecalProjectors();
 void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
-	idWorldSurface* surf, mbrush46_model_t* bmodel );
+	const idWorldSurface* surf, mbrush46_model_t* bmodel );
 bool R_TestDecalBoundingSphere( decalProjector_t* dp, vec3_t center, float radius2 );
 
 #endif

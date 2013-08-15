@@ -312,7 +312,7 @@ struct mbrush46_node_t {
 
 // ydnar: bsp model decal surfaces
 struct mbrush46_decal_t {
-	idWorldSurface* parent;
+	const idWorldSurface* parent;
 	shader_t* shader;
 	float fadeStartTime, fadeEndTime;
 	int fogIndex;

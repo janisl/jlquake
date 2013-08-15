@@ -23,20 +23,20 @@ class idSurfaceFaceQ3 : public idSurfaceFace {
 public:
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();
-	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir );
+	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;
 	virtual void MarkFragments( const vec3_t projectionDir,
 		int numPlanes, const vec3_t* normals, const float* dists,
 		int maxPoints, vec3_t pointBuffer,
 		int maxFragments, markFragment_t* fragmentBuffer,
 		int* returnedPoints, int* returnedFragments,
-		const vec3_t mins, const vec3_t maxs );
+		const vec3_t mins, const vec3_t maxs ) const;
 	virtual void MarkFragmentsWolf( const vec3_t projectionDir,
 		int numPlanes, const vec3_t* normals, const float* dists,
 		int maxPoints, vec3_t pointBuffer,
 		int maxFragments, markFragment_t* fragmentBuffer,
 		int* returnedPoints, int* returnedFragments,
 		const vec3_t mins, const vec3_t maxs,
-		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints );
+		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
 private:
 	void MarkFragmentsOldMapping( const vec3_t projectionDir,
@@ -44,14 +44,14 @@ private:
 		int maxPoints, vec3_t pointBuffer,
 		int maxFragments, markFragment_t* fragmentBuffer,
 		int* returnedPoints, int* returnedFragments,
-		const vec3_t mins, const vec3_t maxs );
+		const vec3_t mins, const vec3_t maxs ) const;
 	void MarkFragmentsWolfMapping( const vec3_t projectionDir,
 		int numPlanes, const vec3_t* normals, const float* dists,
 		int maxPoints, vec3_t pointBuffer,
 		int maxFragments, markFragment_t* fragmentBuffer,
 		int* returnedPoints, int* returnedFragments,
 		const vec3_t mins, const vec3_t maxs,
-		const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints );
+		const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 };
 
 #endif

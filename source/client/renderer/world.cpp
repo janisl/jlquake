@@ -76,13 +76,6 @@ static bool R_CullGrid( srfGridMesh_t* cv ) {
 }
 
 static bool R_CullSurfaceET( surface_base_t* surface, shader_t* shader, int* frontFace ) {
-	// force to non-front facing
-	*frontFace = 0;
-
-	if ( r_nocull->integer ) {
-		return false;
-	}
-
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
 	switch ( surface->surfaceType ) {
 	case SF_FACE:
@@ -154,15 +147,15 @@ static bool R_CullSurfaceET( surface_base_t* surface, shader_t* shader, int* fro
 //
 //	This will also allow mirrors on both sides of a model without recursion.
 static bool R_CullSurface( surface_base_t* surface, shader_t* shader, int* frontFace ) {
-	if ( GGameType & GAME_ET ) {
-		return R_CullSurfaceET( surface, shader, frontFace );
-	}
-
 	// force to non-front facing
 	*frontFace = 0;
 
 	if ( r_nocull->integer ) {
 		return false;
+	}
+
+	if ( GGameType & GAME_ET ) {
+		return R_CullSurfaceET( surface, shader, frontFace );
 	}
 
 	if ( surface->surfaceType == SF_GRID ) {

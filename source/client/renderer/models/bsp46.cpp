@@ -1462,13 +1462,10 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 			idWorldSurface** mark = node->firstmarksurface;
 			int c = node->nummarksurfaces;
 			while ( c-- ) {
-				srfGeneric_t* gen = ( srfGeneric_t* )( **mark ).GetBrush46Data();
-				if ( gen->surfaceType != SF_FACE &&
-					 gen->surfaceType != SF_GRID &&
-					 gen->surfaceType != SF_TRIANGLES &&
-					 gen->surfaceType != SF_FOLIAGE ) {
+				if ( !( *mark )->AddToNodeBounds() ) {
 					continue;
 				}
+				srfGeneric_t* gen = ( srfGeneric_t* )( *mark )->GetBrush46Data();
 				AddPointToBounds( gen->bounds[ 0 ], node->surfMins, node->surfMaxs );
 				AddPointToBounds( gen->bounds[ 1 ], node->surfMins, node->surfMaxs );
 				mark++;

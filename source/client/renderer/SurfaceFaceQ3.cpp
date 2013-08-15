@@ -66,7 +66,7 @@ void idSurfaceFaceQ3::Draw() {
 	tess.numVertexes += surf->numPoints;
 }
 
-bool idSurfaceFaceQ3::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) {
+bool idSurfaceFaceQ3::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const {
 	// check if the surface has NOIMPACT or NOMARKS set
 	if ( !R_ShaderCanHaveMarks( shader ) ) {
 		return false;
@@ -93,7 +93,7 @@ void idSurfaceFaceQ3::MarkFragments( const vec3_t projectionDir,
 	int maxPoints, vec3_t pointBuffer,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
-	const vec3_t mins, const vec3_t maxs ) {
+	const vec3_t mins, const vec3_t maxs ) const {
 	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
 	// check the normal of this face
 	if ( DotProduct( surf->plane.normal, projectionDir ) > -0.5 ) {
@@ -110,7 +110,7 @@ void idSurfaceFaceQ3::MarkFragmentsWolf( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs,
-	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const {
 	if ( !oldMapping ) {
 		MarkFragmentsWolfMapping( projectionDir, numPlanes, normals, dists, maxPoints, pointBuffer,
 			maxFragments, fragmentBuffer, returnedPoints, returnedFragments, mins, maxs,
@@ -126,7 +126,7 @@ void idSurfaceFaceQ3::MarkFragmentsOldMapping( const vec3_t projectionDir,
 	int maxPoints, vec3_t pointBuffer,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
-	const vec3_t mins, const vec3_t maxs ) {
+	const vec3_t mins, const vec3_t maxs ) const {
 	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
 	int* indexes = ( int* )( ( byte* )surf + surf->ofsIndices );
 	for ( int k = 0; k < surf->numIndices; k += 3 ) {
@@ -153,7 +153,7 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs,
-	const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+	const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const {
 	vec3_t axis[ 3 ];
 	float texCoordScale, dot;
 	vec3_t originalPoints[ 4 ];

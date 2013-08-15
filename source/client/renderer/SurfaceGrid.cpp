@@ -178,7 +178,7 @@ float idSurfaceGrid::LodErrorForVolume( vec3_t local, float radius ) {
 	return r_lodCurveError->value / d;
 }
 
-void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) {
+void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {
 	if ( !ClipDecal( dp ) ) {
 		return;
 	}
@@ -209,7 +209,7 @@ void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel
 	}
 }
 
-bool idSurfaceGrid::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) {
+bool idSurfaceGrid::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const {
 	// check if the surface has NOIMPACT or NOMARKS set
 	return R_ShaderCanHaveMarks( shader );
 }
@@ -219,7 +219,7 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 	int maxPoints, vec3_t pointBuffer,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
-	const vec3_t mins, const vec3_t maxs ) {
+	const vec3_t mins, const vec3_t maxs ) const {
 	srfGridMesh_t* cv = ( srfGridMesh_t* )GetBrush46Data();
 	for ( int m = 0; m < cv->height - 1; m++ ) {
 		for ( int n = 0; n < cv->width - 1; n++ ) {
@@ -308,7 +308,7 @@ void idSurfaceGrid::MarkFragmentsWolf( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs,
-	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const {
 	MarkFragments( projectionDir, numPlanes, normals, dists, maxPoints, pointBuffer,
 		maxFragments, fragmentBuffer, returnedPoints, returnedFragments, mins, maxs );
 }

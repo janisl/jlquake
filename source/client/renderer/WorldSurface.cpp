@@ -18,11 +18,10 @@
 #include "decals.h"
 #include "../../common/content_types.h"
 
-void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) {
+void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {
 }
 
-bool idWorldSurface::ClipDecal( struct decalProjector_t* dp )
-{
+bool idWorldSurface::ClipDecal( struct decalProjector_t* dp ) const {
 	//	early outs
 	if ( dp->shader == NULL ) {
 		return false;
@@ -63,7 +62,7 @@ bool idWorldSurface::ClipDecal( struct decalProjector_t* dp )
 	return true;
 }
 
-bool idWorldSurface::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) {
+bool idWorldSurface::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const {
 	return false;
 }
 
@@ -72,7 +71,7 @@ void idWorldSurface::MarkFragments( const vec3_t projectionDir,
 	int maxPoints, vec3_t pointBuffer,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
-	const vec3_t mins, const vec3_t maxs ) {
+	const vec3_t mins, const vec3_t maxs ) const {
 }
 
 void idWorldSurface::MarkFragmentsWolf( const vec3_t projectionDir,
@@ -81,5 +80,9 @@ void idWorldSurface::MarkFragmentsWolf( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs,
-	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) {
+	bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const {
+}
+
+bool idWorldSurface::AddToNodeBounds() const {
+	return true;
 }

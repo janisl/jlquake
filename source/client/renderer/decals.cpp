@@ -471,7 +471,7 @@ static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_
 
 //	projects decal onto a polygon
 void ProjectDecalOntoWinding( decalProjector_t* dp, int numPoints, vec3_t points[ 2 ][ MAX_DECAL_VERTS ],
-	idWorldSurface* surf, mbrush46_model_t* bmodel ) {
+	const idWorldSurface* surf, mbrush46_model_t* bmodel ) {
 	//	make a plane from the winding
 	vec4_t plane;
 	if ( !PlaneFromPoints( plane, points[ 0 ][ 0 ], points[ 0 ][ 1 ], points[ 0 ][ 2 ] ) ) {

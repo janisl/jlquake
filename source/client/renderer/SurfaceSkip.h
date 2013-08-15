@@ -22,6 +22,7 @@
 class idSurfaceSkip : public idWorldSurface {
 public:
 	virtual void Draw();
+	virtual bool AddToNodeBounds() const;
 };
 
 #endif

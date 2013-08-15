@@ -19,3 +19,7 @@
 
 void idSurfaceSkip::Draw() {
 }
+
+bool idSurfaceSkip::AddToNodeBounds() const {
+	return false;
+}
