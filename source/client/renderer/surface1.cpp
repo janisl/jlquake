@@ -154,7 +154,7 @@ static void R_BuildLightMapQ1( idSurfaceFaceQ1* surf, byte* dest, byte* overbrig
 	int maps;
 	unsigned* bl;
 
-	surf->surf.cached_dlight = ( surf->surf.dlightframe == tr.frameCount );
+	surf->surf.cached_dlight = surf->dlightBits[ backEnd.smpFrame ];
 
 	smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
 	tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
@@ -185,7 +185,7 @@ static void R_BuildLightMapQ1( idSurfaceFaceQ1* surf, byte* dest, byte* overbrig
 	}
 
 // add all the dynamic lights
-	if ( surf->surf.dlightframe == tr.frameCount ) {
+	if ( surf->dlightBits[ backEnd.smpFrame ] ) {
 		R_AddDynamicLightsQ1( surf );
 	}
 
@@ -421,8 +421,8 @@ void R_RenderDynamicLightmaps( idSurfaceFaceQ1* surf ) {
 		}
 	}
 
-	if ( fa->dlightframe == tr.frameCount ||// dynamic this frame
-		 fa->cached_dlight ) {				// dynamic previously
+	if ( surf->dlightBits[ backEnd.smpFrame ] ||// dynamic this frame
+		 fa->cached_dlight ) {					// dynamic previously
 dynamic:
 		if ( r_dynamic->value ) {
 			lightmap_modified[ fa->lightmaptexturenum ] = true;

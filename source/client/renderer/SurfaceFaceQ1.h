@@ -62,9 +62,6 @@ struct mbrush29_surface_t : surface_base_t {
 	mbrush29_texinfo_t* texinfo;
 	shader_t* altShader;
 
-	// lighting info
-	int dlightframe;
-
 	int lightmaptexturenum;
 	byte styles[ BSP29_MAXLIGHTMAPS ];
 	int cached_light[ BSP29_MAXLIGHTMAPS ];				// values currently used in lightmap
@@ -88,6 +85,7 @@ public:
 
 protected:
 	virtual bool DoCull( shader_t* shader ) const;
+	virtual int DoMarkDynamicLights( int dlightBits );
 };
 
 #endif

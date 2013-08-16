@@ -586,83 +586,6 @@ DYNAMIC LIGHTS
 =============================================================================
 */
 
-void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node ) {
-	if ( node->contents < 0 ) {
-		return;
-	}
-
-	cplane_t* splitplane = node->plane;
-	float dist = DotProduct( light->origin, splitplane->normal ) - splitplane->dist;
-
-	if ( dist > light->radius ) {
-		R_MarkLightsQ1( light, bit, node->children[ 0 ] );
-		return;
-	}
-	if ( dist < -light->radius ) {
-		R_MarkLightsQ1( light, bit, node->children[ 1 ] );
-		return;
-	}
-
-	// mark the polygons
-	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
-	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->dlightBits[ tr.smpFrame ] = 0;
-			surf->surf.dlightframe = tr.frameCount;
-		}
-		surf->dlightBits[ tr.smpFrame ] |= bit;
-	}
-
-	R_MarkLightsQ1( light, bit, node->children[ 0 ] );
-	R_MarkLightsQ1( light, bit, node->children[ 1 ] );
-}
-
-void R_PushDlightsQ1() {
-	dlight_t* l = tr.refdef.dlights;
-
-	for ( int i = 0; i < tr.refdef.num_dlights; i++, l++ ) {
-		R_MarkLightsQ1( l, 1 << i, tr.worldModel->brush29_nodes );
-	}
-}
-
-void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node ) {
-	if ( node->contents != -1 ) {
-		return;
-	}
-
-	cplane_t* splitplane = node->plane;
-	float dist = DotProduct( light->origin, splitplane->normal ) - splitplane->dist;
-
-	if ( dist > light->radius - DLIGHT_CUTOFF ) {
-		R_MarkLightsQ2( light, bit, node->children[ 0 ] );
-		return;
-	}
-	if ( dist < -light->radius + DLIGHT_CUTOFF ) {
-		R_MarkLightsQ2( light, bit, node->children[ 1 ] );
-		return;
-	}
-
-	// mark the polygons
-	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
-	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->surf.dlightframe != tr.frameCount ) {
-			surf->dlightBits[ tr.smpFrame ] = 0;
-			surf->surf.dlightframe = tr.frameCount;
-		}
-		surf->dlightBits[ tr.smpFrame ] |= bit;
-	}
-
-	R_MarkLightsQ2( light, bit, node->children[ 0 ] );
-	R_MarkLightsQ2( light, bit, node->children[ 1 ] );
-}
-
-void R_PushDlightsQ2() {
-	dlight_t* l = tr.refdef.dlights;
-	for ( int i = 0; i < tr.refdef.num_dlights; i++, l++ ) {
-		R_MarkLightsQ2( l, 1 << i, tr.worldModel->brush38_nodes );
-	}
-}
-
 //	Transforms the origins of an array of dlights. Used by both the front end
 // (for DlightBmodel) and the back end (before doing the lighting calculation)
 void R_TransformDlights( int count, dlight_t* dl, orientationr_t* orient ) {
@@ -675,8 +598,7 @@ void R_TransformDlights( int count, dlight_t* dl, orientationr_t* orient ) {
 	}
 }
 
-//	Determine which dynamic lights may effect this bmodel
-void R_DlightBmodel( mbrush46_model_t* bmodel ) {
+static int R_CalcBmodelDlightBits( const vec3_t mins, const vec3_t maxs ) {
 	// transform all the lights
 	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr.orient );
 
@@ -689,10 +611,10 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 			// see if the point is close enough to the bounds to matter
 			int j;
 			for ( j = 0; j < 3; j++ ) {
-				if ( dl->transformed[ j ] - bmodel->bounds[ 1 ][ j ] > dl->radius ) {
+				if ( dl->transformed[ j ] - maxs[ j ] > dl->radius ) {
 					break;
 				}
-				if ( bmodel->bounds[ 0 ][ j ] - dl->transformed[ j ] > dl->radius ) {
+				if ( mins[ j ] - dl->transformed[ j ] > dl->radius ) {
 					break;
 				}
 			}
@@ -706,6 +628,30 @@ void R_DlightBmodel( mbrush46_model_t* bmodel ) {
 	}
 
 	tr.currentEntity->dlightBits = mask;
+	return mask;
+}
+
+void R_DlightBmodelQ1( idRenderModel* bmodel ) {
+	int mask = R_CalcBmodelDlightBits( bmodel->q1_mins, bmodel->q1_maxs );
+
+	idSurfaceFaceQ1* psurf = &bmodel->brush29_surfaces[ bmodel->brush29_firstmodelsurface ];
+	for ( int i = 0; i < bmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
+		psurf->MarkDynamicLights( mask );
+	}
+}
+
+void R_DlightBmodelQ2( idRenderModel* bmodel ) {
+	int mask = R_CalcBmodelDlightBits( bmodel->q2_mins, bmodel->q2_maxs );
+
+	idSurfaceFaceQ2* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
+	for ( int i = 0; i < tr.currentModel->brush38_nummodelsurfaces; i++, psurf++ ) {
+		psurf->MarkDynamicLights( mask );
+	}
+}
+
+//	Determine which dynamic lights may effect this bmodel
+void R_DlightBmodel( mbrush46_model_t* bmodel ) {
+	int mask = R_CalcBmodelDlightBits( bmodel->bounds[ 0 ], bmodel->bounds[ 1 ] );
 
 	// set the dlight bits in all the surfaces
 	for ( int i = 0; i < bmodel->numSurfaces; i++ ) {

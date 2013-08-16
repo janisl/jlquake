@@ -86,3 +86,8 @@ bool idSurfaceFaceQ2::DoCull( shader_t* shader ) const {
 	}
 	return false;
 }
+
+int idSurfaceFaceQ2::DoMarkDynamicLights( int dlightBits ) {
+	this->dlightBits[ tr.smpFrame ] = dlightBits;
+	return dlightBits;
+}

@@ -549,12 +549,6 @@ void R_RenderScene( const refdef_t* fd ) {
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
 
-	if ( GGameType & GAME_QuakeHexen ) {
-		R_PushDlightsQ1();
-	} else if ( GGameType & GAME_Quake2 ) {
-		R_PushDlightsQ2();
-	}
-
 	R_RenderView( &parms );
 
 	// the next scene rendered in this frame will tack on after this one

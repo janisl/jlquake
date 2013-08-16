@@ -79,20 +79,16 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 		return;
 	}
 
-	idSurfaceFaceQ1* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
-
 	// calculate dynamic lighting for bmodel if it's not an
 	// instanced model
 	if ( clmodel->brush29_firstmodelsurface != 0 ) {
-		for ( int k = 0; k < tr.refdef.num_dlights; k++ ) {
-			R_MarkLightsQ1( &tr.refdef.dlights[ k ], 1 << k,
-				clmodel->brush29_nodes + clmodel->brush29_firstnode );
-		}
+		R_DlightBmodelQ1( clmodel );
 	}
 
 	//
 	// draw texture
 	//
+	idSurfaceFaceQ1* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
 	for ( int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
 		R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
 	}
@@ -100,16 +96,12 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 
 static void R_DrawInlineBModel(int forcedSortIndex) {
 	// calculate dynamic lighting for bmodel
-	dlight_t* lt = tr.refdef.dlights;
-	for ( int k = 0; k < tr.refdef.num_dlights; k++, lt++ ) {
-		R_MarkLightsQ2( lt, 1 << k, tr.currentModel->brush38_nodes + tr.currentModel->brush38_firstnode );
-	}
-
-	idSurfaceFaceQ2* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
+	R_DlightBmodelQ2( tr.currentModel );
 
 	//
 	// draw texture
 	//
+	idSurfaceFaceQ2* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
 	for ( int i = 0; i < tr.currentModel->brush38_nummodelsurfaces; i++, psurf++ ) {
 		// draw the polygon
 		if ( psurf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
@@ -248,7 +240,7 @@ void R_AddBrushModelSurfaces( trRefEntity_t* ent ) {
 =============================================================
 */
 
-static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
+static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node, int dlightBits ) {
 	if ( node->contents == BSP29CONTENTS_SOLID ) {
 		return;		// solid
 	}
@@ -270,10 +262,10 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 		if ( c ) {
 			do {
 				( *mark )->viewCount = tr.viewCount;
+				( *mark )->MarkDynamicLights( dlightBits );
 				mark++;
 			} while ( --c );
 		}
-
 		return;
 	}
 
@@ -305,8 +297,28 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 		side = 1;
 	}
 
+	int newDlights[ 2 ];
+	newDlights[ 0 ] = 0;
+	newDlights[ 1 ] = 0;
+	dlight_t* light = tr.refdef.dlights;
+	for ( int i = 0; i < tr.refdef.num_dlights; i++, light++ ) {
+		if ( !( dlightBits & ( 1 << i ) ) ) {
+			continue;
+		}
+		float dist = DotProduct( light->origin, plane->normal ) - plane->dist;
+
+		if ( dist > light->radius ) {
+			newDlights[ 0 ] |= 1 << i;
+		} else if ( dist < -light->radius ) {
+			newDlights[ 1 ] |= 1 << i;
+		} else {
+			newDlights[ 0 ] |= 1 << i;
+			newDlights[ 1 ] |= 1 << i;
+		}
+	}
+
 	// recurse down the children, front side first
-	R_RecursiveWorldNodeQ1( node->children[ side ] );
+	R_RecursiveWorldNodeQ1( node->children[ side ], newDlights[ side ] );
 
 	// draw stuff
 	int c = node->numsurfaces;
@@ -329,7 +341,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node ) {
 	}
 
 	// recurse down the back side
-	R_RecursiveWorldNodeQ1( node->children[ !side ] );
+	R_RecursiveWorldNodeQ1( node->children[ !side ], newDlights[ !side ] );
 }
 
 static void R_MarkLeavesQ1() {
@@ -377,10 +389,10 @@ void R_DrawWorldQ1() {
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes );
+	R_RecursiveWorldNodeQ1( tr.worldModel->brush29_nodes, ( 1 << tr.refdef.num_dlights ) - 1 );
 }
 
-static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
+static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node, int dlightBits ) {
 	if ( node->contents == BSP38CONTENTS_SOLID ) {
 		return;		// solid
 	}
@@ -407,10 +419,10 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 		if ( c ) {
 			do {
 				( *mark )->viewCount = tr.viewCount;
+				( *mark )->MarkDynamicLights( dlightBits );
 				mark++;
 			} while ( --c );
 		}
-
 		return;
 	}
 
@@ -442,8 +454,28 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 		side = 1;
 	}
 
+	int newDlights[ 2 ];
+	newDlights[ 0 ] = 0;
+	newDlights[ 1 ] = 0;
+	dlight_t* light = tr.refdef.dlights;
+	for ( int i = 0; i < tr.refdef.num_dlights; i++, light++ ) {
+		if ( !( dlightBits & ( 1 << i ) ) ) {
+			continue;
+		}
+		float dist = DotProduct( light->origin, plane->normal ) - plane->dist;
+
+		if ( dist > light->radius - DLIGHT_CUTOFF ) {
+			newDlights[ 0 ] |= 1 << i;
+		} else if ( dist < -light->radius + DLIGHT_CUTOFF ) {
+			newDlights[ 1 ] |= 1 << i;
+		} else {
+			newDlights[ 0 ] |= 1 << i;
+			newDlights[ 1 ] |= 1 << i;
+		}
+	}
+
 	// recurse down the children, front side first
-	R_RecursiveWorldNodeQ2( node->children[ side ] );
+	R_RecursiveWorldNodeQ2( node->children[ side ], newDlights[ side ] );
 
 	// draw stuff
 	idSurfaceFaceQ2* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
@@ -465,7 +497,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node ) {
 	}
 
 	// recurse down the back side
-	R_RecursiveWorldNodeQ2( node->children[ !side ] );
+	R_RecursiveWorldNodeQ2( node->children[ !side ], newDlights[ !side ] );
 }
 
 static void R_FindViewCluster() {
@@ -582,7 +614,7 @@ void R_DrawWorldQ2() {
 
 	R_ClearSkyBox();
 
-	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes );
+	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes, ( 1 << tr.refdef.num_dlights ) - 1 );
 
 	R_AddDrawSurf( &skyBoxQ2Surface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }

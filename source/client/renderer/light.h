@@ -26,11 +26,9 @@ extern vec3_t lightspot;
 int R_LightPointQ1( vec3_t p );
 void R_LightPointQ2( vec3_t p, vec3_t color, trRefdef_t& refdef );
 void R_SetupEntityLighting( const trRefdef_t* refdef, trRefEntity_t* ent );
-void R_MarkLightsQ1( dlight_t* light, int bit, mbrush29_node_t* node );
-void R_PushDlightsQ1();
-void R_MarkLightsQ2( dlight_t* light, int bit, mbrush38_node_t* node );
-void R_PushDlightsQ2();
 void R_TransformDlights( int count, dlight_t* dl, orientationr_t* orient );
+void R_DlightBmodelQ1( idRenderModel* bmodel );
+void R_DlightBmodelQ2( idRenderModel* bmodel );
 void R_DlightBmodel( mbrush46_model_t* bmodel );
 void R_CullDlights();
 

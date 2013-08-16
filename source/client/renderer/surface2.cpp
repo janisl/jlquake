@@ -246,7 +246,7 @@ static void R_BuildLightMapQ2( idSurfaceFaceQ2* surf, byte* dest, int stride ) {
 		}
 
 		// add all the dynamic lights
-		if ( surf->surf.dlightframe == tr.frameCount ) {
+		if ( surf->dlightBits[ tr.smpFrame ] ) {
 			R_AddDynamicLightsQ2( surf );
 		}
 	}
@@ -375,7 +375,7 @@ static void R_UpdateSurfaceLightmap( idSurfaceFaceQ2* surf ) {
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( surf->surf.cached_dlight || surf->surf.dlightframe == tr.frameCount ) {
+	if ( surf->surf.cached_dlight || surf->dlightBits[ tr.smpFrame ] ) {
 dynamic:
 		if ( r_dynamic->value ) {
 			is_dynamic = true;
@@ -389,10 +389,10 @@ dynamic:
 		unsigned temp[ 128 * 128 ];
 		R_BuildLightMapQ2( surf, ( byte* )temp, smax * 4 );
 
-		if ( ( surf->surf.styles[ map ] >= 32 || surf->surf.styles[ map ] == 0 ) && ( surf->surf.dlightframe != tr.frameCount ) ) {
+		if ( ( surf->surf.styles[ map ] >= 32 || surf->surf.styles[ map ] == 0 ) && !surf->dlightBits[ tr.smpFrame ] ) {
 			R_SetCacheState( surf );
 		}
-		surf->surf.cached_dlight = surf->surf.dlightframe == tr.frameCount;
+		surf->surf.cached_dlight = surf->dlightBits[ tr.smpFrame ];
 
 		GL_Bind( tr.lightmaps[ surf->surf.lightmaptexturenum ] );
 
