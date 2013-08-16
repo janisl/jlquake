@@ -96,7 +96,7 @@ void idSurfaceGrid::Draw() {
 
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < lodWidth; j++ ) {
-				bsp46_drawVert_t* dv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
+				mem_drawVert_t* dv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
 
 				xyz[ 0 ] = dv->xyz[ 0 ];
 				xyz[ 1 ] = dv->xyz[ 1 ];
@@ -191,7 +191,7 @@ void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel
 		//	walk mesh cols
 		for ( int x = 0; x < ( srf->width - 1 ); x++ ) {
 			//	get vertex
-			bsp46_drawVert_t* dv = srf->verts + y * srf->width + x;
+			mem_drawVert_t* dv = srf->verts + y * srf->width + x;
 
 			vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
 			//	first triangle
@@ -246,7 +246,7 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 
 			int numClipPoints = 3;
 
-			bsp46_drawVert_t* dv = cv->verts + m * cv->width + n;
+			mem_drawVert_t* dv = cv->verts + m * cv->width + n;
 
 			vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 			VectorCopy( dv[ 0 ].xyz, clipPoints[ 0 ][ 0 ] );

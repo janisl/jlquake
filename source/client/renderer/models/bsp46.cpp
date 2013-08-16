@@ -370,7 +370,7 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 
 	verts += LittleLong( ds->firstVert );
 	int numPoints = width * height;
-	bsp46_drawVert_t points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ];
+	mem_drawVert_t points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ];
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			points[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
@@ -426,7 +426,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	tri->surfaceType = SF_TRIANGLES;
 	tri->numVerts = numVerts;
 	tri->numIndexes = numIndexes;
-	tri->verts = ( bsp46_drawVert_t* )( tri + 1 );
+	tri->verts = ( mem_drawVert_t* )( tri + 1 );
 	tri->indexes = ( int* )( tri->verts + tri->numVerts );
 
 	surf->SetBrush46Data(tri);

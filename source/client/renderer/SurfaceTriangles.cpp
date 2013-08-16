@@ -23,9 +23,9 @@
 
 cplane_t idSurfaceTriangles::GetPlane() const {
 	srfTriangles_t* tri = ( srfTriangles_t* )data;
-	bsp46_drawVert_t* v1 = tri->verts + tri->indexes[ 0 ];
-	bsp46_drawVert_t* v2 = tri->verts + tri->indexes[ 1 ];
-	bsp46_drawVert_t* v3 = tri->verts + tri->indexes[ 2 ];
+	mem_drawVert_t* v1 = tri->verts + tri->indexes[ 0 ];
+	mem_drawVert_t* v2 = tri->verts + tri->indexes[ 1 ];
+	mem_drawVert_t* v3 = tri->verts + tri->indexes[ 2 ];
 	vec4_t plane4;
 	PlaneFromPoints( plane4, v1->xyz, v2->xyz, v3->xyz );
 	cplane_t plane;
@@ -49,7 +49,7 @@ void idSurfaceTriangles::Draw() {
 	}
 	tess.numIndexes += srf->numIndexes;
 
-	bsp46_drawVert_t* dv = srf->verts;
+	mem_drawVert_t* dv = srf->verts;
 	float* xyz = tess.xyz[ tess.numVertexes ];
 	float* normal = tess.normal[ tess.numVertexes ];
 	float* texCoords = tess.texCoords[ tess.numVertexes ][ 0 ];
