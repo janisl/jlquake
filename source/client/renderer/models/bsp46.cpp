@@ -426,6 +426,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	tri->surfaceType = SF_TRIANGLES;
 	tri->numVerts = numVerts;
 	tri->numIndexes = numIndexes;
+	surf->vertexes = new idWorldVertex[ numVerts ];
 	tri->verts = ( mem_drawVert_t* )( tri + 1 );
 	tri->indexes = ( int* )( tri->verts + tri->numVerts );
 
@@ -436,10 +437,12 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numVerts; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
-			tri->verts[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
+			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 			tri->verts[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
-		AddPointToBounds( tri->verts[ i ].xyz, tri->bounds[ 0 ], tri->bounds[ 1 ] );
+		vec3_t old;
+		surf->vertexes[ i ].xyz.ToOldVec3( old );
+		AddPointToBounds( old, tri->bounds[ 0 ], tri->bounds[ 1 ] );
 		for ( int j = 0; j < 2; j++ ) {
 			tri->verts[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			tri->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
@@ -458,7 +461,9 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, tri, tri->verts[ 0 ].xyz );
+	vec3_t old;
+	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
+	FinishGenericSurface( ds, tri, old );
 	return surf;
 }
 

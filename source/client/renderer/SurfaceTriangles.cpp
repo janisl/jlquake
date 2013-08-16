@@ -23,11 +23,15 @@
 
 cplane_t idSurfaceTriangles::GetPlane() const {
 	srfTriangles_t* tri = ( srfTriangles_t* )data;
-	mem_drawVert_t* v1 = tri->verts + tri->indexes[ 0 ];
-	mem_drawVert_t* v2 = tri->verts + tri->indexes[ 1 ];
-	mem_drawVert_t* v3 = tri->verts + tri->indexes[ 2 ];
+	idWorldVertex* v1 = vertexes + tri->indexes[ 0 ];
+	idWorldVertex* v2 = vertexes + tri->indexes[ 1 ];
+	idWorldVertex* v3 = vertexes + tri->indexes[ 2 ];
 	vec4_t plane4;
-	PlaneFromPoints( plane4, v1->xyz, v2->xyz, v3->xyz );
+	vec3_t oldv1, oldv2, oldv3;
+	v1->xyz.ToOldVec3( oldv1 );
+	v2->xyz.ToOldVec3( oldv2 );
+	v3->xyz.ToOldVec3( oldv3 );
+	PlaneFromPoints( plane4, oldv1, oldv2, oldv3 );
 	cplane_t plane;
 	VectorCopy( plane4, plane.normal );
 	plane.dist = plane4[ 3 ];
@@ -49,6 +53,7 @@ void idSurfaceTriangles::Draw() {
 	}
 	tess.numIndexes += srf->numIndexes;
 
+	idWorldVertex* vert = vertexes;
 	mem_drawVert_t* dv = srf->verts;
 	float* xyz = tess.xyz[ tess.numVertexes ];
 	float* normal = tess.normal[ tess.numVertexes ];
@@ -56,10 +61,8 @@ void idSurfaceTriangles::Draw() {
 	byte* color = tess.vertexColors[ tess.numVertexes ];
 	bool needsNormal = tess.shader->needsNormal;
 
-	for ( int i = 0; i < srf->numVerts; i++, dv++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
-		xyz[ 0 ] = dv->xyz[ 0 ];
-		xyz[ 1 ] = dv->xyz[ 1 ];
-		xyz[ 2 ] = dv->xyz[ 2 ];
+	for ( int i = 0; i < srf->numVerts; i++, vert++, dv++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
+		vert->xyz.ToOldVec3( xyz );
 
 		if ( needsNormal ) {
 			normal[ 0 ] = dv->normal[ 0 ];
@@ -95,9 +98,9 @@ void idSurfaceTriangles::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* b
 	for ( int i = 0; i < srf->numIndexes; i += 3 ) {
 		//	make triangle
 		vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
-		VectorCopy( srf->verts[ srf->indexes[ i ] ].xyz, points[ 0 ][ 0 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 1 ] ].xyz, points[ 0 ][ 1 ] );
-		VectorCopy( srf->verts[ srf->indexes[ i + 2 ] ].xyz, points[ 0 ][ 2 ] );
+		vertexes[ srf->indexes[ i ] ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
+		vertexes[ srf->indexes[ i + 1 ] ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+		vertexes[ srf->indexes[ i + 2 ] ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 
 		//	chop it
 		ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
@@ -147,7 +150,8 @@ void idSurfaceTriangles::MarkFragmentsOldMapping( int numPlanes, const vec3_t* n
 	for ( int k = 0; k < cts->numIndexes; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
-			float* v = cts->verts[ indexes[ k + j ] ].xyz;
+			vec3_t v;
+			vertexes[ indexes[ k + j ] ].xyz.ToOldVec3( v );
 			VectorMA( v, MARKER_OFFSET, cts->verts[ indexes[ k + j ] ].normal, clipPoints[ 0 ][ j ] );
 		}
 		// add the fragments of this face
