@@ -38,15 +38,14 @@ void idSurfaceFaceQ1::Draw() {
 	tess.numVertexes += surf.numVerts;
 	tess.numIndexes += surf.numIndexes;
 
+	idWorldVertex* vert = vertexes;
 	float* v = surf.verts[ 0 ].v;
-	for ( int i = 0; i < surf.numVerts; i++, v += BRUSH29_VERTEXSIZE ) {
-		tess.xyz[ numVerts + i ][ 0 ] = v[ 0 ];
-		tess.xyz[ numVerts + i ][ 1 ] = v[ 1 ];
-		tess.xyz[ numVerts + i ][ 2 ] = v[ 2 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 3 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 4 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 5 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 6 ];
+	for ( int i = 0; i < surf.numVerts; i++, vert++, v += BRUSH29_VERTEXSIZE ) {
+		vert->xyz.ToOldVec3( tess.xyz[ numVerts + i ] );
+		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 0 ];
+		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 1 ];
+		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 2 ];
+		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 3 ];
 		if ( surf.flags & BRUSH29_SURF_PLANEBACK ) {
 			tess.normal[ numVerts + i ][ 0 ] = -surf.plane->normal[ 0 ];
 			tess.normal[ numVerts + i ][ 1 ] = -surf.plane->normal[ 1 ];

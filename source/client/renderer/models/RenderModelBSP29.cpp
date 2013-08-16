@@ -481,15 +481,14 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 
 	fa->surf.numVerts = numWarpVerts;
 	fa->surf.verts = new mbrush29_glvert_t[ numWarpVerts ];
+	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		float s = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
-		fa->surf.verts[ i ].v[ 0 ] = v[ 0 ];
-		fa->surf.verts[ i ].v[ 1 ] = v[ 1 ];
-		fa->surf.verts[ i ].v[ 2 ] = v[ 2 ];
-		fa->surf.verts[ i ].v[ 3 ] = s;
-		fa->surf.verts[ i ].v[ 4 ] = t;
+		fa->vertexes[ i ].xyz.FromOldVec3( v );
+		fa->surf.verts[ i ].v[ 0 ] = s;
+		fa->surf.verts[ i ].v[ 1 ] = t;
 	}
 	for ( mbrush29_glpoly_t* p = warppolys; p; p = p->next ) {
 		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;

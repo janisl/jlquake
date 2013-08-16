@@ -21,6 +21,10 @@
 #include "../../common/content_types.h"
 #include "../../common/common_defs.h"
 
+idWorldSurface::~idWorldSurface() {
+	delete[] vertexes;
+}
+
 void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {
 }
 

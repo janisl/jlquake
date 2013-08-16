@@ -239,6 +239,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	// draw texture
 	//
 	fa->surf.numVerts = lnumverts;
+	fa->vertexes = new idWorldVertex[ lnumverts ];
 	fa->surf.verts = new mbrush29_glvert_t[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
@@ -254,15 +255,16 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 			mbrush29_edge_t* r_pedge = &pedges[ -lindex ];
 			vec = r_pcurrentvertbase[ r_pedge->v[ 1 ] ].position;
 		}
+		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+
 		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
 		s /= fa->surf.texinfo->texture->width;
 
 		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
 		t /= fa->surf.texinfo->texture->height;
 
-		VectorCopy( vec, fa->surf.verts[ i ].v );
-		fa->surf.verts[ i ].v[ 3 ] = s;
-		fa->surf.verts[ i ].v[ 4 ] = t;
+		fa->surf.verts[ i ].v[ 0 ] = s;
+		fa->surf.verts[ i ].v[ 1 ] = t;
 
 		//
 		// lightmap texture coordinates
@@ -279,8 +281,8 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 5 ] = s;
-		fa->surf.verts[ i ].v[ 6 ] = t;
+		fa->surf.verts[ i ].v[ 2 ] = s;
+		fa->surf.verts[ i ].v[ 3 ] = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {

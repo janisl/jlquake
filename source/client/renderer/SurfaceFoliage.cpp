@@ -110,27 +110,22 @@ void idSurfaceFoliage::Draw() {
 			tess.indexes[ tess.numIndexes + i ] += tess.numVertexes;
 		}
 
-		// copy xyz, normal and st
+		// copy and offset xyz, copy normal, st and color
 		vec_t* xyz = tess.xyz[ tess.numVertexes ];
-		Com_Memcpy( xyz, srf->xyz, numVerts * sizeof ( srf->xyz[ 0 ] ) );
+		int* color = ( int* )tess.vertexColors[ tess.numVertexes ];
+		for ( int i = 0; i < numVerts; i++, xyz += 4 ) {
+			vec3_t old;
+			vertexes[ i ].xyz.ToOldVec3( old );
+			VectorAdd( old, instance->origin, xyz );
+		}
 		if ( tess.shader->needsNormal ) {
-			Com_Memcpy( &tess.normal[ tess.numVertexes ], srf->normal, numVerts * sizeof ( srf->xyz[ 0 ] ) );
+			Com_Memcpy( &tess.normal[ tess.numVertexes ], srf->normal, numVerts * sizeof ( srf->normal[ 0 ] ) );
 		}
 		for ( int i = 0; i < numVerts; i++ ) {
 			tess.texCoords[ tess.numVertexes + i ][ 0 ][ 0 ] = srf->texCoords[ i ][ 0 ];
 			tess.texCoords[ tess.numVertexes + i ][ 0 ][ 1 ] = srf->texCoords[ i ][ 1 ];
 			tess.texCoords[ tess.numVertexes + i ][ 1 ][ 0 ] = srf->lmTexCoords[ i ][ 0 ];
 			tess.texCoords[ tess.numVertexes + i ][ 1 ][ 1 ] = srf->lmTexCoords[ i ][ 1 ];
-		}
-
-		// offset xyz
-		for ( int i = 0; i < numVerts; i++, xyz += 4 ) {
-			VectorAdd( xyz, instance->origin, xyz );
-		}
-
-		// copy color
-		int* color = ( int* )tess.vertexColors[ tess.numVertexes ];
-		for ( int i = 0; i < numVerts; i++ ) {
 			color[ i ] = srcColor;
 		}
 

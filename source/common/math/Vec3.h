@@ -18,6 +18,7 @@
 #define __idVec3__
 
 #include "Math.h"
+#include "../mathlib.h"
 
 #if 0
 #define VECTOR_EPSILON      0.001f
@@ -46,8 +47,8 @@ public:
 	idVec3 operator*( const float a ) const;
 	idVec3 operator/( const float a ) const;
 	idVec3 operator+( const idVec3& a ) const;
-	idVec3 operator-( const idVec3& a ) const;
 #endif
+	idVec3 operator-( const idVec3& a ) const;
 	idVec3& operator+=( const idVec3& a );
 	idVec3& operator-=( const idVec3& a );
 #if 0
@@ -108,6 +109,9 @@ public:
 	void            Lerp( const idVec3& v1, const idVec3& v2, const float l );
 	void            SLerp( const idVec3& v1, const idVec3& v2, const float l );
 #endif
+
+	void FromOldVec3( vec3_t vec );
+	void ToOldVec3( vec3_t vec ) const;
 };
 
 #if 0
@@ -156,10 +160,6 @@ inline idVec3& idVec3::operator=( const idVec3& a ) {
 }
 
 #if 0
-inline idVec3 idVec3::operator-( const idVec3& a ) const {
-	return idVec3( x - a.x, y - a.y, z - a.z );
-}
-
 inline float idVec3::operator*( const idVec3& a ) const {
 	return x * a.x + y * a.y + z * a.z;
 }
@@ -181,6 +181,10 @@ inline idVec3 idVec3::operator+( const idVec3& a ) const {
 	return idVec3( x + a.x, y + a.y, z + a.z );
 }
 #endif
+
+inline idVec3 idVec3::operator-( const idVec3& a ) const {
+	return idVec3( x - a.x, y - a.y, z - a.z );
+}
 
 inline idVec3& idVec3::operator+=( const idVec3& a ) {
 	x += a.x;
@@ -533,5 +537,17 @@ inline bool idVec3::ProjectAlongPlane( const idVec3& normal, const float epsilon
 	return true;
 }
 #endif
+
+inline void idVec3::FromOldVec3( vec3_t vec ) {
+	x = vec[ 0 ];
+	y = vec[ 1 ];
+	z = vec[ 2 ];
+}
+
+inline void idVec3::ToOldVec3( vec3_t vec ) const {
+	vec[ 0 ] = x;
+	vec[ 1 ] = y;
+	vec[ 2 ] = z;
+}
 
 #endif	/* !__MATH_VECTOR_H__ */

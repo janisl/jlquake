@@ -21,7 +21,7 @@
 #include "../../common/file_formats/bsp38.h"
 #include "shader.h"
 
-#define BRUSH38_VERTEXSIZE  7
+#define BRUSH38_VERTEXSIZE  4
 
 struct mbrush38_texinfo_t {
 	float vecs[ 2 ][ 4 ];

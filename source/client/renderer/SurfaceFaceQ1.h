@@ -21,7 +21,7 @@
 #include "../../common/file_formats/bsp29.h"
 #include "shader.h"
 
-#define BRUSH29_VERTEXSIZE  7
+#define BRUSH29_VERTEXSIZE  4
 
 struct mbrush29_texture_t {
 	char name[ 16 ];

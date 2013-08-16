@@ -323,16 +323,13 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	SubdividePolygon( numverts, verts );
 
 	fa->surf.numVerts = numWarpVerts;
+	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	fa->surf.verts = new mbrush38_glvert_t[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
-		float s = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
-		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
-		fa->surf.verts[ i ].v[ 0 ] = v[ 0 ];
-		fa->surf.verts[ i ].v[ 1 ] = v[ 1 ];
-		fa->surf.verts[ i ].v[ 2 ] = v[ 2 ];
-		fa->surf.verts[ i ].v[ 3 ] = s;
-		fa->surf.verts[ i ].v[ 4 ] = t;
+		fa->vertexes[ i ].xyz.FromOldVec3( v );
+		fa->surf.verts[ i ].v[ 0 ] = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
+		fa->surf.verts[ i ].v[ 1 ] = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 	}
 	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
 		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;
@@ -364,6 +361,7 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	// draw texture
 	//
 	fa->surf.numVerts = lnumverts;
+	fa->vertexes = new idWorldVertex[ lnumverts ];
 	fa->surf.verts = new mbrush38_glvert_t[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
@@ -381,15 +379,16 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 			r_pedge = &pedges[ -lindex ];
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
 		}
+		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+
 		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
 		s /= texinfo->image->width;
 
 		float t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
 		t /= texinfo->image->height;
 
-		VectorCopy( vec, fa->surf.verts[ i ].v );
-		fa->surf.verts[ i ].v[ 3 ] = s;
-		fa->surf.verts[ i ].v[ 4 ] = t;
+		fa->surf.verts[ i ].v[ 0 ] = s;
+		fa->surf.verts[ i ].v[ 1 ] = t;
 
 		//
 		// lightmap texture coordinates
@@ -406,8 +405,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 5 ] = s;
-		fa->surf.verts[ i ].v[ 6 ] = t;
+		fa->surf.verts[ i ].v[ 2 ] = s;
+		fa->surf.verts[ i ].v[ 3 ] = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {

@@ -297,6 +297,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	srfSurfaceFace_t* cv = ( srfSurfaceFace_t* )Mem_Alloc( sfaceSize );
 	cv->surfaceType = SF_FACE;
 	cv->numPoints = numPoints;
+	surf->vertexes = new idWorldVertex[ numPoints ];
 	cv->numIndices = numIndexes;
 	cv->ofsIndices = ofsIndexes;
 
@@ -304,14 +305,16 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
-			cv->points[ i ][ j ] = LittleFloat( verts[ i ].xyz[ j ] );
+			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 		}
-		AddPointToBounds( cv->points[ i ], cv->bounds[ 0 ], cv->bounds[ 1 ] );
+		vec3_t old;
+		surf->vertexes[ i ].xyz.ToOldVec3( old );
+		AddPointToBounds( old, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 		for ( int j = 0; j < 2; j++ ) {
-			cv->points[ i ][ 3 + j ] = LittleFloat( verts[ i ].st[ j ] );
-			cv->points[ i ][ 5 + j ] = LittleFloat( verts[ i ].lightmap[ j ] );
+			cv->points[ i ][ j ] = LittleFloat( verts[ i ].st[ j ] );
+			cv->points[ i ][ 2 + j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
-		R_ColorShiftLightingBytes( verts[ i ].color, ( byte* )&cv->points[ i ][ 7 ] );
+		R_ColorShiftLightingBytes( verts[ i ].color, ( byte* )&cv->points[ i ][ 4 ] );
 	}
 
 	indexes += LittleLong( ds->firstIndex );
@@ -320,7 +323,9 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, cv, cv->points[ 0 ] );
+	vec3_t old;
+	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
+	FinishGenericSurface( ds, cv, old );
 
 	surf->SetBrush46Data(cv);
 	return surf;
@@ -498,7 +503,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// calculate size
 	srfFoliage_t* foliage;
 	int size = sizeof ( *foliage ) +
-			   numVerts * ( sizeof ( foliage->xyz[ 0 ] ) + sizeof ( foliage->normal[ 0 ] ) + sizeof ( foliage->texCoords[ 0 ] ) + sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
+			   numVerts * ( sizeof ( foliage->normal[ 0 ] ) + sizeof ( foliage->texCoords[ 0 ] ) + sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
 			   numIndexes * sizeof ( foliage->indexes[ 0 ] ) +
 			   numInstances * sizeof ( foliage->instances[ 0 ] );
 
@@ -510,8 +515,8 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	foliage->numVerts = numVerts;
 	foliage->numIndexes = numIndexes;
 	foliage->numInstances = numInstances;
-	foliage->xyz = ( vec4_t* )( foliage + 1 );
-	foliage->normal = ( vec4_t* )( foliage->xyz + foliage->numVerts );
+	surf->vertexes = new idWorldVertex[ numVerts ];
+	foliage->normal = ( vec4_t* )( vec4_t* )( foliage + 1 );
 	foliage->texCoords = ( vec2_t* )( foliage->normal + foliage->numVerts );
 	foliage->lmTexCoords = ( vec2_t* )( foliage->texCoords + foliage->numVerts );
 	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
@@ -534,16 +539,18 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	for ( int i = 0; i < numVerts; i++ ) {
 		// copy xyz and normal
 		for ( int j = 0; j < 3; j++ ) {
-			foliage->xyz[ i ][ j ] = LittleFloat( verts[ i ].xyz[ j ] );
+			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 			foliage->normal[ i ][ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 
 		// scale height
-		foliage->xyz[ i ][ 2 ] *= scale;
+		surf->vertexes[ i ].xyz.z *= scale;
 
 		// finish
-		foliage->xyz[ i ][ 3 ] = foliage->normal[ i ][ 3 ] = 0;
-		AddPointToBounds( foliage->xyz[ i ], bounds[ 0 ], bounds[ 1 ] );
+		foliage->normal[ i ][ 3 ] = 0;
+		vec3_t old;
+		surf->vertexes[ i ].xyz.ToOldVec3( old );
+		AddPointToBounds( old, bounds[ 0 ], bounds[ 1 ] );
 
 		// copy texture coordinates
 		for ( int j = 0; j < 2; j++ ) {
@@ -580,7 +587,9 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// finish surface
-	FinishGenericSurface( ds, foliage, foliage->xyz[ 0 ] );
+	vec3_t old;
+	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
+	FinishGenericSurface( ds, foliage, old );
 	return surf;
 }
 

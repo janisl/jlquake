@@ -42,8 +42,6 @@ void idSurfaceFaceQ3::Draw() {
 
 	tess.numIndexes += surf->numIndices;
 
-	float* v = surf->points[ 0 ];
-
 	int numPoints = surf->numPoints;
 
 	if ( tess.shader->needsNormal ) {
@@ -53,14 +51,15 @@ void idSurfaceFaceQ3::Draw() {
 		}
 	}
 
-	v = surf->points[ 0 ];
-	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
-		VectorCopy( v, tess.xyz[ ndx ] );
-		tess.texCoords[ ndx ][ 0 ][ 0 ] = v[ 3 ];
-		tess.texCoords[ ndx ][ 0 ][ 1 ] = v[ 4 ];
-		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 5 ];
-		tess.texCoords[ ndx ][ 1 ][ 1 ] = v[ 6 ];
-		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )&v[ 7 ];
+	idWorldVertex* vert = vertexes;
+	float* v = surf->points[ 0 ];
+	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
+		vert->xyz.ToOldVec3( tess.xyz[ ndx ] );
+		tess.texCoords[ ndx ][ 0 ][ 0 ] = v[ 0 ];
+		tess.texCoords[ ndx ][ 0 ][ 1 ] = v[ 1 ];
+		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 2 ];
+		tess.texCoords[ ndx ][ 1 ][ 1 ] = v[ 3 ];
+		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )&v[ 4 ];
 		tess.vertexDlightBits[ ndx ] = dlightBits;
 	}
 
@@ -133,7 +132,8 @@ void idSurfaceFaceQ3::MarkFragmentsOldMapping( const vec3_t projectionDir,
 	for ( int k = 0; k < surf->numIndices; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
-			float* v = surf->points[ 0 ] + BRUSH46_VERTEXSIZE * indexes[ k + j ];
+			vec3_t v;
+			vertexes[ indexes[ k + j ] ].xyz.ToOldVec3( v );
 			VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
 		}
 		// add the fragments of this face
@@ -233,7 +233,8 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 	for ( int k = 0; k < surf->numIndices; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
-			float* v = surf->points[ 0 ] + BRUSH46_VERTEXSIZE * indexes[ k + j ];
+			vec3_t v;
+			vertexes[ indexes[ k + j ] ].xyz.ToOldVec3( v );
 			VectorMA( v, MARKER_OFFSET, surfnormal, clipPoints[ 0 ][ j ] );
 		}
 

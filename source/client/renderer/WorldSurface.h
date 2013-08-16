@@ -19,6 +19,7 @@
 
 #include "Surface.h"
 #include "shader.h"
+#include "../../common/math/Vec3.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -41,6 +42,10 @@ struct surface_base_t {
 	surfaceType_t surfaceType;
 };
 
+struct idWorldVertex {
+	idVec3 xyz;
+};
+
 class idWorldSurface : public idSurface {
 public:
 	// Q1, Q2 - should be drawn when node is crossed
@@ -52,7 +57,10 @@ public:
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
+	idWorldVertex* vertexes;
+
 	idWorldSurface();
+	virtual ~idWorldSurface();
 
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel ) const;
 	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;
@@ -93,6 +101,7 @@ inline idWorldSurface::idWorldSurface() {
 	shader = NULL;
 	dlightBits[ 0 ] = 0;
 	dlightBits[ 1 ] = 0;
+	vertexes = NULL;
 	data = NULL;
 }
 
