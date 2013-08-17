@@ -487,6 +487,10 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 		float s = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
+		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
+		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
+			fa->vertexes[ i ].normal *= -1;
+		}
 		fa->surf.verts[ i ].v[ 0 ] = s;
 		fa->surf.verts[ i ].v[ 1 ] = t;
 	}

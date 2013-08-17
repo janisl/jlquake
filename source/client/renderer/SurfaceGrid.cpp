@@ -105,9 +105,7 @@ void idSurfaceGrid::Draw() {
 				texCoords[ 2 ] = olddv->lightmap[ 0 ];
 				texCoords[ 3 ] = olddv->lightmap[ 1 ];
 				if ( needsNormal ) {
-					normal[ 0 ] = olddv->normal[ 0 ];
-					normal[ 1 ] = olddv->normal[ 1 ];
-					normal[ 2 ] = olddv->normal[ 2 ];
+					dv.normal.ToOldVec3( normal );
 				}
 				*( unsigned int* )color = *( unsigned int* ) olddv->color;
 				*vDlightBits++ = dlightBits;
@@ -246,15 +244,11 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 			int numClipPoints = 3;
 
 			idWorldVertex* dv = vertexes + m * cv->width + n;
-			mem_drawVert_t* olddv = cv->verts + m * cv->width + n;
 
 			vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
-			dv[ 0 ].xyz.ToOldVec3( clipPoints[ 0 ][ 0 ] );
-			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, olddv[ 0 ].normal, clipPoints[ 0 ][ 0 ] );
-			dv[ cv->width ].xyz.ToOldVec3( clipPoints[ 0 ][ 1 ] );
-			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, olddv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
-			dv[ 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 2 ] );
-			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, olddv[ 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			( dv[ 0 ].xyz + dv[ 0 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 0 ] );
+			( dv[ cv->width ].xyz + dv[ cv->width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			( dv[ 1 ].xyz + dv[ 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			vec3_t v1, v2;
 			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
@@ -275,12 +269,9 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 				}
 			}
 
-			dv[ 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 0 ] );
-			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, olddv[ 1 ].normal, clipPoints[ 0 ][ 0 ] );
-			dv[ cv->width ].xyz.ToOldVec3( clipPoints[ 0 ][ 1 ] );
-			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, olddv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
-			dv[ cv->width + 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 2 ] );
-			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, olddv[ cv->width + 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			( dv[ 1 ].xyz + dv[ 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 0 ] );
+			( dv[ cv->width ].xyz + dv[ cv->width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			( dv[ cv->width + 1 ].xyz + dv[ cv->width + 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
 			VectorSubtract( clipPoints[ 0 ][ 2 ], clipPoints[ 0 ][ 1 ], v2 );

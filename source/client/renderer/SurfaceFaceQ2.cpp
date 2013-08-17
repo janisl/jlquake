@@ -37,19 +37,11 @@ void idSurfaceFaceQ2::Draw() {
 	float* v = surf.verts[ 0 ].v;
 	for ( int i = 0; i < surf.numVerts; i++, vert++, v += BRUSH38_VERTEXSIZE ) {
 		vert->xyz.ToOldVec3( tess.xyz[ numVerts + i ] );
+		vert->normal.ToOldVec3( tess.normal[ numVerts + i ] );
 		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 0 ];
 		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 1 ];
 		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 2 ];
 		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 3 ];
-		if ( surf.flags & BRUSH38_SURF_PLANEBACK ) {
-			tess.normal[ numVerts + i ][ 0 ] = -surf.plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = -surf.plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = -surf.plane->normal[ 2 ];
-		} else {
-			tess.normal[ numVerts + i ][ 0 ] = surf.plane->normal[ 0 ];
-			tess.normal[ numVerts + i ][ 1 ] = surf.plane->normal[ 1 ];
-			tess.normal[ numVerts + i ][ 2 ] = surf.plane->normal[ 2 ];
-		}
 	}
 	for ( int i = 0; i < surf.numIndexes; i++ ) {
 		tess.indexes[ numIndexes + i ] = numVerts + surf.indexes[ i ];

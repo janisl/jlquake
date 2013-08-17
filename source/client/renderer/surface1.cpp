@@ -257,6 +257,11 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		}
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
 
+		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
+		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
+			fa->vertexes[ i ].normal *= -1;
+		}
+
 		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
 		s /= fa->surf.texinfo->texture->width;
 

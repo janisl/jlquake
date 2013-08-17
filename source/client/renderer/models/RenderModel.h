@@ -215,7 +215,6 @@ struct drawSurf_t {
 struct mem_drawVert_t {
 	float st[ 2 ];
 	float lightmap[ 2 ];
-	vec3_t normal;
 	quint8 color[ 4 ];
 };
 
@@ -276,7 +275,6 @@ struct srfFoliage_t : srfGeneric_t {
 	glIndex_t* indexes;
 
 	int numVerts;
-	vec4_t* normal;
 	vec2_t* texCoords;
 	vec2_t* lmTexCoords;
 

@@ -328,6 +328,10 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
+		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
+		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
+			fa->vertexes[ i ].normal *= -1;
+		}
 		fa->surf.verts[ i ].v[ 0 ] = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		fa->surf.verts[ i ].v[ 1 ] = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 	}
@@ -380,6 +384,11 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
 		}
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+
+		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
+		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
+			fa->vertexes[ i ].normal *= -1;
+		}
 
 		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
 		s /= texinfo->image->width;

@@ -65,9 +65,7 @@ void idSurfaceTriangles::Draw() {
 		vert->xyz.ToOldVec3( xyz );
 
 		if ( needsNormal ) {
-			normal[ 0 ] = dv->normal[ 0 ];
-			normal[ 1 ] = dv->normal[ 1 ];
-			normal[ 2 ] = dv->normal[ 2 ];
+			vert->normal.ToOldVec3( normal );
 		}
 
 		texCoords[ 0 ] = dv->st[ 0 ];
@@ -150,9 +148,7 @@ void idSurfaceTriangles::MarkFragmentsOldMapping( int numPlanes, const vec3_t* n
 	for ( int k = 0; k < cts->numIndexes; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
-			vec3_t v;
-			vertexes[ indexes[ k + j ] ].xyz.ToOldVec3( v );
-			VectorMA( v, MARKER_OFFSET, cts->verts[ indexes[ k + j ] ].normal, clipPoints[ 0 ][ j ] );
+			( vertexes[ indexes[ k + j ] ].xyz + vertexes[ indexes[ k + j ] ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ j ] );
 		}
 		// add the fragments of this face
 		R_AddMarkFragments( 3, clipPoints,

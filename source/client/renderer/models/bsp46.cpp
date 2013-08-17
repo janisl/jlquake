@@ -306,6 +306,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
+			surf->vertexes[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 		vec3_t old;
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
@@ -375,7 +376,7 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			points[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
-			oldpoints[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
+			points[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 		for ( int j = 0; j < 2; j++ ) {
 			oldpoints[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
@@ -440,7 +441,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	for ( int i = 0; i < numVerts; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
-			tri->verts[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
+			surf->vertexes[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 		vec3_t old;
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
@@ -510,7 +511,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// calculate size
 	srfFoliage_t* foliage;
 	int size = sizeof ( *foliage ) +
-			   numVerts * ( sizeof ( foliage->normal[ 0 ] ) + sizeof ( foliage->texCoords[ 0 ] ) + sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
+			   numVerts * ( sizeof ( foliage->texCoords[ 0 ] ) + sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
 			   numIndexes * sizeof ( foliage->indexes[ 0 ] ) +
 			   numInstances * sizeof ( foliage->instances[ 0 ] );
 
@@ -523,8 +524,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	foliage->numIndexes = numIndexes;
 	foliage->numInstances = numInstances;
 	surf->vertexes = new idWorldVertex[ numVerts ];
-	foliage->normal = ( vec4_t* )( vec4_t* )( foliage + 1 );
-	foliage->texCoords = ( vec2_t* )( foliage->normal + foliage->numVerts );
+	foliage->texCoords = ( vec2_t* )( foliage + 1 );
 	foliage->lmTexCoords = ( vec2_t* )( foliage->texCoords + foliage->numVerts );
 	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
@@ -547,14 +547,13 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 		// copy xyz and normal
 		for ( int j = 0; j < 3; j++ ) {
 			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
-			foliage->normal[ i ][ j ] = LittleFloat( verts[ i ].normal[ j ] );
+			surf->vertexes[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 
 		// scale height
 		surf->vertexes[ i ].xyz.z *= scale;
 
 		// finish
-		foliage->normal[ i ][ 3 ] = 0;
 		vec3_t old;
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
 		AddPointToBounds( old, bounds[ 0 ], bounds[ 1 ] );

@@ -44,6 +44,7 @@ struct surface_base_t {
 
 struct idWorldVertex {
 	idVec3 xyz;
+	idVec3 normal;
 };
 
 class idWorldSurface : public idSurface {

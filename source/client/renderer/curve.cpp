@@ -174,7 +174,9 @@ static void MakeMeshNormals( int width, int height, idWorldVertex ctrl[ MAX_GRID
 			if ( count == 0 ) {
 				count = 1;
 			}
-			VectorNormalize2( sum, olddv->normal );
+			vec3_t old;
+			VectorNormalize2( sum, old );
+			dv.normal.FromOldVec3( old );
 		}
 	}
 }
