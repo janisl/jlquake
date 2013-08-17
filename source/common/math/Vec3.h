@@ -42,13 +42,13 @@ public:
 	idVec3 operator-() const;
 #endif
 	idVec3& operator=( const idVec3& a );
-#if 0
+	idVec3 operator+( const idVec3& a ) const;
+	idVec3 operator-( const idVec3& a ) const;
 	float operator*( const idVec3& a ) const;
 	idVec3 operator*( const float a ) const;
+#if 0
 	idVec3 operator/( const float a ) const;
-	idVec3 operator+( const idVec3& a ) const;
 #endif
-	idVec3 operator-( const idVec3& a ) const;
 	idVec3& operator+=( const idVec3& a );
 	idVec3& operator-=( const idVec3& a );
 #if 0
@@ -57,9 +57,9 @@ public:
 #endif
 	idVec3& operator*=( const float a );
 
-#if 0
-	friend idVec3 operator*( const float a, const idVec3 b );
+	friend idVec3 operator*( const float a, const idVec3& b );
 
+#if 0
 	bool            Compare( const idVec3& a ) const;								// exact compare, no epsilon
 	bool            Compare( const idVec3& a, const float epsilon ) const;			// compare with epsilon
 	bool operator==( const idVec3& a ) const;										// exact compare, no epsilon
@@ -72,8 +72,8 @@ public:
 	idVec3&        Cross( const idVec3& a, const idVec3& b );
 #endif
 	float Length() const;
+	float LengthSqr() const;
 #if 0
-	float           LengthSqr( void ) const;
 	float           LengthFast( void ) const;
 #endif
 	float Normalize();				// returns length
@@ -159,7 +159,14 @@ inline idVec3& idVec3::operator=( const idVec3& a ) {
 	return *this;
 }
 
-#if 0
+inline idVec3 idVec3::operator+( const idVec3& a ) const {
+	return idVec3( x + a.x, y + a.y, z + a.z );
+}
+
+inline idVec3 idVec3::operator-( const idVec3& a ) const {
+	return idVec3( x - a.x, y - a.y, z - a.z );
+}
+
 inline float idVec3::operator*( const idVec3& a ) const {
 	return x * a.x + y * a.y + z * a.z;
 }
@@ -168,23 +175,12 @@ inline idVec3 idVec3::operator*( const float a ) const {
 	return idVec3( x * a, y * a, z * a );
 }
 
+#if 0
 inline idVec3 idVec3::operator/( const float a ) const {
 	float inva = 1.0f / a;
 	return idVec3( x * inva, y * inva, z * inva );
 }
-
-inline idVec3 operator*( const float a, const idVec3 b ) {
-	return idVec3( b.x * a, b.y * a, b.z * a );
-}
-
-inline idVec3 idVec3::operator+( const idVec3& a ) const {
-	return idVec3( x + a.x, y + a.y, z + a.z );
-}
 #endif
-
-inline idVec3 idVec3::operator-( const idVec3& a ) const {
-	return idVec3( x - a.x, y - a.y, z - a.z );
-}
 
 inline idVec3& idVec3::operator+=( const idVec3& a ) {
 	x += a.x;
@@ -227,6 +223,10 @@ inline idVec3& idVec3::operator*=( const float a ) {
 	z *= a;
 
 	return *this;
+}
+
+inline idVec3 operator*( const float a, const idVec3& b ) {
+	return idVec3( b.x * a, b.y * a, b.z * a );
 }
 
 #if 0
@@ -370,11 +370,11 @@ inline float idVec3::Length() const {
 	return ( float )idMath::Sqrt( x * x + y * y + z * z );
 }
 
-#if 0
-inline float idVec3::LengthSqr( void ) const {
-	return ( x * x + y * y + z * z );
+inline float idVec3::LengthSqr() const {
+	return x * x + y * y + z * z;
 }
 
+#if 0
 inline float idVec3::LengthFast( void ) const {
 	float sqrLength;
 

@@ -96,21 +96,20 @@ void idSurfaceGrid::Draw() {
 
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < lodWidth; j++ ) {
-				mem_drawVert_t* dv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
+				const idWorldVertex& dv = vertexes[ heightTable[ used + i ] * cv->width + widthTable[ j ] ];
+				mem_drawVert_t* olddv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
 
-				xyz[ 0 ] = dv->xyz[ 0 ];
-				xyz[ 1 ] = dv->xyz[ 1 ];
-				xyz[ 2 ] = dv->xyz[ 2 ];
-				texCoords[ 0 ] = dv->st[ 0 ];
-				texCoords[ 1 ] = dv->st[ 1 ];
-				texCoords[ 2 ] = dv->lightmap[ 0 ];
-				texCoords[ 3 ] = dv->lightmap[ 1 ];
+				dv.xyz.ToOldVec3( xyz );
+				texCoords[ 0 ] = olddv->st[ 0 ];
+				texCoords[ 1 ] = olddv->st[ 1 ];
+				texCoords[ 2 ] = olddv->lightmap[ 0 ];
+				texCoords[ 3 ] = olddv->lightmap[ 1 ];
 				if ( needsNormal ) {
-					normal[ 0 ] = dv->normal[ 0 ];
-					normal[ 1 ] = dv->normal[ 1 ];
-					normal[ 2 ] = dv->normal[ 2 ];
+					normal[ 0 ] = olddv->normal[ 0 ];
+					normal[ 1 ] = olddv->normal[ 1 ];
+					normal[ 2 ] = olddv->normal[ 2 ];
 				}
-				*( unsigned int* )color = *( unsigned int* )dv->color;
+				*( unsigned int* )color = *( unsigned int* ) olddv->color;
 				*vDlightBits++ = dlightBits;
 				xyz += 4;
 				normal += 4;
@@ -191,19 +190,19 @@ void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel
 		//	walk mesh cols
 		for ( int x = 0; x < ( srf->width - 1 ); x++ ) {
 			//	get vertex
-			mem_drawVert_t* dv = srf->verts + y * srf->width + x;
+			const idWorldVertex* dv = vertexes + y * srf->width + x;
 
 			vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
 			//	first triangle
-			VectorCopy( dv[ 0 ].xyz, points[ 0 ][ 0 ] );
-			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
-			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 2 ] );
+			dv[ 0 ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
+			dv[ srf->width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+			dv[ 1 ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
 
 			//	second triangle
-			VectorCopy( dv[ 1 ].xyz, points[ 0 ][ 0 ] );
-			VectorCopy( dv[ srf->width ].xyz, points[ 0 ][ 1 ] );
-			VectorCopy( dv[ srf->width + 1 ].xyz, points[ 0 ][ 2 ] );
+			dv[ 1 ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
+			dv[ srf->width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+			dv[ srf->width + 1 ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
 		}
 	}
@@ -246,15 +245,16 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 
 			int numClipPoints = 3;
 
-			mem_drawVert_t* dv = cv->verts + m * cv->width + n;
+			idWorldVertex* dv = vertexes + m * cv->width + n;
+			mem_drawVert_t* olddv = cv->verts + m * cv->width + n;
 
 			vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
-			VectorCopy( dv[ 0 ].xyz, clipPoints[ 0 ][ 0 ] );
-			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, dv[ 0 ].normal, clipPoints[ 0 ][ 0 ] );
-			VectorCopy( dv[ cv->width ].xyz, clipPoints[ 0 ][ 1 ] );
-			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, dv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
-			VectorCopy( dv[ 1 ].xyz, clipPoints[ 0 ][ 2 ] );
-			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, dv[ 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			dv[ 0 ].xyz.ToOldVec3( clipPoints[ 0 ][ 0 ] );
+			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, olddv[ 0 ].normal, clipPoints[ 0 ][ 0 ] );
+			dv[ cv->width ].xyz.ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, olddv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
+			dv[ 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 2 ] );
+			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, olddv[ 1 ].normal, clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			vec3_t v1, v2;
 			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
@@ -275,12 +275,12 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 				}
 			}
 
-			VectorCopy( dv[ 1 ].xyz, clipPoints[ 0 ][ 0 ] );
-			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, dv[ 1 ].normal, clipPoints[ 0 ][ 0 ] );
-			VectorCopy( dv[ cv->width ].xyz, clipPoints[ 0 ][ 1 ] );
-			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, dv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
-			VectorCopy( dv[ cv->width + 1 ].xyz, clipPoints[ 0 ][ 2 ] );
-			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, dv[ cv->width + 1 ].normal, clipPoints[ 0 ][ 2 ] );
+			dv[ 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 0 ] );
+			VectorMA( clipPoints[ 0 ][ 0 ], MARKER_OFFSET, olddv[ 1 ].normal, clipPoints[ 0 ][ 0 ] );
+			dv[ cv->width ].xyz.ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			VectorMA( clipPoints[ 0 ][ 1 ], MARKER_OFFSET, olddv[ cv->width ].normal, clipPoints[ 0 ][ 1 ] );
+			dv[ cv->width + 1 ].xyz.ToOldVec3( clipPoints[ 0 ][ 2 ] );
+			VectorMA( clipPoints[ 0 ][ 2 ], MARKER_OFFSET, olddv[ cv->width + 1 ].normal, clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
 			VectorSubtract( clipPoints[ 0 ][ 2 ], clipPoints[ 0 ][ 1 ], v2 );

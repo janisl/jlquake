@@ -26,11 +26,16 @@ class idVec3Test : public CppUnit::TestFixture
 	CPPUNIT_TEST(TestZero);
 	CPPUNIT_TEST(TestOperatorIndex);
 	CPPUNIT_TEST(TestOperatorAssign);
+	CPPUNIT_TEST(TestOperatorPlus);
 	CPPUNIT_TEST(TestOperatorMinus);
+	CPPUNIT_TEST(TestOperatorMultiplyVec);
+	CPPUNIT_TEST(TestOperatorMultiplyFloat);
 	CPPUNIT_TEST(TestOperatorPlusEqualsVec);
 	CPPUNIT_TEST(TestOperatorMinusEqualsVec);
 	CPPUNIT_TEST(TestOperatorMultiplyEqualsFloat);
+	CPPUNIT_TEST(TestOperatorFloatMultiplyVec);
 	CPPUNIT_TEST(TestLength);
+	CPPUNIT_TEST(TestLengthSqr);
 	CPPUNIT_TEST(TestNormalize);
 	CPPUNIT_TEST(TestToFloatPtr);
 	CPPUNIT_TEST_SUITE_END();
@@ -43,11 +48,16 @@ public:
 	void TestZero();
 	void TestOperatorIndex();
 	void TestOperatorAssign();
+	void TestOperatorPlus();
 	void TestOperatorMinus();
+	void TestOperatorMultiplyVec();
+	void TestOperatorMultiplyFloat();
 	void TestOperatorPlusEqualsVec();
 	void TestOperatorMinusEqualsVec();
 	void TestOperatorMultiplyEqualsFloat();
+	void TestOperatorFloatMultiplyVec();
 	void TestLength();
+	void TestLengthSqr();
 	void TestNormalize();
 	void TestToFloatPtr();
 };
@@ -104,6 +114,16 @@ void idVec3Test::TestOperatorAssign()
 	CPPUNIT_ASSERT_EQUAL(3.0f, v.z);
 }
 
+void idVec3Test::TestOperatorPlus()
+{
+	idVec3 v1(23.0f, 76.0f, 47.0f);
+	idVec3 v2(4.0f, 5.0f, 6.0f);
+	idVec3 v = v1 + v2;
+	CPPUNIT_ASSERT_EQUAL(27.0f, v.x);
+	CPPUNIT_ASSERT_EQUAL(81.0f, v.y);
+	CPPUNIT_ASSERT_EQUAL(53.0f, v.z);
+}
+
 void idVec3Test::TestOperatorMinus()
 {
 	idVec3 v1(34.0f, 73.0f, 83.0f);
@@ -112,6 +132,22 @@ void idVec3Test::TestOperatorMinus()
 	CPPUNIT_ASSERT_EQUAL(30.0f, v.x);
 	CPPUNIT_ASSERT_EQUAL(68.0f, v.y);
 	CPPUNIT_ASSERT_EQUAL(77.0f, v.z);
+}
+
+void idVec3Test::TestOperatorMultiplyVec()
+{
+	idVec3 v1(1.0f, 2.0f, 3.0f);
+	idVec3 v2(4.0f, 5.0f, 6.0f);
+	CPPUNIT_ASSERT_EQUAL(32.0f, v1 * v2);
+}
+
+void idVec3Test::TestOperatorMultiplyFloat()
+{
+	idVec3 v1(1.0f, 2.0f, 3.0f);
+	idVec3 v = v1 * 3;
+	CPPUNIT_ASSERT_EQUAL(3.0f, v.x);
+	CPPUNIT_ASSERT_EQUAL(6.0f, v.y);
+	CPPUNIT_ASSERT_EQUAL(9.0f, v.z);
 }
 
 void idVec3Test::TestOperatorPlusEqualsVec()
@@ -143,10 +179,25 @@ void idVec3Test::TestOperatorMultiplyEqualsFloat()
 	CPPUNIT_ASSERT_EQUAL(9.0f, v.z);
 }
 
+void idVec3Test::TestOperatorFloatMultiplyVec()
+{
+	idVec3 v1(1.0f, 2.0f, 3.0f);
+	idVec3 v = 3 * v1;
+	CPPUNIT_ASSERT_EQUAL(3.0f, v.x);
+	CPPUNIT_ASSERT_EQUAL(6.0f, v.y);
+	CPPUNIT_ASSERT_EQUAL(9.0f, v.z);
+}
+
 void idVec3Test::TestLength()
 {
 	idVec3 v(1.0f, 2.0f, 3.0f);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(3.74166f, v.Length(), 0.00001);
+}
+
+void idVec3Test::TestLengthSqr()
+{
+	idVec3 v(1.0f, 2.0f, 3.0f);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(14.0f, v.LengthSqr(), 0.00001);
 }
 
 void idVec3Test::TestNormalize()

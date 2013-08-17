@@ -213,7 +213,6 @@ struct drawSurf_t {
 };
 
 struct mem_drawVert_t {
-	vec3_t xyz;
 	float st[ 2 ];
 	float lightmap[ 2 ];
 	vec3_t normal;

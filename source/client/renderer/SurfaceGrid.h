@@ -38,6 +38,13 @@ public:
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
+	struct srfGridMesh_t* GetGridData() {
+		return (srfGridMesh_t*)data;
+	}
+	const struct srfGridMesh_t* GetGridData() const {
+		return (const srfGridMesh_t*)data;
+	}
+
 protected:
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
