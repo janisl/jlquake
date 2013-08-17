@@ -324,7 +324,6 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 
 	fa->surf.numVerts = numWarpVerts;
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
-	fa->surf.verts = new mbrush38_glvert_t[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
@@ -366,7 +365,6 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	//
 	fa->surf.numVerts = lnumverts;
 	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->surf.verts = new mbrush38_glvert_t[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
@@ -414,8 +412,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 0 ] = s;
-		fa->surf.verts[ i ].v[ 1 ] = t;
+		fa->vertexes[ i ].lightmap.x = s;
+		fa->vertexes[ i ].lightmap.y = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {
@@ -830,7 +828,6 @@ void Mod_FreeBsp38( idRenderModel* mod ) {
 	delete[] mod->brush38_edges;
 	delete[] mod->brush38_texinfo;
 	for ( int i = 0; i < mod->brush38_numsurfaces; i++ ) {
-		delete[] mod->brush38_surfaces[ i ].surf.verts;
 		delete[] mod->brush38_surfaces[ i ].surf.indexes;
 	}
 	delete[] mod->brush38_surfaces;

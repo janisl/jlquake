@@ -54,23 +54,17 @@ void idSurfaceTriangles::Draw() {
 	tess.numIndexes += srf->numIndexes;
 
 	idWorldVertex* vert = vertexes;
-	mem_drawVert_t* dv = srf->verts;
 	float* xyz = tess.xyz[ tess.numVertexes ];
 	float* normal = tess.normal[ tess.numVertexes ];
 	float* texCoords = tess.texCoords[ tess.numVertexes ][ 0 ];
 	byte* color = tess.vertexColors[ tess.numVertexes ];
 
-	for ( int i = 0; i < srf->numVerts; i++, vert++, dv++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
+	for ( int i = 0; i < srf->numVerts; i++, vert++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
 		vert->xyz.ToOldVec3( xyz );
-
 		vert->normal.ToOldVec3( normal );
-
 		vert->st.ToOldVec2( texCoords );
-
-		texCoords[ 2 ] = dv->lightmap[ 0 ];
-		texCoords[ 3 ] = dv->lightmap[ 1 ];
-
-		*( int* )color = *( int* )dv->color;
+		vert->lightmap.ToOldVec2( texCoords + 2 );
+		*( int* )color = *( int* )vert->color;
 	}
 
 	for ( int i = 0; i < srf->numVerts; i++ ) {

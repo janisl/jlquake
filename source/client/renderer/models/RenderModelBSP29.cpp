@@ -480,7 +480,6 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 	SubdividePolygon( numverts, verts );
 
 	fa->surf.numVerts = numWarpVerts;
-	fa->surf.verts = new mbrush29_glvert_t[ numWarpVerts ];
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {

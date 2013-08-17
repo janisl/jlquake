@@ -90,7 +90,7 @@ mbrush46_node_t* R_PointInLeaf( const vec3_t p );
 //
 //	CURVE TESSELATION
 //
-srfGridMesh_t* R_SubdividePatchToGrid( class idSurfaceGrid* surf, int width, int height, idWorldVertex points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ], mem_drawVert_t oldpoints[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] );
+srfGridMesh_t* R_SubdividePatchToGrid( class idSurfaceGrid* surf, int width, int height, idWorldVertex points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] );
 bool R_GridInsertColumn( class idSurfaceGrid* grid, int column, int row, const idVec3& point, float lodError );
 bool R_GridInsertRow( class idSurfaceGrid* grid, int row, int column, const idVec3& point, float lodError );
 void R_FreeSurfaceGridMesh( class idSurfaceGrid* grid );

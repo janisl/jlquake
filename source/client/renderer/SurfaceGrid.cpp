@@ -96,14 +96,12 @@ void idSurfaceGrid::Draw() {
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < lodWidth; j++ ) {
 				const idWorldVertex& dv = vertexes[ heightTable[ used + i ] * cv->width + widthTable[ j ] ];
-				mem_drawVert_t* olddv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
 
 				dv.xyz.ToOldVec3( xyz );
 				dv.st.ToOldVec2( texCoords );
-				texCoords[ 2 ] = olddv->lightmap[ 0 ];
-				texCoords[ 3 ] = olddv->lightmap[ 1 ];
+				dv.lightmap.ToOldVec2( texCoords + 2 );
 				dv.normal.ToOldVec3( normal );
-				*( unsigned int* )color = *( unsigned int* ) olddv->color;
+				*( unsigned int* )color = *( unsigned int* )dv.color;
 				*vDlightBits++ = dlightBits;
 				xyz += 4;
 				normal += 4;

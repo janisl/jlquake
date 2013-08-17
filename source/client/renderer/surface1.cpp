@@ -240,7 +240,6 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	//
 	fa->surf.numVerts = lnumverts;
 	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->surf.verts = new mbrush29_glvert_t[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
@@ -286,8 +285,8 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 0 ] = s;
-		fa->surf.verts[ i ].v[ 1 ] = t;
+		fa->vertexes[ i ].lightmap.x = s;
+		fa->vertexes[ i ].lightmap.y = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {

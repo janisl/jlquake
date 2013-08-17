@@ -47,6 +47,8 @@ struct idWorldVertex {
 	idVec3 xyz;
 	idVec3 normal;
 	idVec2 st;
+	idVec2 lightmap;
+	quint8 color[ 4 ];
 };
 
 class idWorldSurface : public idSurface {

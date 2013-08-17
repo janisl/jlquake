@@ -21,8 +21,6 @@
 #include "../../common/file_formats/bsp38.h"
 #include "shader.h"
 
-#define BRUSH38_VERTEXSIZE  2
-
 struct mbrush38_texinfo_t {
 	float vecs[ 2 ][ 4 ];
 	int flags;
@@ -35,10 +33,6 @@ struct mbrush38_shaderInfo_t {
 	int numframes;
 	mbrush38_shaderInfo_t* next;	// animation chain
 	shader_t* shader;
-};
-
-struct mbrush38_glvert_t {
-	float v[ BRUSH38_VERTEXSIZE ];		// (xyz s1t1 s2t2)
 };
 
 struct mbrush38_surface_t : surface_base_t {
@@ -62,7 +56,6 @@ struct mbrush38_surface_t : surface_base_t {
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
 
-	mbrush38_glvert_t* verts;
 	int numVerts;
 	glIndex_t* indexes;
 	int numIndexes;

@@ -45,14 +45,12 @@ void idSurfaceFaceQ3::Draw() {
 	int numPoints = surf->numPoints;
 
 	idWorldVertex* vert = vertexes;
-	float* v = surf->points[ 0 ];
-	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
+	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, ndx++ ) {
 		vert->xyz.ToOldVec3( tess.xyz[ ndx ] );
 		vert->normal.ToOldVec3( tess.normal[ ndx ] );
 		vert->st.ToOldVec2( tess.texCoords[ ndx ][ 0 ] );
-		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 0 ];
-		tess.texCoords[ ndx ][ 1 ][ 1 ] = v[ 1 ];
-		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )&v[ 2 ];
+		vert->lightmap.ToOldVec2( tess.texCoords[ ndx ][ 1 ] );
+		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )vert->color;
 		tess.vertexDlightBits[ ndx ] = dlightBits;
 	}
 

@@ -21,8 +21,6 @@
 #include "../../common/file_formats/bsp29.h"
 #include "shader.h"
 
-#define BRUSH29_VERTEXSIZE  2
-
 struct mbrush29_texture_t {
 	char name[ 16 ];
 	unsigned width, height;
@@ -41,10 +39,6 @@ struct mbrush29_texinfo_t {
 	float mipadjust;
 	mbrush29_texture_t* texture;
 	int flags;
-};
-
-struct mbrush29_glvert_t {
-	float v[ BRUSH29_VERTEXSIZE ];		// (xyz s1t1 s2t2)
 };
 
 struct mbrush29_surface_t : surface_base_t {
@@ -68,7 +62,6 @@ struct mbrush29_surface_t : surface_base_t {
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
 
-	mbrush29_glvert_t* verts;
 	int numVerts;
 	glIndex_t* indexes;
 	int numIndexes;

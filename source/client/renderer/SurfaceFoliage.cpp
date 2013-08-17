@@ -120,8 +120,7 @@ void idSurfaceFoliage::Draw() {
 			VectorAdd( old, instance->origin, xyz );
 			vertexes[ i ].normal.ToOldVec3( normal );
 			vertexes[ i ].st.ToOldVec2( tess.texCoords[ tess.numVertexes + i ][ 0 ] );
-			tess.texCoords[ tess.numVertexes + i ][ 1 ][ 0 ] = srf->lmTexCoords[ i ][ 0 ];
-			tess.texCoords[ tess.numVertexes + i ][ 1 ][ 1 ] = srf->lmTexCoords[ i ][ 1 ];
+			vertexes[ i ].lightmap.ToOldVec2( tess.texCoords[ tess.numVertexes + i ][ 1 ] );
 			color[ i ] = srcColor;
 		}
 
