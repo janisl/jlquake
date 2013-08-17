@@ -492,7 +492,7 @@ dynamic:
 
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	shader_t* shader;
-	if ( backEnd.currentEntity->e.frame ) {
+	if ( backEnd.currentEntity && backEnd.currentEntity->e.frame ) {
 		shader = surf->surf.altShader;
 	} else {
 		shader = surf->shader;
