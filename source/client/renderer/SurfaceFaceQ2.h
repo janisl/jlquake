@@ -35,7 +35,7 @@ struct mbrush38_shaderInfo_t {
 	shader_t* shader;
 };
 
-struct mbrush38_surface_t : surface_base_t {
+struct mbrush38_surface_t {
 	cplane_t* plane;
 	int flags;
 

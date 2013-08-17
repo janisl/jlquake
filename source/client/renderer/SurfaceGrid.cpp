@@ -21,6 +21,14 @@
 #include "decals.h"
 #include "marks.h"
 
+idSurfaceGrid::~idSurfaceGrid() {
+	R_FreeSurfaceGridMesh( this );
+}
+
+bool idSurfaceGrid::IsGrid() const {
+	return true;
+}
+
 //	Just copy the grid of points and triangulate
 void idSurfaceGrid::Draw() {
 	srfGridMesh_t* cv = ( srfGridMesh_t* )data;

@@ -27,22 +27,6 @@
 // parallel on a dual cpu machine
 #define SMP_FRAMES      2
 
-enum surfaceType_t
-{
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE,
-	SF_FACE_Q1,
-	SF_FACE_Q2,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_FOLIAGE,
-};
-
-struct surface_base_t {
-	surfaceType_t surfaceType;
-};
-
 struct idWorldVertex {
 	idVec3 xyz;
 	idVec3 normal;
@@ -68,6 +52,7 @@ public:
 	idWorldSurface();
 	virtual ~idWorldSurface();
 
+	virtual bool IsGrid() const;
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel ) const;
 	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;
 	virtual void MarkFragments( const vec3_t projectionDir,
@@ -87,11 +72,11 @@ public:
 	bool Cull( shader_t* shader, int* frontFace );
 	int MarkDynamicLights( int dlightBits );
 
-	surface_base_t* GetBrush46Data() const;
-	void SetBrush46Data( surface_base_t* data );
+	void* GetBrush46Data() const;
+	void SetBrush46Data( void* data );
 
 protected:
-	surface_base_t* data;		// any of srf*_t
+	void* data;		// any of srf*_t
 
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
@@ -112,11 +97,11 @@ inline idWorldSurface::idWorldSurface() {
 	data = NULL;
 }
 
-inline surface_base_t* idWorldSurface::GetBrush46Data() const {
+inline void* idWorldSurface::GetBrush46Data() const {
 	return data;
 }
 
-inline void idWorldSurface::SetBrush46Data( surface_base_t* data ) {
+inline void idWorldSurface::SetBrush46Data( void* data ) {
 	this->data = data;
 }
 

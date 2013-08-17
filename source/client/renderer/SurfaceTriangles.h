@@ -21,6 +21,7 @@
 
 class idSurfaceTriangles : public idWorldSurface {
 public:
+	virtual ~idSurfaceTriangles();
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel ) const;

@@ -210,7 +210,7 @@ struct drawSurf_t {
 	idSurface* surface;					// any of surface*_t
 };
 
-struct srfGeneric_t : surface_base_t {
+struct srfGeneric_t {
 	// culling information
 	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;

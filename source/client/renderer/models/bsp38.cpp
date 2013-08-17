@@ -510,7 +510,6 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	loadTimeInfo.SetNum( count );
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
-		out->surf.surfaceType = SF_FACE_Q2;
 		out->surf.firstedge = LittleLong( in->firstedge );
 		out->surf.numedges = LittleShort( in->numedges );
 		out->surf.flags = 0;

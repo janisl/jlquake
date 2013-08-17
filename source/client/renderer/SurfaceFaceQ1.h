@@ -41,7 +41,7 @@ struct mbrush29_texinfo_t {
 	int flags;
 };
 
-struct mbrush29_surface_t : surface_base_t {
+struct mbrush29_surface_t {
 	cplane_t* plane;
 	int flags;
 

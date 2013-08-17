@@ -21,6 +21,8 @@
 
 class idSurfaceGrid : public idWorldSurface {
 public:
+	virtual ~idSurfaceGrid();
+	virtual bool IsGrid() const;
 	virtual void Draw();
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel ) const;
 	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;

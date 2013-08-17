@@ -25,6 +25,10 @@ idWorldSurface::~idWorldSurface() {
 	delete[] vertexes;
 }
 
+bool idWorldSurface::IsGrid() const {
+	return false;
+}
+
 void idWorldSurface::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {
 }
 

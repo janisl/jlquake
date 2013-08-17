@@ -21,6 +21,7 @@
 
 class idSurfaceFoliage : public idWorldSurface {
 public:
+	virtual ~idSurfaceFoliage();
 	virtual void Draw();
 
 protected:

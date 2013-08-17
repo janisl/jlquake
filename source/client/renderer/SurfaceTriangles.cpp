@@ -21,6 +21,10 @@
 #include "marks.h"
 #include "../../common/common_defs.h"
 
+idSurfaceTriangles::~idSurfaceTriangles() {
+	Mem_Free( GetBrush46Data() );
+}
+
 cplane_t idSurfaceTriangles::GetPlane() const {
 	srfTriangles_t* tri = ( srfTriangles_t* )data;
 	idWorldVertex* v1 = vertexes + tri->indexes[ 0 ];

@@ -21,6 +21,10 @@
 #include "cvars.h"
 #include "../../common/common_defs.h"
 
+idSurfaceFaceQ3::~idSurfaceFaceQ3() {
+	Mem_Free( data );
+}
+
 cplane_t idSurfaceFaceQ3::GetPlane() const {
 	return ( ( srfSurfaceFace_t* )data )->plane;
 }

@@ -224,7 +224,6 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, i
 
 	grid->width = width;
 	grid->height = height;
-	grid->surfaceType = SF_GRID;
 	ClearBounds( grid->bounds[ 0 ], grid->bounds[ 1 ] );
 	for ( int i = 0; i < width; i++ ) {
 		for ( int j = 0; j < height; j++ ) {

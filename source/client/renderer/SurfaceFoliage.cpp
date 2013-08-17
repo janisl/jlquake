@@ -19,6 +19,10 @@
 #include "backend.h"
 #include "cvars.h"
 
+idSurfaceFoliage::~idSurfaceFoliage() {
+	Mem_Free( GetBrush46Data() );
+}
+
 void idSurfaceFoliage::Draw() {
 	srfFoliage_t* srf = ( srfFoliage_t* )data;
 	// basic setup
