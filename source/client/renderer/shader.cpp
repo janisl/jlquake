@@ -2617,12 +2617,6 @@ static void R_ClearGlobalShader() {
 		stages[ i ].bundle[ 0 ].texMods = texMods[ i ];
 	}
 
-	// FIXME: set these "need" values apropriately
-	shader.needsNormal = true;
-	shader.needsST1 = true;
-	shader.needsST2 = true;
-	shader.needsColor = true;
-
 	// ydnar: default to no implicit mappings
 	implicitMap[ 0 ] = '\0';
 	implicitStateBits = GLS_DEFAULT;

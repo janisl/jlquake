@@ -59,14 +59,11 @@ void idSurfaceTriangles::Draw() {
 	float* normal = tess.normal[ tess.numVertexes ];
 	float* texCoords = tess.texCoords[ tess.numVertexes ][ 0 ];
 	byte* color = tess.vertexColors[ tess.numVertexes ];
-	bool needsNormal = tess.shader->needsNormal;
 
 	for ( int i = 0; i < srf->numVerts; i++, vert++, dv++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
 		vert->xyz.ToOldVec3( xyz );
 
-		if ( needsNormal ) {
-			vert->normal.ToOldVec3( normal );
-		}
+		vert->normal.ToOldVec3( normal );
 
 		texCoords[ 0 ] = dv->st[ 0 ];
 		texCoords[ 1 ] = dv->st[ 1 ];

@@ -92,7 +92,6 @@ void idSurfaceGrid::Draw() {
 		float* texCoords = tess.texCoords[ numVertexes ][ 0 ];
 		byte* color = tess.vertexColors[ numVertexes ];
 		int* vDlightBits = &tess.vertexDlightBits[ numVertexes ];
-		bool needsNormal = tess.shader->needsNormal;
 
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < lodWidth; j++ ) {
@@ -104,9 +103,7 @@ void idSurfaceGrid::Draw() {
 				texCoords[ 1 ] = olddv->st[ 1 ];
 				texCoords[ 2 ] = olddv->lightmap[ 0 ];
 				texCoords[ 3 ] = olddv->lightmap[ 1 ];
-				if ( needsNormal ) {
-					dv.normal.ToOldVec3( normal );
-				}
+				dv.normal.ToOldVec3( normal );
 				*( unsigned int* )color = *( unsigned int* ) olddv->color;
 				*vDlightBits++ = dlightBits;
 				xyz += 4;

@@ -118,9 +118,7 @@ void idSurfaceFoliage::Draw() {
 			vec3_t old;
 			vertexes[ i ].xyz.ToOldVec3( old );
 			VectorAdd( old, instance->origin, xyz );
-			if ( tess.shader->needsNormal ) {
-				vertexes[ i ].normal.ToOldVec3( normal );
-			}
+			vertexes[ i ].normal.ToOldVec3( normal );
 			tess.texCoords[ tess.numVertexes + i ][ 0 ][ 0 ] = srf->texCoords[ i ][ 0 ];
 			tess.texCoords[ tess.numVertexes + i ][ 0 ][ 1 ] = srf->texCoords[ i ][ 1 ];
 			tess.texCoords[ tess.numVertexes + i ][ 1 ][ 0 ] = srf->lmTexCoords[ i ][ 0 ];

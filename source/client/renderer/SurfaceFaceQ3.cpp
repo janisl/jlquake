@@ -48,9 +48,7 @@ void idSurfaceFaceQ3::Draw() {
 	float* v = surf->points[ 0 ];
 	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
 		vert->xyz.ToOldVec3( tess.xyz[ ndx ] );
-		if ( tess.shader->needsNormal ) {
-			vert->normal.ToOldVec3( tess.normal[ ndx ] );
-		}
+		vert->normal.ToOldVec3( tess.normal[ ndx ] );
 		tess.texCoords[ ndx ][ 0 ][ 0 ] = v[ 0 ];
 		tess.texCoords[ ndx ][ 0 ][ 1 ] = v[ 1 ];
 		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 2 ];

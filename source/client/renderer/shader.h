@@ -325,11 +325,6 @@ struct shader_t {
 
 	fogPass_t fogPass;					// draw a blended pass, possibly with depth test equals
 
-	bool needsNormal;					// not all shaders will need all data to be gathered
-	bool needsST1;
-	bool needsST2;
-	bool needsColor;
-
 	bool noFog;
 
 	vec4_t distanceCull;				// ydnar: opaque alpha range for foliage (inner, outer, alpha threshold, 1/(outer-inner))
