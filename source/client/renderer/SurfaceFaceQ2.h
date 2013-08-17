@@ -56,7 +56,6 @@ struct mbrush38_surface_t : surface_base_t {
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
 
-	int numVerts;
 	glIndex_t* indexes;
 	int numIndexes;
 };

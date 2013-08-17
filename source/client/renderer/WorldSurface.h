@@ -62,6 +62,7 @@ public:
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
 
+	int numVertexes;
 	idWorldVertex* vertexes;
 
 	idWorldSurface();
@@ -106,6 +107,7 @@ inline idWorldSurface::idWorldSurface() {
 	shader = NULL;
 	dlightBits[ 0 ] = 0;
 	dlightBits[ 1 ] = 0;
+	numVertexes = 0;
 	vertexes = NULL;
 	data = NULL;
 }

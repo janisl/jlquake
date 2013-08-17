@@ -296,7 +296,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 
 	srfSurfaceFace_t* cv = ( srfSurfaceFace_t* )Mem_Alloc( sfaceSize );
 	cv->surfaceType = SF_FACE;
-	cv->numPoints = numPoints;
+	surf->numVertexes = numPoints;
 	surf->vertexes = new idWorldVertex[ numPoints ];
 	cv->numIndices = numIndexes;
 	cv->ofsIndices = ofsIndexes;
@@ -425,9 +425,9 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 
 	srfTriangles_t* tri = ( srfTriangles_t* )Mem_Alloc( sizeof ( *tri ) + numIndexes * sizeof ( tri->indexes[ 0 ] ) );
 	tri->surfaceType = SF_TRIANGLES;
-	tri->numVerts = numVerts;
-	tri->numIndexes = numIndexes;
+	surf->numVertexes = numVerts;
 	surf->vertexes = new idWorldVertex[ numVerts ];
+	tri->numIndexes = numIndexes;
 	tri->indexes = ( int* )( tri + 1 );
 
 	surf->SetBrush46Data(tri);
@@ -516,7 +516,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 
 	// set up surface
 	foliage->surfaceType = SF_FOLIAGE;
-	foliage->numVerts = numVerts;
+	surf->numVertexes = numVerts;
 	foliage->numIndexes = numIndexes;
 	foliage->numInstances = numInstances;
 	surf->vertexes = new idWorldVertex[ numVerts ];

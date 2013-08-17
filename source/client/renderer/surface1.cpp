@@ -238,7 +238,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	//
 	// draw texture
 	//
-	fa->surf.numVerts = lnumverts;
+	fa->numVertexes = lnumverts;
 	fa->vertexes = new idWorldVertex[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];

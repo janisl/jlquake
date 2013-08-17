@@ -41,7 +41,7 @@ cplane_t idSurfaceTriangles::GetPlane() const {
 void idSurfaceTriangles::Draw() {
 	srfTriangles_t* srf = ( srfTriangles_t* ) data;
 	// ydnar: moved before overflow so dlights work properly
-	RB_CHECKOVERFLOW( srf->numVerts, srf->numIndexes );
+	RB_CHECKOVERFLOW( numVertexes, srf->numIndexes );
 
 	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
@@ -59,19 +59,16 @@ void idSurfaceTriangles::Draw() {
 	float* texCoords = tess.texCoords[ tess.numVertexes ][ 0 ];
 	byte* color = tess.vertexColors[ tess.numVertexes ];
 
-	for ( int i = 0; i < srf->numVerts; i++, vert++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
+	for ( int i = 0; i < numVertexes; i++, vert++, xyz += 4, normal += 4, texCoords += 4, color += 4 ) {
 		vert->xyz.ToOldVec3( xyz );
 		vert->normal.ToOldVec3( normal );
 		vert->st.ToOldVec2( texCoords );
 		vert->lightmap.ToOldVec2( texCoords + 2 );
 		*( int* )color = *( int* )vert->color;
-	}
-
-	for ( int i = 0; i < srf->numVerts; i++ ) {
 		tess.vertexDlightBits[ tess.numVertexes + i ] = dlightBits;
 	}
 
-	tess.numVertexes += srf->numVerts;
+	tess.numVertexes += numVertexes;
 }
 
 void idSurfaceTriangles::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel ) const {

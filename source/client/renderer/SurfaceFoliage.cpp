@@ -22,7 +22,6 @@
 void idSurfaceFoliage::Draw() {
 	srfFoliage_t* srf = ( srfFoliage_t* )data;
 	// basic setup
-	int numVerts = srf->numVerts;
 	int numIndexes = srf->numIndexes;
 	vec3_t viewOrigin;
 	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
@@ -99,7 +98,7 @@ void idSurfaceFoliage::Draw() {
 			( ( byte* )&srcColor )[ 3 ] = a;
 		}
 
-		RB_CHECKOVERFLOW( numVerts, numIndexes );
+		RB_CHECKOVERFLOW( numVertexes, numIndexes );
 
 		// ydnar: set after overflow check so dlights work properly
 		tess.dlightBits |= dlightBits;
@@ -114,7 +113,7 @@ void idSurfaceFoliage::Draw() {
 		vec_t* xyz = tess.xyz[ tess.numVertexes ];
 		vec_t* normal = tess.normal[ tess.numVertexes ];
 		int* color = ( int* )tess.vertexColors[ tess.numVertexes ];
-		for ( int i = 0; i < numVerts; i++, xyz += 4, normal += 4 ) {
+		for ( int i = 0; i < numVertexes; i++, xyz += 4, normal += 4 ) {
 			vec3_t old;
 			vertexes[ i ].xyz.ToOldVec3( old );
 			VectorAdd( old, instance->origin, xyz );
@@ -126,7 +125,7 @@ void idSurfaceFoliage::Draw() {
 
 		// increment
 		tess.numIndexes += numIndexes;
-		tess.numVertexes += numVerts;
+		tess.numVertexes += numVertexes;
 	}
 }
 

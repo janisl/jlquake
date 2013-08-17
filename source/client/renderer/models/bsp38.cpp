@@ -322,7 +322,7 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 
 	SubdividePolygon( numverts, verts );
 
-	fa->surf.numVerts = numWarpVerts;
+	fa->numVertexes = numWarpVerts;
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
@@ -363,7 +363,7 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	//
 	// draw texture
 	//
-	fa->surf.numVerts = lnumverts;
+	fa->numVertexes = lnumverts;
 	fa->vertexes = new idWorldVertex[ lnumverts ];
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];

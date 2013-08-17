@@ -27,7 +27,7 @@ cplane_t idSurfaceFaceQ3::GetPlane() const {
 
 void idSurfaceFaceQ3::Draw() {
 	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )data;
-	RB_CHECKOVERFLOW( surf->numPoints, surf->numIndices );
+	RB_CHECKOVERFLOW( numVertexes, surf->numIndices );
 
 	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
@@ -42,10 +42,8 @@ void idSurfaceFaceQ3::Draw() {
 
 	tess.numIndexes += surf->numIndices;
 
-	int numPoints = surf->numPoints;
-
 	idWorldVertex* vert = vertexes;
-	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, ndx++ ) {
+	for ( int i = 0, ndx = tess.numVertexes; i < numVertexes; i++, vert++, ndx++ ) {
 		vert->xyz.ToOldVec3( tess.xyz[ ndx ] );
 		vert->normal.ToOldVec3( tess.normal[ ndx ] );
 		vert->st.ToOldVec2( tess.texCoords[ ndx ][ 0 ] );
@@ -54,7 +52,7 @@ void idSurfaceFaceQ3::Draw() {
 		tess.vertexDlightBits[ ndx ] = dlightBits;
 	}
 
-	tess.numVertexes += surf->numPoints;
+	tess.numVertexes += numVertexes;
 }
 
 bool idSurfaceFaceQ3::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const {

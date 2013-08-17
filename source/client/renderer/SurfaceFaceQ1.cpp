@@ -32,21 +32,23 @@ void idSurfaceFaceQ1::Draw() {
 		R_RenderDynamicLightmaps( this );
 	}
 
-	int numVerts = tess.numVertexes;
-	int numIndexes = tess.numIndexes;
+	RB_CHECKOVERFLOW( numVertexes, surf.numIndexes );
 
-	tess.numVertexes += surf.numVerts;
+	int numTessVerts = tess.numVertexes;
+	int numTessIndexes = tess.numIndexes;
+
+	tess.numVertexes += numVertexes;
 	tess.numIndexes += surf.numIndexes;
 
 	idWorldVertex* vert = vertexes;
-	for ( int i = 0; i < surf.numVerts; i++, vert++ ) {
-		vert->xyz.ToOldVec3( tess.xyz[ numVerts + i ] );
-		vert->normal.ToOldVec3( tess.normal[ numVerts + i ] );
-		vert->st.ToOldVec2( tess.texCoords[ numVerts + i ][ 0 ] );
-		vert->lightmap.ToOldVec2( tess.texCoords[ numVerts + i ][ 1 ] );
+	for ( int i = 0; i < numVertexes; i++, vert++ ) {
+		vert->xyz.ToOldVec3( tess.xyz[ numTessVerts + i ] );
+		vert->normal.ToOldVec3( tess.normal[ numTessVerts + i ] );
+		vert->st.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 0 ] );
+		vert->lightmap.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 1 ] );
 	}
 	for ( int i = 0; i < surf.numIndexes; i++ ) {
-		tess.indexes[ numIndexes + i ] = numVerts + surf.indexes[ i ];
+		tess.indexes[ numTessIndexes + i ] = numTessVerts + surf.indexes[ i ];
 	}
 }
 
