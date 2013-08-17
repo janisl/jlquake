@@ -31,8 +31,7 @@ static idWorldVertex LerpDrawVert( const idWorldVertex& a, const idWorldVertex& 
 
 	out.xyz = 0.5f * ( a.xyz + b.xyz );
 
-	oldout->st[ 0 ] = 0.5f * ( olda->st[ 0 ] + oldb->st[ 0 ] );
-	oldout->st[ 1 ] = 0.5f * ( olda->st[ 1 ] + oldb->st[ 1 ] );
+	out.st = 0.5f * ( a.st + b.st );
 
 	oldout->lightmap[ 0 ] = 0.5f * ( olda->lightmap[ 0 ] + oldb->lightmap[ 0 ] );
 	oldout->lightmap[ 1 ] = 0.5f * ( olda->lightmap[ 1 ] + oldb->lightmap[ 1 ] );
@@ -115,7 +114,6 @@ static void MakeMeshNormals( int width, int height, idWorldVertex ctrl[ MAX_GRID
 		for ( int j = 0; j < height; j++ ) {
 			int count = 0;
 			idWorldVertex& dv = ctrl[ j ][ i ];
-			mem_drawVert_t* olddv = &oldctrl[ j ][ i ];
 			idVec3 base = dv.xyz;
 			vec3_t around[ 8 ];
 			bool good[ 8 ];

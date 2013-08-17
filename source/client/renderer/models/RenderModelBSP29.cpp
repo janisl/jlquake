@@ -491,8 +491,8 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
 			fa->vertexes[ i ].normal *= -1;
 		}
-		fa->surf.verts[ i ].v[ 0 ] = s;
-		fa->surf.verts[ i ].v[ 1 ] = t;
+		fa->vertexes[ i ].st.x = s;
+		fa->vertexes[ i ].st.y = t;
 	}
 	for ( mbrush29_glpoly_t* p = warppolys; p; p = p->next ) {
 		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;

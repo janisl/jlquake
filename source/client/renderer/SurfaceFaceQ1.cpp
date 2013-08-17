@@ -43,10 +43,9 @@ void idSurfaceFaceQ1::Draw() {
 	for ( int i = 0; i < surf.numVerts; i++, vert++, v += BRUSH29_VERTEXSIZE ) {
 		vert->xyz.ToOldVec3( tess.xyz[ numVerts + i ] );
 		vert->normal.ToOldVec3( tess.normal[ numVerts + i ] );
-		tess.texCoords[ numVerts + i ][ 0 ][ 0 ] = v[ 0 ];
-		tess.texCoords[ numVerts + i ][ 0 ][ 1 ] = v[ 1 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 2 ];
-		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 3 ];
+		vert->st.ToOldVec2( tess.texCoords[ numVerts + i ][ 0 ] );
+		tess.texCoords[ numVerts + i ][ 1 ][ 0 ] = v[ 0 ];
+		tess.texCoords[ numVerts + i ][ 1 ][ 1 ] = v[ 1 ];
 	}
 	for ( int i = 0; i < surf.numIndexes; i++ ) {
 		tess.indexes[ numIndexes + i ] = numVerts + surf.indexes[ i ];

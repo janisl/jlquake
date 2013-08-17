@@ -4,6 +4,7 @@ add_executable(common_tests
 	ListTest.cpp
 	MathTests.cpp
 	StrTest.cpp
+	Vec2Test.cpp
 	Vec3Test.cpp
 )
 

@@ -312,10 +312,10 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
 		AddPointToBounds( old, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 		for ( int j = 0; j < 2; j++ ) {
-			cv->points[ i ][ j ] = LittleFloat( verts[ i ].st[ j ] );
-			cv->points[ i ][ 2 + j ] = LittleFloat( verts[ i ].lightmap[ j ] );
+			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
+			cv->points[ i ][ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
-		R_ColorShiftLightingBytes( verts[ i ].color, ( byte* )&cv->points[ i ][ 4 ] );
+		R_ColorShiftLightingBytes( verts[ i ].color, ( byte* )&cv->points[ i ][ 2 ] );
 	}
 
 	indexes += LittleLong( ds->firstIndex );
@@ -379,7 +379,7 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 			points[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
 		for ( int j = 0; j < 2; j++ ) {
-			oldpoints[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
+			points[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			oldpoints[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 		R_ColorShiftLightingBytes( verts[ i ].color, oldpoints[ i ].color );
@@ -447,7 +447,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
 		AddPointToBounds( old, tri->bounds[ 0 ], tri->bounds[ 1 ] );
 		for ( int j = 0; j < 2; j++ ) {
-			tri->verts[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
+			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			tri->verts[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 
@@ -511,7 +511,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// calculate size
 	srfFoliage_t* foliage;
 	int size = sizeof ( *foliage ) +
-			   numVerts * ( sizeof ( foliage->texCoords[ 0 ] ) + sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
+			   numVerts * ( sizeof ( foliage->lmTexCoords[ 0 ] ) ) +
 			   numIndexes * sizeof ( foliage->indexes[ 0 ] ) +
 			   numInstances * sizeof ( foliage->instances[ 0 ] );
 
@@ -524,8 +524,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	foliage->numIndexes = numIndexes;
 	foliage->numInstances = numInstances;
 	surf->vertexes = new idWorldVertex[ numVerts ];
-	foliage->texCoords = ( vec2_t* )( foliage + 1 );
-	foliage->lmTexCoords = ( vec2_t* )( foliage->texCoords + foliage->numVerts );
+	foliage->lmTexCoords = ( vec2_t* )( foliage + 1 );
 	foliage->indexes = ( glIndex_t* )( foliage->lmTexCoords + foliage->numVerts );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
 
@@ -560,7 +559,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 
 		// copy texture coordinates
 		for ( int j = 0; j < 2; j++ ) {
-			foliage->texCoords[ i ][ j ] = LittleFloat( verts[ i ].st[ j ] );
+			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			foliage->lmTexCoords[ i ][ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
 		}
 	}

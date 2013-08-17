@@ -202,7 +202,7 @@ the bits are allocated as follows:
 #define ATI_TESS_NONE       0
 #define ATI_TESS_TRUFORM    1
 
-#define BRUSH46_VERTEXSIZE  5
+#define BRUSH46_VERTEXSIZE  3
 
 #define MAX_PATCH_SIZE      32			// max dimensions of a patch mesh in map file
 #define MAX_GRID_SIZE       65			// max dimensions of a grid mesh in memory
@@ -213,7 +213,6 @@ struct drawSurf_t {
 };
 
 struct mem_drawVert_t {
-	float st[ 2 ];
 	float lightmap[ 2 ];
 	quint8 color[ 4 ];
 };
@@ -275,7 +274,6 @@ struct srfFoliage_t : srfGeneric_t {
 	glIndex_t* indexes;
 
 	int numVerts;
-	vec2_t* texCoords;
 	vec2_t* lmTexCoords;
 
 	// origins

@@ -268,8 +268,8 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
 		t /= fa->surf.texinfo->texture->height;
 
-		fa->surf.verts[ i ].v[ 0 ] = s;
-		fa->surf.verts[ i ].v[ 1 ] = t;
+		fa->vertexes[ i ].st.x = s;
+		fa->vertexes[ i ].st.y = t;
 
 		//
 		// lightmap texture coordinates
@@ -286,8 +286,8 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 2 ] = s;
-		fa->surf.verts[ i ].v[ 3 ] = t;
+		fa->surf.verts[ i ].v[ 0 ] = s;
+		fa->surf.verts[ i ].v[ 1 ] = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {

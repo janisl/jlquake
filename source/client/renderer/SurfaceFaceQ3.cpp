@@ -49,11 +49,10 @@ void idSurfaceFaceQ3::Draw() {
 	for ( int i = 0, ndx = tess.numVertexes; i < numPoints; i++, vert++, v += BRUSH46_VERTEXSIZE, ndx++ ) {
 		vert->xyz.ToOldVec3( tess.xyz[ ndx ] );
 		vert->normal.ToOldVec3( tess.normal[ ndx ] );
-		tess.texCoords[ ndx ][ 0 ][ 0 ] = v[ 0 ];
-		tess.texCoords[ ndx ][ 0 ][ 1 ] = v[ 1 ];
-		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 2 ];
-		tess.texCoords[ ndx ][ 1 ][ 1 ] = v[ 3 ];
-		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )&v[ 4 ];
+		vert->st.ToOldVec2( tess.texCoords[ ndx ][ 0 ] );
+		tess.texCoords[ ndx ][ 1 ][ 0 ] = v[ 0 ];
+		tess.texCoords[ ndx ][ 1 ][ 1 ] = v[ 1 ];
+		*( unsigned int* )&tess.vertexColors[ ndx ] = *( unsigned int* )&v[ 2 ];
 		tess.vertexDlightBits[ ndx ] = dlightBits;
 	}
 

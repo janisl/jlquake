@@ -99,8 +99,7 @@ void idSurfaceGrid::Draw() {
 				mem_drawVert_t* olddv = cv->verts + heightTable[ used + i ] * cv->width + widthTable[ j ];
 
 				dv.xyz.ToOldVec3( xyz );
-				texCoords[ 0 ] = olddv->st[ 0 ];
-				texCoords[ 1 ] = olddv->st[ 1 ];
+				dv.st.ToOldVec2( texCoords );
 				texCoords[ 2 ] = olddv->lightmap[ 0 ];
 				texCoords[ 3 ] = olddv->lightmap[ 1 ];
 				dv.normal.ToOldVec3( normal );

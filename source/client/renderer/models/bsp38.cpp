@@ -332,8 +332,8 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
 			fa->vertexes[ i ].normal *= -1;
 		}
-		fa->surf.verts[ i ].v[ 0 ] = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
-		fa->surf.verts[ i ].v[ 1 ] = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
+		fa->vertexes[ i ].st.x = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
+		fa->vertexes[ i ].st.y = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 	}
 	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
 		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;
@@ -396,8 +396,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		float t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
 		t /= texinfo->image->height;
 
-		fa->surf.verts[ i ].v[ 0 ] = s;
-		fa->surf.verts[ i ].v[ 1 ] = t;
+		fa->vertexes[ i ].st.x = s;
+		fa->vertexes[ i ].st.y = t;
 
 		//
 		// lightmap texture coordinates
@@ -414,8 +414,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
-		fa->surf.verts[ i ].v[ 2 ] = s;
-		fa->surf.verts[ i ].v[ 3 ] = t;
+		fa->surf.verts[ i ].v[ 0 ] = s;
+		fa->surf.verts[ i ].v[ 1 ] = t;
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {

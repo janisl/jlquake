@@ -19,6 +19,7 @@
 
 #include "Surface.h"
 #include "shader.h"
+#include "../../common/math/Vec2.h"
 #include "../../common/math/Vec3.h"
 
 // everything that is needed by the backend needs
@@ -45,6 +46,7 @@ struct surface_base_t {
 struct idWorldVertex {
 	idVec3 xyz;
 	idVec3 normal;
+	idVec2 st;
 };
 
 class idWorldSurface : public idSurface {

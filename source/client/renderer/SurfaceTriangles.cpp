@@ -65,8 +65,7 @@ void idSurfaceTriangles::Draw() {
 
 		vert->normal.ToOldVec3( normal );
 
-		texCoords[ 0 ] = dv->st[ 0 ];
-		texCoords[ 1 ] = dv->st[ 1 ];
+		vert->st.ToOldVec2( texCoords );
 
 		texCoords[ 2 ] = dv->lightmap[ 0 ];
 		texCoords[ 3 ] = dv->lightmap[ 1 ];
