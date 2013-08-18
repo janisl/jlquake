@@ -20,13 +20,12 @@
 #include "cvars.h"
 
 idSurfaceFoliage::~idSurfaceFoliage() {
-	Mem_Free( GetBrush46Data() );
+	Mem_Free( folData );
 }
 
 void idSurfaceFoliage::Draw() {
-	srfFoliage_t* srf = ( srfFoliage_t* )data;
 	// basic setup
-	int numIndexes = srf->numIndexes;
+	int numIndexes = folData->numIndexes;
 	vec3_t viewOrigin;
 	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
@@ -61,8 +60,8 @@ void idSurfaceFoliage::Draw() {
 	tess.dlightBits |= dlightBits;
 
 	// iterate through origin list
-	foliageInstance_t* instance = srf->instances;
-	for ( int o = 0; o < srf->numInstances; o++, instance++ ) {
+	foliageInstance_t* instance = folData->instances;
+	for ( int o = 0; o < folData->numInstances; o++, instance++ ) {
 		// fade alpha based on distance between inner and outer radii
 		int srcColor = *( int* )instance->color;
 		if ( distanceCull[ 1 ] > 0.0f ) {
@@ -110,7 +109,7 @@ void idSurfaceFoliage::Draw() {
 		tess.dlightBits |= dlightBits;
 
 		// copy indexes
-		Com_Memcpy( &tess.indexes[ tess.numIndexes ], srf->indexes, numIndexes * sizeof ( srf->indexes[ 0 ] ) );
+		Com_Memcpy( &tess.indexes[ tess.numIndexes ], folData->indexes, numIndexes * sizeof ( folData->indexes[ 0 ] ) );
 		for ( int i = 0; i < numIndexes; i++ ) {
 			tess.indexes[ tess.numIndexes + i ] += tess.numVertexes;
 		}

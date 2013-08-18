@@ -20,7 +20,6 @@
 
 idSurfaceFaceQ2::idSurfaceFaceQ2() {
 	Com_Memset( &surf, 0, sizeof( surf ) );
-	data = &surf;
 	texturechain = NULL;
 }
 

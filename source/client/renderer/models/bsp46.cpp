@@ -312,7 +312,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	// finish surface
 	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 
-	surf->SetBrush46Data(cv);
+	surf->faceData = cv;
 	return surf;
 }
 
@@ -407,7 +407,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	tri->numIndexes = numIndexes;
 	tri->indexes = ( int* )( tri + 1 );
 
-	surf->SetBrush46Data(tri);
+	surf->triData = tri;
 
 	// copy vertexes
 	surf->bounds.Clear();
@@ -491,7 +491,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	foliage->indexes = ( glIndex_t* )( foliage + 1 );
 	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
 
-	surf->SetBrush46Data(foliage);
+	surf->folData = foliage;
 
 	// get foliage drawscale
 	float scale = r_drawfoliage->value;
@@ -776,9 +776,7 @@ static void R_FixSharedVertexLodError() {
 	}
 }
 
-static bool R_StitchPatches( int grid1num, int grid2num ) {
-	idSurfaceGrid* grid1 = ( idSurfaceGrid* )s_worldData.surfaces[ grid1num ];
-	idSurfaceGrid* grid2 = ( idSurfaceGrid* )s_worldData.surfaces[ grid2num ];
+static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
@@ -1333,30 +1331,29 @@ static bool R_StitchPatches( int grid1num, int grid2num ) {
 //	Vertices will be joined at the patch side a crack is first found, at the
 // other side of the patch (on the same row or column) the vertices will not
 // be joined and cracks might still appear at that side.
-static int R_TryStitchingPatch( int grid1num ) {
+static int R_TryStitchingPatch( idSurfaceGrid* grid1 ) {
 	int numstitches = 0;
-	srfGridMesh_t* grid1 = ( srfGridMesh_t* )s_worldData.surfaces[ grid1num ]->GetBrush46Data();
 	for ( int j = 0; j < s_worldData.numsurfaces; j++ ) {
 		// if this surface is not a grid
 		if ( !s_worldData.surfaces[ j ]->IsGrid() ) {
 			continue;
 		}
-		srfGridMesh_t* grid2 = ( srfGridMesh_t* )s_worldData.surfaces[ j ]->GetBrush46Data();
+		idSurfaceGrid* grid2 = ( idSurfaceGrid* )s_worldData.surfaces[ j ];
 		// grids in the same LOD group should have the exact same lod radius
-		if ( grid1->lodRadius != grid2->lodRadius ) {
+		if ( grid1->gridData->lodRadius != grid2->gridData->lodRadius ) {
 			continue;
 		}
 		// grids in the same LOD group should have the exact same lod origin
-		if ( grid1->lodOrigin[ 0 ] != grid2->lodOrigin[ 0 ] ) {
+		if ( grid1->gridData->lodOrigin[ 0 ] != grid2->gridData->lodOrigin[ 0 ] ) {
 			continue;
 		}
-		if ( grid1->lodOrigin[ 1 ] != grid2->lodOrigin[ 1 ] ) {
+		if ( grid1->gridData->lodOrigin[ 1 ] != grid2->gridData->lodOrigin[ 1 ] ) {
 			continue;
 		}
-		if ( grid1->lodOrigin[ 2 ] != grid2->lodOrigin[ 2 ] ) {
+		if ( grid1->gridData->lodOrigin[ 2 ] != grid2->gridData->lodOrigin[ 2 ] ) {
 			continue;
 		}
-		while ( R_StitchPatches( grid1num, j ) ) {
+		while ( R_StitchPatches( grid1, grid2 ) ) {
 			numstitches++;
 		}
 	}
@@ -1380,7 +1377,7 @@ static void R_StitchAllPatches() {
 			grid1->GetGridData()->lodStitched = true;
 			stitched = true;
 			//
-			numstitches += R_TryStitchingPatch( i );
+			numstitches += R_TryStitchingPatch( grid1 );
 		}
 	} while ( stitched );
 	common->Printf( "stitched %d LoD cracks\n", numstitches );

@@ -21,6 +21,8 @@
 
 class idSurfaceFoliage : public idWorldSurface {
 public:
+	struct srfFoliage_t* folData;
+
 	virtual ~idSurfaceFoliage();
 	virtual void Draw();
 

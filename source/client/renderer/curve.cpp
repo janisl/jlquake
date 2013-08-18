@@ -239,7 +239,7 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, i
 	surf->boundingSphere.GetOrigin().ToOldVec3( grid->lodOrigin );
 	grid->lodRadius = surf->boundingSphere.GetRadius();
 
-	surf->SetBrush46Data(grid);
+	surf->gridData = grid;
 	return grid;
 }
 

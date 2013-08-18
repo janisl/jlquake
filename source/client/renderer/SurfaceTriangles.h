@@ -21,6 +21,8 @@
 
 class idSurfaceTriangles : public idWorldSurface {
 public:
+	struct srfTriangles_t* triData;
+
 	virtual ~idSurfaceTriangles();
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();

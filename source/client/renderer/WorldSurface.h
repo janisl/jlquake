@@ -80,12 +80,7 @@ public:
 	bool Cull( shader_t* shader, int* frontFace );
 	int MarkDynamicLights( int dlightBits );
 
-	void* GetBrush46Data() const;
-	void SetBrush46Data( void* data );
-
 protected:
-	void* data;		// any of srf*_t
-
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
 	virtual int DoMarkDynamicLights( int dlightBits );
@@ -104,15 +99,6 @@ inline idWorldSurface::idWorldSurface() {
 	boundingSphere.Zero();
 	numVertexes = 0;
 	vertexes = NULL;
-	data = NULL;
-}
-
-inline void* idWorldSurface::GetBrush46Data() const {
-	return data;
-}
-
-inline void idWorldSurface::SetBrush46Data( void* data ) {
-	this->data = data;
 }
 
 #endif

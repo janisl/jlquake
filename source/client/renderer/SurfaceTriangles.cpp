@@ -22,14 +22,13 @@
 #include "../../common/common_defs.h"
 
 idSurfaceTriangles::~idSurfaceTriangles() {
-	Mem_Free( GetBrush46Data() );
+	Mem_Free( triData );
 }
 
 cplane_t idSurfaceTriangles::GetPlane() const {
-	srfTriangles_t* tri = ( srfTriangles_t* )data;
-	idWorldVertex* v1 = vertexes + tri->indexes[ 0 ];
-	idWorldVertex* v2 = vertexes + tri->indexes[ 1 ];
-	idWorldVertex* v3 = vertexes + tri->indexes[ 2 ];
+	idWorldVertex* v1 = vertexes + triData->indexes[ 0 ];
+	idWorldVertex* v2 = vertexes + triData->indexes[ 1 ];
+	idWorldVertex* v3 = vertexes + triData->indexes[ 2 ];
 	vec4_t plane4;
 	vec3_t oldv1, oldv2, oldv3;
 	v1->xyz.ToOldVec3( oldv1 );
@@ -43,19 +42,18 @@ cplane_t idSurfaceTriangles::GetPlane() const {
 }
 
 void idSurfaceTriangles::Draw() {
-	srfTriangles_t* srf = ( srfTriangles_t* ) data;
 	// ydnar: moved before overflow so dlights work properly
-	RB_CHECKOVERFLOW( numVertexes, srf->numIndexes );
+	RB_CHECKOVERFLOW( numVertexes, triData->numIndexes );
 
 	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
-	for ( int i = 0; i < srf->numIndexes; i += 3 ) {
-		tess.indexes[ tess.numIndexes + i + 0 ] = tess.numVertexes + srf->indexes[ i + 0 ];
-		tess.indexes[ tess.numIndexes + i + 1 ] = tess.numVertexes + srf->indexes[ i + 1 ];
-		tess.indexes[ tess.numIndexes + i + 2 ] = tess.numVertexes + srf->indexes[ i + 2 ];
+	for ( int i = 0; i < triData->numIndexes; i += 3 ) {
+		tess.indexes[ tess.numIndexes + i + 0 ] = tess.numVertexes + triData->indexes[ i + 0 ];
+		tess.indexes[ tess.numIndexes + i + 1 ] = tess.numVertexes + triData->indexes[ i + 1 ];
+		tess.indexes[ tess.numIndexes + i + 2 ] = tess.numVertexes + triData->indexes[ i + 2 ];
 	}
-	tess.numIndexes += srf->numIndexes;
+	tess.numIndexes += triData->numIndexes;
 
 	idWorldVertex* vert = vertexes;
 	float* xyz = tess.xyz[ tess.numVertexes ];
@@ -80,16 +78,13 @@ void idSurfaceTriangles::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* b
 		return;
 	}
 
-	//	get surface
-	srfTriangles_t* srf = ( srfTriangles_t* )GetBrush46Data();
-
 	//	walk triangle list
-	for ( int i = 0; i < srf->numIndexes; i += 3 ) {
+	for ( int i = 0; i < triData->numIndexes; i += 3 ) {
 		//	make triangle
 		vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
-		vertexes[ srf->indexes[ i ] ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
-		vertexes[ srf->indexes[ i + 1 ] ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
-		vertexes[ srf->indexes[ i + 2 ] ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
+		vertexes[ triData->indexes[ i ] ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
+		vertexes[ triData->indexes[ i + 1 ] ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+		vertexes[ triData->indexes[ i + 2 ] ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 
 		//	chop it
 		ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
@@ -134,9 +129,8 @@ void idSurfaceTriangles::MarkFragmentsOldMapping( int numPlanes, const vec3_t* n
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs ) const {
-	srfTriangles_t* cts = ( srfTriangles_t* )GetBrush46Data();
-	int* indexes = cts->indexes;
-	for ( int k = 0; k < cts->numIndexes; k += 3 ) {
+	int* indexes = triData->indexes;
+	for ( int k = 0; k < triData->numIndexes; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
 			( vertexes[ indexes[ k + j ] ].xyz + vertexes[ indexes[ k + j ] ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ j ] );

@@ -22,7 +22,7 @@
 #include "../../common/common_defs.h"
 
 idSurfaceFaceQ3::~idSurfaceFaceQ3() {
-	Mem_Free( data );
+	Mem_Free( faceData );
 }
 
 cplane_t idSurfaceFaceQ3::GetPlane() const {
@@ -32,21 +32,20 @@ cplane_t idSurfaceFaceQ3::GetPlane() const {
 }
 
 void idSurfaceFaceQ3::Draw() {
-	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )data;
-	RB_CHECKOVERFLOW( numVertexes, surf->numIndices );
+	RB_CHECKOVERFLOW( numVertexes, faceData->numIndices );
 
 	int dlightBits = this->dlightBits[ backEnd.smpFrame ];
 	tess.dlightBits |= dlightBits;
 
-	unsigned* indices = ( unsigned* )( ( ( char* )surf ) + surf->ofsIndices );
+	unsigned* indices = ( unsigned* )( ( ( char* ) faceData ) + faceData->ofsIndices );
 
 	int Bob = tess.numVertexes;
 	unsigned* tessIndexes = tess.indexes + tess.numIndexes;
-	for ( int i = surf->numIndices - 1; i >= 0; i-- ) {
+	for ( int i = faceData->numIndices - 1; i >= 0; i-- ) {
 		tessIndexes[ i ] = indices[ i ] + Bob;
 	}
 
-	tess.numIndexes += surf->numIndices;
+	tess.numIndexes += faceData->numIndices;
 
 	idWorldVertex* vert = vertexes;
 	for ( int i = 0, ndx = tess.numVertexes; i < numVertexes; i++, vert++, ndx++ ) {
@@ -125,9 +124,8 @@ void idSurfaceFaceQ3::MarkFragmentsOldMapping( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs ) const {
-	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
-	int* indexes = ( int* )( ( byte* )surf + surf->ofsIndices );
-	for ( int k = 0; k < surf->numIndices; k += 3 ) {
+	int* indexes = ( int* )( ( byte* ) faceData + faceData->ofsIndices );
+	for ( int k = 0; k < faceData->numIndices; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
 			( vertexes[ indexes[ k + j ] ].xyz + plane.Normal() * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ j ] );
@@ -162,8 +160,6 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 	float ldists[ MAX_VERTS_ON_POLY + 2 ];
 	vec3_t lmins, lmaxs;
 	vec3_t surfnormal;
-
-	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
 
 	plane.Normal().ToOldVec3( surfnormal );
 
@@ -225,8 +221,8 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 
 	// done.
 
-	int* indexes = ( int* )( ( byte* )surf + surf->ofsIndices );
-	for ( int k = 0; k < surf->numIndices; k += 3 ) {
+	int* indexes = ( int* )( ( byte* ) faceData + faceData->ofsIndices );
+	for ( int k = 0; k < faceData->numIndices; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
 			vec3_t v;

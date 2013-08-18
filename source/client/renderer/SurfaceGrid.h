@@ -21,6 +21,8 @@
 
 class idSurfaceGrid : public idWorldSurface {
 public:
+	struct srfGridMesh_t* gridData;
+
 	virtual ~idSurfaceGrid();
 	virtual bool IsGrid() const;
 	virtual void Draw();
@@ -41,10 +43,10 @@ public:
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
 	struct srfGridMesh_t* GetGridData() {
-		return (srfGridMesh_t*)data;
+		return gridData;
 	}
 	const struct srfGridMesh_t* GetGridData() const {
-		return (const srfGridMesh_t*)data;
+		return gridData;
 	}
 
 protected:
