@@ -18,18 +18,17 @@
 
 #include "../../source/common/math/Math.h"
 
-class idMathTest : public CppUnit::TestFixture
-{
-	CPPUNIT_TEST_SUITE(idMathTest);
-	CPPUNIT_TEST(TestDEG2RAD);
-	CPPUNIT_TEST(TestRAD2DEG);
-	CPPUNIT_TEST(TestRSqrt);
-	CPPUNIT_TEST(TestInvSqrt);
-	CPPUNIT_TEST(TestSqrt);
-	CPPUNIT_TEST(TestACos);
-	CPPUNIT_TEST(TestFabs);
-	CPPUNIT_TEST(TestFtoiFast);
-	CPPUNIT_TEST(TestClampChar);
+class idMathTest : public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( idMathTest );
+	CPPUNIT_TEST( TestDEG2RAD );
+	CPPUNIT_TEST( TestRAD2DEG );
+	CPPUNIT_TEST( TestRSqrt );
+	CPPUNIT_TEST( TestInvSqrt );
+	CPPUNIT_TEST( TestSqrt );
+	CPPUNIT_TEST( TestACos );
+	CPPUNIT_TEST( TestFabs );
+	CPPUNIT_TEST( TestFtoiFast );
+	CPPUNIT_TEST( TestClampChar );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -47,65 +46,55 @@ public:
 };
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION(idMathTest);
+CPPUNIT_TEST_SUITE_REGISTRATION( idMathTest );
 
-void idMathTest::setUp()
-{
+void idMathTest::setUp() {
 	idMath::Init();
 }
 
-void idMathTest::TestDEG2RAD()
-{
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(idMath::PI / 6, DEG2RAD(30), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(idMath::PI * 1.25, DEG2RAD(225), 0.000001);
+void idMathTest::TestDEG2RAD() {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( idMath::PI / 6, DEG2RAD( 30 ), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( idMath::PI * 1.25, DEG2RAD( 225 ), 0.000001 );
 }
 
-void idMathTest::TestRAD2DEG()
-{
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(30, RAD2DEG(idMath::PI / 6), 0.0001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(225, RAD2DEG(idMath::PI * 1.25), 0.0001);
+void idMathTest::TestRAD2DEG() {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 30, RAD2DEG( idMath::PI / 6 ), 0.0001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 225, RAD2DEG( idMath::PI * 1.25 ), 0.0001 );
 }
 
-void idMathTest::TestRSqrt()
-{
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, idMath::RSqrt(16), 0.001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(2, idMath::RSqrt(0.25), 0.01);
+void idMathTest::TestRSqrt() {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.25, idMath::RSqrt( 16 ), 0.001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 2, idMath::RSqrt( 0.25 ), 0.01 );
 }
 
-void idMathTest::TestInvSqrt()
-{
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.25, idMath::InvSqrt(16), 0.0000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(2, idMath::InvSqrt(0.25), 0.0000001);
+void idMathTest::TestInvSqrt() {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.25, idMath::InvSqrt( 16 ), 0.0000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 2, idMath::InvSqrt( 0.25 ), 0.0000001 );
 }
 
-void idMathTest::TestSqrt()
-{
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(4, idMath::Sqrt(16), 0.0000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.5, idMath::Sqrt(0.25), 0.0000001);
+void idMathTest::TestSqrt() {
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 4, idMath::Sqrt( 16 ), 0.0000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.5, idMath::Sqrt( 0.25 ), 0.0000001 );
 }
 
-void idMathTest::TestACos()
-{
-	CPPUNIT_ASSERT_EQUAL(0.0f, idMath::ACos(23));
-	CPPUNIT_ASSERT_EQUAL(idMath::PI, idMath::ACos(-456));
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.15928f, idMath::ACos(0.4), 0.000001);
+void idMathTest::TestACos() {
+	CPPUNIT_ASSERT_EQUAL( 0.0f, idMath::ACos( 23 ) );
+	CPPUNIT_ASSERT_EQUAL( idMath::PI, idMath::ACos( -456 ) );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.15928f, idMath::ACos( 0.4 ), 0.000001 );
 }
 
-void idMathTest::TestFabs()
-{
-	CPPUNIT_ASSERT_EQUAL(5.34f, idMath::Fabs(5.34f));
-	CPPUNIT_ASSERT_EQUAL(6.345f, idMath::Fabs(-6.345f));
+void idMathTest::TestFabs() {
+	CPPUNIT_ASSERT_EQUAL( 5.34f, idMath::Fabs( 5.34f ) );
+	CPPUNIT_ASSERT_EQUAL( 6.345f, idMath::Fabs( -6.345f ) );
 }
 
-void idMathTest::TestFtoiFast()
-{
-	CPPUNIT_ASSERT_EQUAL(5, idMath::FtoiFast(5.1));
-	CPPUNIT_ASSERT_EQUAL(-6, idMath::FtoiFast(-6.1));
+void idMathTest::TestFtoiFast() {
+	CPPUNIT_ASSERT_EQUAL( 5, idMath::FtoiFast( 5.1 ) );
+	CPPUNIT_ASSERT_EQUAL( -6, idMath::FtoiFast( -6.1 ) );
 }
 
-void idMathTest::TestClampChar()
-{
-	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(127), idMath::ClampChar(64564));
-	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(-128), idMath::ClampChar(-9700978));
-	CPPUNIT_ASSERT_EQUAL(static_cast<signed char>(6), idMath::ClampChar(6));
+void idMathTest::TestClampChar() {
+	CPPUNIT_ASSERT_EQUAL( static_cast<signed char>( 127 ), idMath::ClampChar( 64564 ) );
+	CPPUNIT_ASSERT_EQUAL( static_cast<signed char>( -128 ), idMath::ClampChar( -9700978 ) );
+	CPPUNIT_ASSERT_EQUAL( static_cast<signed char>( 6 ), idMath::ClampChar( 6 ) );
 }

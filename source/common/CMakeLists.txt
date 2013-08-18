@@ -1,4 +1,5 @@
 set(COMMON_FILES
+	bv/Bounds.cpp
 	clip_map/bsp29/load.cpp
 	clip_map/bsp29/main.cpp
 	clip_map/bsp29/test.cpp

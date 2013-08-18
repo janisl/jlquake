@@ -1,4 +1,5 @@
 add_executable(common_tests
+	BoundsTest.cpp
 	common_tests.cpp
 	Hexen2EffectsRandomTest.cpp
 	ListTest.cpp

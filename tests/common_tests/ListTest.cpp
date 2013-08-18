@@ -18,34 +18,33 @@
 
 #include "../../source/common/containers/List.h"
 
-class idListTest : public CppUnit::TestFixture
-{
-	CPPUNIT_TEST_SUITE(idListTest);
-	CPPUNIT_TEST(TestNum);
-	CPPUNIT_TEST(TestNumAllocated);
-	CPPUNIT_TEST(TestClear);
-	CPPUNIT_TEST(TestGranularity);
-	CPPUNIT_TEST(TestMemory);
-	CPPUNIT_TEST(TestIndex);
-	CPPUNIT_TEST(TestCondense);
-	CPPUNIT_TEST(TestSetNum);
-	CPPUNIT_TEST(TestAssureSize);
-	CPPUNIT_TEST(TestAssureSize2);
-	CPPUNIT_TEST(TestPtr);
-	CPPUNIT_TEST(TestAlloc);
-	CPPUNIT_TEST(TestAddUnique);
-	CPPUNIT_TEST(TestInsert);
-	CPPUNIT_TEST(TestFindIndex);
-	CPPUNIT_TEST(TestFind);
-	CPPUNIT_TEST(TestFindNull);
-	CPPUNIT_TEST(TestIndexOf);
-	CPPUNIT_TEST(TestRemoveIndex);
-	CPPUNIT_TEST(TestRemove);
-	CPPUNIT_TEST(TestSort);
-	CPPUNIT_TEST(TestSortSubSection);
-	CPPUNIT_TEST(TestSwap);
-	CPPUNIT_TEST(TestDeleteContents);
-	CPPUNIT_TEST(TestDeleteContents2);
+class idListTest : public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( idListTest );
+	CPPUNIT_TEST( TestNum );
+	CPPUNIT_TEST( TestNumAllocated );
+	CPPUNIT_TEST( TestClear );
+	CPPUNIT_TEST( TestGranularity );
+	CPPUNIT_TEST( TestMemory );
+	CPPUNIT_TEST( TestIndex );
+	CPPUNIT_TEST( TestCondense );
+	CPPUNIT_TEST( TestSetNum );
+	CPPUNIT_TEST( TestAssureSize );
+	CPPUNIT_TEST( TestAssureSize2 );
+	CPPUNIT_TEST( TestPtr );
+	CPPUNIT_TEST( TestAlloc );
+	CPPUNIT_TEST( TestAddUnique );
+	CPPUNIT_TEST( TestInsert );
+	CPPUNIT_TEST( TestFindIndex );
+	CPPUNIT_TEST( TestFind );
+	CPPUNIT_TEST( TestFindNull );
+	CPPUNIT_TEST( TestIndexOf );
+	CPPUNIT_TEST( TestRemoveIndex );
+	CPPUNIT_TEST( TestRemove );
+	CPPUNIT_TEST( TestSort );
+	CPPUNIT_TEST( TestSortSubSection );
+	CPPUNIT_TEST( TestSwap );
+	CPPUNIT_TEST( TestDeleteContents );
+	CPPUNIT_TEST( TestDeleteContents2 );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -77,277 +76,250 @@ public:
 };
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION(idListTest);
+CPPUNIT_TEST_SUITE_REGISTRATION( idListTest );
 
-void idListTest::TestNum()
-{
+void idListTest::TestNum() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
-	CPPUNIT_ASSERT_EQUAL(2, list.Num());
+	list.Append( 4 );
+	list.Append( 5 );
+	CPPUNIT_ASSERT_EQUAL( 2, list.Num() );
 }
 
-void idListTest::TestNumAllocated()
-{
+void idListTest::TestNumAllocated() {
 	idList<int> list;
-	list.Resize(4);
-	CPPUNIT_ASSERT_EQUAL(4, list.NumAllocated());
+	list.Resize( 4 );
+	CPPUNIT_ASSERT_EQUAL( 4, list.NumAllocated() );
 }
 
-void idListTest::TestClear()
-{
+void idListTest::TestClear() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
+	list.Append( 4 );
+	list.Append( 5 );
 	list.Clear();
-	CPPUNIT_ASSERT_EQUAL(0, list.Num());
+	CPPUNIT_ASSERT_EQUAL( 0, list.Num() );
 }
 
-void idListTest::TestGranularity()
-{
+void idListTest::TestGranularity() {
 	idList<int> list;
-	list.SetGranularity(64);
-	CPPUNIT_ASSERT_EQUAL(64, list.GetGranularity());
+	list.SetGranularity( 64 );
+	CPPUNIT_ASSERT_EQUAL( 64, list.GetGranularity() );
 }
 
-void idListTest::TestMemory()
-{
+void idListTest::TestMemory() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
-	list.Resize(64);
-	CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(256), list.Allocated());
-	CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(256) + sizeof(list), list.Size());
-	CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(8), list.MemoryUsed());
+	list.Append( 4 );
+	list.Append( 5 );
+	list.Resize( 64 );
+	CPPUNIT_ASSERT_EQUAL( static_cast<size_t>( 256 ), list.Allocated() );
+	CPPUNIT_ASSERT_EQUAL( static_cast<size_t>( 256 ) + sizeof(list), list.Size() );
+	CPPUNIT_ASSERT_EQUAL( static_cast<size_t>( 8 ), list.MemoryUsed() );
 }
 
-void idListTest::TestIndex()
-{
+void idListTest::TestIndex() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
-	CPPUNIT_ASSERT_EQUAL(4, list[0]);
-	CPPUNIT_ASSERT_EQUAL(5, list[1]);
+	list.Append( 4 );
+	list.Append( 5 );
+	CPPUNIT_ASSERT_EQUAL( 4, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 5, list[ 1 ] );
 }
 
-void idListTest::TestCondense()
-{
+void idListTest::TestCondense() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
+	list.Append( 4 );
+	list.Append( 5 );
 	list.Condense();
-	CPPUNIT_ASSERT_EQUAL(2, list.NumAllocated());
+	CPPUNIT_ASSERT_EQUAL( 2, list.NumAllocated() );
 }
 
-void idListTest::TestSetNum()
-{
+void idListTest::TestSetNum() {
 	idList<int> list;
-	list.SetNum(12);
-	CPPUNIT_ASSERT_EQUAL(12, list.Num());
+	list.SetNum( 12 );
+	CPPUNIT_ASSERT_EQUAL( 12, list.Num() );
 }
 
-void idListTest::TestAssureSize()
-{
+void idListTest::TestAssureSize() {
 	idList<int> list;
-	list.AssureSize(12);
-	CPPUNIT_ASSERT_EQUAL(12, list.Num());
+	list.AssureSize( 12 );
+	CPPUNIT_ASSERT_EQUAL( 12, list.Num() );
 }
 
-void idListTest::TestAssureSize2()
-{
+void idListTest::TestAssureSize2() {
 	idList<int> list;
-	list.AssureSize(23, 6);
-	CPPUNIT_ASSERT_EQUAL(23, list.Num());
-	CPPUNIT_ASSERT_EQUAL(6, list[0]);
-	CPPUNIT_ASSERT_EQUAL(6, list[22]);
+	list.AssureSize( 23, 6 );
+	CPPUNIT_ASSERT_EQUAL( 23, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 6, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 6, list[ 22 ] );
 }
 
-void idListTest::TestPtr()
-{
+void idListTest::TestPtr() {
 	idList<int> list;
-	list.Append(4);
-	list.Append(5);
-	CPPUNIT_ASSERT_EQUAL(4, list.Ptr()[0]);
-	CPPUNIT_ASSERT_EQUAL(5, list.Ptr()[1]);
+	list.Append( 4 );
+	list.Append( 5 );
+	CPPUNIT_ASSERT_EQUAL( 4, list.Ptr()[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 5, list.Ptr()[ 1 ] );
 }
 
-void idListTest::TestAlloc()
-{
+void idListTest::TestAlloc() {
 	idList<int> list;
 	list.Alloc() = 7;
 	list.Alloc() = 45;
-	CPPUNIT_ASSERT_EQUAL(2, list.Num());
-	CPPUNIT_ASSERT_EQUAL(7, list[0]);
-	CPPUNIT_ASSERT_EQUAL(45, list[1]);
+	CPPUNIT_ASSERT_EQUAL( 2, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 7, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 45, list[ 1 ] );
 }
 
-void idListTest::TestAddUnique()
-{
+void idListTest::TestAddUnique() {
 	idList<int> list;
-	list.AddUnique(7);
-	list.AddUnique(45);
-	list.AddUnique(7);
-	CPPUNIT_ASSERT_EQUAL(2, list.Num());
-	CPPUNIT_ASSERT_EQUAL(7, list[0]);
-	CPPUNIT_ASSERT_EQUAL(45, list[1]);
+	list.AddUnique( 7 );
+	list.AddUnique( 45 );
+	list.AddUnique( 7 );
+	CPPUNIT_ASSERT_EQUAL( 2, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 7, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 45, list[ 1 ] );
 }
 
-void idListTest::TestInsert()
-{
+void idListTest::TestInsert() {
 	idList<int> list;
-	list.Append(67);
-	list.Append(23);
-	list.Insert(86, 1);
-	CPPUNIT_ASSERT_EQUAL(3, list.Num());
-	CPPUNIT_ASSERT_EQUAL(67, list[0]);
-	CPPUNIT_ASSERT_EQUAL(86, list[1]);
-	CPPUNIT_ASSERT_EQUAL(23, list[2]);
+	list.Append( 67 );
+	list.Append( 23 );
+	list.Insert( 86, 1 );
+	CPPUNIT_ASSERT_EQUAL( 3, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 67, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 86, list[ 1 ] );
+	CPPUNIT_ASSERT_EQUAL( 23, list[ 2 ] );
 }
 
-void idListTest::TestFindIndex()
-{
+void idListTest::TestFindIndex() {
 	idList<int> list;
-	list.Append(67);
-	list.Append(23);
-	CPPUNIT_ASSERT_EQUAL(0, list.FindIndex(67));
-	CPPUNIT_ASSERT_EQUAL(1, list.FindIndex(23));
-	CPPUNIT_ASSERT_EQUAL(-1, list.FindIndex(888));
+	list.Append( 67 );
+	list.Append( 23 );
+	CPPUNIT_ASSERT_EQUAL( 0, list.FindIndex( 67 ) );
+	CPPUNIT_ASSERT_EQUAL( 1, list.FindIndex( 23 ) );
+	CPPUNIT_ASSERT_EQUAL( -1, list.FindIndex( 888 ) );
 }
 
-void idListTest::TestFind()
-{
+void idListTest::TestFind() {
 	idList<int> list;
-	list.Append(67);
-	list.Append(23);
-	CPPUNIT_ASSERT_EQUAL(&list[0], list.Find(67));
-	CPPUNIT_ASSERT_EQUAL(&list[1], list.Find(23));
-	CPPUNIT_ASSERT_EQUAL((int*)NULL, list.Find(888));
+	list.Append( 67 );
+	list.Append( 23 );
+	CPPUNIT_ASSERT_EQUAL( &list[0], list.Find( 67 ) );
+	CPPUNIT_ASSERT_EQUAL( &list[1], list.Find( 23 ) );
+	CPPUNIT_ASSERT_EQUAL( static_cast<int*>( NULL ), list.Find( 888 ) );
 }
 
-void idListTest::TestFindNull()
-{
+void idListTest::TestFindNull() {
 	int a, b;
 	idList<int*> list;
-	list.Append(&a);
-	list.Append(&b);
-	CPPUNIT_ASSERT_EQUAL(-1, list.FindNull());
-	list.Append(NULL);
-	CPPUNIT_ASSERT_EQUAL(2, list.FindNull());
+	list.Append( &a );
+	list.Append( &b );
+	CPPUNIT_ASSERT_EQUAL( -1, list.FindNull() );
+	list.Append( NULL );
+	CPPUNIT_ASSERT_EQUAL( 2, list.FindNull() );
 }
 
-void idListTest::TestIndexOf()
-{
+void idListTest::TestIndexOf() {
 	idList<int> list;
-	list.Append(67);
-	list.Append(23);
-	CPPUNIT_ASSERT_EQUAL(0, list.IndexOf(&list[0]));
-	CPPUNIT_ASSERT_EQUAL(1, list.IndexOf(&list[1]));
+	list.Append( 67 );
+	list.Append( 23 );
+	CPPUNIT_ASSERT_EQUAL( 0, list.IndexOf( &list[ 0 ] ) );
+	CPPUNIT_ASSERT_EQUAL( 1, list.IndexOf( &list[ 1 ] ) );
 }
 
-void idListTest::TestRemoveIndex()
-{
+void idListTest::TestRemoveIndex() {
 	idList<int> list;
-	list.Append(45);
-	list.Append(84);
-	list.Append(457);
-	list.RemoveIndex(1);
-	CPPUNIT_ASSERT_EQUAL(2, list.Num());
-	CPPUNIT_ASSERT_EQUAL(45, list[0]);
-	CPPUNIT_ASSERT_EQUAL(457, list[1]);
+	list.Append( 45 );
+	list.Append( 84 );
+	list.Append( 457 );
+	list.RemoveIndex( 1 );
+	CPPUNIT_ASSERT_EQUAL( 2, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 45, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 457, list[ 1 ] );
 }
 
-void idListTest::TestRemove()
-{
+void idListTest::TestRemove() {
 	idList<int> list;
-	list.Append(45);
-	list.Append(84);
-	list.Append(457);
-	list.Remove(45);
-	CPPUNIT_ASSERT_EQUAL(2, list.Num());
-	CPPUNIT_ASSERT_EQUAL(84, list[0]);
-	CPPUNIT_ASSERT_EQUAL(457, list[1]);
+	list.Append( 45 );
+	list.Append( 84 );
+	list.Append( 457 );
+	list.Remove( 45 );
+	CPPUNIT_ASSERT_EQUAL( 2, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( 84, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 457, list[ 1 ] );
 }
 
-void idListTest::TestSort()
-{
+void idListTest::TestSort() {
 	idList<int> list;
-	list.Append(975);
-	list.Append(45);
-	list.Append(457);
-	list.Append(84);
+	list.Append( 975 );
+	list.Append( 45 );
+	list.Append( 457 );
+	list.Append( 84 );
 	list.Sort();
-	CPPUNIT_ASSERT_EQUAL(45, list[0]);
-	CPPUNIT_ASSERT_EQUAL(84, list[1]);
-	CPPUNIT_ASSERT_EQUAL(457, list[2]);
-	CPPUNIT_ASSERT_EQUAL(975, list[3]);
+	CPPUNIT_ASSERT_EQUAL( 45, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 84, list[ 1 ] );
+	CPPUNIT_ASSERT_EQUAL( 457, list[ 2 ] );
+	CPPUNIT_ASSERT_EQUAL( 975, list[ 3 ] );
 }
 
-void idListTest::TestSortSubSection()
-{
+void idListTest::TestSortSubSection() {
 	idList<int> list;
-	list.Append(975);
-	list.Append(45);
-	list.Append(457);
-	list.Append(84);
-	list.Append(1);
-	list.SortSubSection(1, 3);
-	CPPUNIT_ASSERT_EQUAL(975, list[0]);
-	CPPUNIT_ASSERT_EQUAL(45, list[1]);
-	CPPUNIT_ASSERT_EQUAL(84, list[2]);
-	CPPUNIT_ASSERT_EQUAL(457, list[3]);
-	CPPUNIT_ASSERT_EQUAL(1, list[4]);
+	list.Append( 975 );
+	list.Append( 45 );
+	list.Append( 457 );
+	list.Append( 84 );
+	list.Append( 1 );
+	list.SortSubSection( 1, 3 );
+	CPPUNIT_ASSERT_EQUAL( 975, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 45, list[ 1 ] );
+	CPPUNIT_ASSERT_EQUAL( 84, list[ 2 ] );
+	CPPUNIT_ASSERT_EQUAL( 457, list[ 3 ] );
+	CPPUNIT_ASSERT_EQUAL( 1, list[ 4 ] );
 }
 
-void idListTest::TestSwap()
-{
+void idListTest::TestSwap() {
 	idList<int> list1;
-	list1.Append(975);
-	list1.Append(45);
+	list1.Append( 975 );
+	list1.Append( 45 );
 	idList<int> list2;
-	list2.Append(457);
-	list2.Append(84);
-	list2.Append(1);
-	list1.Swap(list2);
-	CPPUNIT_ASSERT_EQUAL(3, list1.Num());
-	CPPUNIT_ASSERT_EQUAL(457, list1[0]);
-	CPPUNIT_ASSERT_EQUAL(84, list1[1]);
-	CPPUNIT_ASSERT_EQUAL(1, list1[2]);
-	CPPUNIT_ASSERT_EQUAL(2, list2.Num());
-	CPPUNIT_ASSERT_EQUAL(975, list2[0]);
-	CPPUNIT_ASSERT_EQUAL(45, list2[1]);
+	list2.Append( 457 );
+	list2.Append( 84 );
+	list2.Append( 1 );
+	list1.Swap( list2 );
+	CPPUNIT_ASSERT_EQUAL( 3, list1.Num() );
+	CPPUNIT_ASSERT_EQUAL( 457, list1[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 84, list1[ 1 ] );
+	CPPUNIT_ASSERT_EQUAL( 1, list1[ 2 ] );
+	CPPUNIT_ASSERT_EQUAL( 2, list2.Num() );
+	CPPUNIT_ASSERT_EQUAL( 975, list2[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( 45, list2[ 1 ] );
 }
 
-class idListDeleteContentsHelper
-{
+class idListDeleteContentsHelper {
 public:
 	bool& deleted;
 
 	idListDeleteContentsHelper(bool& deleted)
 		: deleted(deleted)
 	{}
-	~idListDeleteContentsHelper()
-	{
+	~idListDeleteContentsHelper() {
 		deleted = true;
 	}
 };
 
-void idListTest::TestDeleteContents()
-{
+void idListTest::TestDeleteContents() {
 	idList<idListDeleteContentsHelper*> list;
 	bool deleted = false;
-	list.Append(new idListDeleteContentsHelper(deleted));
-	list.DeleteContents(true);
-	CPPUNIT_ASSERT_EQUAL(0, list.Num());
-	CPPUNIT_ASSERT_EQUAL(true, deleted);
+	list.Append( new idListDeleteContentsHelper( deleted ) );
+	list.DeleteContents( true );
+	CPPUNIT_ASSERT_EQUAL( 0, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( true, deleted );
 }
 
-void idListTest::TestDeleteContents2()
-{
+void idListTest::TestDeleteContents2() {
 	idList<idListDeleteContentsHelper*> list;
 	bool deleted = false;
-	list.Append(new idListDeleteContentsHelper(deleted));
-	list.DeleteContents(false);
-	CPPUNIT_ASSERT_EQUAL(1, list.Num());
-	CPPUNIT_ASSERT_EQUAL((idListDeleteContentsHelper*)NULL, list[0]);
-	CPPUNIT_ASSERT_EQUAL(true, deleted);
+	list.Append( new idListDeleteContentsHelper( deleted ) );
+	list.DeleteContents( false );
+	CPPUNIT_ASSERT_EQUAL( 1, list.Num() );
+	CPPUNIT_ASSERT_EQUAL( (idListDeleteContentsHelper*)NULL, list[ 0 ] );
+	CPPUNIT_ASSERT_EQUAL( true, deleted );
 }

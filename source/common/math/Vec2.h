@@ -22,26 +22,26 @@
 
 class idVec2 {
 public:
-	float			x;
-	float			y;
+	float x;
+	float y;
 
-					idVec2();
-					explicit idVec2( const float x, const float y );
+	idVec2();
+	explicit idVec2( const float x, const float y );
 
 #if 0
 	void			Set( const float x, const float y );
 	void			Zero( void );
 #endif
 
-	float			operator[]( int index ) const;
-	float &			operator[]( int index );
+	float operator[]( int index ) const;
+	float& operator[]( int index );
 #if 0
 	idVec2			operator-() const;
 	float			operator*( const idVec2 &a ) const;
 	idVec2			operator*( const float a ) const;
 	idVec2			operator/( const float a ) const;
 #endif
-	idVec2			operator+( const idVec2 &a ) const;
+	idVec2 operator+( const idVec2 &a ) const;
 #if 0
 	idVec2			operator-( const idVec2 &a ) const;
 	idVec2 &		operator+=( const idVec2 &a );
@@ -51,7 +51,7 @@ public:
 	idVec2 &		operator*=( const float a );
 #endif
 
-	friend idVec2	operator*( const float a, const idVec2 b );
+	friend idVec2 operator*( const float a, const idVec2 b );
 
 #if 0
 	bool			Compare( const idVec2 &a ) const;							// exact compare, no epsilon

@@ -18,11 +18,10 @@
 
 #include "../../source/common/Hexen2EffectsRandom.h"
 
-class idHexen2EffectsRandomTest : public CppUnit::TestFixture
-{
-	CPPUNIT_TEST_SUITE(idHexen2EffectsRandomTest);
-	CPPUNIT_TEST(TestSetSeed);
-	CPPUNIT_TEST(TestSeedRand);
+class idHexen2EffectsRandomTest : public CppUnit::TestFixture {
+	CPPUNIT_TEST_SUITE( idHexen2EffectsRandomTest );
+	CPPUNIT_TEST( TestSetSeed );
+	CPPUNIT_TEST( TestSeedRand );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -31,27 +30,25 @@ public:
 };
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION(idHexen2EffectsRandomTest);
+CPPUNIT_TEST_SUITE_REGISTRATION( idHexen2EffectsRandomTest );
 
-void idHexen2EffectsRandomTest::TestSetSeed()
-{
+void idHexen2EffectsRandomTest::TestSetSeed() {
 	idHexen2EffectsRandom rnd;
-	rnd.SetSeed(23456);
-	CPPUNIT_ASSERT_EQUAL(23456u, rnd.seed);
+	rnd.SetSeed( 23456 );
+	CPPUNIT_ASSERT_EQUAL( 23456u, rnd.seed );
 }
 
-void idHexen2EffectsRandomTest::TestSeedRand()
-{
+void idHexen2EffectsRandomTest::TestSeedRand() {
 	idHexen2EffectsRandom rnd;
-	rnd.SetSeed(3456);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.121689, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.779093, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.32213, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.566211, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.6253, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.446428, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.575341, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.631621, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.989265, rnd.SeedRand(), 0.000001);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(0.643459, rnd.SeedRand(), 0.000001);
+	rnd.SetSeed( 3456 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.121689, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.779093, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.32213, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.566211, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.6253, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.446428, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.575341, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.631621, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.989265, rnd.SeedRand(), 0.000001 );
+	CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.643459, rnd.SeedRand(), 0.000001 );
 }

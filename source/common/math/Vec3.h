@@ -59,10 +59,12 @@ public:
 
 	friend idVec3 operator*( const float a, const idVec3& b );
 
-#if 0
 	bool            Compare( const idVec3& a ) const;								// exact compare, no epsilon
+#if 0
 	bool            Compare( const idVec3& a, const float epsilon ) const;			// compare with epsilon
+#endif
 	bool operator==( const idVec3& a ) const;										// exact compare, no epsilon
+#if 0
 	bool operator!=( const idVec3& a ) const;										// exact compare, no epsilon
 
 	bool            FixDegenerateNormal( void );		// fix degenerate axial cases
@@ -229,11 +231,11 @@ inline idVec3 operator*( const float a, const idVec3& b ) {
 	return idVec3( b.x * a, b.y * a, b.z * a );
 }
 
-#if 0
 inline bool idVec3::Compare( const idVec3& a ) const {
 	return ( ( x == a.x ) && ( y == a.y ) && ( z == a.z ) );
 }
 
+#if 0
 inline bool idVec3::Compare( const idVec3& a, const float epsilon ) const {
 	if ( idMath::Fabs( x - a.x ) > epsilon ) {
 		return false;
@@ -249,11 +251,13 @@ inline bool idVec3::Compare( const idVec3& a, const float epsilon ) const {
 
 	return true;
 }
+#endif
 
 inline bool idVec3::operator==( const idVec3& a ) const {
 	return Compare( a );
 }
 
+#if 0
 inline bool idVec3::operator!=( const idVec3& a ) const {
 	return !Compare( a );
 }

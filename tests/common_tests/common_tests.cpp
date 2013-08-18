@@ -4,17 +4,16 @@
 
 #include "../../source/server/public.h"
 
-int main(int argc, char* argv[])
-{
+int main( int argc, char* argv[] ) {
 	// Get the top level suite from the registry
 	CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 
 	// Adds the test to the list of test to run
 	CppUnit::TextUi::TestRunner runner;
-	runner.addTest(suite);
+	runner.addTest( suite );
 
 	// Change the default outputter to a compiler error format outputter
-	runner.setOutputter(new CppUnit::CompilerOutputter(&runner.result(), std::cerr));
+	runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(), std::cerr ) );
 	// Run the tests.
 	bool wasSucessful = runner.run();
 
@@ -22,7 +21,6 @@ int main(int argc, char* argv[])
 	return wasSucessful ? 0 : 1;
 }
 
-void RefsPuller()
-{
+void RefsPuller() {
 	SV_Shutdown("");
 }
