@@ -325,8 +325,10 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	fa->numVertexes = numWarpVerts;
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
+	ClearBounds( fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
+		AddPointToBounds( v, fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
 		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
 			fa->vertexes[ i ].normal *= -1;
@@ -368,6 +370,7 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
+	ClearBounds( fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 	mbrush38_texinfo_t* texinfo = fa->surf.texinfo;
 	for ( int i = 0; i < lnumverts; i++ ) {
 		int lindex = tr.currentModel->brush38_surfedges[ fa->surf.firstedge + i ];
@@ -382,6 +385,7 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
 		}
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		AddPointToBounds( vec, fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 
 		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
 		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {

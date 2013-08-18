@@ -550,7 +550,7 @@ void R_RotateForEntity( const trRefEntity_t* ent, const viewParms_t* viewParms,
 }
 
 //	Returns CULL_IN, CULL_CLIP, or CULL_OUT
-int R_CullLocalBox( vec3_t bounds[ 2 ] ) {
+int R_CullLocalBox( const vec3_t bounds[ 2 ] ) {
 	if ( r_nocull->integer ) {
 		return CULL_CLIP;
 	}
@@ -599,6 +599,13 @@ int R_CullLocalBox( vec3_t bounds[ 2 ] ) {
 	}
 
 	return CULL_CLIP;		// partially clipped
+}
+
+int R_CullLocalBox( const idBounds& bounds ) {
+	vec3_t old[ 2 ];
+	bounds[ 0 ].ToOldVec3( old[ 0 ] );
+	bounds[ 1 ].ToOldVec3( old[ 1 ] );
+	return R_CullLocalBox( old );
 }
 
 int R_CullPointAndRadius( vec3_t pt, float radius ) {

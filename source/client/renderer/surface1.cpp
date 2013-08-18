@@ -243,6 +243,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
 	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
 
+	ClearBounds( fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 	for ( int i = 0; i < lnumverts; i++ ) {
 		int lindex = tr.currentModel->brush29_surfedges[ fa->surf.firstedge + i ];
 
@@ -255,6 +256,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 			vec = r_pcurrentvertbase[ r_pedge->v[ 1 ] ].position;
 		}
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		AddPointToBounds( vec, fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
 
 		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
 		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {

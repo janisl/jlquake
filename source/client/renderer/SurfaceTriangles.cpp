@@ -155,9 +155,7 @@ void idSurfaceTriangles::MarkFragmentsOldMapping( int numPlanes, const vec3_t* n
 }
 
 bool idSurfaceTriangles::DoCull( shader_t* shader ) const {
-	srfTriangles_t* cv = ( srfTriangles_t* )GetBrush46Data();
-	int boxCull = R_CullLocalBox( cv->bounds );
-
+	int boxCull = R_CullLocalBox( bounds );
 	return boxCull == CULL_OUT;
 }
 

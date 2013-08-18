@@ -330,7 +330,7 @@ bool idSurfaceGrid::DoCull( shader_t* shader ) const {
 	else if ( sphereCull == CULL_CLIP ) {
 		tr.pc.c_sphere_cull_patch_clip++;
 
-		int boxCull = R_CullLocalBox( cv->bounds );
+		int boxCull = R_CullLocalBox( bounds );
 
 		if ( boxCull == CULL_OUT ) {
 			tr.pc.c_box_cull_patch_out++;
@@ -361,12 +361,12 @@ int idSurfaceGrid::DoMarkDynamicLights( int dlightBits ) {
 			continue;
 		}
 		dlight_t* dl = &tr.refdef.dlights[ i ];
-		if ( dl->origin[ 0 ] - dl->radius > grid->bounds[ 1 ][ 0 ] ||
-			 dl->origin[ 0 ] + dl->radius <grid->bounds[ 0 ][ 0 ] ||
-										   dl->origin[ 1 ] - dl->radius> grid->bounds[ 1 ][ 1 ] ||
-			 dl->origin[ 1 ] + dl->radius <grid->bounds[ 0 ][ 1 ] ||
-										   dl->origin[ 2 ] - dl->radius> grid->bounds[ 1 ][ 2 ] ||
-			 dl->origin[ 2 ] + dl->radius < grid->bounds[ 0 ][ 2 ] ) {
+		if ( dl->origin[ 0 ] - dl->radius > bounds[ 1 ].x ||
+			dl->origin[ 0 ] + dl->radius < bounds[ 0 ].x ||
+			dl->origin[ 1 ] - dl->radius > bounds[ 1 ].y ||
+			dl->origin[ 1 ] + dl->radius < bounds[ 0 ].y ||
+			dl->origin[ 2 ] - dl->radius > bounds[ 1 ].z ||
+			dl->origin[ 2 ] + dl->radius < bounds[ 0 ].z ) {
 			// dlight doesn't reach the bounds
 			dlightBits &= ~( 1 << i );
 		}

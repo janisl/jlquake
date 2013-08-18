@@ -211,8 +211,6 @@ struct drawSurf_t {
 };
 
 struct srfGeneric_t {
-	// culling information
-	vec3_t bounds[ 2 ];
 	vec3_t localOrigin;
 	float radius;
 	cplane_t plane;

@@ -21,6 +21,7 @@
 #include "shader.h"
 #include "../../common/math/Vec2.h"
 #include "../../common/math/Vec3.h"
+#include "../../common/bv/Bounds.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -45,6 +46,9 @@ public:
 
 	// dynamic lighting information
 	int dlightBits[ SMP_FRAMES ];
+
+	// culling information
+	idBounds bounds;
 
 	int numVertexes;
 	idWorldVertex* vertexes;

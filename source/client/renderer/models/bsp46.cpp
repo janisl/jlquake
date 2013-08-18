@@ -245,7 +245,7 @@ static shader_t* ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 }
 
 //	creates a bounding sphere from a bounding box
-static void SphereFromBounds( vec3_t mins, vec3_t maxs, vec3_t origin, float* radius ) {
+void SphereFromBounds( const vec3_t mins, const vec3_t maxs, vec3_t origin, float* radius ) {
 	VectorAdd( mins, maxs, origin );
 	VectorScale( origin, 0.5, origin );
 	vec3_t temp;
@@ -254,9 +254,9 @@ static void SphereFromBounds( vec3_t mins, vec3_t maxs, vec3_t origin, float* ra
 }
 
 //	handles final surface classification
-static void FinishGenericSurface( bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_t pt ) {
+static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_t pt ) {
 	// set bounding sphere
-	SphereFromBounds( gen->bounds[ 0 ], gen->bounds[ 1 ], gen->localOrigin, &gen->radius );
+	SphereFromBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr(), gen->localOrigin, &gen->radius );
 
 	// take the plane normal from the lightmap vector and classify it
 	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
@@ -300,7 +300,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	cv->numIndices = numIndexes;
 	cv->ofsIndices = ofsIndexes;
 
-	ClearBounds( cv->bounds[ 0 ], cv->bounds[ 1 ] );
+	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
@@ -309,7 +309,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 		}
 		vec3_t old;
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
-		AddPointToBounds( old, cv->bounds[ 0 ], cv->bounds[ 1 ] );
+		AddPointToBounds( old, surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 		for ( int j = 0; j < 2; j++ ) {
 			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			surf->vertexes[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
@@ -325,7 +325,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	// finish surface
 	vec3_t old;
 	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( ds, cv, old );
+	FinishGenericSurface( surf, ds, cv, old );
 
 	surf->SetBrush46Data(cv);
 	return surf;
@@ -399,7 +399,7 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 	// finish surface
 	vec3_t old;
 	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( ds, grid, old );
+	FinishGenericSurface( surf, ds, grid, old );
 	return surf;
 }
 
@@ -427,7 +427,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	surf->SetBrush46Data(tri);
 
 	// copy vertexes
-	ClearBounds( tri->bounds[ 0 ], tri->bounds[ 1 ] );
+	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numVerts; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
@@ -436,7 +436,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 		}
 		vec3_t old;
 		surf->vertexes[ i ].xyz.ToOldVec3( old );
-		AddPointToBounds( old, tri->bounds[ 0 ], tri->bounds[ 1 ] );
+		AddPointToBounds( old, surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 		for ( int j = 0; j < 2; j++ ) {
 			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			surf->vertexes[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
@@ -457,7 +457,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// finish surface
 	vec3_t old;
 	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( ds, tri, old );
+	FinishGenericSurface( surf, ds, tri, old );
 	return surf;
 }
 
@@ -558,7 +558,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// copy origins and colors
-	ClearBounds( foliage->bounds[ 0 ], foliage->bounds[ 1 ] );
+	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 	verts += numVerts;
 	for ( int i = 0; i < numInstances; i++ ) {
 		// copy xyz
@@ -568,8 +568,8 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 		vec3_t boundsTranslated[ 2 ];
 		VectorAdd( bounds[ 0 ], foliage->instances[ i ].origin, boundsTranslated[ 0 ] );
 		VectorAdd( bounds[ 1 ], foliage->instances[ i ].origin, boundsTranslated[ 1 ] );
-		AddPointToBounds( boundsTranslated[ 0 ], foliage->bounds[ 0 ], foliage->bounds[ 1 ] );
-		AddPointToBounds( boundsTranslated[ 1 ], foliage->bounds[ 0 ], foliage->bounds[ 1 ] );
+		AddPointToBounds( boundsTranslated[ 0 ], surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+		AddPointToBounds( boundsTranslated[ 1 ], surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
 
 		// copy color
 		R_ColorShiftLightingBytes( verts[ i ].color, foliage->instances[ i ].color );
@@ -578,7 +578,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// finish surface
 	vec3_t old;
 	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( ds, foliage, old );
+	FinishGenericSurface( surf, ds, foliage, old );
 	return surf;
 }
 
@@ -1494,9 +1494,8 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 				if ( !( *mark )->AddToNodeBounds() ) {
 					continue;
 				}
-				srfGeneric_t* gen = ( srfGeneric_t* )( *mark )->GetBrush46Data();
-				AddPointToBounds( gen->bounds[ 0 ], node->surfMins, node->surfMaxs );
-				AddPointToBounds( gen->bounds[ 1 ], node->surfMins, node->surfMaxs );
+				AddPointToBounds( ( *mark )->bounds[ 0 ].ToFloatPtr(), node->surfMins, node->surfMaxs );
+				AddPointToBounds( ( *mark )->bounds[ 1 ].ToFloatPtr(), node->surfMins, node->surfMaxs );
 				mark++;
 			}
 		}
