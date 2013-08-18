@@ -32,7 +32,9 @@ const float idMath::M_RAD2DEG       = 180.0f / PI;
 #if 0
 const float idMath::M_SEC2MS        = 1000.0f;
 const float idMath::M_MS2SEC        = 0.001f;
+#endif
 const float idMath::INFINITY        = 1e30f;
+#if 0
 const float idMath::FLT_EPSILON     = 1.192092896e-07f;
 #endif
 

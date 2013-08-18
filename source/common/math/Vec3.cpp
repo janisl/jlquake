@@ -16,9 +16,9 @@
 
 #include "Vec3.h"
 
-#if 0
-idVec3 vec3_origin( 0.0f, 0.0f, 0.0f );
+const idVec3 vec3_origin( 0.0f, 0.0f, 0.0f );
 
+#if 0
 /*
 =============
 idVec3::ToYaw

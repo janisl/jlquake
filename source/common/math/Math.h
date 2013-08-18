@@ -227,7 +227,9 @@ public:
 #if 0
 	static const float M_SEC2MS;							// seconds to milliseconds multiplier
 	static const float M_MS2SEC;							// milliseconds to seconds multiplier
+#endif
 	static const float INFINITY;							// huge number which should be larger than any valid number used
+#if 0
 	static const float FLT_EPSILON;							// smallest positive number such that 1.0+FLT_EPSILON != 1.0
 #endif
 

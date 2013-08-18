@@ -224,19 +224,17 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, i
 
 	grid->width = width;
 	grid->height = height;
-	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+	surf->bounds.Clear();
 	for ( int i = 0; i < width; i++ ) {
 		for ( int j = 0; j < height; j++ ) {
 			idWorldVertex& vert = surf->vertexes[ j * width + i ];
 			vert = ctrl[ j ][ i ];
-			vec3_t old;
-			vert.xyz.ToOldVec3( old );
-			AddPointToBounds( old, surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+			surf->bounds.AddPoint( vert.xyz );
 		}
 	}
 
 	// compute local origin and bounds
-	SphereFromBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr(), grid->localOrigin, &grid->radius );
+	SphereFromBounds( surf->bounds, grid->localOrigin, &grid->radius );
 
 	VectorCopy( grid->localOrigin, grid->lodOrigin );
 	grid->lodRadius = grid->radius;

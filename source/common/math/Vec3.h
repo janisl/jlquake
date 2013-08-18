@@ -116,10 +116,8 @@ public:
 	void ToOldVec3( vec3_t vec ) const;
 };
 
-#if 0
-extern idVec3 vec3_origin;
+extern const idVec3 vec3_origin;
 #define vec3_zero vec3_origin
-#endif
 
 inline idVec3::idVec3() {
 }

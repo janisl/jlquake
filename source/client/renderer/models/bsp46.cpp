@@ -245,18 +245,16 @@ static shader_t* ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 }
 
 //	creates a bounding sphere from a bounding box
-void SphereFromBounds( const vec3_t mins, const vec3_t maxs, vec3_t origin, float* radius ) {
-	VectorAdd( mins, maxs, origin );
-	VectorScale( origin, 0.5, origin );
-	vec3_t temp;
-	VectorSubtract( maxs, origin, temp );
-	*radius = VectorLength( temp );
+void SphereFromBounds( const idBounds& bounds, vec3_t origin, float* radius ) {
+	idVec3 center = ( bounds[ 0 ] + bounds[ 1 ] ) * 0.5f;
+	center.ToOldVec3( origin );
+	*radius = ( bounds[ 1 ] - center ).Length();
 }
 
 //	handles final surface classification
 static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_t pt ) {
 	// set bounding sphere
-	SphereFromBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr(), gen->localOrigin, &gen->radius );
+	SphereFromBounds( surf->bounds, gen->localOrigin, &gen->radius );
 
 	// take the plane normal from the lightmap vector and classify it
 	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
@@ -300,16 +298,14 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	cv->numIndices = numIndexes;
 	cv->ofsIndices = ofsIndexes;
 
-	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+	surf->bounds.Clear();
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numPoints; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 			surf->vertexes[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
-		vec3_t old;
-		surf->vertexes[ i ].xyz.ToOldVec3( old );
-		AddPointToBounds( old, surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+		surf->bounds.AddPoint( surf->vertexes[ i ].xyz );
 		for ( int j = 0; j < 2; j++ ) {
 			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			surf->vertexes[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
@@ -427,16 +423,14 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	surf->SetBrush46Data(tri);
 
 	// copy vertexes
-	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+	surf->bounds.Clear();
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numVerts; i++ ) {
 		for ( int j = 0; j < 3; j++ ) {
 			surf->vertexes[ i ].xyz[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 			surf->vertexes[ i ].normal[ j ] = LittleFloat( verts[ i ].normal[ j ] );
 		}
-		vec3_t old;
-		surf->vertexes[ i ].xyz.ToOldVec3( old );
-		AddPointToBounds( old, surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+		surf->bounds.AddPoint( surf->vertexes[ i ].xyz );
 		for ( int j = 0; j < 2; j++ ) {
 			surf->vertexes[ i ].st[ j ] = LittleFloat( verts[ i ].st[ j ] );
 			surf->vertexes[ i ].lightmap[ j ] = LittleFloat( verts[ i ].lightmap[ j ] );
@@ -523,8 +517,8 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// copy vertexes
-	vec3_t bounds[ 2 ];
-	ClearBounds( bounds[ 0 ], bounds[ 1 ] );
+	idBounds bounds;
+	bounds.Clear();
 	verts += LittleLong( ds->firstVert );
 	for ( int i = 0; i < numVerts; i++ ) {
 		// copy xyz and normal
@@ -537,9 +531,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 		surf->vertexes[ i ].xyz.z *= scale;
 
 		// finish
-		vec3_t old;
-		surf->vertexes[ i ].xyz.ToOldVec3( old );
-		AddPointToBounds( old, bounds[ 0 ], bounds[ 1 ] );
+		bounds.AddPoint( surf->vertexes[ i ].xyz );
 
 		// copy texture coordinates
 		for ( int j = 0; j < 2; j++ ) {
@@ -558,18 +550,16 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// copy origins and colors
-	ClearBounds( surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+	surf->bounds.Clear();
 	verts += numVerts;
 	for ( int i = 0; i < numInstances; i++ ) {
 		// copy xyz
 		for ( int j = 0; j < 3; j++ ) {
 			foliage->instances[ i ].origin[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 		}
-		vec3_t boundsTranslated[ 2 ];
-		VectorAdd( bounds[ 0 ], foliage->instances[ i ].origin, boundsTranslated[ 0 ] );
-		VectorAdd( bounds[ 1 ], foliage->instances[ i ].origin, boundsTranslated[ 1 ] );
-		AddPointToBounds( boundsTranslated[ 0 ], surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
-		AddPointToBounds( boundsTranslated[ 1 ], surf->bounds[ 0 ].ToFloatPtr(), surf->bounds[ 1 ].ToFloatPtr() );
+		idVec3 neworg;
+		neworg.FromOldVec3( foliage->instances[ i ].origin );
+		surf->bounds.AddBounds( bounds + neworg );
 
 		// copy color
 		R_ColorShiftLightingBytes( verts[ i ].color, foliage->instances[ i ].color );

@@ -482,12 +482,12 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 	fa->numVertexes = numWarpVerts;
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
-	ClearBounds( fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
+	fa->bounds.Clear();
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		float s = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
-		AddPointToBounds( v, fa->bounds[ 0 ].ToFloatPtr(), fa->bounds[ 1 ].ToFloatPtr() );
+		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
 		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
 		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
 			fa->vertexes[ i ].normal *= -1;

@@ -96,6 +96,7 @@ inline idWorldSurface::idWorldSurface() {
 	shader = NULL;
 	dlightBits[ 0 ] = 0;
 	dlightBits[ 1 ] = 0;
+	bounds.Zero();
 	numVertexes = 0;
 	vertexes = NULL;
 	data = NULL;

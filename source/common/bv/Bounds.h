@@ -37,8 +37,8 @@ public:
 
 	const idVec3& operator[]( const int index ) const;
 	idVec3& operator[]( const int index );
+	idBounds operator+( const idVec3 &t ) const;				// returns translated bounds
 #if 0
-	idBounds		operator+( const idVec3 &t ) const;				// returns translated bounds
 	idBounds &		operator+=( const idVec3 &t );					// translate the bounds
 	idBounds		operator*( const idMat3 &r ) const;				// returns rotated bounds
 	idBounds &		operator*=( const idMat3 &r );					// rotate the bounds
@@ -51,18 +51,22 @@ public:
 	bool			Compare( const idBounds &a, const float epsilon ) const;	// compare with epsilon
 	bool			operator==(	const idBounds &a ) const;						// exact compare, no epsilon
 	bool			operator!=(	const idBounds &a ) const;						// exact compare, no epsilon
+#endif
 
-	void			Clear( void );									// inside out bounds
-	void			Zero( void );									// single point at origin
+	void Clear();									// inside out bounds
+	void Zero();									// single point at origin
 
+#if 0
 	idVec3			GetCenter( void ) const;						// returns center of bounds
 	float			GetRadius( void ) const;						// returns the radius relative to the bounds origin
 	float			GetRadius( const idVec3 &center ) const;		// returns the radius relative to the given center
 	float			GetVolume( void ) const;						// returns the volume of the bounds
 	bool			IsCleared( void ) const;						// returns true if bounds are inside out
+#endif
 
-	bool			AddPoint( const idVec3 &v );					// add the point, returns true if the bounds expanded
-	bool			AddBounds( const idBounds &a );					// add the bounds, returns true if the bounds expanded
+	bool AddPoint( const idVec3 &v );				// add the point, returns true if the bounds expanded
+	bool AddBounds( const idBounds &a );			// add the bounds, returns true if the bounds expanded
+#if 0
 	idBounds		Intersect( const idBounds &a ) const;			// return intersection of this bounds with the given bounds
 	idBounds &		IntersectSelf( const idBounds &a );				// intersect this bounds with the given bounds
 	idBounds		Expand( const float d ) const;					// return bounds expanded in all directions with the given value
@@ -130,11 +134,11 @@ inline idVec3& idBounds::operator[]( const int index ) {
 	return b[ index ];
 }
 
-#if 0
 inline idBounds idBounds::operator+( const idVec3 &t ) const {
-	return idBounds( b[0] + t, b[1] + t );
+	return idBounds( b[ 0 ] + t, b[ 1 ] + t );
 }
 
+#if 0
 inline idBounds &idBounds::operator+=( const idVec3 &t ) {
 	b[0] += t;
 	b[1] += t;
@@ -196,17 +200,19 @@ inline bool idBounds::operator==( const idBounds &a ) const {
 inline bool idBounds::operator!=( const idBounds &a ) const {
 	return !Compare( a );
 }
+#endif
 
-inline void idBounds::Clear( void ) {
+inline void idBounds::Clear() {
 	b[0][0] = b[0][1] = b[0][2] = idMath::INFINITY;
 	b[1][0] = b[1][1] = b[1][2] = -idMath::INFINITY;
 }
 
-inline void idBounds::Zero( void ) {
+inline void idBounds::Zero() {
 	b[0][0] = b[0][1] = b[0][2] =
 	b[1][0] = b[1][1] = b[1][2] = 0;
 }
 
+#if 0
 inline idVec3 idBounds::GetCenter( void ) const {
 	return idVec3( ( b[1][0] + b[0][0] ) * 0.5f, ( b[1][1] + b[0][1] ) * 0.5f, ( b[1][2] + b[0][2] ) * 0.5f );
 }
@@ -221,31 +227,32 @@ inline float idBounds::GetVolume( void ) const {
 inline bool idBounds::IsCleared( void ) const {
 	return b[0][0] > b[1][0];
 }
+#endif
 
 inline bool idBounds::AddPoint( const idVec3 &v ) {
 	bool expanded = false;
-	if ( v[0] < b[0][0]) {
-		b[0][0] = v[0];
+	if ( v.x < b[ 0 ].x) {
+		b[ 0 ].x = v.x;
 		expanded = true;
 	}
-	if ( v[0] > b[1][0]) {
-		b[1][0] = v[0];
+	if ( v.x > b[ 1 ].x) {
+		b[ 1 ].x = v.x;
 		expanded = true;
 	}
-	if ( v[1] < b[0][1] ) {
-		b[0][1] = v[1];
+	if ( v.y < b[ 0 ].y ) {
+		b[ 0 ].y = v.y;
 		expanded = true;
 	}
-	if ( v[1] > b[1][1]) {
-		b[1][1] = v[1];
+	if ( v.y > b[ 1 ].y) {
+		b[ 1 ].y = v.y;
 		expanded = true;
 	}
-	if ( v[2] < b[0][2] ) {
-		b[0][2] = v[2];
+	if ( v.z < b[ 0 ].z ) {
+		b[ 0 ].z = v.z;
 		expanded = true;
 	}
-	if ( v[2] > b[1][2]) {
-		b[1][2] = v[2];
+	if ( v.z > b[ 1 ].z) {
+		b[ 1 ].z = v.z;
 		expanded = true;
 	}
 	return expanded;
@@ -253,33 +260,34 @@ inline bool idBounds::AddPoint( const idVec3 &v ) {
 
 inline bool idBounds::AddBounds( const idBounds &a ) {
 	bool expanded = false;
-	if ( a.b[0][0] < b[0][0] ) {
-		b[0][0] = a.b[0][0];
+	if ( a.b[ 0 ].x < b[ 0 ].x ) {
+		b[ 0 ].x = a.b[ 0 ].x;
 		expanded = true;
 	}
-	if ( a.b[0][1] < b[0][1] ) {
-		b[0][1] = a.b[0][1];
+	if ( a.b[ 0 ].y < b[ 0 ].y ) {
+		b[ 0 ].y = a.b[ 0 ].y;
 		expanded = true;
 	}
-	if ( a.b[0][2] < b[0][2] ) {
-		b[0][2] = a.b[0][2];
+	if ( a.b[ 0 ].z < b[ 0 ].z ) {
+		b[ 0 ].z = a.b[ 0 ].z;
 		expanded = true;
 	}
-	if ( a.b[1][0] > b[1][0] ) {
-		b[1][0] = a.b[1][0];
+	if ( a.b[ 1 ].x > b[ 1 ].x ) {
+		b[ 1 ].x = a.b[ 1 ].x;
 		expanded = true;
 	}
-	if ( a.b[1][1] > b[1][1] ) {
-		b[1][1] = a.b[1][1];
+	if ( a.b[ 1 ].y > b[ 1 ].y ) {
+		b[ 1 ].y = a.b[ 1 ].y;
 		expanded = true;
 	}
-	if ( a.b[1][2] > b[1][2] ) {
-		b[1][2] = a.b[1][2];
+	if ( a.b[ 1 ].z > b[ 1 ].z ) {
+		b[ 1 ].z = a.b[ 1 ].z;
 		expanded = true;
 	}
 	return expanded;
 }
 
+#if 0
 inline idBounds idBounds::Intersect( const idBounds &a ) const {
 	idBounds n;
 	n.b[0][0] = ( a.b[0][0] > b[0][0] ) ? a.b[0][0] : b[0][0];
