@@ -22,16 +22,20 @@
 class idPlaneTest : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( idPlaneTest );
 	CPPUNIT_TEST( TestConstructor );
+	CPPUNIT_TEST( TestOperatorMinus );
 	CPPUNIT_TEST( TestZero );
 	CPPUNIT_TEST( TestSettersAndGetters );
+	CPPUNIT_TEST( TestFitThroughPoint );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	virtual void setUp();
 
 	void TestConstructor();
+	void TestOperatorMinus();
 	void TestZero();
 	void TestSettersAndGetters();
+	void TestFitThroughPoint();
 };
 
 // Registers the fixture into the 'registry'
@@ -52,6 +56,13 @@ void idPlaneTest::TestConstructor() {
 	CPPUNIT_ASSERT_EQUAL( 56.0f, p2.Dist() );
 }
 
+void idPlaneTest::TestOperatorMinus() {
+	idPlane p1( 1.0f, 2.0f, 3.0f, 4.0f );
+	idPlane p2 = -p1;
+	CPPUNIT_ASSERT_EQUAL( idVec3( -1.0f, -2.0f, -3.0f ), p2.Normal() );
+	CPPUNIT_ASSERT_EQUAL( 4.0f, p2.Dist() );
+}
+
 void idPlaneTest::TestZero() {
 	idPlane p;
 	p.Zero();
@@ -66,4 +77,14 @@ void idPlaneTest::TestSettersAndGetters() {
 	p.SetDist( 4556.0f );
 	CPPUNIT_ASSERT_EQUAL( v, p.Normal() );
 	CPPUNIT_ASSERT_EQUAL( 4556.0f, p.Dist() );
+	p.Normal()[ 0 ] = 6.0f;
+	p.Normal()[ 1 ] = 98.0f;
+	p.Normal()[ 2 ] = 79.0f;
+	CPPUNIT_ASSERT_EQUAL( idVec3( 6.0f, 98.0f, 79.0f ), p.Normal() );
+}
+
+void idPlaneTest::TestFitThroughPoint() {
+	idPlane p( 1.0f, 0.0f, 0.0f, 0.0f );
+	p.FitThroughPoint( idVec3( 8.0f, 7.0f, 4.0f ) );
+	CPPUNIT_ASSERT_EQUAL( 8.0f, p.Dist() );
 }

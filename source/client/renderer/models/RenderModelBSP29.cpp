@@ -489,10 +489,7 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 		float t = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
 		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
-		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
-			fa->vertexes[ i ].normal *= -1;
-		}
+		fa->vertexes[ i ].normal = fa->plane.Normal();
 		fa->vertexes[ i ].st.x = s;
 		fa->vertexes[ i ].st.y = t;
 	}
@@ -547,10 +544,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
 		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
 
-		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
-		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
-			fa->vertexes[ i ].normal *= -1;
-		}
+		fa->vertexes[ i ].normal = fa->plane.Normal();
 
 		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
 		s /= fa->surf.texinfo->texture->width;
@@ -609,11 +603,10 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );
+		out->plane.FromOldCPlane( loadmodel->brush29_planes[ planenum ] );
 		if ( side ) {
-			out->surf.flags |= BRUSH29_SURF_PLANEBACK;
+			out->plane = -out->plane;
 		}
-
-		out->surf.plane = loadmodel->brush29_planes + planenum;
 
 		out->surf.texinfo = loadmodel->brush29_texinfo + LittleShort( in->texinfo );
 

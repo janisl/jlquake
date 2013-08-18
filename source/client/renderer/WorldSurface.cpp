@@ -45,9 +45,6 @@ bool idWorldSurface::ClipDecal( struct decalProjector_t* dp ) const {
 	//	add to counts
 	tr.pc.c_decalTestSurfaces++;
 
-	//	get generic surface
-	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
-
 	//	test bounding sphere
 	vec3_t old;
 	boundingSphere.GetOrigin().ToOldVec3( old );
@@ -56,15 +53,17 @@ bool idWorldSurface::ClipDecal( struct decalProjector_t* dp ) const {
 	}
 
 	//	planar surface
-	if ( gen->plane.normal[ 0 ] || gen->plane.normal[ 1 ] || gen->plane.normal[ 2 ] ) {
+	if ( plane.Normal()[ 0 ] || plane.Normal()[ 1 ] || plane.Normal()[ 2 ] ) {
 		//	backface check
-		float d = DotProduct( dp->planes[ 0 ], gen->plane.normal );
+		vec3_t old;
+		plane.Normal().ToOldVec3( old );
+		float d = DotProduct( dp->planes[ 0 ], old );
 		if ( d < -0.0001 ) {
 			return false;
 		}
 
 		//	plane-sphere check
-		d = DotProduct( dp->center, gen->plane.normal ) - gen->plane.dist;
+		d = DotProduct( dp->center, old ) - plane.Dist();
 		if ( fabs( d ) >= dp->radius ) {
 			return false;
 		}
@@ -125,12 +124,12 @@ bool idWorldSurface::DoCull( shader_t* shader ) const {
 
 bool idWorldSurface::DoCullET( shader_t* shader, int* frontFace ) const {
 	// ydnar: made surface culling generic, inline with q3map2 surface classification
-	// get generic surface
-	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
 
 	// plane cull
-	if ( gen->plane.type != PLANE_NON_PLANAR && r_facePlaneCull->integer ) {
-		float d = DotProduct( tr.orient.viewOrigin, gen->plane.normal ) - gen->plane.dist;
+	if ( plane.Normal() != vec3_origin && r_facePlaneCull->integer ) {
+		vec3_t old;
+		plane.Normal().ToOldVec3( old );
+		float d = DotProduct( tr.orient.viewOrigin, old ) - plane.Dist();
 		if ( d > 0.0f ) {
 			*frontFace = 1;
 		}

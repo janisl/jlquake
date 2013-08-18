@@ -47,28 +47,9 @@ void idSurfaceFaceQ2::Draw() {
 }
 
 bool idSurfaceFaceQ2::DoCull( shader_t* shader ) const {
-	cplane_t* plane = surf.plane;
-
-	double dot;
-	switch ( plane->type ) {
-	case PLANE_X:
-		dot = tr.orient.viewOrigin[ 0 ] - plane->dist;
-		break;
-	case PLANE_Y:
-		dot = tr.orient.viewOrigin[ 1 ] - plane->dist;
-		break;
-	case PLANE_Z:
-		dot = tr.orient.viewOrigin[ 2 ] - plane->dist;
-		break;
-	default:
-		dot = DotProduct( tr.orient.viewOrigin, plane->normal ) - plane->dist;
-		break;
-	}
-
-	if ( surf.flags & BRUSH29_SURF_PLANEBACK ) {
-		dot = -dot;
-	}
-
+	vec3_t old;
+	plane.Normal().ToOldVec3( old );
+	double dot = DotProduct( tr.orient.viewOrigin, old ) - plane.Dist();
 	if ( dot < 0 ) {
 		return true;		// wrong side
 	}

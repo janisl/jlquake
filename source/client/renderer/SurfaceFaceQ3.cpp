@@ -26,7 +26,9 @@ idSurfaceFaceQ3::~idSurfaceFaceQ3() {
 }
 
 cplane_t idSurfaceFaceQ3::GetPlane() const {
-	return ( ( srfSurfaceFace_t* )data )->plane;
+	cplane_t old;
+	plane.ToOldCPlane( old );
+	return old;
 }
 
 void idSurfaceFaceQ3::Draw() {
@@ -65,13 +67,15 @@ bool idSurfaceFaceQ3::CheckAddMarks( const vec3_t mins, const vec3_t maxs, const
 		return false;
 	}
 	// extra check for surfaces to avoid list overflows
-	if ( ( ( srfSurfaceFace_t* )GetBrush46Data() )->plane.type != PLANE_NON_PLANAR ) {
+	if ( plane.Normal() != vec3_origin ) {
 		// the face plane should go through the box
-		int s = BoxOnPlaneSide( mins, maxs, &( ( srfSurfaceFace_t* )GetBrush46Data() )->plane );
+		cplane_t old;
+		plane.ToOldCPlane( old );
+		int s = BoxOnPlaneSide( mins, maxs, &old );
 		if ( s == 1 || s == 2 ) {
 			return false;
 		}
-		float dot = DotProduct( ( ( srfSurfaceFace_t* )GetBrush46Data() )->plane.normal, dir );
+		float dot = DotProduct( old.normal, dir );
 		if ( ( !( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) ) && dot > -0.5 ) ||
 			( GGameType & ( GAME_WolfSP | GAME_WolfMP | GAME_ET ) && dot < -0.5 ) ) {
 			// don't add faces that make sharp angles with the projection direction
@@ -87,9 +91,10 @@ void idSurfaceFaceQ3::MarkFragments( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs ) const {
-	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
 	// check the normal of this face
-	if ( DotProduct( surf->plane.normal, projectionDir ) > -0.5 ) {
+	vec3_t old;
+	plane.Normal().ToOldVec3( old );
+	if ( DotProduct( old, projectionDir ) > -0.5 ) {
 		return;
 	}
 
@@ -125,9 +130,7 @@ void idSurfaceFaceQ3::MarkFragmentsOldMapping( const vec3_t projectionDir,
 	for ( int k = 0; k < surf->numIndices; k += 3 ) {
 		vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 		for ( int j = 0; j < 3; j++ ) {
-			vec3_t v;
-			vertexes[ indexes[ k + j ] ].xyz.ToOldVec3( v );
-			VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
+			( vertexes[ indexes[ k + j ] ].xyz + plane.Normal() * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ j ] );
 		}
 		// add the fragments of this face
 		R_AddMarkFragments( 3, clipPoints,
@@ -162,7 +165,7 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 
 	srfSurfaceFace_t* surf = ( srfSurfaceFace_t* )GetBrush46Data();
 
-	VectorCopy( surf->plane.normal, surfnormal );
+	plane.Normal().ToOldVec3( surfnormal );
 
 	// Ridah, create a new clip box such that this decal surface is mapped onto
 	// the current surface without distortion. To find the center of the new clip box,
@@ -171,7 +174,7 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 
 	// find the center of the new decal
 	dot = DotProduct( center, surfnormal );
-	dot -= surf->plane.dist;
+	dot -= plane.Dist();
 	// check the normal of this face
 	if ( dot < -epsilon && DotProduct( surfnormal, projectionDir ) >= 0.01 ) {
 		return;
@@ -183,7 +186,7 @@ void idSurfaceFaceQ3::MarkFragmentsWolfMapping( const vec3_t projectionDir,
 
 	// recalc dot from the offset position
 	dot = DotProduct( newCenter, surfnormal );
-	dot -= surf->plane.dist;
+	dot -= plane.Dist();
 	VectorMA( newCenter, -dot, surfnormal, newCenter );
 
 	VectorMA( newCenter, MARKER_OFFSET, surfnormal, newCenter );
@@ -268,18 +271,19 @@ bool idSurfaceFaceQ3::DoCull( shader_t* shader ) const {
 		return false;
 	}
 
-	srfSurfaceFace_t* sface = ( srfSurfaceFace_t* )GetBrush46Data();
-	float d = DotProduct( tr.orient.viewOrigin, sface->plane.normal );
+	vec3_t old;
+	plane.Normal().ToOldVec3( old );
+	float d = DotProduct( tr.orient.viewOrigin, old );
 
 	// don't cull exactly on the plane, because there are levels of rounding
 	// through the BSP, ICD, and hardware that may cause pixel gaps if an
 	// epsilon isn't allowed here
 	if ( shader->cullType == CT_FRONT_SIDED ) {
-		if ( d < sface->plane.dist - 8 ) {
+		if ( d < plane.Dist() - 8 ) {
 			return true;
 		}
 	} else {
-		if ( d > sface->plane.dist + 8 ) {
+		if ( d > plane.Dist() + 8 ) {
 			return true;
 		}
 	}
@@ -288,13 +292,14 @@ bool idSurfaceFaceQ3::DoCull( shader_t* shader ) const {
 }
 
 int idSurfaceFaceQ3::DoMarkDynamicLights( int dlightBits ) {
-	srfSurfaceFace_t* face = ( srfSurfaceFace_t* )GetBrush46Data();
 	for ( int i = 0; i < tr.refdef.num_dlights; i++ ) {
 		if ( !( dlightBits & ( 1 << i ) ) ) {
 			continue;
 		}
 		dlight_t* dl = &tr.refdef.dlights[ i ];
-		float d = DotProduct( dl->origin, face->plane.normal ) - face->plane.dist;
+		vec3_t old;
+		plane.Normal().ToOldVec3( old );
+		float d = DotProduct( dl->origin, old ) - plane.Dist();
 		if ( d < -dl->radius || d > dl->radius ) {
 			// dlight doesn't reach the plane
 			dlightBits &= ~( 1 << i );

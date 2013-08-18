@@ -114,7 +114,9 @@ static void R_AddDynamicLightsQ2( idSurfaceFaceQ2* surf ) {
 
 		dlight_t* dl = &tr.refdef.dlights[ lnum ];
 		float frad = dl->radius;
-		float fdist = DotProduct( dl->origin, surf->surf.plane->normal ) - surf->surf.plane->dist;
+		vec3_t old;
+		surf->plane.Normal().ToOldVec3( old );
+		float fdist = DotProduct( dl->origin, old ) - surf->plane.Dist();
 		frad -= fabs( fdist );
 		// rad is now the highest intensity on the plane
 
@@ -126,7 +128,7 @@ static void R_AddDynamicLightsQ2( idSurfaceFaceQ2* surf ) {
 
 		vec3_t impact;
 		for ( int i = 0; i < 3; i++ ) {
-			impact[ i ] = dl->origin[ i ] - surf->surf.plane->normal[ i ] * fdist;
+			impact[ i ] = dl->origin[ i ] - surf->plane.Normal()[ i ] * fdist;
 		}
 
 		vec3_t local;

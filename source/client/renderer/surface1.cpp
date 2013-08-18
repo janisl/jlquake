@@ -99,7 +99,9 @@ static void R_AddDynamicLightsQ1( idSurfaceFaceQ1* surf ) {
 		}
 
 		float rad = tr.refdef.dlights[ lnum ].radius;
-		float dist = DotProduct( tr.refdef.dlights[ lnum ].origin, surf->surf.plane->normal ) - surf->surf.plane->dist;
+		vec3_t old;
+		surf->plane.Normal().ToOldVec3( old );
+		float dist = DotProduct( tr.refdef.dlights[ lnum ].origin, old ) - surf->plane.Dist();
 		rad -= idMath::Fabs( dist );
 		float minlight = 0;	//tr.refdef.dlights[lnum].minlight;
 		if ( rad < minlight ) {
@@ -109,7 +111,7 @@ static void R_AddDynamicLightsQ1( idSurfaceFaceQ1* surf ) {
 
 		vec3_t impact;
 		for ( int i = 0; i < 3; i++ ) {
-			impact[ i ] = tr.refdef.dlights[ lnum ].origin[ i ] - surf->surf.plane->normal[ i ] * dist;
+			impact[ i ] = tr.refdef.dlights[ lnum ].origin[ i ] - old[ i ] * dist;
 		}
 
 		vec3_t local;

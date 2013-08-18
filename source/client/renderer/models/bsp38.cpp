@@ -329,10 +329,7 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
 		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
-		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
-			fa->vertexes[ i ].normal *= -1;
-		}
+		fa->vertexes[ i ].normal = fa->plane.Normal();
 		fa->vertexes[ i ].st.x = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		fa->vertexes[ i ].st.y = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 	}
@@ -389,10 +386,7 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( vec );
 		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
 
-		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
-		if ( fa->surf.flags & BRUSH38_SURF_PLANEBACK ) {
-			fa->vertexes[ i ].normal *= -1;
-		}
+		fa->vertexes[ i ].normal = fa->plane.Normal();
 
 		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
 		s /= texinfo->image->width;
@@ -520,15 +514,13 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
 		out->surf.firstedge = LittleLong( in->firstedge );
 		out->surf.numedges = LittleShort( in->numedges );
-		out->surf.flags = 0;
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );
+		out->plane.FromOldCPlane( loadmodel->brush38_planes[ planenum ] );
 		if ( side ) {
-			out->surf.flags |= BRUSH38_SURF_PLANEBACK;
+			out->plane = -out->plane;
 		}
-
-		out->surf.plane = loadmodel->brush38_planes + planenum;
 
 		int ti = LittleShort( in->texinfo );
 		if ( ti < 0 || ti >= loadmodel->brush38_numtexinfo ) {

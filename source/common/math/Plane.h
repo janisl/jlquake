@@ -14,8 +14,8 @@
 //**
 //**************************************************************************
 
-#ifndef __MATH_PLANE_H__
-#define __MATH_PLANE_H__
+#ifndef __idPlane__
+#define __idPlane__
 
 #include "Vec3.h"
 
@@ -68,7 +68,9 @@ public:
 #if 0
 	float			operator[]( int index ) const;
 	float &			operator[]( int index );
-	idPlane			operator-() const;						// flips plane
+#endif
+	idPlane operator-() const;						// flips plane
+#if 0
 	idPlane &		operator=( const idVec3 &v );			// sets normal and sets idPlane::d to zero
 	idPlane			operator+( const idPlane &p ) const;	// add plane equations
 	idPlane			operator-( const idPlane &p ) const;	// subtract plane equations
@@ -97,7 +99,9 @@ public:
 
 	bool			FromPoints( const idVec3 &p1, const idVec3 &p2, const idVec3 &p3, bool fixDegenerate = true );
 	bool			FromVecs( const idVec3 &dir1, const idVec3 &dir2, const idVec3 &p, bool fixDegenerate = true );
-	void			FitThroughPoint( const idVec3 &p );	// assumes normal is valid
+#endif
+	void FitThroughPoint( const idVec3 &p );	// assumes normal is valid
+#if 0
 	bool			HeightFit( const idVec3 *points, const int numPoints );
 	idPlane			Translate( const idVec3 &translation ) const;
 	idPlane &		TranslateSelf( const idVec3 &translation );
@@ -120,6 +124,9 @@ public:
 	float *			ToFloatPtr( void );
 	const char *	ToString( int precision = 2 ) const;
 #endif
+
+	void FromOldCPlane( const cplane_t& plane );
+	void ToOldCPlane( cplane_t& plane ) const;
 
 private:
 	float			a;
@@ -158,11 +165,13 @@ inline float idPlane::operator[]( int index ) const {
 inline float& idPlane::operator[]( int index ) {
 	return ( &a )[ index ];
 }
+#endif
 
 inline idPlane idPlane::operator-() const {
 	return idPlane( -a, -b, -c, -d );
 }
 
+#if 0
 inline idPlane &idPlane::operator=( const idVec3 &v ) {
 	a = v.x;
 	b = v.y;
@@ -297,11 +306,13 @@ inline bool idPlane::FromVecs( const idVec3 &dir1, const idVec3 &dir2, const idV
 	d = -( Normal() * p );
 	return true;
 }
+#endif
 
 inline void idPlane::FitThroughPoint( const idVec3 &p ) {
 	d = -( Normal() * p );
 }
 
+#if 0
 inline idPlane idPlane::Translate( const idVec3 &translation ) const {
 	return idPlane( a, b, c, d - translation * Normal() );
 }
@@ -392,5 +403,21 @@ inline float *idPlane::ToFloatPtr( void ) {
 	return reinterpret_cast<float *>(&a);
 }
 #endif
+
+inline void idPlane::FromOldCPlane( const cplane_t& plane ) {
+	a = plane.normal[ 0 ];
+	b = plane.normal[ 1 ];
+	c = plane.normal[ 2 ];
+	d = -plane.dist;
+}
+
+inline void idPlane::ToOldCPlane( cplane_t& plane ) const {
+	plane.normal[ 0 ] = a;
+	plane.normal[ 1 ] = b;
+	plane.normal[ 2 ] = c;
+	plane.dist = -d;
+	SetPlaneSignbits( &plane );
+	plane.type = PlaneTypeForNormal( plane.normal );
+}
 
 #endif

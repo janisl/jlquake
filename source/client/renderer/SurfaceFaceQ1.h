@@ -42,7 +42,6 @@ struct mbrush29_texinfo_t {
 };
 
 struct mbrush29_surface_t {
-	cplane_t* plane;
 	int flags;
 
 	int firstedge;			// look up in model->surfedges[], negative numbers

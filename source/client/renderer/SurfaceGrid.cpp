@@ -313,7 +313,6 @@ bool idSurfaceGrid::DoCull( shader_t* shader ) const {
 		return true;
 	}
 
-	srfGridMesh_t* cv = ( srfGridMesh_t* )GetBrush46Data();
 	int sphereCull;
 	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
 		sphereCull = R_CullLocalSphere( boundingSphere );

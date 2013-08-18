@@ -21,6 +21,7 @@
 #include "shader.h"
 #include "../../common/math/Vec2.h"
 #include "../../common/math/Vec3.h"
+#include "../../common/math/Plane.h"
 #include "../../common/bv/Bounds.h"
 #include "../../common/bv/Sphere.h"
 
@@ -51,6 +52,7 @@ public:
 	// culling information
 	idBounds bounds;
 	idSphere boundingSphere;
+	idPlane plane;
 
 	int numVertexes;
 	idWorldVertex* vertexes;

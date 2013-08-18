@@ -45,7 +45,6 @@
 //
 //==============================================================================
 
-#define BRUSH29_SURF_PLANEBACK      2
 #define BRUSH29_SURF_DRAWSKY        4
 #define BRUSH29_SURF_DRAWTURB       0x10
 #define BRUSH29_SURF_DRAWTILED      0x20
@@ -111,8 +110,6 @@ struct mbrush29_submodel_t {
 //	QUAKE 2 BRUSH MODELS
 //
 //==============================================================================
-
-#define BRUSH38_SURF_PLANEBACK      2
 
 struct mbrush38_vertex_t {
 	vec3_t position;
@@ -210,11 +207,7 @@ struct drawSurf_t {
 	idSurface* surface;					// any of surface*_t
 };
 
-struct srfGeneric_t {
-	cplane_t plane;
-};
-
-struct srfGridMesh_t : srfGeneric_t {
+struct srfGridMesh_t {
 	// lod information, which may be different
 	// than the culling information to allow for
 	// groups of curves that LOD as a unit
@@ -229,14 +222,14 @@ struct srfGridMesh_t : srfGeneric_t {
 	float* heightLodError;
 };
 
-struct srfSurfaceFace_t : srfGeneric_t {
+struct srfSurfaceFace_t {
 	int numIndices;
 	int ofsIndices;
 	// there is a variable length list of indices here also
 };
 
 // misc_models in maps are turned into direct geometry by q3map
-struct srfTriangles_t : srfGeneric_t {
+struct srfTriangles_t {
 	// triangle definitions
 	int numIndexes;
 	int* indexes;
@@ -250,7 +243,7 @@ struct foliageInstance_t {
 	fcolor4ub_t color;
 };
 
-struct srfFoliage_t : srfGeneric_t {
+struct srfFoliage_t {
 	// triangle definitions
 	int numIndexes;
 	glIndex_t* indexes;

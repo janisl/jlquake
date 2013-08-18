@@ -64,9 +64,9 @@ public:
 	bool            Compare( const idVec3& a, const float epsilon ) const;			// compare with epsilon
 #endif
 	bool operator==( const idVec3& a ) const;										// exact compare, no epsilon
-#if 0
 	bool operator!=( const idVec3& a ) const;										// exact compare, no epsilon
 
+#if 0
 	bool            FixDegenerateNormal( void );		// fix degenerate axial cases
 	bool            FixDenormals( void );				// change tiny numbers to zero
 
@@ -255,11 +255,11 @@ inline bool idVec3::operator==( const idVec3& a ) const {
 	return Compare( a );
 }
 
-#if 0
 inline bool idVec3::operator!=( const idVec3& a ) const {
 	return !Compare( a );
 }
 
+#if 0
 inline float idVec3::NormalizeFast( void ) {
 	float sqrLength, invLength;
 

@@ -245,17 +245,15 @@ static shader_t* ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 }
 
 //	handles final surface classification
-static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_t pt ) {
+static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, const idVec3& pt ) {
 	// set bounding sphere
 	surf->boundingSphere = surf->bounds.ToSphere();
 
 	// take the plane normal from the lightmap vector and classify it
-	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
-	gen->plane.normal[ 1 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 1 ] );
-	gen->plane.normal[ 2 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 2 ] );
-	gen->plane.dist = DotProduct( pt, gen->plane.normal );
-	SetPlaneSignbits( &gen->plane );
-	gen->plane.type = PlaneTypeForNormal( gen->plane.normal );
+	surf->plane.Normal()[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );
+	surf->plane.Normal()[ 1 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 1 ] );
+	surf->plane.Normal()[ 2 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 2 ] );
+	surf->plane.FitThroughPoint( pt );
 }
 
 static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
@@ -312,9 +310,7 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 	}
 
 	// finish surface
-	vec3_t old;
-	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( surf, ds, cv, old );
+	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 
 	surf->SetBrush46Data(cv);
 	return surf;
@@ -386,9 +382,7 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 	grid->lodRadius = VectorLength( tmpVec );
 
 	// finish surface
-	vec3_t old;
-	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( surf, ds, grid, old );
+	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 	return surf;
 }
 
@@ -442,9 +436,7 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// finish surface
-	vec3_t old;
-	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( surf, ds, tri, old );
+	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 	return surf;
 }
 
@@ -559,9 +551,7 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	}
 
 	// finish surface
-	vec3_t old;
-	surf->vertexes[ 0 ].xyz.ToOldVec3( old );
-	FinishGenericSurface( surf, ds, foliage, old );
+	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 	return surf;
 }
 
