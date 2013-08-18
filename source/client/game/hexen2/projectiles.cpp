@@ -146,7 +146,7 @@ void CLH2_LinkProjectiles() {
 		ent.hModel = cl.model_draw[ pr->modelindex ];
 		ent.frame = pr->frame;
 		VectorCopy( pr->origin, ent.origin );
-		CLH2_SetRefEntAxis( &ent, pr->angles, vec3_origin, 0, 0, 0 );
+		CLH2_SetRefEntAxis( &ent, pr->angles, oldvec3_origin, 0, 0, 0 );
 		R_AddRefEntityToScene( &ent );
 	}
 }
@@ -166,11 +166,11 @@ void CLH2_LinkMissiles() {
 		if ( pr->type == 1 ) {
 			//ball
 			ent.hModel = cl.model_draw[ clh2_ballindex ];
-			CLH2_SetRefEntAxis( &ent, vec3_origin, vec3_origin, 10, 0, H2SCALE_ORIGIN_CENTER );
+			CLH2_SetRefEntAxis( &ent, oldvec3_origin, oldvec3_origin, 10, 0, H2SCALE_ORIGIN_CENTER );
 		} else {
 			//missilestar
 			ent.hModel = cl.model_draw[ clh2_missilestarindex ];
-			CLH2_SetRefEntAxis( &ent, missilestar_angle, vec3_origin, 50, 0, H2SCALE_ORIGIN_CENTER );
+			CLH2_SetRefEntAxis( &ent, missilestar_angle, oldvec3_origin, 50, 0, H2SCALE_ORIGIN_CENTER );
 		}
 		if ( rand() % 10 < 3 ) {
 			CLH2_RunParticleEffect4( ent.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10 );

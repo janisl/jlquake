@@ -37,7 +37,7 @@ typedef int fixed4_t;
 typedef int fixed8_t;
 typedef int fixed16_t;
 
-extern vec3_t vec3_origin;
+extern vec3_t oldvec3_origin;
 
 #define nanmask                 ( 255 << 23 )
 

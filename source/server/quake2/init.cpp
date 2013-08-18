@@ -46,7 +46,7 @@ static int SVQ2_FindIndex( const char* name, int start, int max ) {
 		sv.multicast.WriteChar( q2svc_configstring );
 		sv.multicast.WriteShort( start + i );
 		sv.multicast.WriteString2( name );
-		SVQ2_Multicast( vec3_origin, Q2MULTICAST_ALL_R );
+		SVQ2_Multicast( oldvec3_origin, Q2MULTICAST_ALL_R );
 	}
 
 	return i;

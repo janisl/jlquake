@@ -87,7 +87,7 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, flo
 
 	// constant normal all the way around
 	vec3_t normal;
-	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
+	VectorSubtract( oldvec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
 	tess.normal[ ndx ][ 0 ] = tess.normal[ ndx + 1 ][ 0 ] = tess.normal[ ndx + 2 ][ 0 ] = tess.normal[ ndx + 3 ][ 0 ] = normal[ 0 ];
 	tess.normal[ ndx ][ 1 ] = tess.normal[ ndx + 1 ][ 1 ] = tess.normal[ ndx + 2 ][ 1 ] = tess.normal[ ndx + 3 ][ 1 ] = normal[ 1 ];

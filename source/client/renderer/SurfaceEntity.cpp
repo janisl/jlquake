@@ -45,7 +45,7 @@ void idSurfaceEntity::RB_SurfaceSprite() {
 		VectorMA( up, s * radius, backEnd.viewParms.orient.axis[ 1 ], up );
 	}
 	if ( backEnd.viewParms.isMirror ) {
-		VectorSubtract( vec3_origin, left, left );
+		VectorSubtract( oldvec3_origin, left, left );
 	}
 
 	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );
@@ -364,7 +364,7 @@ void idSurfaceEntity::RB_SurfaceSplash() {
 	VectorSet( left, -radius, 0, 0 );
 	VectorSet( up, 0, radius, 0 );
 	if ( backEnd.viewParms.isMirror ) {
-		VectorSubtract( vec3_origin, left, left );
+		VectorSubtract( oldvec3_origin, left, left );
 	}
 
 	RB_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, backEnd.currentEntity->e.shaderRGBA );

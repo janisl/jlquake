@@ -1242,7 +1242,7 @@ void AAS_JumpReachRunStart( const aas_reachability_t* reach, vec3_t runstart ) {
 
 	aas_clientmove_t move;
 	AAS_PredictClientMovement( &move, -1, start, PRESENCE_NORMAL, 0, true,
-		vec3_origin, cmdmove, 1, 2, 0.1f,
+		oldvec3_origin, cmdmove, 1, 2, 0.1f,
 		SE_ENTERWATER | SE_ENTERSLIME | SE_ENTERLAVA |
 		SE_HITGROUNDDAMAGE | SE_GAP, 0, false );
 	VectorCopy( move.endpos, runstart );

@@ -189,7 +189,7 @@ static void CLQ1_UpdateExplosions() {
 		VectorCopy( explosion->origin, entity.origin );
 		entity.hModel = explosion->model;
 		entity.frame = f;
-		CLQ1_SetRefEntAxis( &entity, vec3_origin );
+		CLQ1_SetRefEntAxis( &entity, oldvec3_origin );
 		R_AddRefEntityToScene( &entity );
 	}
 }
@@ -198,7 +198,7 @@ static void CLQ1_ParseWizSpike( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 20, 30 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 20, 30 );
 	S_StartSound( position, -1, 0, clq1_sfx_wizhit, 1, 1 );
 }
 
@@ -206,7 +206,7 @@ static void CLQ1_ParseKnightSpike( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 226, 20 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 226, 20 );
 	S_StartSound( position, -1, 0, clq1_sfx_knighthit, 1, 1 );
 }
 
@@ -229,7 +229,7 @@ static void CLQ1_ParseSpike( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 0, 10 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 0, 10 );
 	SpikeSound( position );
 }
 
@@ -237,7 +237,7 @@ static void CLQ1_ParseSuperSpike( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 0, 20 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 0, 20 );
 	SpikeSound( position );
 }
 
@@ -297,7 +297,7 @@ static void CLQ1_ParseGunShot( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 0, 20 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 0, 20 );
 }
 
 static void CLQW_ParseGunShot( QMsg& message ) {
@@ -305,7 +305,7 @@ static void CLQW_ParseGunShot( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 0, 20 * count );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 0, 20 * count );
 }
 
 static void CLQ1_ParseBlood( QMsg& message ) {
@@ -313,14 +313,14 @@ static void CLQ1_ParseBlood( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 73, 20 * count );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 73, 20 * count );
 }
 
 static void CLQ1_ParseLightningBlood( QMsg& message ) {
 	vec3_t position;
 	message.ReadPos( position );
 
-	CLQ1_RunParticleEffect( position, vec3_origin, 225, 50 );
+	CLQ1_RunParticleEffect( position, oldvec3_origin, 225, 50 );
 }
 
 static void CLQ1_ParseTEntCommon( QMsg& message, int type ) {

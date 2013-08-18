@@ -93,7 +93,7 @@ static void CLQ2_ClipMoveToEntities( const vec3_t start, const vec3_t mins, cons
 			bmaxs[ 2 ] = zu;
 
 			cmodel = CM_TempBoxModel( bmins, bmaxs );
-			angles = vec3_origin;	// boxes don't rotate
+			angles = oldvec3_origin;	// boxes don't rotate
 		}
 
 		if ( tr->allsolid ) {

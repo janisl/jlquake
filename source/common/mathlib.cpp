@@ -19,7 +19,7 @@
 #include "Common.h"
 
 //	Should be const
-vec3_t vec3_origin = {0, 0, 0};
+vec3_t oldvec3_origin = {0, 0, 0};
 
 const vec3_t axisDefault[ 3 ] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
@@ -908,7 +908,7 @@ void AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] ) {
 
 	// angle vectors returns "right" instead of "y axis"
 	AngleVectors( angles, axis[ 0 ], right, axis[ 2 ] );
-	VectorSubtract( vec3_origin, right, axis[ 1 ] );
+	VectorSubtract( oldvec3_origin, right, axis[ 1 ] );
 }
 
 void AxisClear( vec3_t axis[ 3 ] ) {
@@ -1003,7 +1003,7 @@ void ByteToDir( int b, vec3_t dir ) {
 		if ( GGameType & GAME_Quake2 ) {
 			common->Error( "MSF_ReadDir: out of range" );
 		}
-		VectorCopy( vec3_origin, dir );
+		VectorCopy( oldvec3_origin, dir );
 		return;
 	}
 	VectorCopy( bytedirs[ b ], dir );

@@ -555,7 +555,7 @@ void CLH2_TrailParticles( vec3_t start, const vec3_t end, int type ) {
 			return;
 		}
 
-		VectorCopy( vec3_origin, p->vel );
+		VectorCopy( oldvec3_origin, p->vel );
 		p->die = cl.serverTime + lifetime * 1000;
 
 		switch ( type ) {

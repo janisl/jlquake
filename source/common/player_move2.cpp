@@ -108,7 +108,7 @@ static void PM_StepSlideMove_() {
 		// slide along this plane
 		if ( numplanes >= MAX_CLIP_PLANES ) {
 			// this shouldn't really happen
-			VectorCopy( vec3_origin, pml.velocity );
+			VectorCopy( oldvec3_origin, pml.velocity );
 			break;
 		}
 
@@ -139,7 +139,7 @@ static void PM_StepSlideMove_() {
 		} else {
 			// go along the crease
 			if ( numplanes != 2 ) {
-				VectorCopy( vec3_origin, pml.velocity );
+				VectorCopy( oldvec3_origin, pml.velocity );
 				break;
 			}
 			vec3_t dir;
@@ -152,7 +152,7 @@ static void PM_StepSlideMove_() {
 		// to avoid tiny occilations in sloping corners
 		//
 		if ( DotProduct( pml.velocity, primal_velocity ) <= 0 ) {
-			VectorCopy( vec3_origin, pml.velocity );
+			VectorCopy( oldvec3_origin, pml.velocity );
 			break;
 		}
 	}
@@ -675,7 +675,7 @@ static void PM_FlyMove( bool doclip ) {
 
 	float speed = VectorLength( pml.velocity );
 	if ( speed < 1 ) {
-		VectorCopy( vec3_origin, pml.velocity );
+		VectorCopy( oldvec3_origin, pml.velocity );
 	} else {
 		float drop = 0;
 

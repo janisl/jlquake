@@ -215,7 +215,7 @@ static bool InitFlyby( const vec3_t self_origin, const vec3_t player_origin,
 		VectorCopy( vec2, vec );
 	}
 	// invert
-	VectorSubtract( vec3_origin, forward, vec2 );
+	VectorSubtract( oldvec3_origin, forward, vec2 );
 	if ( ( f = Cam_TryFlyby( self_origin, player_origin, vec2, checkvis ) ) < max ) {
 		max = f;
 		VectorCopy( vec2, vec );
@@ -226,7 +226,7 @@ static bool InitFlyby( const vec3_t self_origin, const vec3_t player_origin,
 		VectorCopy( vec2, vec );
 	}
 	// invert
-	VectorSubtract( vec3_origin, right, vec2 );
+	VectorSubtract( oldvec3_origin, right, vec2 );
 	if ( ( f = Cam_TryFlyby( self_origin, player_origin, vec2, checkvis ) ) < max ) {
 		max = f;
 		VectorCopy( vec2, vec );

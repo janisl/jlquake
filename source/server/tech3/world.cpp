@@ -87,7 +87,7 @@ void SVT3_UnlinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 
 void SVT3_LinkEntity( idEntity3* ent, q3svEntity_t* svent ) {
 	// Ridah, sanity check for possible currentOrigin being reset bug
-	if ( !ent->GetBModel() && VectorCompare( ent->GetCurrentOrigin(), vec3_origin ) ) {
+	if ( !ent->GetBModel() && VectorCompare( ent->GetCurrentOrigin(), oldvec3_origin ) ) {
 		common->DPrintf( "WARNING: BBOX entity is being linked at world origin, this is probably a bug\n" );
 	}
 
@@ -351,7 +351,7 @@ void SVT3_ClipToEntity( q3trace_t* trace, const vec3_t start, const vec3_t mins,
 	const float* angles = touch->GetCurrentAngles();
 
 	if ( !touch->GetBModel() ) {
-		angles = vec3_origin;	// boxes don't rotate
+		angles = oldvec3_origin;	// boxes don't rotate
 	}
 
 	CM_TransformedBoxTraceQ3( trace, start, end,
@@ -422,7 +422,7 @@ static void SVT3_ClipMoveToEntities( q3moveclip_t* clip ) {
 		const float* angles = touch->GetCurrentAngles();
 
 		if ( !touch->GetBModel() ) {
-			angles = vec3_origin;	// boxes don't rotate
+			angles = oldvec3_origin;	// boxes don't rotate
 		}
 
 		q3trace_t trace;
@@ -462,10 +462,10 @@ void SVT3_Trace( q3trace_t* results, const vec3_t start, const vec3_t mins, cons
 	int i;
 
 	if ( !mins ) {
-		mins = vec3_origin;
+		mins = oldvec3_origin;
 	}
 	if ( !maxs ) {
-		maxs = vec3_origin;
+		maxs = oldvec3_origin;
 	}
 
 	Com_Memset( &clip, 0, sizeof ( q3moveclip_t ) );

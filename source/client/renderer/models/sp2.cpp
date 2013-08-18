@@ -48,7 +48,7 @@ void RB_SurfaceSp2( dsprite2_t* psprite ) {
 	float* left = backEnd.viewParms.orient.axis[ 1 ];
 
 	vec3_t normal;
-	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
+	VectorSubtract( oldvec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
 	int numVerts = tess.numVertexes;
 	int numIndexes = tess.numIndexes;

@@ -94,7 +94,7 @@ static void CLQ2_NewPlayerBeam( int ent, qhandle_t model, vec3_t start, vec3_t e
 }
 
 void CLQ2_ParasiteBeam( int ent, vec3_t start, vec3_t end ) {
-	CLQ2_NewBeam( ent, 0, clq2_mod_parasite_segment, start, end, vec3_origin );
+	CLQ2_NewBeam( ent, 0, clq2_mod_parasite_segment, start, end, oldvec3_origin );
 }
 
 void CLQ2_GrappleCableBeam( int ent, vec3_t start, vec3_t end, vec3_t offset ) {
@@ -114,7 +114,7 @@ void CLQ2_MonsterHeatBeam( int ent, vec3_t start, vec3_t end ) {
 }
 
 void CLQ2_LightningBeam( int srcEnt, int destEnt, vec3_t start, vec3_t end ) {
-	CLQ2_NewBeam( srcEnt, destEnt, clq2_mod_lightning, start, end, vec3_origin );
+	CLQ2_NewBeam( srcEnt, destEnt, clq2_mod_lightning, start, end, oldvec3_origin );
 }
 
 void CLQ2_AddBeams() {
@@ -287,7 +287,7 @@ void CLQ2_AddPlayerBeams() {
 				AngleVectors( angles, f, r, u );
 
 				// if it's a non-origin offset, it's a player, so use the hardcoded player offset
-				if ( !VectorCompare( b->offset, vec3_origin ) ) {
+				if ( !VectorCompare( b->offset, oldvec3_origin ) ) {
 					VectorMA( org, -b->offset[ 0 ] + 1, r, org );
 					VectorMA( org, -b->offset[ 1 ], f, org );
 					VectorMA( org, -b->offset[ 2 ] - 10, u, org );

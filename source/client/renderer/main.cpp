@@ -1133,7 +1133,7 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 			 e->e.oldorigin[ 2 ] == e->e.origin[ 2 ] ) {
 			VectorScale( plane.normal, plane.dist, surface->origin );
 			VectorCopy( surface->origin, camera->origin );
-			VectorSubtract( vec3_origin, surface->axis[ 0 ], camera->axis[ 0 ] );
+			VectorSubtract( oldvec3_origin, surface->axis[ 0 ], camera->axis[ 0 ] );
 			VectorCopy( surface->axis[ 1 ], camera->axis[ 1 ] );
 			VectorCopy( surface->axis[ 2 ], camera->axis[ 2 ] );
 
@@ -1149,8 +1149,8 @@ static bool R_GetPortalOrientations( drawSurf_t* drawSurf, int entityNum,
 		// now get the camera origin and orientation
 		VectorCopy( e->e.oldorigin, camera->origin );
 		AxisCopy( e->e.axis, camera->axis );
-		VectorSubtract( vec3_origin, camera->axis[ 0 ], camera->axis[ 0 ] );
-		VectorSubtract( vec3_origin, camera->axis[ 1 ], camera->axis[ 1 ] );
+		VectorSubtract( oldvec3_origin, camera->axis[ 0 ], camera->axis[ 0 ] );
+		VectorSubtract( oldvec3_origin, camera->axis[ 1 ], camera->axis[ 1 ] );
 
 		// optionally rotate
 		if ( e->e.oldframe ) {
@@ -1249,7 +1249,7 @@ static bool R_MirrorViewBySurface( drawSurf_t* drawSurf, int entityNum ) {
 
 	R_MirrorPoint( oldParms.orient.origin, &surface, &camera, newParms.orient.origin );
 
-	VectorSubtract( vec3_origin, camera.axis[ 0 ], newParms.portalPlane.normal );
+	VectorSubtract( oldvec3_origin, camera.axis[ 0 ], newParms.portalPlane.normal );
 	newParms.portalPlane.dist = DotProduct( camera.origin, newParms.portalPlane.normal );
 
 	R_MirrorVector( oldParms.orient.axis[ 0 ], &surface, &camera, newParms.orient.axis[ 0 ] );

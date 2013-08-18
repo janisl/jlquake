@@ -130,7 +130,7 @@ q1trace_t PMQH_TestPlayerMove( const vec3_t start, const vec3_t end ) {
 			if ( pe->model >= 0 && ( idMath::Fabs( pe->angles[ 0 ] ) > 1 || idMath::Fabs( pe->angles[ 1 ] ) > 1 || idMath::Fabs( pe->angles[ 2 ] ) > 1 ) ) {
 				if ( trace.fraction != 1 ) {
 					vec3_t a;
-					VectorSubtract( vec3_origin, pe->angles, a );
+					VectorSubtract( oldvec3_origin, pe->angles, a );
 					vec3_t forward, right, up;
 					AngleVectors( a, forward, right, up );
 
@@ -222,7 +222,7 @@ static int PMQH_FlyMove() {
 
 		if ( trace.startsolid || trace.allsolid ) {
 			// entity is trapped in another solid
-			VectorCopy( vec3_origin, qh_pmove.velocity );
+			VectorCopy( oldvec3_origin, qh_pmove.velocity );
 			return 3;
 		}
 
@@ -252,7 +252,7 @@ static int PMQH_FlyMove() {
 		// cliped to another plane
 		if ( numplanes >= MAX_FLY_MOVE_CLIP_PLANES ) {
 			// this shouldn't really happen
-			VectorCopy( vec3_origin, qh_pmove.velocity );
+			VectorCopy( oldvec3_origin, qh_pmove.velocity );
 			break;
 		}
 
@@ -281,7 +281,7 @@ static int PMQH_FlyMove() {
 		if ( i != numplanes ) {	// go along this plane
 		} else {	// go along the crease
 			if ( numplanes != 2 ) {
-				VectorCopy( vec3_origin, qh_pmove.velocity );
+				VectorCopy( oldvec3_origin, qh_pmove.velocity );
 				break;
 			}
 			vec3_t dir;
@@ -295,7 +295,7 @@ static int PMQH_FlyMove() {
 		// to avoid tiny occilations in sloping corners
 		//
 		if ( DotProduct( qh_pmove.velocity, primal_velocity ) <= 0 ) {
-			VectorCopy( vec3_origin, qh_pmove.velocity );
+			VectorCopy( oldvec3_origin, qh_pmove.velocity );
 			break;
 		}
 	}
@@ -907,7 +907,7 @@ static void PMQH_SpectatorMove() {
 
 	float speed = VectorLength( qh_pmove.velocity );
 	if ( speed < 1 ) {
-		VectorCopy( vec3_origin, qh_pmove.velocity );
+		VectorCopy( oldvec3_origin, qh_pmove.velocity );
 	} else {
 		float drop = 0;
 

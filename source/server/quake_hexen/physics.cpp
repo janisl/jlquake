@@ -212,7 +212,7 @@ static int SVQH_FlyMove( qhedict_t* ent, float time, q1trace_t* steptrace ) {
 
 		if ( trace.allsolid ) {
 			// entity is trapped in another solid
-			ent->SetVelocity( vec3_origin );
+			ent->SetVelocity( oldvec3_origin );
 			return 3;
 		}
 
@@ -258,7 +258,7 @@ static int SVQH_FlyMove( qhedict_t* ent, float time, q1trace_t* steptrace ) {
 		// cliped to another plane
 		if ( numplanes >= MAX_FLY_MOVE_CLIP_PLANES ) {
 			// this shouldn't really happen
-			ent->SetVelocity( vec3_origin );
+			ent->SetVelocity( oldvec3_origin );
 			return 3;
 		}
 
@@ -290,7 +290,7 @@ static int SVQH_FlyMove( qhedict_t* ent, float time, q1trace_t* steptrace ) {
 		} else {
 			// go along the crease
 			if ( numplanes != 2 ) {
-				ent->SetVelocity( vec3_origin );
+				ent->SetVelocity( oldvec3_origin );
 				return 7;
 			}
 			vec3_t dir;
@@ -302,7 +302,7 @@ static int SVQH_FlyMove( qhedict_t* ent, float time, q1trace_t* steptrace ) {
 		// if original velocity is against the original velocity, stop dead
 		// to avoid tiny occilations in sloping corners
 		if ( DotProduct( ent->GetVelocity(), primal_velocity ) <= 0 ) {
-			ent->SetVelocity( vec3_origin );
+			ent->SetVelocity( oldvec3_origin );
 			return blocked;
 		}
 	}
@@ -576,7 +576,7 @@ static void SVQH_PushRotate( qhedict_t* pusher, float movetime ) {
 	}
 
 	vec3_t a;
-	VectorSubtract( vec3_origin, amove, a );
+	VectorSubtract( oldvec3_origin, amove, a );
 	AngleVectors( a, forward, right, up );
 
 	VectorCopy( pusher->GetOrigin(), pushorig );
@@ -981,8 +981,8 @@ static void SVQH_Physics_Toss( qhedict_t* ent, float frametime ) {
 		if ( ent->GetVelocity()[ 2 ] < 60 || ent->GetMoveType() != QHMOVETYPE_BOUNCE ) {
 			ent->SetFlags( ( int )ent->GetFlags() | QHFL_ONGROUND );
 			ent->SetGroundEntity( EDICT_TO_PROG( QH_EDICT_NUM( trace.entityNum ) ) );
-			ent->SetVelocity( vec3_origin );
-			ent->SetAVelocity( vec3_origin );
+			ent->SetVelocity( oldvec3_origin );
+			ent->SetAVelocity( oldvec3_origin );
 		}
 	}
 
@@ -1115,7 +1115,7 @@ static int SVQH_TryUnstick( qhedict_t* ent, const vec3_t oldvel ) {
 	vec3_t oldorg;
 	VectorCopy( ent->GetOrigin(), oldorg );
 	vec3_t dir;
-	VectorCopy( vec3_origin, dir );
+	VectorCopy( oldvec3_origin, dir );
 
 	for ( int i = 0; i < 8; i++ ) {
 		// try pushing a little in an axial direction
@@ -1148,7 +1148,7 @@ static int SVQH_TryUnstick( qhedict_t* ent, const vec3_t oldvel ) {
 		VectorCopy( oldorg, ent->GetOrigin() );
 	}
 
-	ent->SetVelocity( vec3_origin );
+	ent->SetVelocity( oldvec3_origin );
 	// still not moving
 	return 7;
 }
@@ -1201,8 +1201,8 @@ static void SVQH_WalkMove( qhedict_t* ent, float frametime ) {
 	//
 	VectorCopy( oldorg, ent->GetOrigin() );		// back to start pos
 
-	VectorCopy( vec3_origin, upmove );
-	VectorCopy( vec3_origin, downmove );
+	VectorCopy( oldvec3_origin, upmove );
+	VectorCopy( oldvec3_origin, downmove );
 	upmove[ 2 ] = STEPSIZE;
 	downmove[ 2 ] = -STEPSIZE + oldvel[ 2 ] * frametime;
 
@@ -1516,7 +1516,7 @@ static void SVQH_UserFriction( qhedict_t* sv_player, float frametime ) {
 	start[ 2 ] = sv_player->GetOrigin()[ 2 ] + sv_player->GetMins()[ 2 ];
 	stop[ 2 ] = start[ 2 ] - 34;
 
-	q1trace_t trace = SVQH_MoveHull0( start, vec3_origin, vec3_origin, stop, true, sv_player );
+	q1trace_t trace = SVQH_MoveHull0( start, oldvec3_origin, oldvec3_origin, stop, true, sv_player );
 
 	if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_H2Portals ) && sv_player->GetFriction() != 1 ) {//reset their friction to 1, only a trigger touching can change it again
 		sv_player->SetFriction( 1 );

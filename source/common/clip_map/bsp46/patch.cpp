@@ -875,7 +875,7 @@ bool patchCollide_t::ValidateFacet( facet_t* facet ) {
 		}
 		Vector4Copy( cm_patch_planes[ facet->borderPlanes[ j ] ].plane, plane );
 		if ( !facet->borderInward[ j ] ) {
-			VectorSubtract( vec3_origin, plane, plane );
+			VectorSubtract( oldvec3_origin, plane, plane );
 			plane[ 3 ] = -plane[ 3 ];
 		}
 		CM46_ChopWindingInPlace( &w, plane, plane[ 3 ], 0.1f );
@@ -921,7 +921,7 @@ void patchCollide_t::AddFacetBevels( facet_t* facet ) {
 		Vector4Copy( cm_patch_planes[ facet->borderPlanes[ j ] ].plane, plane );
 
 		if ( !facet->borderInward[ j ] ) {
-			VectorSubtract( vec3_origin, plane, plane );
+			VectorSubtract( oldvec3_origin, plane, plane );
 			plane[ 3 ] = -plane[ 3 ];
 		}
 
@@ -1659,7 +1659,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 
 			//planenum = facet->surfacePlane;
 			if ( inward ) {
-				VectorSubtract( vec3_origin, plane, plane );
+				VectorSubtract( oldvec3_origin, plane, plane );
 				plane[ 3 ] = -plane[ 3 ];
 			}
 
@@ -1694,7 +1694,7 @@ void QClipMap46::DrawDebugSurface( void ( * drawPoly )( int color, int numPoints
 
 				Vector4Copy( pc->planes[ curplanenum ].plane, plane );
 				if ( !curinward ) {
-					VectorSubtract( vec3_origin, plane, plane );
+					VectorSubtract( oldvec3_origin, plane, plane );
 					plane[ 3 ] = -plane[ 3 ];
 				}
 				//			if ( !facet->borderNoAdjust[j] ) {

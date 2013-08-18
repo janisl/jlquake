@@ -989,7 +989,7 @@ static void CLH2_LinkStaticEntities() {
 		rent.frame = pent->state.frame;
 		rent.skinNum = pent->state.skinnum;
 		rent.syncBase = pent->syncbase;
-		CLH2_SetRefEntAxis( &rent, pent->state.angles, vec3_origin, pent->state.scale,
+		CLH2_SetRefEntAxis( &rent, pent->state.angles, oldvec3_origin, pent->state.scale,
 			pent->state.abslight, pent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		R_AddRefEntityToScene( &rent );
@@ -1150,7 +1150,7 @@ static void CLH2_RelinkEntities() {
 		rent.frame = ent->state.frame;
 		rent.syncBase = ent->syncbase;
 		rent.skinNum = ent->state.skinnum;
-		CLH2_SetRefEntAxis( &rent, ent->state.angles, vec3_origin, ent->state.scale, ent->state.abslight, ent->state.drawflags );
+		CLH2_SetRefEntAxis( &rent, ent->state.angles, oldvec3_origin, ent->state.scale, ent->state.abslight, ent->state.drawflags );
 		CLH2_HandleCustomSkin( &rent );
 		if ( i <= cl.qh_maxclients ) {
 			CLH2_SetPlayerColours( &rent, i - 1 );
@@ -1295,7 +1295,7 @@ static void CLHW_LinkPacketEntities() {
 			}
 		}
 		if ( i == PrevPack->num_entities ) {
-			CLH2_SetRefEntAxis( &ent, angles, vec3_origin, s1->scale, s1->abslight, drawflags );
+			CLH2_SetRefEntAxis( &ent, angles, oldvec3_origin, s1->scale, s1->abslight, drawflags );
 			R_AddRefEntityToScene( &ent );
 			CLH2_AddColourShadeRefEnt( &ent, s1->colormap, drawflags );
 			continue;		// not in last message

@@ -55,7 +55,7 @@ realcheck:
 	start[ 0 ] = stop[ 0 ] = ( mins[ 0 ] + maxs[ 0 ] ) * 0.5;
 	start[ 1 ] = stop[ 1 ] = ( mins[ 1 ] + maxs[ 1 ] ) * 0.5;
 	stop[ 2 ] = start[ 2 ] - 2 * STEPSIZE;
-	q1trace_t trace = SVQH_MoveHull0( start, vec3_origin, vec3_origin, stop, true, ent );
+	q1trace_t trace = SVQH_MoveHull0( start, oldvec3_origin, oldvec3_origin, stop, true, ent );
 
 	if ( trace.fraction == 1.0 ) {
 		return false;
@@ -69,7 +69,7 @@ realcheck:
 			start[ 0 ] = stop[ 0 ] = x ? maxs[ 0 ] : mins[ 0 ];
 			start[ 1 ] = stop[ 1 ] = y ? maxs[ 1 ] : mins[ 1 ];
 
-			trace = SVQH_MoveHull0( start, vec3_origin, vec3_origin, stop, true, ent );
+			trace = SVQH_MoveHull0( start, oldvec3_origin, oldvec3_origin, stop, true, ent );
 
 			if ( trace.fraction != 1.0 && trace.endpos[ 2 ] > bottom ) {
 				bottom = trace.endpos[ 2 ];
@@ -384,7 +384,7 @@ void SVQH_MoveToGoal() {
 	float dist = G_FLOAT( OFS_PARM0 );
 
 	if ( GGameType & GAME_Hexen2 && !( GGameType & GAME_HexenWorld ) ) {
-		VectorCopy( vec3_origin, pr_globalVars.trace_plane_normal );
+		VectorCopy( oldvec3_origin, pr_globalVars.trace_plane_normal );
 	}
 	if ( !( ( int )ent->GetFlags() & ( QHFL_ONGROUND | QHFL_FLY | QHFL_SWIM ) ) ) {
 		G_FLOAT( OFS_RETURN ) = 0;

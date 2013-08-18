@@ -103,7 +103,7 @@ winding_t* CM46_BaseWindingForPlane( vec3_t normal, vec_t dist ) {
 	}
 
 	vec3_t vup;
-	VectorCopy( vec3_origin, vup );
+	VectorCopy( oldvec3_origin, vup );
 	switch ( x ) {
 	case 0:
 	case 1:

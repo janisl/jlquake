@@ -692,7 +692,7 @@ bool AAS_AreaWaypoint( int areanum, vec3_t center ) {
 	if ( !aasworld->areawaypoints ) {
 		return false;
 	}
-	if ( VectorCompare( aasworld->areawaypoints[ areanum ], vec3_origin ) ) {
+	if ( VectorCompare( aasworld->areawaypoints[ areanum ], oldvec3_origin ) ) {
 		return false;
 	}
 	VectorCopy( aasworld->areawaypoints[ areanum ], center );

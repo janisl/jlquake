@@ -177,7 +177,7 @@ void SVQH_SetIdealPitch( qhedict_t* player ) {
 		bottom[ 1 ] = top[ 1 ];
 		bottom[ 2 ] = top[ 2 ] - 160;
 
-		q1trace_t tr = SVQH_MoveHull0( top, vec3_origin, vec3_origin, bottom, 1, player );
+		q1trace_t tr = SVQH_MoveHull0( top, oldvec3_origin, oldvec3_origin, bottom, 1, player );
 		if ( tr.allsolid ||		// looking at a wall, leave ideal the way is was
 			 tr.fraction == 1 ) {	// near a dropoff
 			return;
@@ -753,8 +753,8 @@ static void SVQHW_Spawn_f( client_t* host_client ) {
 }
 
 static void SVQHW_SpawnSpectator( qhedict_t* player ) {
-	VectorCopy( vec3_origin, player->GetOrigin() );
-	player->SetViewOfs( vec3_origin );
+	VectorCopy( oldvec3_origin, player->GetOrigin() );
+	player->SetViewOfs( oldvec3_origin );
 	player->GetViewOfs()[ 2 ] = 22;
 
 	// search for an info_playerstart to spawn the spectator at

@@ -369,7 +369,7 @@ static void SVQ2_ClipMoveToEntities( q2moveclip_t* clip ) {
 		clipHandle_t model = SVQ2_HullForEntity( touch );
 		float* angles = touch->s.angles;
 		if ( touch->solid != Q2SOLID_BSP ) {
-			angles = vec3_origin;	// boxes don't rotate
+			angles = oldvec3_origin;	// boxes don't rotate
 
 		}
 		q2trace_t trace;
@@ -414,10 +414,10 @@ void SVQ2_TraceBounds( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, vec3_
 //	Passedict and edicts owned by passedict are explicitly not checked.
 q2trace_t SVQ2_Trace( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2edict_t* passedict, int contentmask ) {
 	if ( !mins ) {
-		mins = vec3_origin;
+		mins = oldvec3_origin;
 	}
 	if ( !maxs ) {
-		maxs = vec3_origin;
+		maxs = oldvec3_origin;
 	}
 
 	q2moveclip_t clip;

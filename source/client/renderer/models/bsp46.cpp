@@ -1772,7 +1772,7 @@ static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t
 		} else {
 			out->hasSurface = true;
 			int planeNum = LittleLong( sides[ firstSide + sideNum ].planeNum );
-			VectorSubtract( vec3_origin, s_worldData.planes[ planeNum ].normal, out->surface );
+			VectorSubtract( oldvec3_origin, s_worldData.planes[ planeNum ].normal, out->surface );
 			out->surface[ 3 ] = -s_worldData.planes[ planeNum ].dist;
 		}
 	}

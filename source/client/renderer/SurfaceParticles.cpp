@@ -92,7 +92,7 @@ void idSurfaceParticles::DrawParticle( const particle_t* p, float s1, float t1, 
 void idSurfaceParticles::DrawParticleTriangles() {
 	VectorScale( backEnd.viewParms.orient.axis[ 2 ], 1.5, up );
 	VectorScale( backEnd.viewParms.orient.axis[ 1 ], -1.5, right );
-	VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
+	VectorSubtract( oldvec3_origin, backEnd.viewParms.orient.axis[ 0 ], normal );
 
 	const particle_t* p = backEnd.refdef.particles;
 	for ( int i = 0; i < backEnd.refdef.num_particles; i++, p++ ) {

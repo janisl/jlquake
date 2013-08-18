@@ -153,7 +153,7 @@ bool QClipMap29::RecursiveHullCheck( chull_t* hull, int num, float p1f,
 		VectorCopy( plane->normal, trace->plane.normal );
 		trace->plane.dist = plane->dist;
 	} else {
-		VectorSubtract( vec3_origin, plane->normal, trace->plane.normal );
+		VectorSubtract( oldvec3_origin, plane->normal, trace->plane.normal );
 		trace->plane.dist = -plane->dist;
 	}
 

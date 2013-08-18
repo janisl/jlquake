@@ -208,7 +208,7 @@ static int RecursiveLightPointQ2( mbrush38_node_t* node, vec3_t start, vec3_t en
 		dt >>= 4;
 
 		byte* lightmap = surf->surf.samples;
-		VectorCopy( vec3_origin, pointcolor );
+		VectorCopy( oldvec3_origin, pointcolor );
 		if ( lightmap ) {
 			vec3_t scale;
 
@@ -246,7 +246,7 @@ void R_LightPointQ2( vec3_t p, vec3_t color, trRefdef_t& refdef ) {
 	int r = RecursiveLightPointQ2( tr.worldModel->brush38_nodes, p, end );
 
 	if ( r == -1 ) {
-		VectorCopy( vec3_origin, color );
+		VectorCopy( oldvec3_origin, color );
 	} else {
 		VectorCopy( pointcolor, color );
 	}

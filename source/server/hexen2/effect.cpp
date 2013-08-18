@@ -33,7 +33,7 @@ static void SVH2_ClearEffects() {
 }
 
 static void SVH2_GetSendEffectTestParams( int index, bool& DoTest, float& TestDistance, vec3_t TestO ) {
-	VectorCopy( vec3_origin, TestO );
+	VectorCopy( oldvec3_origin, TestO );
 	TestDistance = 0;
 
 	switch ( sv.h2_Effects[ index ].type ) {
@@ -149,7 +149,7 @@ static void SVH2_GetSendEffectTestParams( int index, bool& DoTest, float& TestDi
 }
 
 static void SVHW_GetSendEffectTestParams( int index, bool& DoTest, vec3_t TestO ) {
-	VectorCopy( vec3_origin, TestO );
+	VectorCopy( oldvec3_origin, TestO );
 
 	switch ( sv.h2_Effects[ index ].type ) {
 	case HWCE_HWSHEEPINATOR:

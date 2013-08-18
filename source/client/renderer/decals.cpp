@@ -252,7 +252,7 @@ void R_ProjectDecal( qhandle_t hShader, int numPoints, vec3_t* points, vec4_t pr
 	}
 
 	//	make the back plane
-	VectorSubtract( vec3_origin, temp.planes[ 0 ], temp.planes[ 1 ] );
+	VectorSubtract( oldvec3_origin, temp.planes[ 0 ], temp.planes[ 1 ] );
 	VectorMA( dv[ 0 ].xyz, projection[ 3 ], projection, xyz );
 	temp.planes[ 1 ][ 3 ] = DotProduct( xyz, temp.planes[ 1 ] );
 

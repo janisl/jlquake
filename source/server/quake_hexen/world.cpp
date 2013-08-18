@@ -329,7 +329,7 @@ static q1trace_t SV_ClipMoveToEntity( qhedict_t* ent, const vec3_t start, const 
 			 ( idMath::Fabs( ent->GetAngles()[ 0 ] ) > 1 || idMath::Fabs( ent->GetAngles()[ 1 ] ) > 1 || idMath::Fabs( ent->GetAngles()[ 2 ] ) > 1 ) ) {
 			if ( trace.fraction != 1 ) {
 				vec3_t a;
-				VectorSubtract( vec3_origin, ent->GetAngles(), a );
+				VectorSubtract( oldvec3_origin, ent->GetAngles(), a );
 				vec3_t forward, right, up;
 				AngleVectors( a, forward, right, up );
 

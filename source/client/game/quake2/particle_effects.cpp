@@ -923,7 +923,7 @@ void CLQ2_HeatbeamPaticles( vec3_t start, vec3_t forward ) {
 	float len = VectorNormalize( vec );
 
 	vec3_t right;
-	VectorSubtract( vec3_origin, cl.refdef.viewaxis[ 1 ], right );
+	VectorSubtract( oldvec3_origin, cl.refdef.viewaxis[ 1 ], right );
 	vec3_t up;
 	VectorCopy( cl.refdef.viewaxis[ 2 ], up );
 	VectorMA( move, -0.5, right, move );
@@ -1114,7 +1114,7 @@ void CLQ2_WidowSplash( vec3_t origin ) {
 		dir[ 2 ] = crand();
 		VectorNormalize( dir );
 		VectorMA( origin, 45.0, dir, p->org );
-		VectorMA( vec3_origin, 40.0, dir, p->vel );
+		VectorMA( oldvec3_origin, 40.0, dir, p->vel );
 
 		p->accel[ 0 ] = p->accel[ 1 ] = 0;
 		p->alpha = 1.0;

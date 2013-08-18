@@ -467,7 +467,7 @@ static void CLQW_ParseIntermission( QMsg& message ) {
 	for ( int i = 0; i < 3; i++ ) {
 		cl.qh_simangles[ i ] = message.ReadAngle();
 	}
-	VectorCopy( vec3_origin, cl.qh_simvel );
+	VectorCopy( oldvec3_origin, cl.qh_simvel );
 }
 
 static void CLQ1_ParseFinale( QMsg& message ) {

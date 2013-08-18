@@ -117,7 +117,7 @@ static void RB_CalcDeformVertexes( deformStage_t* ds ) {
 	float* normal = ( float* )tess.normal;
 
 	if ( ds->deformationWave.frequency < 0 ) {
-		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) ) {
+		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, oldvec3_origin ) ) {
 			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
 		}
 
@@ -342,7 +342,7 @@ static void AutospriteDeform() {
 		VectorScale( upDir, radius, up );
 
 		if ( backEnd.viewParms.isMirror ) {
-			VectorSubtract( vec3_origin, left, left );
+			VectorSubtract( oldvec3_origin, left, left );
 		}
 
 		// compensate for scale in the axes if necessary
@@ -1175,7 +1175,7 @@ void ComputeColors( shaderStage_t* pStage ) {
 		vec3_t worldUp;
 		qboolean zombieEffect = false;
 
-		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, vec3_origin ) ) {
+		if ( VectorCompare( backEnd.currentEntity->e.fireRiseDir, oldvec3_origin ) ) {
 			VectorSet( backEnd.currentEntity->e.fireRiseDir, 0, 0, 1 );
 		}
 

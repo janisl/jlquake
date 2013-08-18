@@ -189,7 +189,7 @@ POLYGON TO BOX SIDE PROJECTION
 static void AddSkyPolygon( int nump, vec3_t vecs ) {
 	// decide which face it maps to
 	vec3_t v;
-	VectorCopy( vec3_origin, v );
+	VectorCopy( oldvec3_origin, v );
 	float* vp = vecs;
 	for ( int i = 0; i < nump; i++, vp += 3 ) {
 		VectorAdd( vp, v, v );

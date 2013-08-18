@@ -38,7 +38,7 @@ static predicted_player predicted_players[ MAX_CLIENTS_QHW ];
 //	Builds all the qh_pmove physents for the current frame
 void CLQW_SetSolidEntities() {
 	qh_pmove.physents[ 0 ].model = 0;
-	VectorCopy( vec3_origin, qh_pmove.physents[ 0 ].origin );
+	VectorCopy( oldvec3_origin, qh_pmove.physents[ 0 ].origin );
 	qh_pmove.physents[ 0 ].info = 0;
 	qh_pmove.numphysent = 1;
 
@@ -63,7 +63,7 @@ void CLQW_SetSolidEntities() {
 //	Builds all the qh_pmove physents for the current frame
 void CLHW_SetSolidEntities() {
 	qh_pmove.physents[ 0 ].model = 0;
-	VectorCopy( vec3_origin, qh_pmove.physents[ 0 ].origin );
+	VectorCopy( oldvec3_origin, qh_pmove.physents[ 0 ].origin );
 	qh_pmove.physents[ 0 ].info = 0;
 	qh_pmove.numphysent = 1;
 

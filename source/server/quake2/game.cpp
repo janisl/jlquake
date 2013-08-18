@@ -149,7 +149,7 @@ static void SVQ2_Configstring( int index, const char* val ) {
 		sv.multicast.WriteShort( index );
 		sv.multicast.WriteString2( val );
 
-		SVQ2_Multicast( vec3_origin, Q2MULTICAST_ALL_R );
+		SVQ2_Multicast( oldvec3_origin, Q2MULTICAST_ALL_R );
 	}
 }
 

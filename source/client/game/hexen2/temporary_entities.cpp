@@ -100,19 +100,19 @@ h2entity_state_t* CLH2_FindState( int entityNumber ) {
 static void CLH2_ParseWizSpike( QMsg& message ) {
 	vec3_t pos;
 	message.ReadPos( pos );
-	CLH2_RunParticleEffect( pos, vec3_origin, 30 );
+	CLH2_RunParticleEffect( pos, oldvec3_origin, 30 );
 }
 
 static void CLH2_ParseKnightSpike( QMsg& message ) {
 	vec3_t pos;
 	message.ReadPos( pos );
-	CLH2_RunParticleEffect( pos, vec3_origin, 20 );
+	CLH2_RunParticleEffect( pos, oldvec3_origin, 20 );
 }
 
 static void CLH2_ParseSpikeCommon( QMsg& message, int count ) {
 	vec3_t pos;
 	message.ReadPos( pos );
-	CLH2_RunParticleEffect( pos, vec3_origin, count );
+	CLH2_RunParticleEffect( pos, oldvec3_origin, count );
 	if ( rand() % 5 ) {
 		S_StartSound( pos, CLH2_TempSoundChannel(), 0, clh2_sfx_tink1, 1, 1 );
 	} else {
@@ -188,13 +188,13 @@ static void CLHW_ParseGunShot( QMsg& message ) {
 	int cnt = message.ReadByte();
 	vec3_t pos;
 	message.ReadPos( pos );
-	CLH2_RunParticleEffect( pos, vec3_origin, 20 * cnt );
+	CLH2_RunParticleEffect( pos, oldvec3_origin, 20 * cnt );
 }
 
 static void CLHW_ParseLightningBlood( QMsg& message ) {
 	vec3_t pos;
 	message.ReadPos( pos );
-	CLH2_RunParticleEffect( pos, vec3_origin, 50 );
+	CLH2_RunParticleEffect( pos, oldvec3_origin, 50 );
 }
 
 static void CLHW_ParseBoneRic( QMsg& message ) {

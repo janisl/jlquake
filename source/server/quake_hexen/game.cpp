@@ -147,7 +147,7 @@ void PFQ1_setmodel() {
 		CM_ModelBounds( mod, mins, maxs );
 		SetMinMaxSize( e, mins, maxs );
 	} else {
-		SetMinMaxSize( e, vec3_origin, vec3_origin );
+		SetMinMaxSize( e, oldvec3_origin, oldvec3_origin );
 	}
 }
 
@@ -220,7 +220,7 @@ void PF_traceline() {
 	int type = G_FLOAT( OFS_PARM2 );
 	qhedict_t* ent = G_EDICT( OFS_PARM3 );
 
-	q1trace_t trace = SVQH_MoveHull0( v1, vec3_origin, vec3_origin, v2, type, ent );
+	q1trace_t trace = SVQH_MoveHull0( v1, oldvec3_origin, oldvec3_origin, v2, type, ent );
 
 	SVQH_SetMoveTrace( trace );
 }
@@ -611,7 +611,7 @@ static void SVQH_Aim( qhedict_t* ent, const vec3_t shot_org ) {
 	VectorCopy( pr_globalVars.v_forward, dir );
 	vec3_t end;
 	VectorMA( start, 2048, dir, end );
-	q1trace_t tr = SVQH_MoveHull0( start, vec3_origin, vec3_origin, end, false, ent );
+	q1trace_t tr = SVQH_MoveHull0( start, oldvec3_origin, oldvec3_origin, end, false, ent );
 	if ( tr.entityNum >= 0 &&
 		 QH_EDICT_NUM( tr.entityNum )->GetTakeDamage() == ( GGameType & GAME_Hexen2 ? QHDAMAGE_YES : Q1DAMAGE_AIM ) &&
 		 ( !svqh_teamplay->value || ent->GetTeam() <= 0 || ent->GetTeam() != QH_EDICT_NUM( tr.entityNum )->GetTeam() ) ) {
@@ -646,7 +646,7 @@ static void SVQH_Aim( qhedict_t* ent, const vec3_t shot_org ) {
 		if ( dist < bestdist ) {
 			continue;	// to far to turn
 		}
-		q1trace_t tr = SVQH_MoveHull0( start, vec3_origin, vec3_origin, end, false, ent );
+		q1trace_t tr = SVQH_MoveHull0( start, oldvec3_origin, oldvec3_origin, end, false, ent );
 		if ( QH_EDICT_NUM( tr.entityNum ) == check ) {	// can shoot at this one
 			bestdist = dist;
 			bestent = check;

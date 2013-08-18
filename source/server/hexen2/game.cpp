@@ -79,7 +79,7 @@ static void PF_setpuzzlemodel() {
 		CM_ModelBounds( mod, mins, maxs );
 		SetMinMaxSize( e, mins, maxs );
 	} else {
-		SetMinMaxSize( e, vec3_origin, vec3_origin );
+		SetMinMaxSize( e, oldvec3_origin, oldvec3_origin );
 	}
 }
 
@@ -721,7 +721,7 @@ static void PFHW_endeffect() {
 	sv.h2_Effects[ index ].type = 0;
 	sv.multicast.WriteByte( hwsvc_end_effect );
 	sv.multicast.WriteByte( index );
-	SVQH_Multicast( vec3_origin, MULTICAST_ALL_R );
+	SVQH_Multicast( oldvec3_origin, MULTICAST_ALL_R );
 }
 
 static void PF_turneffect() {

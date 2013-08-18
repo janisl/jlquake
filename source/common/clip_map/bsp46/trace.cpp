@@ -66,7 +66,7 @@ TRACING
 
 void QClipMap46::BoxTraceQ3( q3trace_t* Results, const vec3_t Start, const vec3_t End,
 	const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule ) {
-	Trace( Results, Start, End, Mins, Maxs, Model, vec3_origin, BrushMask, Capsule, NULL );
+	Trace( Results, Start, End, Mins, Maxs, Model, oldvec3_origin, BrushMask, Capsule, NULL );
 }
 
 //==========================================================================
@@ -82,10 +82,10 @@ void QClipMap46::TransformedBoxTraceQ3( q3trace_t* Results, const vec3_t Start,
 	const vec3_t End, const vec3_t Mins, const vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule ) {
 	if ( !Mins ) {
-		Mins = vec3_origin;
+		Mins = oldvec3_origin;
 	}
 	if ( !Maxs ) {
-		Maxs = vec3_origin;
+		Maxs = oldvec3_origin;
 	}
 
 	// adjust so that mins and maxs are always symetric, which
@@ -196,10 +196,10 @@ void QClipMap46::Trace( q3trace_t* results, const vec3_t start, const vec3_t end
 
 	// allow NULL to be passed in for 0,0,0
 	if ( !mins ) {
-		mins = vec3_origin;
+		mins = oldvec3_origin;
 	}
 	if ( !maxs ) {
-		maxs = vec3_origin;
+		maxs = oldvec3_origin;
 	}
 
 	// set basic parms

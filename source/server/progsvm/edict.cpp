@@ -889,8 +889,8 @@ void ED_Free( qhedict_t* ed ) {
 	ed->SetColorMap( 0 );
 	ed->SetSkin( 0 );
 	ed->SetFrame( 0 );
-	VectorCopy( vec3_origin, ed->GetOrigin() );
-	ed->SetAngles( vec3_origin );
+	VectorCopy( oldvec3_origin, ed->GetOrigin() );
+	ed->SetAngles( oldvec3_origin );
 	ed->SetNextThink( -1 );
 	ed->SetSolid( 0 );
 

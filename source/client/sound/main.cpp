@@ -2314,7 +2314,7 @@ void S_StartLocalSound( const char* Sound ) {
 	sfxHandle_t sfx = S_RegisterSound( Sound );
 
 	if ( GGameType & GAME_QuakeHexen ) {
-		S_StartSound( vec3_origin, listener_number, -1, sfx );
+		S_StartSound( oldvec3_origin, listener_number, -1, sfx );
 	} else {
 		S_StartSound( NULL, listener_number, 0, sfx );
 	}

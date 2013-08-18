@@ -120,7 +120,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 		// are no problem situations, because the sprite is always in the same
 		// position relative to the viewer
 		VectorCopy( backEnd.viewParms.orient.axis[ 2 ], up );
-		VectorSubtract( vec3_origin, backEnd.viewParms.orient.axis[ 1 ], right );
+		VectorSubtract( oldvec3_origin, backEnd.viewParms.orient.axis[ 1 ], right );
 	} else if ( psprite->type == SPR_VP_PARALLEL_UPRIGHT ) {
 		// generate the sprite's axes, with vup straight up in worldspace, and
 		// r_spritedesc.vright parallel to the viewplane.
@@ -143,7 +143,7 @@ void RB_SurfaceSpr( msprite1_t* psprite ) {
 	} else if ( psprite->type == SPR_ORIENTED ) {
 		// generate the sprite's axes, according to the sprite's world orientation
 		VectorCopy( backEnd.currentEntity->e.axis[ 2 ], up );
-		VectorSubtract( vec3_origin, backEnd.currentEntity->e.axis[ 1 ], right );
+		VectorSubtract( oldvec3_origin, backEnd.currentEntity->e.axis[ 1 ], right );
 	} else if ( psprite->type == SPR_VP_PARALLEL_ORIENTED ) {
 		// generate the sprite's axes, parallel to the viewplane, but rotated in
 		// that plane around the center according to the sprite entity's roll

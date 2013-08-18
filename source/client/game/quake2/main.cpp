@@ -449,7 +449,7 @@ void CLQ2_UpdateSounds() {
 		if ( !ent->sound ) {
 			continue;
 		}
-		S_AddLoopingSound( num, ent->origin, vec3_origin, 0, cl.sound_precache[ ent->sound ], 0, 0 );
+		S_AddLoopingSound( num, ent->origin, oldvec3_origin, 0, cl.sound_precache[ ent->sound ], 0, 0 );
 	}
 }
 

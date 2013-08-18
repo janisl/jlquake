@@ -699,7 +699,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_INFANTRY_MACHINEGUN_12:
 	case Q2MZ2_INFANTRY_MACHINEGUN_13:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
@@ -713,7 +713,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_SOLDIER_MACHINEGUN_7:
 	case Q2MZ2_SOLDIER_MACHINEGUN_8:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "soldier/solatck3.wav" ), 1, ATTN_NORM, 0 );
 		break;
@@ -727,7 +727,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_GUNNER_MACHINEGUN_7:
 	case Q2MZ2_GUNNER_MACHINEGUN_8:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "gunner/gunatck2.wav" ), 1, ATTN_NORM, 0 );
 		break;
@@ -742,7 +742,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_TURRET_MACHINEGUN:			// PGM
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NORM, 0 );
 		break;
@@ -756,7 +756,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_CARRIER_MACHINEGUN_L2:		// PMM
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "infantry/infatck1.wav" ), 1, ATTN_NONE, 0 );
 		break;
@@ -835,7 +835,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_TANK_MACHINEGUN_18:
 	case Q2MZ2_TANK_MACHINEGUN_19:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		String::Sprintf( soundname, sizeof ( soundname ), "tank/tnkatk2%c.wav", 'a' + rand() % 5 );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( soundname ), 1, ATTN_NORM, 0 );
@@ -919,7 +919,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_JORG_MACHINEGUN_L5:
 	case Q2MZ2_JORG_MACHINEGUN_L6:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		S_StartSound( NULL, ent, Q2CHAN_WEAPON, S_RegisterSound( "boss3/xfire.wav" ), 1, ATTN_NORM, 0 );
 		break;
@@ -931,7 +931,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 	case Q2MZ2_JORG_MACHINEGUN_R5:
 	case Q2MZ2_JORG_MACHINEGUN_R6:
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		break;
 
@@ -949,7 +949,7 @@ void CLQ2_ParseMuzzleFlash2( QMsg& message ) {
 
 		color[ 0 ] = 1; color[ 1 ] = 1; color[ 2 ] = 0;
 
-		CLQ2_ParticleEffect( origin, vec3_origin, 0, 40 );
+		CLQ2_ParticleEffect( origin, oldvec3_origin, 0, 40 );
 		CLQ2_SmokeAndFlash( origin );
 		break;
 

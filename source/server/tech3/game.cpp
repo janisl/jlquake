@@ -113,7 +113,7 @@ bool SVT3_EntityContact( const vec3_t mins, const vec3_t maxs, const idEntity3* 
 
 	clipHandle_t ch = SVT3_ClipHandleForEntity( ent );
 	q3trace_t trace;
-	CM_TransformedBoxTraceQ3( &trace, vec3_origin, vec3_origin, mins, maxs,
+	CM_TransformedBoxTraceQ3( &trace, oldvec3_origin, oldvec3_origin, mins, maxs,
 		ch, -1, origin, angles, capsule );
 
 	return trace.startsolid;

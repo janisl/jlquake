@@ -1571,7 +1571,7 @@ static void UpdatePIV() {
 			VectorCopy( client->qh_edict->GetOrigin(), adjust_org2 );
 			adjust_org2[ 2 ] += 24;
 
-			q1trace_t trace = SVQH_MoveHull0( adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->qh_edict );
+			q1trace_t trace = SVQH_MoveHull0( adjust_org1, oldvec3_origin, oldvec3_origin, adjust_org2, false, host_client->qh_edict );
 			if ( QH_EDICT_NUM( trace.entityNum ) == client->qh_edict ) {
 				//can see each other, check for invisible, dead
 				if ( ValidToShowName( client->qh_edict ) ) {
