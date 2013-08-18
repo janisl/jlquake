@@ -508,7 +508,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 
 	tr.currentModel = loadmodel;
 
-	GL_BeginBuildingLightmaps( loadmodel );
+	GL_BeginBuildingLightmaps();
 	idList<idBrush38ShaderInfoBuild> shaderInfoBuild;
 	idList<idSurface2LoadTimeInfo> loadTimeInfo;
 	loadTimeInfo.SetNum( count );

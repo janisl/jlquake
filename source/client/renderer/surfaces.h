@@ -35,6 +35,7 @@ struct gllightmapstate_t {
 	byte lightmap_buffer[ 4 * BLOCK_WIDTH * BLOCK_HEIGHT ];
 };
 
+void R_BeginBuildingLightmapsQ1();
 void GL_BuildLightmaps();
 void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
@@ -42,8 +43,9 @@ void R_RenderDynamicLightmaps( idSurfaceFaceQ1* fa );
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex );
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces(int& forcedSortIndex);
+void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf );
 
-void GL_BeginBuildingLightmaps( idRenderModel* m );
+void GL_BeginBuildingLightmaps();
 void GL_CreateSurfaceLightmapQ2( idSurfaceFaceQ2* surf );
 void GL_EndBuildingLightmaps();
 void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex );

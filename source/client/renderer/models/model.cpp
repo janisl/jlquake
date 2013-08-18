@@ -166,6 +166,8 @@ void R_LoadWorld( const char* name ) {
 	idRenderModel* mod = NULL;
 
 	if ( GGameType & GAME_QuakeHexen ) {
+		R_BeginBuildingLightmapsQ1();
+
 		mod = new idRenderModelBSP29();
 		R_AddModel( mod );
 		String::NCpyZ( mod->name, name, sizeof ( mod->name ) );

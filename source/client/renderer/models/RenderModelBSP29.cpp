@@ -22,6 +22,8 @@
 #include "model.h"
 #include "../sky.h"
 #include "../cvars.h"
+#include "../main.h"
+#include "../surfaces.h"
 
 #define SUBDIVIDE_SIZE  64
 
@@ -39,6 +41,8 @@ static vec3_t warpverts[ 1024 ];
 static mbrush29_glpoly_t* warppolys;
 
 static byte mod_novis[ BSP29_MAX_MAP_LEAFS / 8 ];
+
+static mbrush29_vertex_t* r_pcurrentvertbase;
 
 idRenderModelBSP29::idRenderModelBSP29() {
 }
@@ -342,10 +346,7 @@ static void CalcSurfaceExtents( idSurfaceFaceQ1* s ) {
 		}
 
 		for ( int j = 0; j < 2; j++ ) {
-			float val = v->position[ 0 ] * tex->vecs[ j ][ 0 ] +
-						v->position[ 1 ] * tex->vecs[ j ][ 1 ] +
-						v->position[ 2 ] * tex->vecs[ j ][ 2 ] +
-						tex->vecs[ j ][ 3 ];
+			float val = DotProduct( v->position, tex->vecs[ j ] ) + tex->vecs[ j ][ 3 ];
 			if ( val < mins[ j ] ) {
 				mins[ j ] = val;
 			}
@@ -516,6 +517,74 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 	}
 }
 
+static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
+	// reconstruct the polygon
+	mbrush29_edge_t* pedges = tr.currentModel->brush29_edges;
+	int lnumverts = fa->surf.numedges;
+
+	//
+	// draw texture
+	//
+	fa->numVertexes = lnumverts;
+	fa->vertexes = new idWorldVertex[ lnumverts ];
+	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
+	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
+
+	fa->bounds.Clear();
+	for ( int i = 0; i < lnumverts; i++ ) {
+		int lindex = tr.currentModel->brush29_surfedges[ fa->surf.firstedge + i ];
+
+		float* vec;
+		if ( lindex > 0 ) {
+			mbrush29_edge_t* r_pedge = &pedges[ lindex ];
+			vec = r_pcurrentvertbase[ r_pedge->v[ 0 ] ].position;
+		} else {
+			mbrush29_edge_t* r_pedge = &pedges[ -lindex ];
+			vec = r_pcurrentvertbase[ r_pedge->v[ 1 ] ].position;
+		}
+		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
+
+		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
+		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
+			fa->vertexes[ i ].normal *= -1;
+		}
+
+		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
+		s /= fa->surf.texinfo->texture->width;
+
+		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
+		t /= fa->surf.texinfo->texture->height;
+
+		fa->vertexes[ i ].st.x = s;
+		fa->vertexes[ i ].st.y = t;
+
+		//
+		// lightmap texture coordinates
+		//
+		s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
+		s -= fa->surf.texturemins[ 0 ];
+		s += fa->surf.light_s * 16;
+		s += 8;
+		s /= BLOCK_WIDTH * 16;
+
+		t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
+		t -= fa->surf.texturemins[ 1 ];
+		t += fa->surf.light_t * 16;
+		t += 8;
+		t /= BLOCK_HEIGHT * 16;
+
+		fa->vertexes[ i ].lightmap.x = s;
+		fa->vertexes[ i ].lightmap.y = t;
+	}
+
+	for ( int i = 0; i < lnumverts - 2; i++ ) {
+		fa->surf.indexes[ i * 3 + 0 ] = 0;
+		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
+		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
+	}
+}
+
 static void Mod_LoadFaces( bsp29_lump_t* l ) {
 	bsp29_dface_t* in = ( bsp29_dface_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -526,6 +595,8 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 
 	loadmodel->brush29_surfaces = out;
 	loadmodel->brush29_numsurfaces = count;
+
+	r_pcurrentvertbase = loadmodel->brush29_vertexes;
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
 		out->surf.firstedge = LittleLong( in->firstedge );
@@ -575,8 +646,17 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 				out->surf.texturemins[ i ] = -8192;
 			}
 			GL_SubdivideSurface( out );		// cut up polygon for warps
-
 			continue;
+		}
+
+		GL_CreateSurfaceLightmapQ1( out );
+		BuildSurfaceDisplayList( out );
+
+		out->shader = R_BuildBsp29Shader( out->surf.texinfo->texture, out->surf.lightmaptexturenum );
+		if ( out->surf.texinfo->texture->alternate_anims ) {
+			out->surf.altShader = R_BuildBsp29Shader( out->surf.texinfo->texture->alternate_anims, out->surf.lightmaptexturenum );
+		} else {
+			out->surf.altShader = out->shader;
 		}
 	}
 }
@@ -777,7 +857,8 @@ static void Mod_LoadSubmodelsH2( bsp29_lump_t* l ) {
 bool idRenderModelBSP29::Load( idList<byte>& buffer, idSkinTranslation* skinTranslation ) {
 	Com_Memset( mod_novis, 0xff, sizeof ( mod_novis ) );
 
-	loadmodel->type = MOD_BRUSH29;
+	type = MOD_BRUSH29;
+	tr.currentModel = this;
 
 	bsp29_dheader_t* header = ( bsp29_dheader_t* )buffer.Ptr();
 

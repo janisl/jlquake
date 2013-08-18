@@ -41,8 +41,6 @@ static byte lightmaps[ 4 * MAX_LIGHTMAPS * BLOCK_WIDTH * BLOCK_HEIGHT ];
 
 static unsigned blocklights_q1[ 18 * 18 ];
 
-static mbrush29_vertex_t* r_pcurrentvertbase;
-
 /*
 =============================================================================
 
@@ -145,7 +143,7 @@ static void R_AddDynamicLightsQ1( idSurfaceFaceQ1* surf ) {
 }
 
 //	Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-static void R_BuildLightMapQ1( idSurfaceFaceQ1* surf, byte* dest, byte* overbrightDest, int stride ) {
+static void R_BuildLightMapQ1( idRenderModel* model, idSurfaceFaceQ1* surf, byte* dest, byte* overbrightDest, int stride ) {
 	int smax, tmax;
 	int t;
 	int i, j, size;
@@ -162,7 +160,7 @@ static void R_BuildLightMapQ1( idSurfaceFaceQ1* surf, byte* dest, byte* overbrig
 	lightmap = surf->surf.samples;
 
 // set to full bright if no light data
-	if ( !tr.worldModel->brush29_lightdata ) {
+	if ( !model->brush29_lightdata ) {
 		for ( i = 0; i < size; i++ )
 			blocklights_q1[ i ] = 255 * 256;
 		goto store;
@@ -218,7 +216,7 @@ store:
 	}
 }
 
-static void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf ) {
+void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf ) {
 	int smax = ( surf->surf.extents[ 0 ] >> 4 ) + 1;
 	int tmax = ( surf->surf.extents[ 1 ] >> 4 ) + 1;
 
@@ -227,79 +225,10 @@ static void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1* surf ) {
 	base += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
 	byte* overbrightBase = lightmaps + ( surf->surf.lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 	overbrightBase += ( surf->surf.light_t * BLOCK_WIDTH + surf->surf.light_s ) * 4;
-	R_BuildLightMapQ1( surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+	R_BuildLightMapQ1( loadmodel, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 }
 
-static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
-	// reconstruct the polygon
-	mbrush29_edge_t* pedges = tr.currentModel->brush29_edges;
-	int lnumverts = fa->surf.numedges;
-
-	//
-	// draw texture
-	//
-	fa->numVertexes = lnumverts;
-	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
-	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
-
-	fa->bounds.Clear();
-	for ( int i = 0; i < lnumverts; i++ ) {
-		int lindex = tr.currentModel->brush29_surfedges[ fa->surf.firstedge + i ];
-
-		float* vec;
-		if ( lindex > 0 ) {
-			mbrush29_edge_t* r_pedge = &pedges[ lindex ];
-			vec = r_pcurrentvertbase[ r_pedge->v[ 0 ] ].position;
-		} else {
-			mbrush29_edge_t* r_pedge = &pedges[ -lindex ];
-			vec = r_pcurrentvertbase[ r_pedge->v[ 1 ] ].position;
-		}
-		fa->vertexes[ i ].xyz.FromOldVec3( vec );
-		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-
-		fa->vertexes[ i ].normal.FromOldVec3( fa->surf.plane->normal );
-		if ( fa->surf.flags & BRUSH29_SURF_PLANEBACK ) {
-			fa->vertexes[ i ].normal *= -1;
-		}
-
-		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
-		s /= fa->surf.texinfo->texture->width;
-
-		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
-		t /= fa->surf.texinfo->texture->height;
-
-		fa->vertexes[ i ].st.x = s;
-		fa->vertexes[ i ].st.y = t;
-
-		//
-		// lightmap texture coordinates
-		//
-		s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
-		s -= fa->surf.texturemins[ 0 ];
-		s += fa->surf.light_s * 16;
-		s += 8;
-		s /= BLOCK_WIDTH * 16;
-
-		t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
-		t -= fa->surf.texturemins[ 1 ];
-		t += fa->surf.light_t * 16;
-		t += 8;
-		t /= BLOCK_HEIGHT * 16;
-
-		fa->vertexes[ i ].lightmap.x = s;
-		fa->vertexes[ i ].lightmap.y = t;
-	}
-
-	for ( int i = 0; i < lnumverts - 2; i++ ) {
-		fa->surf.indexes[ i * 3 + 0 ] = 0;
-		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
-		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
-	}
-}
-
-//	Builds the lightmap texture with all the surfaces from all brush models
-void GL_BuildLightmaps() {
+void R_BeginBuildingLightmapsQ1() {
 	Com_Memset( allocated, 0, sizeof ( allocated ) );
 
 	tr.frameCount = 1;		// no dlightcache
@@ -317,40 +246,10 @@ void GL_BuildLightmaps() {
 			tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), lightmaps + i * BLOCK_WIDTH * BLOCK_HEIGHT * 4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP );
 		}
 	}
+}
 
-	for ( int j = 1; j < MAX_MOD_KNOWN; j++ ) {
-		idRenderModel* m = tr.models[ j ];
-		if ( !m ) {
-			break;
-		}
-		if ( m->type != MOD_BRUSH29 ) {
-			continue;
-		}
-		if ( m->name[ 0 ] == '*' ) {
-			continue;
-		}
-		r_pcurrentvertbase = m->brush29_vertexes;
-		tr.currentModel = m;
-		for ( int i = 0; i < m->brush29_numsurfaces; i++ ) {
-			idSurfaceFaceQ1* surf = &m->brush29_surfaces[ i ];
-			if ( surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
-				continue;
-			}
-			if ( surf->surf.flags & BRUSH29_SURF_DRAWSKY ) {
-				continue;
-			}
-			GL_CreateSurfaceLightmapQ1( surf );
-			BuildSurfaceDisplayList( surf );
-
-			surf->shader = R_BuildBsp29Shader( surf->surf.texinfo->texture, surf->surf.lightmaptexturenum );
-			if ( surf->surf.texinfo->texture->alternate_anims ) {
-				surf->surf.altShader = R_BuildBsp29Shader( surf->surf.texinfo->texture->alternate_anims, surf->surf.lightmaptexturenum );
-			} else {
-				surf->surf.altShader = surf->shader;
-			}
-		}
-	}
-
+//	Builds the lightmap texture with all the surfaces from all brush models
+void GL_BuildLightmaps() {
 	//
 	// upload all lightmaps that were filled
 	//
@@ -460,7 +359,7 @@ dynamic:
 			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
 			byte* overbrightBase = lightmaps + ( fa->lightmaptexturenum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 			overbrightBase += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
-			R_BuildLightMapQ1( surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+			R_BuildLightMapQ1( tr.worldModel, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 		}
 	}
 

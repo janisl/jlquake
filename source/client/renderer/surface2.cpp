@@ -308,7 +308,7 @@ static void R_BuildLightMapQ2( idSurfaceFaceQ2* surf, byte* dest, int stride ) {
 	}
 }
 
-void GL_BeginBuildingLightmaps( idRenderModel* m ) {
+void GL_BeginBuildingLightmaps() {
 	Com_Memset( gl_lms.allocated, 0, sizeof ( gl_lms.allocated ) );
 
 	tr.frameCount = 1;		// no dlightcache
