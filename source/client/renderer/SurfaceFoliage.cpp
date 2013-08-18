@@ -25,7 +25,6 @@ idSurfaceFoliage::~idSurfaceFoliage() {
 
 void idSurfaceFoliage::Draw() {
 	// basic setup
-	int numIndexes = folData->numIndexes;
 	vec3_t viewOrigin;
 	VectorCopy( backEnd.orient.viewOrigin, viewOrigin );
 
@@ -109,9 +108,8 @@ void idSurfaceFoliage::Draw() {
 		tess.dlightBits |= dlightBits;
 
 		// copy indexes
-		Com_Memcpy( &tess.indexes[ tess.numIndexes ], folData->indexes, numIndexes * sizeof ( folData->indexes[ 0 ] ) );
 		for ( int i = 0; i < numIndexes; i++ ) {
-			tess.indexes[ tess.numIndexes + i ] += tess.numVertexes;
+			tess.indexes[ tess.numIndexes + i ] = indexes[ i ] + tess.numVertexes;
 		}
 
 		// copy and offset xyz, copy normal, st and color

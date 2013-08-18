@@ -24,13 +24,13 @@ idSurfaceFaceQ2::idSurfaceFaceQ2() {
 }
 
 void idSurfaceFaceQ2::Draw() {
-	RB_CHECKOVERFLOW( numVertexes, surf.numIndexes );
+	RB_CHECKOVERFLOW( numVertexes, numIndexes );
 
 	int numTessVerts = tess.numVertexes;
 	int numTessIndexes = tess.numIndexes;
 
 	tess.numVertexes += numVertexes;
-	tess.numIndexes += surf.numIndexes;
+	tess.numIndexes += numIndexes;
 
 	idWorldVertex* vert = vertexes;
 	for ( int i = 0; i < numVertexes; i++, vert++ ) {
@@ -39,8 +39,8 @@ void idSurfaceFaceQ2::Draw() {
 		vert->st.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 0 ] );
 		vert->lightmap.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 1 ] );
 	}
-	for ( int i = 0; i < surf.numIndexes; i++ ) {
-		tess.indexes[ numTessIndexes + i ] = numTessVerts + surf.indexes[ i ];
+	for ( int i = 0; i < numIndexes; i++ ) {
+		tess.indexes[ numTessIndexes + i ] = numTessVerts + indexes[ i ];
 	}
 	c_brush_polys++;
 }

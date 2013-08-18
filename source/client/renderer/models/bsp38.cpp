@@ -334,15 +334,15 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 		fa->vertexes[ i ].st.y = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
 	}
 	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
-		fa->surf.numIndexes += ( p->numverts - 2 ) * 3;
+		fa->numIndexes += ( p->numverts - 2 ) * 3;
 	}
-	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
+	fa->indexes = new int[ fa->numIndexes ];
 	int numIndexes = 0;
 	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
 		for ( int i = 0; i < p->numverts - 2; i++ ) {
-			fa->surf.indexes[ numIndexes + i * 3 + 0 ] = p->indexes[ 0 ];
-			fa->surf.indexes[ numIndexes + i * 3 + 1 ] = p->indexes[ i + 1 ];
-			fa->surf.indexes[ numIndexes + i * 3 + 2 ] = p->indexes[ i + 2 ];
+			fa->indexes[ numIndexes + i * 3 + 0 ] = p->indexes[ 0 ];
+			fa->indexes[ numIndexes + i * 3 + 1 ] = p->indexes[ i + 1 ];
+			fa->indexes[ numIndexes + i * 3 + 2 ] = p->indexes[ i + 2 ];
 		}
 		numIndexes += ( p->numverts - 2 ) * 3;
 	}
@@ -366,8 +366,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	//
 	fa->numVertexes = lnumverts;
 	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->surf.numIndexes = ( lnumverts - 2 ) * 3;
-	fa->surf.indexes = new glIndex_t[ fa->surf.numIndexes ];
+	fa->numIndexes = ( lnumverts - 2 ) * 3;
+	fa->indexes = new int[ fa->numIndexes ];
 
 	fa->bounds.Clear();
 	mbrush38_texinfo_t* texinfo = fa->surf.texinfo;
@@ -417,9 +417,9 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	}
 
 	for ( int i = 0; i < lnumverts - 2; i++ ) {
-		fa->surf.indexes[ i * 3 + 0 ] = 0;
-		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
-		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
+		fa->indexes[ i * 3 + 0 ] = 0;
+		fa->indexes[ i * 3 + 1 ] = i + 1;
+		fa->indexes[ i * 3 + 2 ] = i + 2;
 	}
 
 	fa->boundingSphere = fa->bounds.ToSphere();
@@ -826,9 +826,6 @@ void Mod_FreeBsp38( idRenderModel* mod ) {
 	delete[] mod->brush38_vertexes;
 	delete[] mod->brush38_edges;
 	delete[] mod->brush38_texinfo;
-	for ( int i = 0; i < mod->brush38_numsurfaces; i++ ) {
-		delete[] mod->brush38_surfaces[ i ].surf.indexes;
-	}
 	delete[] mod->brush38_surfaces;
 	delete[] mod->brush38_shaderInfo;
 	delete[] mod->brush38_nodes;

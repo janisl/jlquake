@@ -359,12 +359,12 @@ void R_AddSkySurface( idSurfaceFaceQ2* fa ) {
 	}
 
 	// calculate vertex values for sky box
-	for ( int i = 0; i < fa->surf.numIndexes; i += 3 ) {
+	for ( int i = 0; i < fa->numIndexes; i += 3 ) {
 		vec3_t verts[ MAX_CLIP_VERTS ];
 		for ( int j = 0; j < 3; j++ ) {
 			idVec3 org;
 			org.FromOldVec3( tr.viewParms.orient.origin );
-			idVec3 res = fa->vertexes[ fa->surf.indexes[ i + j ] ].xyz - org;
+			idVec3 res = fa->vertexes[ fa->indexes[ i + j ] ].xyz - org;
 			res.ToOldVec3( verts[ j ] );
 		}
 		ClipSkyPolygon( 3, verts[ 0 ], 0 );

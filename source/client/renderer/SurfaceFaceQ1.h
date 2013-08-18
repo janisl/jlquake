@@ -60,9 +60,6 @@ struct mbrush29_surface_t {
 	int cached_light[ BSP29_MAXLIGHTMAPS ];				// values currently used in lightmap
 	qboolean cached_dlight;					// true if dynamic light in cache
 	byte* samples;				// [numstyles*surfsize]
-
-	glIndex_t* indexes;
-	int numIndexes;
 };
 
 class idSurfaceFaceQ1 : public idSurfaceFace {

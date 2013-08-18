@@ -21,9 +21,6 @@
 
 class idSurfaceFaceQ3 : public idSurfaceFace {
 public:
-	struct srfSurfaceFace_t* faceData;
-
-	virtual ~idSurfaceFaceQ3();
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();
 	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;

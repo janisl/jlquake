@@ -278,16 +278,10 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 
 	int numIndexes = LittleLong( ds->numIndexes );
 
-	// create the srfSurfaceFace_t
-	int sfaceSize = sizeof( srfSurfaceFace_t );
-	int ofsIndexes = sfaceSize;
-	sfaceSize += sizeof ( int ) * numIndexes;
-
-	srfSurfaceFace_t* cv = ( srfSurfaceFace_t* )Mem_Alloc( sfaceSize );
 	surf->numVertexes = numPoints;
 	surf->vertexes = new idWorldVertex[ numPoints ];
-	cv->numIndices = numIndexes;
-	cv->ofsIndices = ofsIndexes;
+	surf->numIndexes = numIndexes;
+	surf->indexes = new int[ numIndexes ];
 
 	surf->bounds.Clear();
 	verts += LittleLong( ds->firstVert );
@@ -306,13 +300,12 @@ static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts,
 
 	indexes += LittleLong( ds->firstIndex );
 	for ( int i = 0; i < numIndexes; i++ ) {
-		( ( int* )( ( byte* )cv + cv->ofsIndices ) )[ i ] = LittleLong( indexes[ i ] );
+		surf->indexes[ i ] = LittleLong( indexes[ i ] );
 	}
 
 	// finish surface
 	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
 
-	surf->faceData = cv;
 	return surf;
 }
 
@@ -401,13 +394,10 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	int numVerts = LittleLong( ds->numVerts );
 	int numIndexes = LittleLong( ds->numIndexes );
 
-	srfTriangles_t* tri = ( srfTriangles_t* )Mem_Alloc( sizeof ( *tri ) + numIndexes * sizeof ( tri->indexes[ 0 ] ) );
 	surf->numVertexes = numVerts;
 	surf->vertexes = new idWorldVertex[ numVerts ];
-	tri->numIndexes = numIndexes;
-	tri->indexes = ( int* )( tri + 1 );
-
-	surf->triData = tri;
+	surf->numIndexes = numIndexes;
+	surf->indexes = new int[ numIndexes ];
 
 	// copy vertexes
 	surf->bounds.Clear();
@@ -429,8 +419,8 @@ static idWorldSurface* ParseTriSurf( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// copy indexes
 	indexes += LittleLong( ds->firstIndex );
 	for ( int i = 0; i < numIndexes; i++ ) {
-		tri->indexes[ i ] = LittleLong( indexes[ i ] );
-		if ( tri->indexes[ i ] < 0 || tri->indexes[ i ] >= numVerts ) {
+		surf->indexes[ i ] = LittleLong( indexes[ i ] );
+		if ( surf->indexes[ i ] < 0 || surf->indexes[ i ] >= numVerts ) {
 			common->Error( "Bad index in triangle surface" );
 		}
 	}
@@ -477,7 +467,6 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// calculate size
 	srfFoliage_t* foliage;
 	int size = sizeof ( *foliage ) +
-			   numIndexes * sizeof ( foliage->indexes[ 0 ] ) +
 			   numInstances * sizeof ( foliage->instances[ 0 ] );
 
 	// get memory
@@ -485,11 +474,11 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 
 	// set up surface
 	surf->numVertexes = numVerts;
-	foliage->numIndexes = numIndexes;
+	surf->numIndexes = numIndexes;
 	foliage->numInstances = numInstances;
 	surf->vertexes = new idWorldVertex[ numVerts ];
-	foliage->indexes = ( glIndex_t* )( foliage + 1 );
-	foliage->instances = ( foliageInstance_t* )( foliage->indexes + foliage->numIndexes );
+	surf->indexes = new int[ numIndexes ];
+	foliage->instances = ( foliageInstance_t* )( foliage + 1 );
 
 	surf->folData = foliage;
 
@@ -528,8 +517,8 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	// copy indexes
 	indexes += LittleLong( ds->firstIndex );
 	for ( int i = 0; i < numIndexes; i++ ) {
-		foliage->indexes[ i ] = LittleLong( indexes[ i ] );
-		if ( foliage->indexes[ i ] < 0 || ( int )foliage->indexes[ i ] >= numVerts ) {
+		surf->indexes[ i ] = LittleLong( indexes[ i ] );
+		if ( surf->indexes[ i ] < 0 || surf->indexes[ i ] >= numVerts ) {
 			common->Error( "Bad index in triangle surface" );
 		}
 	}

@@ -23,6 +23,7 @@
 
 idWorldSurface::~idWorldSurface() {
 	delete[] vertexes;
+	delete[] indexes;
 }
 
 bool idWorldSurface::IsGrid() const {

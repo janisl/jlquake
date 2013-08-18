@@ -19,11 +19,9 @@
 
 #include "WorldSurface.h"
 
+// misc_models in maps are turned into direct geometry by q3map
 class idSurfaceTriangles : public idWorldSurface {
 public:
-	struct srfTriangles_t* triData;
-
-	virtual ~idSurfaceTriangles();
 	virtual cplane_t GetPlane() const;
 	virtual void Draw();
 	virtual void ProjectDecal( struct decalProjector_t* dp, struct mbrush46_model_t* bmodel ) const;

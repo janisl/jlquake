@@ -57,6 +57,9 @@ public:
 	int numVertexes;
 	idWorldVertex* vertexes;
 
+	int numIndexes;
+	int* indexes;
+
 	idWorldSurface();
 	virtual ~idWorldSurface();
 
@@ -99,6 +102,8 @@ inline idWorldSurface::idWorldSurface() {
 	boundingSphere.Zero();
 	numVertexes = 0;
 	vertexes = NULL;
+	numIndexes = 0;
+	indexes = NULL;
 }
 
 #endif
