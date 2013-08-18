@@ -22,12 +22,16 @@
 class idSphereTest : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE( idSphereTest );
 	CPPUNIT_TEST( TestConstructor );
+	CPPUNIT_TEST( TestZero );
+	CPPUNIT_TEST( TestSettersAndGetters );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
 	virtual void setUp();
 
 	void TestConstructor();
+	void TestZero();
+	void TestSettersAndGetters();
 };
 
 // Registers the fixture into the 'registry'
@@ -46,4 +50,20 @@ void idSphereTest::TestConstructor() {
 	idSphere s2( v, 56.0f );
 	CPPUNIT_ASSERT_EQUAL( v, s2.GetOrigin() );
 	CPPUNIT_ASSERT_EQUAL( 56.0f, s2.GetRadius() );
+}
+
+void idSphereTest::TestZero() {
+	idSphere s;
+	s.Zero();
+	CPPUNIT_ASSERT_EQUAL( vec3_origin, s.GetOrigin() );
+	CPPUNIT_ASSERT_EQUAL( 0.0f, s.GetRadius() );
+}
+
+void idSphereTest::TestSettersAndGetters() {
+	idVec3 v( 1.0f, 2.0f, 3.0f );
+	idSphere s;
+	s.SetOrigin( v );
+	s.SetRadius( 4556.0f );
+	CPPUNIT_ASSERT_EQUAL( v, s.GetOrigin() );
+	CPPUNIT_ASSERT_EQUAL( 4556.0f, s.GetRadius() );
 }

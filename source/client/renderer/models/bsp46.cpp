@@ -244,17 +244,10 @@ static shader_t* ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 	return shader;
 }
 
-//	creates a bounding sphere from a bounding box
-void SphereFromBounds( const idBounds& bounds, vec3_t origin, float* radius ) {
-	idVec3 center = ( bounds[ 0 ] + bounds[ 1 ] ) * 0.5f;
-	center.ToOldVec3( origin );
-	*radius = ( bounds[ 1 ] - center ).Length();
-}
-
 //	handles final surface classification
 static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, srfGeneric_t* gen, vec3_t pt ) {
 	// set bounding sphere
-	SphereFromBounds( surf->bounds, gen->localOrigin, &gen->radius );
+	surf->boundingSphere = surf->bounds.ToSphere();
 
 	// take the plane normal from the lightmap vector and classify it
 	gen->plane.normal[ 0 ] = LittleFloat( ds->lightmapVecs[ 2 ][ 0 ] );

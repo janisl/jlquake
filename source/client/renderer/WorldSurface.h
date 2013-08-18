@@ -22,6 +22,7 @@
 #include "../../common/math/Vec2.h"
 #include "../../common/math/Vec3.h"
 #include "../../common/bv/Bounds.h"
+#include "../../common/bv/Sphere.h"
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -49,6 +50,7 @@ public:
 
 	// culling information
 	idBounds bounds;
+	idSphere boundingSphere;
 
 	int numVertexes;
 	idWorldVertex* vertexes;
@@ -97,6 +99,7 @@ inline idWorldSurface::idWorldSurface() {
 	dlightBits[ 0 ] = 0;
 	dlightBits[ 1 ] = 0;
 	bounds.Zero();
+	boundingSphere.Zero();
 	numVertexes = 0;
 	vertexes = NULL;
 	data = NULL;

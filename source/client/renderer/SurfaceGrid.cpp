@@ -316,9 +316,9 @@ bool idSurfaceGrid::DoCull( shader_t* shader ) const {
 	srfGridMesh_t* cv = ( srfGridMesh_t* )GetBrush46Data();
 	int sphereCull;
 	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
-		sphereCull = R_CullLocalPointAndRadius( cv->localOrigin, cv->radius );
+		sphereCull = R_CullLocalSphere( boundingSphere );
 	} else {
-		sphereCull = R_CullPointAndRadius( cv->localOrigin, cv->radius );
+		sphereCull = R_CullSphere( boundingSphere );
 	}
 
 	// check for trivial reject

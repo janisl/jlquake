@@ -42,6 +42,7 @@ class idBoundsTest : public CppUnit::TestFixture {
 	CPPUNIT_TEST( TestAddBoundsMaxZ );
 	CPPUNIT_TEST( TestAddBoundsInside );
 	CPPUNIT_TEST( TestAddBoundsCleared );
+	CPPUNIT_TEST( TestToSphere );
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -68,6 +69,7 @@ public:
 	void TestAddBoundsMaxZ();
 	void TestAddBoundsInside();
 	void TestAddBoundsCleared();
+	void TestToSphere();
 };
 
 // Registers the fixture into the 'registry'
@@ -232,4 +234,11 @@ void idBoundsTest::TestAddBoundsCleared() {
 	CPPUNIT_ASSERT_EQUAL( true, b.AddBounds( idBounds( v1, v2 ) ) );
 	CPPUNIT_ASSERT_EQUAL( v1, b[ 0 ] );
 	CPPUNIT_ASSERT_EQUAL( v2, b[ 1 ] );
+}
+
+void idBoundsTest::TestToSphere() {
+	idBounds b( idVec3( 0.0f, 0.0f, 0.0f), idVec3( 9.0f, 12.0f, 20.0f ) );
+	idSphere s = b.ToSphere();
+	CPPUNIT_ASSERT_EQUAL( idVec3( 4.5f, 6.0f, 10.0f), s.GetOrigin() );
+	CPPUNIT_ASSERT_EQUAL( 12.5f, s.GetRadius() );
 }

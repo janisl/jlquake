@@ -86,7 +86,6 @@ void R_FreeBsp46( world_t* mod );
 void R_FreeBsp46Model( idRenderModel* mod );
 const byte* R_ClusterPVS( int cluster );
 mbrush46_node_t* R_PointInLeaf( const vec3_t p );
-void SphereFromBounds( const idBounds& bounds, vec3_t origin, float* radius );
 
 //
 //	CURVE TESSELATION

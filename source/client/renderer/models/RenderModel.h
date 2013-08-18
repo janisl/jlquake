@@ -211,8 +211,6 @@ struct drawSurf_t {
 };
 
 struct srfGeneric_t {
-	vec3_t localOrigin;
-	float radius;
 	cplane_t plane;
 };
 

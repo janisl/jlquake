@@ -47,7 +47,9 @@ void idSurfaceFoliage::Draw() {
 	VectorCopy( tess.shader->distanceCull, distanceCull );
 	distanceCull[ 3 ] = tess.shader->distanceCull[ 3 ];
 	if ( distanceCull[ 1 ] > 0 ) {
-		float z = fovScale * ( DotProduct( srf->localOrigin, distanceVector ) + distanceVector[ 3 ] - srf->radius );
+		vec3_t old;
+		boundingSphere.GetOrigin().ToOldVec3( old );
+		float z = fovScale * ( DotProduct( old, distanceVector ) + distanceVector[ 3 ] - boundingSphere.GetRadius() );
 		float alpha = ( distanceCull[ 1 ] - z ) * distanceCull[ 3 ];
 		if ( alpha < distanceCull[ 2 ] ) {
 			return;

@@ -49,7 +49,9 @@ bool idWorldSurface::ClipDecal( struct decalProjector_t* dp ) const {
 	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
 
 	//	test bounding sphere
-	if ( !R_TestDecalBoundingSphere( dp, gen->localOrigin, ( gen->radius * gen->radius ) ) ) {
+	vec3_t old;
+	boundingSphere.GetOrigin().ToOldVec3( old );
+	if ( !R_TestDecalBoundingSphere( dp, old, ( boundingSphere.GetRadius() * boundingSphere.GetRadius() ) ) ) {
 		return false;
 	}
 
@@ -154,9 +156,9 @@ bool idWorldSurface::DoCullET( shader_t* shader, int* frontFace ) const {
 	// try sphere cull
 	int cull;
 	if ( tr.currentEntityNum != REF_ENTITYNUM_WORLD ) {
-		cull = R_CullLocalPointAndRadius( gen->localOrigin, gen->radius );
+		cull = R_CullLocalSphere( boundingSphere );
 	} else {
-		cull = R_CullPointAndRadius( gen->localOrigin, gen->radius );
+		cull = R_CullSphere( boundingSphere );
 	}
 	if ( cull == CULL_OUT ) {
 		tr.pc.c_sphere_cull_out++;
@@ -191,9 +193,6 @@ int idWorldSurface::DoMarkDynamicLights( int dlightBits ) {
 
 // ydnar: made this use generic surface
 int idWorldSurface::DoMarkDynamicLightsET( int dlightBits ) {
-	// get generic surface
-	srfGeneric_t* gen = ( srfGeneric_t* )GetBrush46Data();
-
 	// ydnar: made surface dlighting generic, inline with q3map2 surface classification
 
 	// try to cull out dlights
@@ -218,12 +217,12 @@ int idWorldSurface::DoMarkDynamicLightsET( int dlightBits ) {
 		VectorCopy( tr.refdef.dlights[ i ].transformed, origin );
 		float radius = tr.refdef.dlights[ i ].radius;
 
-		if ( ( gen->localOrigin[ 0 ] + gen->radius ) < ( origin[ 0 ] - radius ) ||
-			 ( gen->localOrigin[ 0 ] - gen->radius ) > ( origin[ 0 ] + radius ) ||
-			 ( gen->localOrigin[ 1 ] + gen->radius ) < ( origin[ 1 ] - radius ) ||
-			 ( gen->localOrigin[ 1 ] - gen->radius ) > ( origin[ 1 ] + radius ) ||
-			 ( gen->localOrigin[ 2 ] + gen->radius ) < ( origin[ 2 ] - radius ) ||
-			 ( gen->localOrigin[ 2 ] - gen->radius ) > ( origin[ 2 ] + radius ) ) {
+		if ( ( boundingSphere.GetOrigin().x + boundingSphere.GetRadius() ) < ( origin[ 0 ] - radius ) ||
+			 ( boundingSphere.GetOrigin().x - boundingSphere.GetRadius() ) > ( origin[ 0 ] + radius ) ||
+			 ( boundingSphere.GetOrigin().y + boundingSphere.GetRadius() ) < ( origin[ 1 ] - radius ) ||
+			 ( boundingSphere.GetOrigin().y - boundingSphere.GetRadius() ) > ( origin[ 1 ] + radius ) ||
+			 ( boundingSphere.GetOrigin().z + boundingSphere.GetRadius() ) < ( origin[ 2 ] - radius ) ||
+			 ( boundingSphere.GetOrigin().z - boundingSphere.GetRadius() ) > ( origin[ 2 ] + radius ) ) {
 			dlightBits &= ~( 1 << i );
 		}
 	}

@@ -349,6 +349,8 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 		}
 		numIndexes += ( p->numverts - 2 ) * 3;
 	}
+	fa->boundingSphere = fa->bounds.ToSphere();
+
 	mbrush38_glpoly_t* poly = warppolys;
 	while ( poly ) {
 		mbrush38_glpoly_t* tmp = poly;
@@ -425,6 +427,8 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
 		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
 	}
+
+	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
 //	We need to duplicate texinfos for different lightmap indexes.

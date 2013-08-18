@@ -509,6 +509,8 @@ static void GL_SubdivideSurface( idSurfaceFaceQ1* fa ) {
 		}
 		numIndexes += ( p->numverts - 2 ) * 3;
 	}
+	fa->boundingSphere = fa->bounds.ToSphere();
+
 	mbrush29_glpoly_t* poly = warppolys;
 	while ( poly ) {
 		mbrush29_glpoly_t* tmp = poly;
@@ -583,6 +585,8 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		fa->surf.indexes[ i * 3 + 1 ] = i + 1;
 		fa->surf.indexes[ i * 3 + 2 ] = i + 2;
 	}
+
+	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
 static void Mod_LoadFaces( bsp29_lump_t* l ) {

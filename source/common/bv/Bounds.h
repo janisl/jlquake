@@ -18,6 +18,7 @@
 #define __idBounds__
 
 #include "../math/Vec3.h"
+#include "Sphere.h"
 
 /*
 ===============================================================================
@@ -97,8 +98,10 @@ public:
 	void			FromBoundsRotation( const idBounds &bounds, const idVec3 &origin, const idMat3 &axis, const idRotation &rotation );
 
 	void			ToPoints( idVec3 points[8] ) const;
-	idSphere		ToSphere( void ) const;
+#endif
+	idSphere ToSphere() const;
 
+#if 0
 	void			AxisProjection( const idVec3 &dir, float &min, float &max ) const;
 	void			AxisProjection( const idVec3 &origin, const idMat3 &axis, const idVec3 &dir, float &min, float &max ) const;
 #endif
@@ -372,14 +375,16 @@ inline bool idBounds::IntersectsBounds( const idBounds &a ) const {
 	}
 	return true;
 }
+#endif
 
-inline idSphere idBounds::ToSphere( void ) const {
+inline idSphere idBounds::ToSphere() const {
 	idSphere sphere;
-	sphere.SetOrigin( ( b[0] + b[1] ) * 0.5f );
-	sphere.SetRadius( ( b[1] - sphere.GetOrigin() ).Length() );
+	sphere.SetOrigin( ( b[ 0 ] + b[ 1 ] ) * 0.5f );
+	sphere.SetRadius( ( b[ 1 ] - sphere.GetOrigin() ).Length() );
 	return sphere;
 }
 
+#if 0
 inline void idBounds::AxisProjection( const idVec3 &dir, float &min, float &max ) const {
 	float d1, d2;
 	idVec3 center, extents;

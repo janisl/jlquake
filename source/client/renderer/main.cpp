@@ -415,7 +415,7 @@ void R_LocalNormalToWorld( vec3_t local, vec3_t world ) {
 	world[ 2 ] = local[ 0 ] * tr.orient.axis[ 0 ][ 2 ] + local[ 1 ] * tr.orient.axis[ 1 ][ 2 ] + local[ 2 ] * tr.orient.axis[ 2 ][ 2 ];
 }
 
-void R_LocalPointToWorld( vec3_t local, vec3_t world ) {
+void R_LocalPointToWorld( const vec3_t local, vec3_t world ) {
 	world[ 0 ] = local[ 0 ] * tr.orient.axis[ 0 ][ 0 ] + local[ 1 ] * tr.orient.axis[ 1 ][ 0 ] + local[ 2 ] * tr.orient.axis[ 2 ][ 0 ] + tr.orient.origin[ 0 ];
 	world[ 1 ] = local[ 0 ] * tr.orient.axis[ 0 ][ 1 ] + local[ 1 ] * tr.orient.axis[ 1 ][ 1 ] + local[ 2 ] * tr.orient.axis[ 2 ][ 1 ] + tr.orient.origin[ 1 ];
 	world[ 2 ] = local[ 0 ] * tr.orient.axis[ 0 ][ 2 ] + local[ 1 ] * tr.orient.axis[ 1 ][ 2 ] + local[ 2 ] * tr.orient.axis[ 2 ][ 2 ] + tr.orient.origin[ 2 ];
@@ -608,7 +608,7 @@ int R_CullLocalBox( const idBounds& bounds ) {
 	return R_CullLocalBox( old );
 }
 
-int R_CullPointAndRadius( vec3_t pt, float radius ) {
+int R_CullPointAndRadius( const vec3_t pt, float radius ) {
 	if ( r_nocull->integer ) {
 		return CULL_CLIP;
 	}
@@ -633,12 +633,24 @@ int R_CullPointAndRadius( vec3_t pt, float radius ) {
 	return CULL_IN;		// completely inside frustum
 }
 
-int R_CullLocalPointAndRadius( vec3_t pt, float radius ) {
+int R_CullSphere( const idSphere& sphere ) {
+	vec3_t old;
+	sphere.GetOrigin().ToOldVec3( old );
+	return R_CullPointAndRadius( old, sphere.GetRadius() );
+}
+
+int R_CullLocalPointAndRadius( const vec3_t pt, float radius ) {
 	vec3_t transformed;
 
 	R_LocalPointToWorld( pt, transformed );
 
 	return R_CullPointAndRadius( transformed, radius );
+}
+
+int R_CullLocalSphere( const idSphere& sphere ) {
+	vec3_t old;
+	sphere.GetOrigin().ToOldVec3( old );
+	return R_CullLocalPointAndRadius( old, sphere.GetRadius() );
 }
 
 void R_AddDrawSurf( idSurface* surface, shader_t* shader, int fogIndex,

@@ -39,10 +39,10 @@ public:
 	bool			operator!=(	const idSphere &a ) const;						// exact compare, no epsilon
 
 	void			Clear( void );									// inside out sphere
-	void			Zero( void );									// single point at origin
-	void			SetOrigin( const idVec3 &o );					// set origin of sphere
-	void			SetRadius( const float r );						// set square radius
 #endif
+	void Zero();											// single point at origin
+	void SetOrigin( const idVec3 &o );					// set origin of sphere
+	void SetRadius( const float r );						// set square radius
 
 	const idVec3& GetOrigin() const;						// returns origin of sphere
 	float GetRadius() const;								// returns sphere radius
@@ -137,8 +137,9 @@ inline void idSphere::Clear( void ) {
 	origin.Zero();
 	radius = -1.0f;
 }
+#endif
 
-inline void idSphere::Zero( void ) {
+inline void idSphere::Zero() {
 	origin.Zero();
 	radius = 0.0f;
 }
@@ -150,7 +151,6 @@ inline void idSphere::SetOrigin( const idVec3 &o ) {
 inline void idSphere::SetRadius( const float r ) {
 	radius = r;
 }
-#endif
 
 inline const idVec3 &idSphere::GetOrigin() const {
 	return origin;
