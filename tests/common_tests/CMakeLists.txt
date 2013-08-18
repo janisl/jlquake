@@ -4,6 +4,7 @@ add_executable(common_tests
 	Hexen2EffectsRandomTest.cpp
 	ListTest.cpp
 	MathTests.cpp
+	SphereTest.cpp
 	StrTest.cpp
 	Vec2Test.cpp
 	Vec3Test.cpp
