@@ -27,7 +27,7 @@
 
 int r_firstSceneDrawSurf;
 
-int r_numentities;
+static int r_numentities;
 int r_firstSceneEntity;
 
 int r_numdlights;

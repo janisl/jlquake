@@ -60,12 +60,6 @@ public:
 	idSurfaceFaceQ2* texturechain;
 
 	idSurfaceFaceQ2();
-
-	virtual void Draw();
-
-protected:
-	virtual bool DoCull( shader_t* shader ) const;
-	virtual int DoMarkDynamicLights( int dlightBits );
 };
 
 #endif

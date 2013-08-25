@@ -473,8 +473,6 @@ void R_AddMdlSurfaces( trRefEntity_t* e, int forcedSortIndex ) {
 void RB_SurfaceMdl( mesh1hdr_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
-	c_alias_polys += paliashdr->numtris;
-
 	RB_CHECKOVERFLOW( paliashdr->poseverts, paliashdr->numIndexes );
 
 	if ( ent->e.frame >= paliashdr->numframes || ent->e.frame < 0 ) {

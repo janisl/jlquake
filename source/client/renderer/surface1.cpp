@@ -321,7 +321,6 @@ bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* 
 //	Multitexture
 static void R_RenderDynamicLightmaps( idSurfaceFaceQ1* surf ) {
 	mbrush29_surface_t* fa = &surf->surf;
-	c_brush_polys++;
 
 	// check for lightmap modification
 	for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && fa->styles[ maps ] != 255; maps++ ) {

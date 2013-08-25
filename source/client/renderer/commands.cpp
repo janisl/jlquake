@@ -51,29 +51,6 @@ static void R_PerformanceCounters() {
 		// clear the counters even if we aren't printing
 		Com_Memset( &tr.pc, 0, sizeof ( tr.pc ) );
 		Com_Memset( &backEnd.pc, 0, sizeof ( backEnd.pc ) );
-		c_brush_polys = 0;
-		c_alias_polys = 0;
-		return;
-	}
-
-	if ( GGameType & GAME_Quake ) {
-		common->Printf( "%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys );
-		c_brush_polys = 0;
-		c_alias_polys = 0;
-		return;
-	}
-	if ( GGameType & GAME_Hexen2 ) {
-		common->Printf( "%4i wpoly  %4i epoly  %4i(%i) edicts\n",
-			c_brush_polys, c_alias_polys, r_numentities, cl_numtransvisedicts + cl_numtranswateredicts );
-		c_brush_polys = 0;
-		c_alias_polys = 0;
-		return;
-	}
-	if ( GGameType & GAME_Quake2 ) {
-		common->Printf( "%4i wpoly %4i epoly\n",
-			c_brush_polys, c_alias_polys );
-		c_brush_polys = 0;
-		c_alias_polys = 0;
 		return;
 	}
 

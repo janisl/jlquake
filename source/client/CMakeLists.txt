@@ -153,7 +153,6 @@ set(CLIENT_FILES
 	renderer/SurfaceFace.cpp
 	renderer/SurfaceFaceQ1.cpp
 	renderer/SurfaceFaceQ2.cpp
-	renderer/SurfaceFaceQ3.cpp
 	renderer/SurfaceFoliage.cpp
 	renderer/SurfaceGrid.cpp
 	renderer/SurfaceMD2.cpp

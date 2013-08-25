@@ -337,12 +337,6 @@ extern glconfig_t glConfig;			// outside of TR since it shouldn't be cleared dur
 
 extern trGlobals_t tr;
 
-extern int c_brush_polys;
-extern int c_alias_polys;
-
-extern int cl_numtransvisedicts;
-extern int cl_numtranswateredicts;
-
 extern float s_flipMatrix[ 16 ];
 
 extern int gl_NormalFontBase;

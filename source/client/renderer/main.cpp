@@ -39,11 +39,8 @@ glconfig_t glConfig;
 
 trGlobals_t tr;
 
-int c_brush_polys;
-int c_alias_polys;
-
-int cl_numtransvisedicts;
-int cl_numtranswateredicts;
+static int cl_numtransvisedicts;
+static int cl_numtranswateredicts;
 
 void ( * BotDrawDebugPolygonsFunc )( void ( * drawPoly )( int color, int numPoints, float* points ), int value );
 

@@ -21,6 +21,41 @@
 
 class idSurfaceFace : public idWorldSurface {
 public:
+	virtual cplane_t GetPlane() const;
+	virtual void Draw();
+	virtual bool CheckAddMarks( const vec3_t mins, const vec3_t maxs, const vec3_t dir ) const;
+	virtual void MarkFragments( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs ) const;
+	virtual void MarkFragmentsWolf( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs,
+		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
+
+protected:
+	virtual bool DoCull( shader_t* shader ) const;
+	virtual int DoMarkDynamicLights( int dlightBits );
+
+private:
+	void MarkFragmentsOldMapping( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs ) const;
+	void MarkFragmentsWolfMapping( const vec3_t projectionDir,
+		int numPlanes, const vec3_t* normals, const float* dists,
+		int maxPoints, vec3_t pointBuffer,
+		int maxFragments, markFragment_t* fragmentBuffer,
+		int* returnedPoints, int* returnedFragments,
+		const vec3_t mins, const vec3_t maxs,
+		const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 };
 
 #endif

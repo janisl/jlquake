@@ -306,8 +306,6 @@ static void RB_EmitMd2VertexesAndIndexes( trRefEntity_t* ent, mmd2_t* paliashdr 
 void RB_SurfaceMd2( mmd2_t* paliashdr ) {
 	trRefEntity_t* ent = backEnd.currentEntity;
 
-	c_alias_polys += paliashdr->numIndexes / 3;
-
 	if ( ent->e.renderfx & RF_LEFTHAND ) {
 		qglMatrixMode( GL_PROJECTION );
 		qglPushMatrix();

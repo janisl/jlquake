@@ -15,49 +15,8 @@
 //**************************************************************************
 
 #include "SurfaceFaceQ1.h"
-#include "surfaces.h"
-#include "backend.h"
-
-#define BACKFACE_EPSILON    0.01
 
 idSurfaceFaceQ1::idSurfaceFaceQ1() {
 	Com_Memset( &surf, 0, sizeof( surf ) );
 	texturechain = NULL;
-}
-
-void idSurfaceFaceQ1::Draw() {
-	RB_CHECKOVERFLOW( numVertexes, numIndexes );
-
-	int numTessVerts = tess.numVertexes;
-	int numTessIndexes = tess.numIndexes;
-
-	tess.numVertexes += numVertexes;
-	tess.numIndexes += numIndexes;
-
-	idWorldVertex* vert = vertexes;
-	for ( int i = 0; i < numVertexes; i++, vert++ ) {
-		vert->xyz.ToOldVec3( tess.xyz[ numTessVerts + i ] );
-		vert->normal.ToOldVec3( tess.normal[ numTessVerts + i ] );
-		vert->st.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 0 ] );
-		vert->lightmap.ToOldVec2( tess.texCoords[ numTessVerts + i ][ 1 ] );
-	}
-	for ( int i = 0; i < numIndexes; i++ ) {
-		tess.indexes[ numTessIndexes + i ] = numTessVerts + indexes[ i ];
-	}
-}
-
-bool idSurfaceFaceQ1::DoCull( shader_t* shader ) const {
-	vec3_t old;
-	plane.Normal().ToOldVec3( old );
-	double dot = DotProduct( tr.orient.viewOrigin, old ) - plane.Dist();
-
-	if ( dot < BACKFACE_EPSILON ) {
-		return true;		// wrong side
-	}
-	return false;
-}
-
-int idSurfaceFaceQ1::DoMarkDynamicLights( int dlightBits ) {
-	this->dlightBits[ tr.smpFrame ] = dlightBits;
-	return dlightBits;
 }

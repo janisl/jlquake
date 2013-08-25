@@ -254,6 +254,8 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node, int dlightBits ) {
 
 	// if a leaf node, draw stuff
 	if ( node->contents < 0 ) {
+		tr.pc.c_leafs++;
+
 		mbrush29_leaf_t* pleaf = ( mbrush29_leaf_t* )node;
 
 		idSurfaceFaceQ1** mark = pleaf->firstmarksurface;
@@ -406,6 +408,8 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node, int dlightBits ) {
 
 	// if a leaf node, draw stuff
 	if ( node->contents != -1 ) {
+		tr.pc.c_leafs++;
+
 		mbrush38_leaf_t* pleaf = ( mbrush38_leaf_t* )node;
 
 		// check for door connected areas

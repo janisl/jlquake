@@ -27,7 +27,7 @@
 #include "../../../common/file_formats/bsp47.h"
 #include "RenderModelBSP46.h"
 #include "../SurfaceSkip.h"
-#include "../SurfaceFaceQ3.h"
+#include "../SurfaceFace.h"
 #include "../SurfaceGrid.h"
 #include "../SurfaceTriangles.h"
 #include "../SurfaceFoliage.h"
@@ -257,7 +257,7 @@ static void FinishGenericSurface( idWorldSurface* surf, bsp46_dsurface_t* ds, co
 }
 
 static idWorldSurface* ParseFace( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, int* indexes ) {
-	idSurfaceFaceQ3* surf = new idSurfaceFaceQ3;
+	idSurfaceFace* surf = new idSurfaceFace;
 	int lightmapNum = LittleLong( ds->lightmapNum );
 
 	// get fog volume
