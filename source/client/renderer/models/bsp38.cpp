@@ -157,6 +157,32 @@ static void Mod_LoadTexinfo( bsp38_lump_t* l ) {
 	}
 }
 
+static void BuildSurfaceVertexesList( idSurfaceFaceQ2* fa, int firstedge, int numedges ) {
+	// reconstruct the polygon
+	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
+	int lnumverts = numedges;
+
+	fa->numVertexes = lnumverts;
+	fa->vertexes = new idWorldVertex[ lnumverts ];
+	fa->bounds.Clear();
+	for ( int i = 0; i < lnumverts; i++ ) {
+		int lindex = tr.currentModel->brush38_surfedges[ firstedge + i ];
+
+		mbrush38_edge_t* r_pedge;
+		float* vec;
+		if ( lindex > 0 ) {
+			r_pedge = &pedges[ lindex ];
+			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 0 ] ].position;
+		} else {
+			r_pedge = &pedges[ -lindex ];
+			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
+		}
+		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
+	}
+	fa->boundingSphere = fa->bounds.ToSphere();
+}
+
 //	Fills in s->texturemins[] and s->extents[]
 static void CalcSurfaceExtents( idSurfaceFaceQ2* s ) {
 	float mins[ 2 ];
@@ -166,20 +192,11 @@ static void CalcSurfaceExtents( idSurfaceFaceQ2* s ) {
 
 	mbrush38_texinfo_t* tex = s->surf.texinfo;
 
-	for ( int i = 0; i < s->surf.numedges; i++ ) {
-		int e = loadmodel->brush38_surfedges[ s->surf.firstedge + i ];
-		mbrush38_vertex_t* v;
-		if ( e >= 0 ) {
-			v = &loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ e ].v[ 0 ] ];
-		} else {
-			v = &loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ -e ].v[ 1 ] ];
-		}
-
+	for ( int i = 0; i < s->numVertexes; i++ ) {
+		vec3_t old;
+		s->vertexes[ i ].xyz.ToOldVec3( old );
 		for ( int j = 0; j < 2; j++ ) {
-			float val = v->position[ 0 ] * tex->vecs[ j ][ 0 ] +
-						v->position[ 1 ] * tex->vecs[ j ][ 1 ] +
-						v->position[ 2 ] * tex->vecs[ j ][ 2 ] +
-						tex->vecs[ j ][ 3 ];
+			float val = DotProduct( old, tex->vecs[ j ] ) + tex->vecs[ j ][ 3 ];
 			if ( val < mins[ j ] ) {
 				mins[ j ] = val;
 			}
@@ -303,32 +320,21 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 	//
 	// convert edges back to a normal polygon
 	//
-	int numverts = 0;
 	int verts[ 64 ];
-	for ( int i = 0; i < fa->surf.numedges; i++ ) {
-		int lindex = loadmodel->brush38_surfedges[ fa->surf.firstedge + i ];
-
-		float* vec;
-		if ( lindex > 0 ) {
-			vec = loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ lindex ].v[ 0 ] ].position;
-		} else {
-			vec = loadmodel->brush38_vertexes[ loadmodel->brush38_edges[ -lindex ].v[ 1 ] ].position;
-		}
-		VectorCopy( vec, warpverts[ numverts ] );
+	for ( int i = 0; i < fa->numVertexes; i++ ) {
+		fa->vertexes[ i ].xyz.ToOldVec3( warpverts[ i ] );
 		verts[ i ] = i;
-		numverts++;
 	}
-	numWarpVerts = numverts;
+	numWarpVerts = fa->numVertexes;
 
-	SubdividePolygon( numverts, verts );
+	SubdividePolygon( fa->numVertexes, verts );
 
+	delete[] fa->vertexes;
 	fa->numVertexes = numWarpVerts;
 	fa->vertexes = new idWorldVertex[ numWarpVerts ];
 	float* v = warpverts[ 0 ];
-	fa->bounds.Clear();
 	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
 		fa->vertexes[ i ].xyz.FromOldVec3( v );
-		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
 		fa->vertexes[ i ].normal = fa->plane.Normal();
 		fa->vertexes[ i ].st.x = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
 		fa->vertexes[ i ].st.y = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
@@ -346,7 +352,6 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 		}
 		numIndexes += ( p->numverts - 2 ) * 3;
 	}
-	fa->boundingSphere = fa->bounds.ToSphere();
 
 	mbrush38_glpoly_t* poly = warppolys;
 	while ( poly ) {
@@ -357,37 +362,16 @@ static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
 }
 
 static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
-	// reconstruct the polygon
-	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
-	int lnumverts = fa->surf.numedges;
+	int lnumverts = fa->numVertexes;
 
-	//
-	// draw texture
-	//
-	fa->numVertexes = lnumverts;
-	fa->vertexes = new idWorldVertex[ lnumverts ];
 	fa->numIndexes = ( lnumverts - 2 ) * 3;
 	fa->indexes = new int[ fa->numIndexes ];
-
-	fa->bounds.Clear();
 	mbrush38_texinfo_t* texinfo = fa->surf.texinfo;
 	for ( int i = 0; i < lnumverts; i++ ) {
-		int lindex = tr.currentModel->brush38_surfedges[ fa->surf.firstedge + i ];
-
-		mbrush38_edge_t* r_pedge;
-		float* vec;
-		if ( lindex > 0 ) {
-			r_pedge = &pedges[ lindex ];
-			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 0 ] ].position;
-		} else {
-			r_pedge = &pedges[ -lindex ];
-			vec = tr.currentModel->brush38_vertexes[ r_pedge->v[ 1 ] ].position;
-		}
-		fa->vertexes[ i ].xyz.FromOldVec3( vec );
-		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-
 		fa->vertexes[ i ].normal = fa->plane.Normal();
 
+		vec3_t vec;
+		fa->vertexes[ i ].xyz.ToOldVec3( vec );
 		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
 		s /= texinfo->image->width;
 
@@ -421,8 +405,6 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		fa->indexes[ i * 3 + 1 ] = i + 1;
 		fa->indexes[ i * 3 + 2 ] = i + 2;
 	}
-
-	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
 //	We need to duplicate texinfos for different lightmap indexes.
@@ -512,8 +494,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 	loadTimeInfo.SetNum( count );
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
-		out->surf.firstedge = LittleLong( in->firstedge );
-		out->surf.numedges = LittleShort( in->numedges );
+		BuildSurfaceVertexesList( out, LittleLong( in->firstedge ), LittleShort( in->numedges ) );
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );

@@ -44,9 +44,6 @@ struct mbrush29_texinfo_t {
 struct mbrush29_surface_t {
 	int flags;
 
-	int firstedge;			// look up in model->surfedges[], negative numbers
-	int numedges;			// are backwards edges
-
 	short texturemins[ 2 ];
 	short extents[ 2 ];
 

@@ -36,9 +36,6 @@ struct mbrush38_shaderInfo_t {
 };
 
 struct mbrush38_surface_t {
-	int firstedge;			// look up in model->surfedges[], negative numbers
-	int numedges;			// are backwards edges
-
 	short texturemins[ 2 ];
 	short extents[ 2 ];
 
