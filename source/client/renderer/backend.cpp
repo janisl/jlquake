@@ -344,6 +344,10 @@ static void RB_RenderDrawSurfList( drawSurf_t* drawSurfs, int numDrawSurfs ) {
 	bool depthRange = false;
 	int oldAtiTess = -1;
 
+	if ( GGameType & GAME_QuakeHexen ) {
+		R_UploadModifiedLightmapsQ1();
+	}
+
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
 	drawSurf_t* drawSurf = drawSurfs;

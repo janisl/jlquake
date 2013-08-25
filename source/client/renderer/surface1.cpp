@@ -319,7 +319,7 @@ bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* 
 }
 
 //	Multitexture
-void R_RenderDynamicLightmaps( idSurfaceFaceQ1* surf ) {
+static void R_RenderDynamicLightmaps( idSurfaceFaceQ1* surf ) {
 	mbrush29_surface_t* fa = &surf->surf;
 	c_brush_polys++;
 
@@ -364,27 +364,20 @@ dynamic:
 			R_BuildLightMapQ1( tr.worldModel, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 		}
 	}
+}
 
-	int i = fa->lightmaptexturenum;
-	if ( lightmap_modified[ i ] ) {
+void R_UploadModifiedLightmapsQ1() {
+	for (int i = 0; i < MAX_LIGHTMAPS; i++) {
+		if ( !lightmap_modified[ i ] ) {
+			continue;
+		}
+
 		GL_Bind( tr.lightmaps[ i ] );
 		lightmap_modified[ i ] = false;
-		glRect_t* theRect = &lightmap_rectchange[ i ];
+		glRect_t* theRect = &lightmap_rectchange[ i < MAX_LIGHTMAPS / 2 ? i : i - MAX_LIGHTMAPS / 2 ];
 		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
 			BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
 			lightmaps + ( i * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
-		theRect->l = BLOCK_WIDTH;
-		theRect->t = BLOCK_HEIGHT;
-		theRect->h = 0;
-		theRect->w = 0;
-	}
-	if ( lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] ) {
-		GL_Bind( tr.lightmaps[ i + MAX_LIGHTMAPS / 2 ] );
-		lightmap_modified[ i + MAX_LIGHTMAPS / 2 ] = false;
-		glRect_t* theRect = &lightmap_rectchange[ i ];
-		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, theRect->t,
-			BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
-			lightmaps + ( ( i + MAX_LIGHTMAPS / 2 ) * BLOCK_HEIGHT + theRect->t ) * BLOCK_WIDTH * 4 );
 		theRect->l = BLOCK_WIDTH;
 		theRect->t = BLOCK_HEIGHT;
 		theRect->h = 0;
@@ -394,7 +387,7 @@ dynamic:
 
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	shader_t* shader;
-	if ( backEnd.currentEntity && backEnd.currentEntity->e.frame ) {
+	if ( tr.currentEntity->e.frame ) {
 		shader = surf->surf.altShader;
 	} else {
 		shader = surf->shader;
@@ -403,6 +396,11 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	int frontFace;
 	if ( surf->Cull( shader, &frontFace ) ) {
 		return;
+	}
+
+	if ( !( surf->surf.flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
+		!( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
+		R_RenderDynamicLightmaps( surf );
 	}
 
 	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );

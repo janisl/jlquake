@@ -26,11 +26,6 @@ idSurfaceFaceQ1::idSurfaceFaceQ1() {
 }
 
 void idSurfaceFaceQ1::Draw() {
-	if ( !( surf.flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
-		!( backEnd.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
-		R_RenderDynamicLightmaps( this );
-	}
-
 	RB_CHECKOVERFLOW( numVertexes, numIndexes );
 
 	int numTessVerts = tess.numVertexes;
