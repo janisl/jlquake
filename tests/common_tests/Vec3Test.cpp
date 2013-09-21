@@ -29,6 +29,7 @@ class idVec3Test : public CppUnit::TestFixture {
 	CPPUNIT_TEST( TestOperatorMinus );
 	CPPUNIT_TEST( TestOperatorMultiplyVec );
 	CPPUNIT_TEST( TestOperatorMultiplyFloat );
+	CPPUNIT_TEST( TestOperatorDivideFloat );
 	CPPUNIT_TEST( TestOperatorPlusEqualsVec );
 	CPPUNIT_TEST( TestOperatorMinusEqualsVec );
 	CPPUNIT_TEST( TestOperatorMultiplyEqualsFloat );
@@ -54,6 +55,7 @@ public:
 	void TestOperatorMinus();
 	void TestOperatorMultiplyVec();
 	void TestOperatorMultiplyFloat();
+	void TestOperatorDivideFloat();
 	void TestOperatorPlusEqualsVec();
 	void TestOperatorMinusEqualsVec();
 	void TestOperatorMultiplyEqualsFloat();
@@ -143,6 +145,14 @@ void idVec3Test::TestOperatorMultiplyFloat() {
 	CPPUNIT_ASSERT_EQUAL( 3.0f, v.x );
 	CPPUNIT_ASSERT_EQUAL( 6.0f, v.y );
 	CPPUNIT_ASSERT_EQUAL( 9.0f, v.z );
+}
+
+void idVec3Test::TestOperatorDivideFloat() {
+	idVec3 v1( 15.0f, 9.0f, 12.0f );
+	idVec3 v = v1 / 3.0f;
+	CPPUNIT_ASSERT_EQUAL( 5.0f, v.x );
+	CPPUNIT_ASSERT_EQUAL( 3.0f, v.y );
+	CPPUNIT_ASSERT_EQUAL( 4.0f, v.z );
 }
 
 void idVec3Test::TestOperatorPlusEqualsVec() {

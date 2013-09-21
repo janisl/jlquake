@@ -46,9 +46,7 @@ public:
 	idVec3 operator-( const idVec3& a ) const;
 	float operator*( const idVec3& a ) const;
 	idVec3 operator*( const float a ) const;
-#if 0
 	idVec3 operator/( const float a ) const;
-#endif
 	idVec3& operator+=( const idVec3& a );
 	idVec3& operator-=( const idVec3& a );
 #if 0
@@ -175,12 +173,10 @@ inline idVec3 idVec3::operator*( const float a ) const {
 	return idVec3( x * a, y * a, z * a );
 }
 
-#if 0
 inline idVec3 idVec3::operator/( const float a ) const {
 	float inva = 1.0f / a;
 	return idVec3( x * inva, y * inva, z * inva );
 }
-#endif
 
 inline idVec3& idVec3::operator+=( const idVec3& a ) {
 	x += a.x;

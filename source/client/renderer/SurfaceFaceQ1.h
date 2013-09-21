@@ -36,7 +36,6 @@ struct mbrush29_texture_t {
 
 struct mbrush29_texinfo_t {
 	float vecs[ 2 ][ 4 ];
-	float mipadjust;
 	mbrush29_texture_t* texture;
 	int flags;
 };

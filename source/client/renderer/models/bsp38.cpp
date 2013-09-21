@@ -22,8 +22,7 @@
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
 #include "RenderModelBSP38.h"
-
-#define SUBDIVIDE_SIZE  64
+#include "../SurfaceSubdivider.h"
 
 struct idBrush38ShaderInfoBuild {
 	int flags;
@@ -38,18 +37,9 @@ struct idSurface2LoadTimeInfo
 	int shaderInfoIndex;
 };
 
-struct mbrush38_glpoly_t {
-	mbrush38_glpoly_t* next;
-	int numverts;
-	int indexes[ 4 ];		// variable sized
-};
+static idSurfaceSubdivider surfaceSubdivider;
 
 static byte* mod_base;
-
-static idSurfaceFaceQ2* warpface;
-static int numWarpVerts;
-static vec3_t warpverts[ 1024 ];
-static mbrush38_glpoly_t* warppolys;
 
 static byte mod_novis[ BSP38MAX_MAP_LEAFS / 8 ];
 
@@ -213,151 +203,6 @@ static void CalcSurfaceExtents( idSurfaceFaceQ2* s ) {
 
 		s->surf.texturemins[ i ] = bmins[ i ] * 16;
 		s->surf.extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
-	}
-}
-
-static void BoundPoly( int numverts, int* vertIndexes, vec3_t mins, vec3_t maxs ) {
-	ClearBounds( mins, maxs );
-	int* v = vertIndexes;
-	for ( int i = 0; i < numverts; i++, v++ ) {
-		AddPointToBounds( warpverts[ *v ], mins, maxs );
-	}
-}
-
-static void SubdividePolygon( int numverts, int* vertIndexes ) {
-	if ( numverts > 60 ) {
-		common->Error( "numverts = %i", numverts );
-	}
-
-	vec3_t mins, maxs;
-	BoundPoly( numverts, vertIndexes, mins, maxs );
-
-	for ( int i = 0; i < 3; i++ ) {
-		float m = ( mins[ i ] + maxs[ i ] ) * 0.5;
-		m = SUBDIVIDE_SIZE * floor( m / SUBDIVIDE_SIZE + 0.5 );
-		if ( maxs[ i ] - m < 8 ) {
-			continue;
-		}
-		if ( m - mins[ i ] < 8 ) {
-			continue;
-		}
-
-		// cut it
-		int* v = vertIndexes;
-		float dist[ 64 ];
-		for ( int j = 0; j < numverts; j++, v++ ) {
-			dist[ j ] = warpverts[ *v ][ i ] - m;
-		}
-
-		// wrap cases
-		dist[ numverts ] = dist[ 0 ];
-		*v = vertIndexes[ 0 ];
-
-		int f = 0;
-		int b = 0;
-		v = vertIndexes;
-		int front[ 64 ], back[ 64 ];
-		for ( int j = 0; j < numverts; j++, v++ ) {
-			if ( dist[ j ] >= 0 ) {
-				front[ f ] = *v;
-				f++;
-			}
-			if ( dist[ j ] <= 0 ) {
-				back[ b ] = *v;
-				b++;
-			}
-			if ( dist[ j ] == 0 || dist[ j + 1 ] == 0 ) {
-				continue;
-			}
-			if ( ( dist[ j ] > 0 ) != ( dist[ j + 1 ] > 0 ) ) {
-				// clip point
-				if ( numWarpVerts >= 1024 ) {
-					common->FatalError( "Out of wapr vers" );
-				}
-				float frac = dist[ j ] / ( dist[ j ] - dist[ j + 1 ] );
-				for ( int k = 0; k < 3; k++ ) {
-					warpverts[ numWarpVerts ][ k ] = warpverts[ *v ][ k ] + frac * ( warpverts[ v[ 1 ] ][ k ] - warpverts[ *v ][ k ] );
-				}
-				front[ f ] = back[ b ] = numWarpVerts++;
-				f++;
-				b++;
-			}
-		}
-
-		SubdividePolygon( f, front );
-		SubdividePolygon( b, back );
-		return;
-	}
-
-	// add a point in the center to help keep warp valid
-	mbrush38_glpoly_t* poly = ( mbrush38_glpoly_t* )Mem_Alloc( sizeof ( mbrush38_glpoly_t ) + ( ( numverts - 4 ) + 2 ) * sizeof( int ) );
-	poly->next = warppolys;
-	warppolys = poly;
-	poly->numverts = numverts + 2;
-	vec3_t total;
-	VectorClear( total );
-	for ( int i = 0; i < numverts; i++ ) {
-		poly->indexes[ i + 1 ] = vertIndexes[ i ];
-		VectorAdd( total, warpverts[ vertIndexes[ i ] ], total );
-	}
-
-	if ( numWarpVerts >= 1024 ) {
-		common->FatalError( "Out of wapr vers" );
-	}
-	VectorScale( total, ( 1.0 / numverts ), warpverts[ numWarpVerts ] );
-
-	poly->indexes[ 0 ] = numWarpVerts;
-	poly->indexes[ numverts + 1 ] = poly->indexes[ 1 ];
-	numWarpVerts++;
-}
-
-//	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
-// sky warps can be done reasonably.
-static void GL_SubdivideSurface( idSurfaceFaceQ2* fa ) {
-	warpface = fa;
-	warppolys = NULL;
-
-	//
-	// convert edges back to a normal polygon
-	//
-	int verts[ 64 ];
-	for ( int i = 0; i < fa->numVertexes; i++ ) {
-		fa->vertexes[ i ].xyz.ToOldVec3( warpverts[ i ] );
-		verts[ i ] = i;
-	}
-	numWarpVerts = fa->numVertexes;
-
-	SubdividePolygon( fa->numVertexes, verts );
-
-	delete[] fa->vertexes;
-	fa->numVertexes = numWarpVerts;
-	fa->vertexes = new idWorldVertex[ numWarpVerts ];
-	float* v = warpverts[ 0 ];
-	for ( int i = 0; i < numWarpVerts; i++, v += 3 ) {
-		fa->vertexes[ i ].xyz.FromOldVec3( v );
-		fa->vertexes[ i ].normal = fa->plane.Normal();
-		fa->vertexes[ i ].st.x = DotProduct( v, fa->surf.texinfo->vecs[ 0 ] ) / 64.0f;
-		fa->vertexes[ i ].st.y = DotProduct( v, fa->surf.texinfo->vecs[ 1 ] ) / 64.0f;
-	}
-	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
-		fa->numIndexes += ( p->numverts - 2 ) * 3;
-	}
-	fa->indexes = new int[ fa->numIndexes ];
-	int numIndexes = 0;
-	for ( mbrush38_glpoly_t* p = warppolys; p; p = p->next ) {
-		for ( int i = 0; i < p->numverts - 2; i++ ) {
-			fa->indexes[ numIndexes + i * 3 + 0 ] = p->indexes[ 0 ];
-			fa->indexes[ numIndexes + i * 3 + 1 ] = p->indexes[ i + 1 ];
-			fa->indexes[ numIndexes + i * 3 + 2 ] = p->indexes[ i + 2 ];
-		}
-		numIndexes += ( p->numverts - 2 ) * 3;
-	}
-
-	mbrush38_glpoly_t* poly = warppolys;
-	while ( poly ) {
-		mbrush38_glpoly_t* tmp = poly;
-		poly = poly->next;
-		Mem_Free( tmp );
 	}
 }
 
@@ -539,7 +384,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 				out->surf.extents[ i ] = 16384;
 				out->surf.texturemins[ i ] = -8192;
 			}
-			GL_SubdivideSurface( out );		// cut up polygon for warps
+			surfaceSubdivider.Subdivide( out, out->surf.texinfo->vecs[ 0 ], out->surf.texinfo->vecs[ 1 ] );		// cut up polygon for warps
 		} else {
 			GL_BuildPolygonFromSurface( out );
 		}
