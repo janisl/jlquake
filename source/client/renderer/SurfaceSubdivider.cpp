@@ -19,7 +19,7 @@
 
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
-void idSurfaceSubdivider::Subdivide( idSurfaceFace* fa, float* texInfoVec0, float* texInfoVec1 ) {
+void idSurfaceSubdivider::Subdivide( idSurfaceFaceQ1Q2* fa ) {
 	polys = NULL;
 
 	//
@@ -40,8 +40,8 @@ void idSurfaceSubdivider::Subdivide( idSurfaceFace* fa, float* texInfoVec0, floa
 	for ( int i = 0; i < verts.Num(); i++, v++ ) {
 		fa->vertexes[ i ].xyz = *v;
 		fa->vertexes[ i ].normal = fa->plane.Normal();
-		fa->vertexes[ i ].st.x = DotProduct( *v, texInfoVec0 ) / 64.0f;
-		fa->vertexes[ i ].st.y = DotProduct( *v, texInfoVec1 ) / 64.0f;
+		fa->vertexes[ i ].st.x = DotProduct( *v, fa->textureInfo->vecs[ 0 ] ) / 64.0f;
+		fa->vertexes[ i ].st.y = DotProduct( *v, fa->textureInfo->vecs[ 1 ] ) / 64.0f;
 	}
 	for ( glpoly_t* p = polys; p; p = p->next ) {
 		fa->numIndexes += ( p->numverts - 2 ) * 3;

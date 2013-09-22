@@ -276,37 +276,39 @@ static void Mod_LoadTexinfo( bsp29_lump_t* l ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush29_texinfo_t* out = new mbrush29_texinfo_t[ count ];
-	Com_Memset( out, 0, sizeof ( mbrush29_texinfo_t ) * count );
+	mbrush29_texinfo_t* _out = new mbrush29_texinfo_t[ count ];
+	Com_Memset( _out, 0, sizeof ( mbrush29_texinfo_t ) * count );
+	idTextureInfo* out = new idTextureInfo[ count ];
 
-	loadmodel->brush29_texinfo = out;
+	loadmodel->brush29_texinfo = _out;
+	loadmodel->textureInfos = out;
 	loadmodel->brush29_numtexinfo = count;
 
-	for ( int i = 0; i < count; i++, in++, out++ ) {
+	for ( int i = 0; i < count; i++, in++, out++, _out++ ) {
 		for ( int j = 0; j < 8; j++ ) {
 			out->vecs[ 0 ][ j ] = LittleFloat( in->vecs[ 0 ][ j ] );
 		}
 
 		int miptex = LittleLong( in->miptex );
-		out->flags = LittleLong( in->flags );
+		_out->flags = LittleLong( in->flags );
 
 		if ( !loadmodel->brush29_textures ) {
-			out->texture = r_notexture_mip;	// checkerboard texture
-			out->flags = 0;
+			_out->texture = r_notexture_mip;	// checkerboard texture
+			_out->flags = 0;
 		} else {
 			if ( miptex >= loadmodel->brush29_numtextures ) {
 				common->FatalError( "miptex >= loadmodel->numtextures" );
 			}
-			out->texture = loadmodel->brush29_textures[ miptex ];
-			if ( !out->texture ) {
-				out->texture = r_notexture_mip;	// texture not found
-				out->flags = 0;
+			_out->texture = loadmodel->brush29_textures[ miptex ];
+			if ( !_out->texture ) {
+				_out->texture = r_notexture_mip;	// texture not found
+				_out->flags = 0;
 			}
 		}
 	}
 }
 
-static void BuildSurfaceVertexesList( idSurfaceFaceQ1* fa, int firstedge, int lnumverts ) {
+static void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int lnumverts ) {
 	// reconstruct the polygon
 	mbrush29_edge_t* pedges = tr.currentModel->brush29_edges;
 
@@ -328,41 +330,6 @@ static void BuildSurfaceVertexesList( idSurfaceFaceQ1* fa, int firstedge, int ln
 	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
-//	Fills in s->texturemins[] and s->extents[]
-static void CalcSurfaceExtents( idSurfaceFaceQ1* s ) {
-	float mins[ 2 ], maxs[ 2 ];
-	mins[ 0 ] = mins[ 1 ] = 999999;
-	maxs[ 0 ] = maxs[ 1 ] = -99999;
-
-	mbrush29_texinfo_t* tex = s->surf.texinfo;
-
-	for ( int i = 0; i < s->numVertexes; i++ ) {
-		vec3_t old;
-		s->vertexes[ i ].xyz.ToOldVec3( old );
-		for ( int j = 0; j < 2; j++ ) {
-			float val = DotProduct( old, tex->vecs[ j ] ) + tex->vecs[ j ][ 3 ];
-			if ( val < mins[ j ] ) {
-				mins[ j ] = val;
-			}
-			if ( val > maxs[ j ] ) {
-				maxs[ j ] = val;
-			}
-		}
-	}
-
-	int bmins[ 2 ], bmaxs[ 2 ];
-	for ( int i = 0; i < 2; i++ ) {
-		bmins[ i ] = floor( mins[ i ] / 16 );
-		bmaxs[ i ] = ceil( maxs[ i ] / 16 );
-
-		s->surf.texturemins[ i ] = bmins[ i ] * 16;
-		s->surf.extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
-		if ( !( tex->flags & BSP29TEX_SPECIAL ) && s->surf.extents[ i ] > 512 ) {
-			common->FatalError( "Bad surface extents" );
-		}
-	}
-}
-
 static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	int lnumverts = fa->numVertexes;
 
@@ -373,10 +340,10 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 
 		vec3_t vec;
 		fa->vertexes[ i ].xyz.ToOldVec3( vec );
-		float s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
+		float s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
 		s /= fa->surf.texinfo->texture->width;
 
-		float t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
+		float t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
 		t /= fa->surf.texinfo->texture->height;
 
 		fa->vertexes[ i ].st.x = s;
@@ -385,15 +352,15 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		//
 		// lightmap texture coordinates
 		//
-		s = DotProduct( vec, fa->surf.texinfo->vecs[ 0 ] ) + fa->surf.texinfo->vecs[ 0 ][ 3 ];
-		s -= fa->surf.texturemins[ 0 ];
-		s += fa->surf.light_s * 16;
+		s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
+		s -= fa->textureMins[ 0 ];
+		s += fa->lightS * 16;
 		s += 8;
 		s /= BLOCK_WIDTH * 16;
 
-		t = DotProduct( vec, fa->surf.texinfo->vecs[ 1 ] ) + fa->surf.texinfo->vecs[ 1 ][ 3 ];
-		t -= fa->surf.texturemins[ 1 ];
-		t += fa->surf.light_t * 16;
+		t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
+		t -= fa->textureMins[ 1 ];
+		t += fa->lightT * 16;
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
@@ -433,20 +400,25 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 			out->plane = -out->plane;
 		}
 
-		out->surf.texinfo = loadmodel->brush29_texinfo + LittleShort( in->texinfo );
+		int ti = LittleShort( in->texinfo );
+		if ( ti < 0 || ti >= loadmodel->brush29_numtexinfo ) {
+			common->Error( "MOD_LoadBmodel: bad texinfo number" );
+		}
+		out->surf.texinfo = loadmodel->brush29_texinfo + ti;
+		out->textureInfo = loadmodel->textureInfos + ti;
 
-		CalcSurfaceExtents( out );
+		out->CalcSurfaceExtents();
 
 		// lighting info
 
 		for ( int i = 0; i < BSP29_MAXLIGHTMAPS; i++ ) {
-			out->surf.styles[ i ] = in->styles[ i ];
+			out->styles[ i ] = in->styles[ i ];
 		}
 		int lightofs = LittleLong( in->lightofs );
 		if ( lightofs == -1 ) {
-			out->surf.samples = NULL;
+			out->samples = NULL;
 		} else {
-			out->surf.samples = loadmodel->brush29_lightdata + lightofs;
+			out->samples = loadmodel->brush29_lightdata + lightofs;
 		}
 
 		// set the drawing flags flag
@@ -455,7 +427,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 			out->surf.flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
 			out->shader = out->surf.texinfo->texture->shader;
 			out->surf.altShader = out->surf.texinfo->texture->shader;
-			surfaceSubdivider.Subdivide( out, out->surf.texinfo->vecs[ 0 ], out->surf.texinfo->vecs[ 1 ] );		// cut up polygon for warps
+			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
 			continue;
 		}
 
@@ -464,19 +436,19 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 			out->shader = out->surf.texinfo->texture->shader;
 			out->surf.altShader = out->surf.texinfo->texture->shader;
 			for ( int i = 0; i < 2; i++ ) {
-				out->surf.extents[ i ] = 16384;
-				out->surf.texturemins[ i ] = -8192;
+				out->extents[ i ] = 16384;
+				out->textureMins[ i ] = -8192;
 			}
-			surfaceSubdivider.Subdivide( out, out->surf.texinfo->vecs[ 0 ], out->surf.texinfo->vecs[ 1 ] );		// cut up polygon for warps
+			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
 			continue;
 		}
 
 		GL_CreateSurfaceLightmapQ1( out );
 		BuildSurfaceDisplayList( out );
 
-		out->shader = R_BuildBsp29Shader( out->surf.texinfo->texture, out->surf.lightmaptexturenum );
+		out->shader = R_BuildBsp29Shader( out->surf.texinfo->texture, out->lightMapTextureNum );
 		if ( out->surf.texinfo->texture->alternate_anims ) {
-			out->surf.altShader = R_BuildBsp29Shader( out->surf.texinfo->texture->alternate_anims, out->surf.lightmaptexturenum );
+			out->surf.altShader = R_BuildBsp29Shader( out->surf.texinfo->texture->alternate_anims, out->lightMapTextureNum );
 		} else {
 			out->surf.altShader = out->shader;
 		}

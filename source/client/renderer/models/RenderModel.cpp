@@ -43,6 +43,7 @@ idRenderModel::idRenderModel() {
 	brush29_nodes = NULL;
 	brush29_numtexinfo = 0;
 	brush29_texinfo = NULL;
+	textureInfos = NULL;
 	brush29_numsurfaces = 0;
 	brush29_surfaces = NULL;
 	brush29_numsurfedges = 0;

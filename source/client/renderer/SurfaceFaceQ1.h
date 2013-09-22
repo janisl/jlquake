@@ -17,7 +17,7 @@
 #ifndef __idSurfaceFaceQ1__
 #define __idSurfaceFaceQ1__
 
-#include "SurfaceFace.h"
+#include "SurfaceFaceQ1Q2.h"
 #include "../../common/file_formats/bsp29.h"
 #include "shader.h"
 
@@ -35,7 +35,6 @@ struct mbrush29_texture_t {
 };
 
 struct mbrush29_texinfo_t {
-	float vecs[ 2 ][ 4 ];
 	mbrush29_texture_t* texture;
 	int flags;
 };
@@ -43,22 +42,11 @@ struct mbrush29_texinfo_t {
 struct mbrush29_surface_t {
 	int flags;
 
-	short texturemins[ 2 ];
-	short extents[ 2 ];
-
-	int light_s, light_t;			// gl lightmap coordinates
-
 	mbrush29_texinfo_t* texinfo;
 	shader_t* altShader;
-
-	int lightmaptexturenum;
-	byte styles[ BSP29_MAXLIGHTMAPS ];
-	int cached_light[ BSP29_MAXLIGHTMAPS ];				// values currently used in lightmap
-	qboolean cached_dlight;					// true if dynamic light in cache
-	byte* samples;				// [numstyles*surfsize]
 };
 
-class idSurfaceFaceQ1 : public idSurfaceFace {
+class idSurfaceFaceQ1 : public idSurfaceFaceQ1Q2 {
 public:
 	mbrush29_surface_t surf;
 	idSurfaceFaceQ1* texturechain;

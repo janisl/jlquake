@@ -17,12 +17,11 @@
 #ifndef __idSurfaceFaceQ2__
 #define __idSurfaceFaceQ2__
 
-#include "SurfaceFace.h"
+#include "SurfaceFaceQ1Q2.h"
 #include "../../common/file_formats/bsp38.h"
 #include "shader.h"
 
 struct mbrush38_texinfo_t {
-	float vecs[ 2 ][ 4 ];
 	int flags;
 	int numframes;
 	mbrush38_texinfo_t* next;		// animation chain
@@ -36,22 +35,11 @@ struct mbrush38_shaderInfo_t {
 };
 
 struct mbrush38_surface_t {
-	short texturemins[ 2 ];
-	short extents[ 2 ];
-
-	int light_s, light_t;			// gl lightmap coordinates
-
 	mbrush38_texinfo_t* texinfo;
 	mbrush38_shaderInfo_t* shaderInfo;
-
-	int lightmaptexturenum;
-	byte styles[ BSP38_MAXLIGHTMAPS ];
-	float cached_light[ BSP38_MAXLIGHTMAPS ];			// values currently used in lightmap
-	qboolean cached_dlight;					// true if dynamic light in cache
-	byte* samples;				// [numstyles*surfsize]
 };
 
-class idSurfaceFaceQ2 : public idSurfaceFace {
+class idSurfaceFaceQ2 : public idSurfaceFaceQ1Q2 {
 public:
 	mbrush38_surface_t surf;
 	idSurfaceFaceQ2* texturechain;

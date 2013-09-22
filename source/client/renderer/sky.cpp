@@ -352,7 +352,7 @@ void R_ClearSkyBox() {
 	}
 }
 
-void R_AddSkySurface( idSurfaceFaceQ2* fa ) {
+void R_AddSkySurface( idSurfaceFace* fa ) {
 	int frontFace;
 	if ( fa->Cull( fa->shader, &frontFace ) ) {
 		return;

@@ -152,6 +152,7 @@ set(CLIENT_FILES
 	renderer/SurfaceEntity.cpp
 	renderer/SurfaceFace.cpp
 	renderer/SurfaceFaceQ1.cpp
+	renderer/SurfaceFaceQ1Q2.cpp
 	renderer/SurfaceFaceQ2.cpp
 	renderer/SurfaceFoliage.cpp
 	renderer/SurfaceGrid.cpp

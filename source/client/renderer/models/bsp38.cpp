@@ -110,44 +110,46 @@ static void Mod_LoadTexinfo( bsp38_lump_t* l ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush38_texinfo_t* out = new mbrush38_texinfo_t[ count ];
+	mbrush38_texinfo_t* _out = new mbrush38_texinfo_t[ count ];
+	idTextureInfo* out = new idTextureInfo[ count ];
 
-	loadmodel->brush38_texinfo = out;
+	loadmodel->brush38_texinfo = _out;
+	loadmodel->textureInfos = out;
 	loadmodel->brush38_numtexinfo = count;
 
-	for ( int i = 0; i < count; i++, in++, out++ ) {
+	for ( int i = 0; i < count; i++, in++, out++, _out++ ) {
 		for ( int j = 0; j < 8; j++ ) {
 			out->vecs[ 0 ][ j ] = LittleFloat( in->vecs[ 0 ][ j ] );
 		}
 
-		out->flags = LittleLong( in->flags );
+		_out->flags = LittleLong( in->flags );
 		int next = LittleLong( in->nexttexinfo );
 		if ( next > 0 ) {
-			out->next = loadmodel->brush38_texinfo + next;
+			_out->next = loadmodel->brush38_texinfo + next;
 		} else {
-			out->next = NULL;
+			_out->next = NULL;
 		}
 		char name[ MAX_QPATH ];
 		String::Sprintf( name, sizeof ( name ), "textures/%s.wal", in->texture );
 
-		out->image = R_FindImageFile( name, true, true, GL_REPEAT );
-		if ( !out->image ) {
+		_out->image = R_FindImageFile( name, true, true, GL_REPEAT );
+		if ( !_out->image ) {
 			common->Printf( "Couldn't load %s\n", name );
-			out->image = tr.defaultImage;
+			_out->image = tr.defaultImage;
 		}
 	}
 
 	// count animation frames
 	for ( int i = 0; i < count; i++ ) {
-		out = &loadmodel->brush38_texinfo[ i ];
-		out->numframes = 1;
-		for ( mbrush38_texinfo_t* step = out->next; step && step != out; step = step->next ) {
-			out->numframes++;
+		_out = &loadmodel->brush38_texinfo[ i ];
+		_out->numframes = 1;
+		for ( mbrush38_texinfo_t* step = _out->next; step && step != _out; step = step->next ) {
+			_out->numframes++;
 		}
 	}
 }
 
-static void BuildSurfaceVertexesList( idSurfaceFaceQ2* fa, int firstedge, int numedges ) {
+static void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int numedges ) {
 	// reconstruct the polygon
 	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
 	int lnumverts = numedges;
@@ -173,55 +175,21 @@ static void BuildSurfaceVertexesList( idSurfaceFaceQ2* fa, int firstedge, int nu
 	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
-//	Fills in s->texturemins[] and s->extents[]
-static void CalcSurfaceExtents( idSurfaceFaceQ2* s ) {
-	float mins[ 2 ];
-	mins[ 0 ] = mins[ 1 ] = 999999;
-	float maxs[ 2 ];
-	maxs[ 0 ] = maxs[ 1 ] = -99999;
-
-	mbrush38_texinfo_t* tex = s->surf.texinfo;
-
-	for ( int i = 0; i < s->numVertexes; i++ ) {
-		vec3_t old;
-		s->vertexes[ i ].xyz.ToOldVec3( old );
-		for ( int j = 0; j < 2; j++ ) {
-			float val = DotProduct( old, tex->vecs[ j ] ) + tex->vecs[ j ][ 3 ];
-			if ( val < mins[ j ] ) {
-				mins[ j ] = val;
-			}
-			if ( val > maxs[ j ] ) {
-				maxs[ j ] = val;
-			}
-		}
-	}
-
-	int bmins[ 2 ], bmaxs[ 2 ];
-	for ( int i = 0; i < 2; i++ ) {
-		bmins[ i ] = floor( mins[ i ] / 16 );
-		bmaxs[ i ] = ceil( maxs[ i ] / 16 );
-
-		s->surf.texturemins[ i ] = bmins[ i ] * 16;
-		s->surf.extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
-	}
-}
-
 static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	int lnumverts = fa->numVertexes;
 
 	fa->numIndexes = ( lnumverts - 2 ) * 3;
 	fa->indexes = new int[ fa->numIndexes ];
-	mbrush38_texinfo_t* texinfo = fa->surf.texinfo;
 	for ( int i = 0; i < lnumverts; i++ ) {
 		fa->vertexes[ i ].normal = fa->plane.Normal();
 
 		vec3_t vec;
 		fa->vertexes[ i ].xyz.ToOldVec3( vec );
-		float s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
-		s /= texinfo->image->width;
+		float s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
+		s /= fa->surf.texinfo->image->width;
 
-		float t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
-		t /= texinfo->image->height;
+		float t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
+		t /= fa->surf.texinfo->image->height;
 
 		fa->vertexes[ i ].st.x = s;
 		fa->vertexes[ i ].st.y = t;
@@ -229,15 +197,15 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		//
 		// lightmap texture coordinates
 		//
-		s = DotProduct( vec, texinfo->vecs[ 0 ] ) + texinfo->vecs[ 0 ][ 3 ];
-		s -= fa->surf.texturemins[ 0 ];
-		s += fa->surf.light_s * 16;
+		s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
+		s -= fa->textureMins[ 0 ];
+		s += fa->lightS * 16;
 		s += 8;
 		s /= BLOCK_WIDTH * 16;
 
-		t = DotProduct( vec, texinfo->vecs[ 1 ] ) + texinfo->vecs[ 1 ][ 3 ];
-		t -= fa->surf.texturemins[ 1 ];
-		t += fa->surf.light_t * 16;
+		t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
+		t -= fa->textureMins[ 1 ];
+		t += fa->lightT * 16;
 		t += 8;
 		t /= BLOCK_HEIGHT * 16;
 
@@ -353,38 +321,39 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 			common->Error( "MOD_LoadBmodel: bad texinfo number" );
 		}
 		out->surf.texinfo = loadmodel->brush38_texinfo + ti;
+		out->textureInfo = loadmodel->textureInfos + ti;
 
-		CalcSurfaceExtents( out );
+		out->CalcSurfaceExtents();
 
 		// lighting info
 
 		for ( int i = 0; i < BSP38_MAXLIGHTMAPS; i++ ) {
-			out->surf.styles[ i ] = in->styles[ i ];
+			out->styles[ i ] = in->styles[ i ];
 		}
 		int lightofs = LittleLong( in->lightofs );
 		if ( lightofs == -1 ) {
-			out->surf.samples = NULL;
+			out->samples = NULL;
 		} else {
-			out->surf.samples = loadmodel->brush38_lightdata + lightofs;
+			out->samples = loadmodel->brush38_lightdata + lightofs;
 		}
 
 		// create lightmaps
 		// don't bother if we're set to fullbright
 		if ( r_fullbright->value || !loadmodel->brush38_lightdata ||
 			out->surf.texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
-			out->surf.lightmaptexturenum = LIGHTMAP_NONE;
+			out->lightMapTextureNum = LIGHTMAP_NONE;
 		} else {
 			GL_CreateSurfaceLightmapQ2( out );
 		}
-		loadTimeInfo[ surfnum ].shaderInfoIndex = AddShaderInfo( shaderInfoBuild, out->surf.texinfo, out->surf.lightmaptexturenum );
+		loadTimeInfo[ surfnum ].shaderInfoIndex = AddShaderInfo( shaderInfoBuild, out->surf.texinfo, out->lightMapTextureNum );
 
 		// create polygons
 		if ( out->surf.texinfo->flags & BSP38SURF_WARP ) {
 			for ( int i = 0; i < 2; i++ ) {
-				out->surf.extents[ i ] = 16384;
-				out->surf.texturemins[ i ] = -8192;
+				out->extents[ i ] = 16384;
+				out->textureMins[ i ] = -8192;
 			}
-			surfaceSubdivider.Subdivide( out, out->surf.texinfo->vecs[ 0 ], out->surf.texinfo->vecs[ 1 ] );		// cut up polygon for warps
+			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
 		} else {
 			GL_BuildPolygonFromSurface( out );
 		}

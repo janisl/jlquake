@@ -38,6 +38,10 @@ struct idWorldVertex {
 	quint8 color[ 4 ];
 };
 
+struct idTextureInfo {
+	float vecs[ 2 ][ 4 ];
+};
+
 class idWorldSurface : public idSurface {
 public:
 	// Q1, Q2 - should be drawn when node is crossed

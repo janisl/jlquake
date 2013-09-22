@@ -14,30 +14,35 @@
 //**
 //**************************************************************************
 
-#ifndef __idSurfaceSubdivider__
-#define __idSurfaceSubdivider__
-
 #include "SurfaceFaceQ1Q2.h"
 
-class idSurfaceSubdivider {
-public:
-	void Subdivide( idSurfaceFaceQ1Q2* fa );
+//	Fills in s->texturemins[] and s->extents[]
+void idSurfaceFaceQ1Q2::CalcSurfaceExtents() {
+	float mins[ 2 ];
+	mins[ 0 ] = mins[ 1 ] = 999999;
+	float maxs[ 2 ];
+	maxs[ 0 ] = maxs[ 1 ] = -99999;
 
-private:
-	enum { SUBDIVIDE_SIZE = 64 };
+	for ( int i = 0; i < numVertexes; i++ ) {
+		vec3_t old;
+		vertexes[ i ].xyz.ToOldVec3( old );
+		for ( int j = 0; j < 2; j++ ) {
+			float val = DotProduct( old, textureInfo->vecs[ j ] ) + textureInfo->vecs[ j ][ 3 ];
+			if ( val < mins[ j ] ) {
+				mins[ j ] = val;
+			}
+			if ( val > maxs[ j ] ) {
+				maxs[ j ] = val;
+			}
+		}
+	}
 
-	struct glpoly_t {
-		glpoly_t* next;
-		int numverts;
-		int indexes[ 4 ];		// variable sized
-	};
+	int bmins[ 2 ], bmaxs[ 2 ];
+	for ( int i = 0; i < 2; i++ ) {
+		bmins[ i ] = floor( mins[ i ] / 16 );
+		bmaxs[ i ] = ceil( maxs[ i ] / 16 );
 
-	idList<idVec3> verts;
-	glpoly_t* polys;
-
-	void SubdividePolygon( const idList<int>& vertIndexes );
-	void EmitPolygon( const idList<int>& vertIndexes );
-	idBounds BoundPoly( const idList<int>& vertIndexes );
-};
-
-#endif
+		textureMins[ i ] = bmins[ i ] * 16;
+		extents[ i ] = ( bmaxs[ i ] - bmins[ i ] ) * 16;
+	}
+}

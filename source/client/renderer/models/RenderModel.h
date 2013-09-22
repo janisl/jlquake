@@ -455,6 +455,7 @@ public:
 
 	int brush29_numtexinfo;
 	mbrush29_texinfo_t* brush29_texinfo;
+	idTextureInfo* textureInfos;
 
 	int brush29_numsurfaces;
 	idSurfaceFaceQ1* brush29_surfaces;

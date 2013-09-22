@@ -81,38 +81,38 @@ static int RecursiveLightPointQ1( mbrush29_node_t* node, vec3_t start, vec3_t en
 			continue;	// no lightmaps
 		}
 
-		mbrush29_texinfo_t* tex = surf->surf.texinfo;
+		idTextureInfo* tex = surf->textureInfo;
 
 		int s = DotProduct( mid, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ];
 		int t = DotProduct( mid, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ];;
 
-		if ( s < surf->surf.texturemins[ 0 ] || t < surf->surf.texturemins[ 1 ] ) {
+		if ( s < surf->textureMins[ 0 ] || t < surf->textureMins[ 1 ] ) {
 			continue;
 		}
 
-		int ds = s - surf->surf.texturemins[ 0 ];
-		int dt = t - surf->surf.texturemins[ 1 ];
+		int ds = s - surf->textureMins[ 0 ];
+		int dt = t - surf->textureMins[ 1 ];
 
-		if ( ds > surf->surf.extents[ 0 ] || dt > surf->surf.extents[ 1 ] ) {
+		if ( ds > surf->extents[ 0 ] || dt > surf->extents[ 1 ] ) {
 			continue;
 		}
 
-		if ( !surf->surf.samples ) {
+		if ( !surf->samples ) {
 			return 0;
 		}
 
 		ds >>= 4;
 		dt >>= 4;
 
-		byte* lightmap = surf->surf.samples;
+		byte* lightmap = surf->samples;
 		r = 0;
 		if ( lightmap ) {
 
-			lightmap += dt * ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) + ds;
+			lightmap += dt * ( ( surf->extents[ 0 ] >> 4 ) + 1 ) + ds;
 
-			for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
-				r += *lightmap * tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ 0 ];
-				lightmap += ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->surf.extents[ 1 ] >> 4 ) + 1 );
+			for ( int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
+				r += *lightmap * tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ 0 ];
+				lightmap += ( ( surf->extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->extents[ 1 ] >> 4 ) + 1 );
 			}
 		}
 
@@ -184,45 +184,45 @@ static int RecursiveLightPointQ2( mbrush38_node_t* node, vec3_t start, vec3_t en
 			continue;	// no lightmaps
 		}
 
-		mbrush38_texinfo_t* tex = surf->surf.texinfo;
+		idTextureInfo* tex = surf->textureInfo;
 
 		int s = ( int )( DotProduct( mid, tex->vecs[ 0 ] ) + tex->vecs[ 0 ][ 3 ] );
 		int t = ( int )( DotProduct( mid, tex->vecs[ 1 ] ) + tex->vecs[ 1 ][ 3 ] );
 
-		if ( s < surf->surf.texturemins[ 0 ] || t < surf->surf.texturemins[ 1 ] ) {
+		if ( s < surf->textureMins[ 0 ] || t < surf->textureMins[ 1 ] ) {
 			continue;
 		}
 
-		int ds = s - surf->surf.texturemins[ 0 ];
-		int dt = t - surf->surf.texturemins[ 1 ];
+		int ds = s - surf->textureMins[ 0 ];
+		int dt = t - surf->textureMins[ 1 ];
 
-		if ( ds > surf->surf.extents[ 0 ] || dt > surf->surf.extents[ 1 ] ) {
+		if ( ds > surf->extents[ 0 ] || dt > surf->extents[ 1 ] ) {
 			continue;
 		}
 
-		if ( !surf->surf.samples ) {
+		if ( !surf->samples ) {
 			return 0;
 		}
 
 		ds >>= 4;
 		dt >>= 4;
 
-		byte* lightmap = surf->surf.samples;
+		byte* lightmap = surf->samples;
 		VectorCopy( oldvec3_origin, pointcolor );
 		if ( lightmap ) {
 			vec3_t scale;
 
-			lightmap += 3 * ( dt * ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) + ds );
+			lightmap += 3 * ( dt * ( ( surf->extents[ 0 ] >> 4 ) + 1 ) + ds );
 
-			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->surf.styles[ maps ] != 255; maps++ ) {
+			for ( int maps = 0; maps < BSP38_MAXLIGHTMAPS && surf->styles[ maps ] != 255; maps++ ) {
 				for ( int j = 0; j < 3; j++ ) {
-					scale[ j ] = r_modulate->value * tr.refdef.lightstyles[ surf->surf.styles[ maps ] ].rgb[ j ];
+					scale[ j ] = r_modulate->value * tr.refdef.lightstyles[ surf->styles[ maps ] ].rgb[ j ];
 				}
 
 				pointcolor[ 0 ] += lightmap[ 0 ] * scale[ 0 ] * ( 1.0 / 255 );
 				pointcolor[ 1 ] += lightmap[ 1 ] * scale[ 1 ] * ( 1.0 / 255 );
 				pointcolor[ 2 ] += lightmap[ 2 ] * scale[ 2 ] * ( 1.0 / 255 );
-				lightmap += 3 * ( ( surf->surf.extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->surf.extents[ 1 ] >> 4 ) + 1 );
+				lightmap += 3 * ( ( surf->extents[ 0 ] >> 4 ) + 1 ) * ( ( surf->extents[ 1 ] >> 4 ) + 1 );
 			}
 		}
 		return 1;
