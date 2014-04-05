@@ -395,7 +395,7 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 		return;
 	}
 
-	if ( !( surf->surf.flags & ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWSKY ) ) &&
+	if ( !( surf->surf.flags & BRUSH29_SURF_DRAWTILED ) &&
 		!( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
 		R_RenderDynamicLightmaps( surf );
 	}
