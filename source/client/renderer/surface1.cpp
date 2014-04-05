@@ -404,6 +404,13 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 }
 
 void R_DrawWaterSurfaces(int& forcedSortIndex) {
+	VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );
+
+	tr.currentEntity = &tr.worldEntity;
+
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
+	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
 	for ( idSurfaceFaceQ1* s = waterchain; s; s = s->texturechain ) {
 		R_AddWorldSurfaceBsp29( s, forcedSortIndex++ );
 	}
