@@ -434,6 +434,7 @@ void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
 void R_DrawAlphaSurfaces(int& forcedSortIndex) {
 	int savedShiftedEntityNum = tr.shiftedEntityNum;
 	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
+	VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );
 	for ( idSurfaceFaceQ2* s = r_alpha_surfaces; s; s = s->texturechain ) {
 		R_AddWorldSurfaceBsp38( s, forcedSortIndex );
 	}
