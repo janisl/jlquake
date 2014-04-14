@@ -27,8 +27,6 @@
 mbrush29_leaf_t* r_viewleaf;
 mbrush29_leaf_t* r_oldviewleaf;
 
-idSurfaceFaceQ1* waterchain = NULL;
-
 int skytexturenum;
 
 static int allocated[ MAX_LIGHTMAPS ][ BLOCK_WIDTH ];
@@ -400,19 +398,9 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 		R_RenderDynamicLightmaps( surf );
 	}
 
-	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-}
-
-void R_DrawWaterSurfaces(int& forcedSortIndex) {
-	VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );
-
-	tr.currentEntity = &tr.worldEntity;
-
-	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
-	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
-
-	for ( idSurfaceFaceQ1* s = waterchain; s; s = s->texturechain ) {
-		R_AddWorldSurfaceBsp29( s, forcedSortIndex++ );
+	if ( tr.currentEntityNum == REF_ENTITYNUM_WORLD && surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
+		forcedSortIndex = tr.waterSurfForcedSortIndex--;
 	}
-	waterchain = NULL;
+
+	R_AddDrawSurf( surf, shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 }

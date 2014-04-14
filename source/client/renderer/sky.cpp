@@ -459,6 +459,7 @@ void R_DrawSkyBoxQ2() {
 	qglPushMatrix();
 	qglTranslatef( tr.viewParms.orient.origin[ 0 ], tr.viewParms.orient.origin[ 1 ], tr.viewParms.orient.origin[ 2 ] );
 	qglRotatef( tr.refdef.floatTime * skyrotate, skyaxis[ 0 ], skyaxis[ 1 ], skyaxis[ 2 ] );
+	qglColor4f( 1, 1, 1, 1 );
 
 	for ( int i = 0; i < 6; i++ ) {
 		if ( skyrotate ) {

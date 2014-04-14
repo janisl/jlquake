@@ -49,7 +49,6 @@ struct mbrush29_surface_t {
 class idSurfaceFaceQ1 : public idSurfaceFaceQ1Q2 {
 public:
 	mbrush29_surface_t surf;
-	idSurfaceFaceQ1* texturechain;
 	
     idSurfaceFaceQ1();
 };

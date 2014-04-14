@@ -41,7 +41,6 @@ void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex );
 void DrawTextureChainsQ1();
-void R_DrawWaterSurfaces(int& forcedSortIndex);
 void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf );
 void R_UploadModifiedLightmapsQ1();
 
@@ -49,7 +48,6 @@ void GL_BeginBuildingLightmaps();
 void GL_CreateSurfaceLightmapQ2( idSurfaceFaceQ2* surf );
 void GL_EndBuildingLightmaps();
 void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex );
-void R_DrawAlphaSurfaces(int& forcedSortIndex);
 
 void RB_CheckOverflow( int verts, int indexes );
 #define RB_CHECKOVERFLOW( v,i ) if ( tess.numVertexes + ( v ) >= SHADER_MAX_VERTEXES || tess.numIndexes + ( i ) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow( v,i ); }
@@ -58,11 +56,9 @@ void RB_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, byte* color, flo
 
 extern mbrush29_leaf_t* r_viewleaf;
 extern mbrush29_leaf_t* r_oldviewleaf;
-extern idSurfaceFaceQ1* waterchain;
 extern int skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern gllightmapstate_t gl_lms;
-extern idSurfaceFaceQ2* r_alpha_surfaces;
 extern int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 #endif

@@ -285,6 +285,7 @@ struct trGlobals_t {
 	int shiftedEntityNum;						// currentEntityNum << QSORT_ENTITYNUM_SHIFT
 	idRenderModel* currentModel;
 	mbrush46_model_t* currentBModel;	// only valid when rendering brush models
+	int waterSurfForcedSortIndex;
 
 	viewParms_t viewParms;
 

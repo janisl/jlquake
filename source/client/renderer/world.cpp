@@ -103,14 +103,7 @@ static void R_DrawInlineBModel(int forcedSortIndex) {
 	//
 	idSurfaceFaceQ2* psurf = &tr.currentModel->brush38_surfaces[ tr.currentModel->brush38_firstmodelsurface ];
 	for ( int i = 0; i < tr.currentModel->brush38_nummodelsurfaces; i++, psurf++ ) {
-		// draw the polygon
-		if ( psurf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-			// add to the translucent chain
-			psurf->texturechain = r_alpha_surfaces;
-			r_alpha_surfaces = psurf;
-		} else {
-			R_AddWorldSurfaceBsp38( psurf, forcedSortIndex );
-		}
+		R_AddWorldSurfaceBsp38( psurf, forcedSortIndex );
 	}
 }
 
@@ -333,12 +326,7 @@ static void R_RecursiveWorldNodeQ1( mbrush29_node_t* node, int dlightBits ) {
 				continue;
 			}
 
-			if ( surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
-				surf->texturechain = waterchain;
-				waterchain = surf;
-			} else {
-				R_AddWorldSurfaceBsp29( surf, 0 );
-			}
+			R_AddWorldSurfaceBsp29( surf, 0 );
 		}
 	}
 
@@ -491,10 +479,6 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node, int dlightBits ) {
 		if ( surf->surf.texinfo->flags & BSP38SURF_SKY ) {
 			// just adds to visible sky bounds
 			R_AddSkySurface( surf );
-		} else if ( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
-			// add to the translucent chain
-			surf->texturechain = r_alpha_surfaces;
-			r_alpha_surfaces = surf;
 		} else {
 			R_AddWorldSurfaceBsp38( surf, 0 );
 		}

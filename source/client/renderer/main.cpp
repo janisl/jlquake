@@ -912,6 +912,7 @@ static void R_GenerateDrawSurfs() {
 		R_CullDlights();
 	}
 
+	tr.waterSurfForcedSortIndex = FORCED_SORT_WATER_SURFACES_END;
 	if ( GGameType & GAME_QuakeHexen ) {
 		R_DrawWorldQ1();
 	} else if ( GGameType & GAME_Quake2 ) {
@@ -939,17 +940,12 @@ static void R_GenerateDrawSurfs() {
 		R_AddDrawSurf( &particlesSurface, tr.particleShader, 0, false, false, ATI_TESS_NONE, 2 );
 	}
 
-	int forcedSortIndex = 3;
-	if ( GGameType & GAME_Quake ) {
-		R_DrawWaterSurfaces(forcedSortIndex);
-	} else if ( GGameType & GAME_Hexen2 ) {
+	if ( GGameType & GAME_Hexen2 ) {
+		int forcedSortIndex = FORCED_SORT_WATER_TRANS_ENTITIES_START;
 		R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY, forcedSortIndex );	// This restores the depth mask
 
-		R_DrawWaterSurfaces(forcedSortIndex);
-
+		forcedSortIndex = FORCED_SORT_TRANS_ENTITIES_START;
 		R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY, forcedSortIndex );
-	} else if ( GGameType & GAME_Quake2 ) {
-		R_DrawAlphaSurfaces(forcedSortIndex);
 	}
 }
 

@@ -25,8 +25,6 @@
 
 gllightmapstate_t gl_lms;
 
-idSurfaceFaceQ2* r_alpha_surfaces;
-
 int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 static float s_blocklights_q2[ 34 * 34 * 3 ];
@@ -425,19 +423,14 @@ void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
 	if ( !( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
 		R_UpdateSurfaceLightmap( surf );
 	}
-	R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
-}
 
-//	Draw water surfaces and windows.
-//	The BSP tree is waled front to back, so unwinding the chain of
-// alpha_surfaces will draw back to front, giving proper ordering.
-void R_DrawAlphaSurfaces(int& forcedSortIndex) {
-	int savedShiftedEntityNum = tr.shiftedEntityNum;
-	tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
-	VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );
-	for ( idSurfaceFaceQ2* s = r_alpha_surfaces; s; s = s->texturechain ) {
-		R_AddWorldSurfaceBsp38( s, forcedSortIndex );
+	if ( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+		int savedShiftedEntityNum = tr.shiftedEntityNum;
+		tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
+		VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );
+		R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, tr.waterSurfForcedSortIndex-- );
+		tr.shiftedEntityNum = savedShiftedEntityNum;
+	} else {
+		R_AddDrawSurf( surf, texinfo->shader, 0, false, false, ATI_TESS_NONE, forcedSortIndex );
 	}
-	r_alpha_surfaces = NULL;
-	tr.shiftedEntityNum = savedShiftedEntityNum;
 }
