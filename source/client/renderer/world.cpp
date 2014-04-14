@@ -25,7 +25,6 @@
 #include "../../common/Common.h"
 #include "../../common/common_defs.h"
 #include "../../common/content_types.h"
-#include "SurfaceSkyBoxQ2.h"
 
 static void R_AddWorldSurface( idWorldSurface* surf, shader_t* shader, int dlightBits, int decalBits ) {
 	if ( surf->viewCount == tr.viewCount ) {
@@ -476,12 +475,7 @@ static void R_RecursiveWorldNodeQ2( mbrush38_node_t* node, int dlightBits ) {
 			continue;
 		}
 
-		if ( surf->surf.texinfo->flags & BSP38SURF_SKY ) {
-			// just adds to visible sky bounds
-			R_AddSkySurface( surf );
-		} else {
-			R_AddWorldSurfaceBsp38( surf, 0 );
-		}
+		R_AddWorldSurfaceBsp38( surf, 0 );
 	}
 
 	// recurse down the back side
@@ -600,11 +594,7 @@ void R_DrawWorldQ2() {
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
 
-	R_ClearSkyBox();
-
 	R_RecursiveWorldNodeQ2( tr.worldModel->brush38_nodes, ( 1 << tr.refdef.num_dlights ) - 1 );
-
-	R_AddDrawSurf( &skyBoxQ2Surface, tr.defaultShader, 0, false, false, ATI_TESS_NONE, 0 );
 }
 
 static void R_AddLeafSurfacesQ3( mbrush46_node_t* node, int dlightBits, int decalBits ) {

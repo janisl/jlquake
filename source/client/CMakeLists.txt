@@ -168,7 +168,6 @@ set(CLIENT_FILES
 	renderer/SurfacePolyBuffer.cpp
 	renderer/SurfaceSkip.cpp
 	renderer/SurfaceSubdivider.cpp
-	renderer/SurfaceSkyBoxQ2.cpp
 	renderer/SurfaceSP2.cpp
 	renderer/SurfaceSPR.cpp
 	renderer/SurfaceTriangles.cpp

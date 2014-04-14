@@ -2935,6 +2935,19 @@ static void R_CreateColourShellShader() {
 	tr.colorShellShader = FinishShader();
 }
 
+static void R_CreateSkyBoxShader() {
+	if ( !( GGameType & GAME_Quake2 ) ) {
+		return;
+	}
+
+	R_ClearGlobalShader();
+	String::NCpyZ( shader.name, "*sky", sizeof ( shader.name ) );
+	shader.lightmapIndex = LIGHTMAP_NONE;
+	shader.isSky = true;
+
+	tr.skyboxShader = FinishShader();
+}
+
 static void CreateInternalShaders() {
 	tr.numShaders = 0;
 
@@ -2956,6 +2969,7 @@ static void CreateInternalShaders() {
 
 	R_CreateColourShadeShader();
 	R_CreateColourShellShader();
+	R_CreateSkyBoxShader();
 }
 
 static void BuildShaderChecksumLookup() {
@@ -4004,6 +4018,10 @@ shader_t* R_BuildBsp29SkyShader( const char* name, image_t* imageSolid, image_t*
 }
 
 shader_t* R_BuildBsp38Shader( image_t* image, int flags, int lightMapIndex ) {
+	if ( flags & BSP38SURF_SKY ) {
+		return tr.skyboxShader;
+	}
+
 	char shaderName[ MAX_QPATH ];
 	String::StripExtension2( image->imgName, shaderName, sizeof ( shaderName ) );
 	String::FixPath( shaderName );

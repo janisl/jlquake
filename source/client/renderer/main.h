@@ -269,6 +269,7 @@ struct trGlobals_t {
 	shader_t* particleShader;
 	shader_t* colorShadeShader;
 	shader_t* colorShellShader;
+	shader_t* skyboxShader;
 
 	float identityLight;						// 1.0 / ( 1 << overbrightBits )
 	int identityLightByte;						// identityLight * 255

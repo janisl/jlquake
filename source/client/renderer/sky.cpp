@@ -345,29 +345,10 @@ static void ClipSkyPolygon( int nump, vec3_t vecs, int stage ) {
 	ClipSkyPolygon( newc[ 1 ], newv[ 1 ][ 0 ], stage + 1 );
 }
 
-void R_ClearSkyBox() {
+static void R_ClearSkyBox() {
 	for ( int i = 0; i < 6; i++ ) {
 		sky_mins[ 0 ][ i ] = sky_mins[ 1 ][ i ] = 9999;
 		sky_maxs[ 0 ][ i ] = sky_maxs[ 1 ][ i ] = -9999;
-	}
-}
-
-void R_AddSkySurface( idSurfaceFace* fa ) {
-	int frontFace;
-	if ( fa->Cull( fa->shader, &frontFace ) ) {
-		return;
-	}
-
-	// calculate vertex values for sky box
-	for ( int i = 0; i < fa->numIndexes; i += 3 ) {
-		vec3_t verts[ MAX_CLIP_VERTS ];
-		for ( int j = 0; j < 3; j++ ) {
-			idVec3 org;
-			org.FromOldVec3( tr.viewParms.orient.origin );
-			idVec3 res = fa->vertexes[ fa->indexes[ i + j ] ].xyz - org;
-			res.ToOldVec3( verts[ j ] );
-		}
-		ClipSkyPolygon( 3, verts[ 0 ], 0 );
 	}
 }
 
@@ -441,7 +422,7 @@ static void EmitSkyVertex( float s, float t, int axis ) {
 	qglVertex3fv( v );
 }
 
-void R_DrawSkyBoxQ2() {
+static void R_DrawSkyBoxQ2() {
 	if ( skyrotate ) {
 		// check for no sky at all
 		int i;
@@ -858,6 +839,12 @@ static void R_BuildCloudData( shaderCommands_t* input ) {
 //
 //	Other things could be stuck in here, like birds in the sky, etc
 void RB_StageIteratorSky() {
+	if ( GGameType & GAME_Quake2 ) {
+		RB_ClipSkyPolygons( &tess );
+		R_DrawSkyBoxQ2();
+		return;
+	}
+
 	if ( r_fastsky->integer ) {
 		return;
 	}
