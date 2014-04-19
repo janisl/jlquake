@@ -71,6 +71,7 @@ int R_MDM_GetBoneTag( orientation_t* outTag, mdmHeader_t* mdm, int startTagIndex
 
 void R_InitBsp29NoTextureMip();
 void Mod_FreeBsp29( idRenderModel* mod );
+void Mod_FreeBsp29NonMap( idRenderModel* mod );
 byte* Mod_LeafPVS( mbrush29_leaf_t* Leaf, idRenderModel* Model );
 mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t P, idRenderModel* Model );
 

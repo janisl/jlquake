@@ -14,17 +14,17 @@
 //**
 //**************************************************************************
 
-#ifndef _R_WORLD_H
-#define _R_WORLD_H
+#ifndef __idRenderModelBSP29NonMap__
+#define __idRenderModelBSP29NonMap__
 
-#include "main.h"
+#include "RenderModel.h"
 
-void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex );
-void R_DrawBrushModelQ1NonMap( trRefEntity_t* e, int forcedSortIndex );
-void R_DrawWorldQ1();
-void R_DrawBrushModelQ2( trRefEntity_t* e, int forcedSortIndex );
-void R_DrawWorldQ2();
-void R_AddBrushModelSurfaces( trRefEntity_t* e );
-void R_AddWorldSurfaces();
+class idRenderModelBSP29NonMap : public idRenderModel {
+public:
+	idRenderModelBSP29NonMap();
+	virtual ~idRenderModelBSP29NonMap();
+
+	virtual bool Load( idList<byte>& buffer, idSkinTranslation* skinTranslation );
+};
 
 #endif

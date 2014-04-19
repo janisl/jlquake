@@ -41,7 +41,7 @@ void R_TextureAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 bool R_TextureFullbrightAnimationQ1( mbrush29_texture_t* base, textureBundle_t* bundle );
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex );
 void DrawTextureChainsQ1();
-void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf );
+void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf, byte* lightdata );
 void R_UploadModifiedLightmapsQ1();
 
 void GL_BeginBuildingLightmaps();

@@ -713,6 +713,10 @@ static void R_AddModelSurfaces( idRenderModel* model, trRefEntity_t* ent, int fo
 		R_DrawBrushModelQ1( ent, forcedSortIndex );
 		break;
 
+	case MOD_BRUSH29_NON_MAP:
+		R_DrawBrushModelQ1NonMap( ent, forcedSortIndex );
+		break;
+
 	case MOD_SPRITE:
 		R_AddSprSurfaces( ent, forcedSortIndex );
 		break;

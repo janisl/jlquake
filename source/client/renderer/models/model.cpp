@@ -27,6 +27,7 @@
 #include "../../../common/endian.h"
 #include "RenderModelBad.h"
 #include "RenderModelBSP29.h"
+#include "RenderModelBSP29NonMap.h"
 #include "RenderModelBSP38.h"
 #include "RenderModelSPR.h"
 #include "RenderModelSP2.h"
@@ -86,6 +87,8 @@ static void R_FreeModel( idRenderModel* mod ) {
 		R_FreeMdx( mod );
 	} else if ( mod->type == MOD_BRUSH29 ) {
 		Mod_FreeBsp29( mod );
+	} else if ( mod->type == MOD_BRUSH29_NON_MAP ) {
+		Mod_FreeBsp29NonMap( mod );
 	} else if ( mod->type == MOD_BRUSH38 ) {
 		Mod_FreeBsp38( mod );
 	} else if ( mod->type == MOD_BRUSH46 ) {
@@ -345,7 +348,7 @@ qhandle_t R_RegisterModel( const char* name, idSkinTranslation* skinTranslation 
 	idRenderModel* mod;
 	switch ( LittleLong( *( qint32* )buf.Ptr() ) ) {
 	case BSP29_VERSION:
-		mod = new idRenderModelBSP29();
+		mod = new idRenderModelBSP29NonMap();
 		break;
 
 	case IDSPRITE1HEADER:
@@ -437,6 +440,7 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 
 	switch ( model->type ) {
 	case MOD_BRUSH29:
+	case MOD_BRUSH29_NON_MAP:
 	case MOD_SPRITE:
 	case MOD_MESH1:
 		VectorCopy( model->q1_mins, mins );
@@ -485,6 +489,7 @@ int R_ModelNumFrames( qhandle_t Handle ) {
 	idRenderModel* Model = R_GetModelByHandle( Handle );
 	switch ( Model->type ) {
 	case MOD_BRUSH29:
+	case MOD_BRUSH29_NON_MAP:
 	case MOD_SPRITE:
 	case MOD_MESH1:
 		return Model->q1_numframes;

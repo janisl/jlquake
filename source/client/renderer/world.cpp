@@ -80,15 +80,33 @@ void R_DrawBrushModelQ1( trRefEntity_t* e, int forcedSortIndex ) {
 
 	// calculate dynamic lighting for bmodel if it's not an
 	// instanced model
-	if ( clmodel->brush29_firstmodelsurface != 0 ) {
-		R_DlightBmodelQ1( clmodel );
-	}
+	R_DlightBmodelQ1( clmodel );
 
 	//
 	// draw texture
 	//
 	idSurfaceFaceQ1* psurf = &clmodel->brush29_surfaces[ clmodel->brush29_firstmodelsurface ];
 	for ( int i = 0; i < clmodel->brush29_nummodelsurfaces; i++, psurf++ ) {
+		R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
+	}
+}
+
+void R_DrawBrushModelQ1NonMap( trRefEntity_t* e, int forcedSortIndex ) {
+	if ( ( e->e.renderfx & RF_THIRD_PERSON ) && !tr.viewParms.isPortal ) {
+		return;
+	}
+
+	idRenderModel* clmodel = R_GetModelByHandle( e->e.hModel );
+
+	if ( R_CullLocalBox( &clmodel->q1_mins ) == CULL_OUT ) {
+		return;
+	}
+
+	//
+	// draw texture
+	//
+	idSurfaceFaceQ1* psurf = &clmodel->brush29nm_surfaces[ clmodel->brush29nm_firstmodelsurface ];
+	for ( int i = 0; i < clmodel->brush29nm_nummodelsurfaces; i++, psurf++ ) {
 		R_AddWorldSurfaceBsp29( psurf, forcedSortIndex );
 	}
 }

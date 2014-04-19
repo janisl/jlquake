@@ -143,7 +143,7 @@ static void R_AddDynamicLightsQ1( idSurfaceFaceQ1Q2* surf ) {
 }
 
 //	Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-static void R_BuildLightMapQ1( idRenderModel* model, idSurfaceFaceQ1Q2* surf, byte* dest, byte* overbrightDest, int stride ) {
+static void R_BuildLightMapQ1( byte* lightdata, idSurfaceFaceQ1Q2* surf, byte* dest, byte* overbrightDest, int stride ) {
 	int smax, tmax;
 	int t;
 	int i, j, size;
@@ -160,7 +160,7 @@ static void R_BuildLightMapQ1( idRenderModel* model, idSurfaceFaceQ1Q2* surf, by
 	lightmap = surf->samples;
 
 // set to full bright if no light data
-	if ( !model->brush29_lightdata ) {
+	if ( !lightdata ) {
 		for ( i = 0; i < size; i++ )
 			blocklights_q1[ i ] = 255 * 256;
 		goto store;
@@ -216,7 +216,7 @@ store:
 	}
 }
 
-void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf ) {
+void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf, byte* lightdata ) {
 	int smax = ( surf->extents[ 0 ] >> 4 ) + 1;
 	int tmax = ( surf->extents[ 1 ] >> 4 ) + 1;
 
@@ -225,7 +225,7 @@ void GL_CreateSurfaceLightmapQ1( idSurfaceFaceQ1Q2* surf ) {
 	base += ( surf->lightT * BLOCK_WIDTH + surf->lightS ) * 4;
 	byte* overbrightBase = lightmaps + ( surf->lightMapTextureNum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 	overbrightBase += ( surf->lightT * BLOCK_WIDTH + surf->lightS ) * 4;
-	R_BuildLightMapQ1( loadmodel, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+	R_BuildLightMapQ1( lightdata, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 }
 
 void R_BeginBuildingLightmapsQ1() {
@@ -356,7 +356,7 @@ dynamic:
 			base += surf->lightT * BLOCK_WIDTH * 4 + surf->lightS * 4;
 			byte* overbrightBase = lightmaps + ( surf->lightMapTextureNum + MAX_LIGHTMAPS / 2 ) * 4 * BLOCK_WIDTH * BLOCK_HEIGHT;
 			overbrightBase += surf->lightT * BLOCK_WIDTH * 4 + surf->lightS * 4;
-			R_BuildLightMapQ1( tr.worldModel, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
+			R_BuildLightMapQ1( tr.worldModel->brush29_lightdata, surf, base, overbrightBase, BLOCK_WIDTH * 4 );
 		}
 	}
 }

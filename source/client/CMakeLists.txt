@@ -106,6 +106,7 @@ set(CLIENT_FILES
 	renderer/models/RenderModel.cpp
 	renderer/models/RenderModelBad.cpp
 	renderer/models/RenderModelBSP29.cpp
+	renderer/models/RenderModelBSP29NonMap.cpp
 	renderer/models/RenderModelBSP38.cpp
 	renderer/models/RenderModelBSP46.cpp
 	renderer/models/RenderModelMD2.cpp
