@@ -30,8 +30,6 @@ static idSurfaceSubdivider surfaceSubdivider;
 
 static byte* mod_base;
 
-static byte mod_novis[ BSP29_MAX_MAP_LEAFS / 8 ];
-
 static mbrush29_vertex_t* r_pcurrentvertbase;
 
 idRenderModelBSP29NonMap::idRenderModelBSP29NonMap() {
@@ -216,24 +214,6 @@ static void Mod_LoadLighting( bsp29_lump_t* l ) {
 	Com_Memcpy( loadmodel->brush29nm_lightdata, mod_base + l->fileofs, l->filelen );
 }
 
-static void Mod_LoadVisibility( bsp29_lump_t* l ) {
-	if ( !l->filelen ) {
-		loadmodel->brush29nm_visdata = NULL;
-		return;
-	}
-	loadmodel->brush29nm_visdata = new byte[ l->filelen ];
-	Com_Memcpy( loadmodel->brush29nm_visdata, mod_base + l->fileofs, l->filelen );
-}
-
-static void Mod_LoadEntities( bsp29_lump_t* l ) {
-	if ( !l->filelen ) {
-		loadmodel->brush29nm_entities = NULL;
-		return;
-	}
-	loadmodel->brush29nm_entities = new char[ l->filelen ];
-	Com_Memcpy( loadmodel->brush29nm_entities, mod_base + l->fileofs, l->filelen );
-}
-
 static void Mod_LoadVertexes( bsp29_lump_t* l ) {
 	bsp29_dvertex_t* in = ( bsp29_dvertex_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -281,7 +261,7 @@ static void Mod_LoadTexinfo( bsp29_lump_t* l ) {
 	idTextureInfo* out = new idTextureInfo[ count ];
 
 	loadmodel->brush29nm_texinfo = _out;
-	loadmodel->nmtextureInfos = out;
+	loadmodel->brush29nm_textureInfos = out;
 	loadmodel->brush29nm_numtexinfo = count;
 
 	for ( int i = 0; i < count; i++, in++, out++, _out++ ) {
@@ -405,7 +385,7 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 			common->Error( "MOD_LoadBmodel: bad texinfo number" );
 		}
 		out->surf.texinfo = loadmodel->brush29nm_texinfo + ti;
-		out->textureInfo = loadmodel->nmtextureInfos + ti;
+		out->textureInfo = loadmodel->brush29nm_textureInfos + ti;
 
 		out->CalcSurfaceExtents();
 
@@ -452,110 +432,6 @@ static void Mod_LoadFaces( bsp29_lump_t* l ) {
 		} else {
 			out->surf.altShader = out->shader;
 		}
-	}
-}
-
-static void Mod_SetParent( mbrush29_node_t* node, mbrush29_node_t* parent ) {
-	node->parent = parent;
-	if ( node->contents < 0 ) {
-		return;
-	}
-	Mod_SetParent( node->children[ 0 ], node );
-	Mod_SetParent( node->children[ 1 ], node );
-}
-
-static void Mod_LoadNodes( bsp29_lump_t* l ) {
-	bsp29_dnode_t* in = ( bsp29_dnode_t* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush29_node_t* out = new mbrush29_node_t[ count ];
-	Com_Memset( out, 0, sizeof ( mbrush29_node_t ) * count );
-
-	loadmodel->brush29nm_nodes = out;
-	loadmodel->brush29nm_numnodes = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		for ( int j = 0; j < 3; j++ ) {
-			out->minmaxs[ j ] = LittleShort( in->mins[ j ] );
-			out->minmaxs[ 3 + j ] = LittleShort( in->maxs[ j ] );
-		}
-
-		int p = LittleLong( in->planenum );
-		out->plane = loadmodel->brush29nm_planes + p;
-
-		out->firstsurface = LittleShort( in->firstface );
-		out->numsurfaces = LittleShort( in->numfaces );
-
-		for ( int j = 0; j < 2; j++ ) {
-			p = LittleShort( in->children[ j ] );
-			if ( p >= 0 ) {
-				out->children[ j ] = loadmodel->brush29nm_nodes + p;
-			} else {
-				out->children[ j ] = ( mbrush29_node_t* )( loadmodel->brush29nm_leafs + ( -1 - p ) );
-			}
-		}
-	}
-
-	Mod_SetParent( loadmodel->brush29nm_nodes, NULL );	// sets nodes and leafs
-}
-
-static void Mod_LoadLeafs( bsp29_lump_t* l ) {
-	bsp29_dleaf_t* in = ( bsp29_dleaf_t* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush29_leaf_t* out = new mbrush29_leaf_t[ count ];
-	Com_Memset( out, 0, sizeof ( mbrush29_leaf_t ) * count );
-
-	loadmodel->brush29nm_leafs = out;
-	loadmodel->brush29nm_numleafs = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		for ( int j = 0; j < 3; j++ ) {
-			out->minmaxs[ j ] = LittleShort( in->mins[ j ] );
-			out->minmaxs[ 3 + j ] = LittleShort( in->maxs[ j ] );
-		}
-
-		int p = LittleLong( in->contents );
-		out->contents = p;
-
-		out->firstmarksurface = loadmodel->brush29nm_marksurfaces +
-								( quint16 )LittleShort( in->firstmarksurface );
-		out->nummarksurfaces = LittleShort( in->nummarksurfaces );
-
-		p = LittleLong( in->visofs );
-		if ( p == -1 ) {
-			out->compressed_vis = NULL;
-		} else {
-			out->compressed_vis = loadmodel->brush29nm_visdata + p;
-		}
-
-		for ( int j = 0; j < 4; j++ ) {
-			out->ambient_sound_level[ j ] = in->ambient_level[ j ];
-		}
-	}
-}
-
-static void Mod_LoadMarksurfaces( bsp29_lump_t* l ) {
-	short* in = ( short* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	idSurfaceFaceQ1** out = new idSurfaceFaceQ1*[ count ];
-
-	loadmodel->brush29nm_marksurfaces = out;
-	loadmodel->brush29nm_nummarksurfaces = count;
-
-	for ( int i = 0; i < count; i++ ) {
-		int j = ( quint16 )LittleShort( in[ i ] );
-		if ( j >= loadmodel->brush29nm_numsurfaces ) {
-			common->FatalError( "Mod_ParseMarksurfaces: bad surface number" );
-		}
-		out[ i ] = loadmodel->brush29nm_surfaces + j;
 	}
 }
 
@@ -649,8 +525,6 @@ static void Mod_LoadSubmodelsH2( bsp29_lump_t* l ) {
 }
 
 bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* skinTranslation ) {
-	Com_Memset( mod_novis, 0xff, sizeof ( mod_novis ) );
-
 	type = MOD_BRUSH29_NON_MAP;
 	tr.currentModel = this;
 
@@ -678,11 +552,6 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	Mod_LoadPlanes( &header->lumps[ BSP29LUMP_PLANES ] );
 	Mod_LoadTexinfo( &header->lumps[ BSP29LUMP_TEXINFO ] );
 	Mod_LoadFaces( &header->lumps[ BSP29LUMP_FACES ] );
-	Mod_LoadMarksurfaces( &header->lumps[ BSP29LUMP_MARKSURFACES ] );
-	Mod_LoadVisibility( &header->lumps[ BSP29LUMP_VISIBILITY ] );
-	Mod_LoadLeafs( &header->lumps[ BSP29LUMP_LEAFS ] );
-	Mod_LoadNodes( &header->lumps[ BSP29LUMP_NODES ] );
-	Mod_LoadEntities( &header->lumps[ BSP29LUMP_ENTITIES ] );
 	if ( GGameType & GAME_Hexen2 ) {
 		Mod_LoadSubmodelsH2( &header->lumps[ BSP29LUMP_MODELS ] );
 	} else {
@@ -698,7 +567,6 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	for ( int i = 0; i < mod->brush29nm_numsubmodels; i++ ) {
 		mbrush29_submodel_t* bm = &mod->brush29nm_submodels[ i ];
 
-		mod->brush29nm_firstnode = bm->headnode;
 		mod->brush29nm_firstmodelsurface = bm->firstface;
 		mod->brush29nm_nummodelsurfaces = bm->numfaces;
 
@@ -706,8 +574,6 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 		VectorCopy( bm->mins, mod->q1_mins );
 
 		mod->q1_radius = RadiusFromBounds( mod->q1_mins, mod->q1_maxs );
-
-		mod->brush29nm_numleafs = bm->visleafs;
 
 		if ( i < mod->brush29nm_numsubmodels - 1 ) {
 			// duplicate the basic information

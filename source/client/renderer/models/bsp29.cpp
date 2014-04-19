@@ -100,19 +100,10 @@ void Mod_FreeBsp29NonMap( idRenderModel* mod ) {
 	if ( mod->brush29nm_lightdata ) {
 		delete[] mod->brush29nm_lightdata;
 	}
-	if ( mod->brush29nm_visdata ) {
-		delete[] mod->brush29nm_visdata;
-	}
-	if ( mod->brush29nm_entities ) {
-		delete[] mod->brush29nm_entities;
-	}
 	delete[] mod->brush29nm_vertexes;
 	delete[] mod->brush29nm_edges;
 	delete[] mod->brush29nm_texinfo;
 	delete[] mod->brush29nm_surfaces;
-	delete[] mod->brush29nm_nodes;
-	delete[] mod->brush29nm_leafs;
-	delete[] mod->brush29nm_marksurfaces;
 	delete[] mod->brush29nm_surfedges;
 	delete[] mod->brush29nm_planes;
 	delete[] mod->brush29nm_submodels;
