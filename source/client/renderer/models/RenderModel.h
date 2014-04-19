@@ -98,7 +98,6 @@ struct mbrush29_leaf_t {
 struct mbrush29_submodel_t {
 	float mins[ 3 ];
 	float maxs[ 3 ];
-	float origin[ 3 ];
 	qint32 headnode;
 	qint32 visleafs;			// not including the solid leaf 0
 	qint32 firstface;
