@@ -21,7 +21,19 @@
 
 class idSurfaceGrid : public idWorldSurface {
 public:
-	struct srfGridMesh_t* gridData;
+	// lod information, which may be different
+	// than the culling information to allow for
+	// groups of curves that LOD as a unit
+	idVec3 lodOrigin;
+	float lodRadius;
+	int lodFixed;
+	bool lodStitched;
+
+	// vertexes
+	int width;
+	int height;
+	float* widthLodError;
+	float* heightLodError;
 
 	virtual ~idSurfaceGrid();
 	virtual bool IsGrid() const;
@@ -42,20 +54,13 @@ public:
 		const vec3_t mins, const vec3_t maxs,
 		bool oldMapping, const vec3_t center, float radius, const vec3_t bestnormal, int orientation, int numPoints ) const;
 
-	struct srfGridMesh_t* GetGridData() {
-		return gridData;
-	}
-	const struct srfGridMesh_t* GetGridData() const {
-		return gridData;
-	}
-
 protected:
 	virtual bool DoCull( shader_t* shader ) const;
 	virtual bool DoCullET( shader_t* shader, int* frontFace ) const;
 	virtual int DoMarkDynamicLights( int dlightBits );
 
 private:
-	static float LodErrorForVolume( vec3_t local, float radius );
+	static float LodErrorForVolume( idVec3 local, float radius );
 };
 
 #endif

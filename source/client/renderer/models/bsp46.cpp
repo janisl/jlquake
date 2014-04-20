@@ -358,21 +358,18 @@ static idWorldSurface* ParseMesh( bsp46_dsurface_t* ds, bsp46_drawVert_t* verts 
 	}
 
 	// pre-tesseleate
-	srfGridMesh_t* grid = R_SubdividePatchToGrid( surf, width, height, points );
+	R_SubdividePatchToGrid( surf, width, height, points );
 
 	// copy the level of detail origin, which is the center
 	// of the group of all curves that must subdivide the same
 	// to avoid cracking
-	vec3_t bounds[ 2 ];
+	idVec3 bounds[ 2 ];
 	for ( int i = 0; i < 3; i++ ) {
 		bounds[ 0 ][ i ] = LittleFloat( ds->lightmapVecs[ 0 ][ i ] );
 		bounds[ 1 ][ i ] = LittleFloat( ds->lightmapVecs[ 1 ][ i ] );
 	}
-	VectorAdd( bounds[ 0 ], bounds[ 1 ], bounds[ 1 ] );
-	VectorScale( bounds[ 1 ], 0.5f, grid->lodOrigin );
-	vec3_t tmpVec;
-	VectorSubtract( bounds[ 0 ], grid->lodOrigin, tmpVec );
-	grid->lodRadius = VectorLength( tmpVec );
+	surf->lodOrigin = (bounds[ 0 ] + bounds[ 1 ]) * 0.5f;
+	surf->lodRadius = (bounds[ 0 ] - surf->lodOrigin).Length();
 
 	// finish surface
 	FinishGenericSurface( surf, ds, surf->vertexes[ 0 ].xyz );
@@ -536,8 +533,8 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 
 //	returns true if there are grid points merged on a width edge
 static bool R_MergedWidthPoints( idSurfaceGrid* grid, int offset ) {
-	for ( int i = 1; i < grid->GetGridData()->width - 1; i++ ) {
-		for ( int j = i + 1; j < grid->GetGridData()->width - 1; j++ ) {
+	for ( int i = 1; i < grid->width - 1; i++ ) {
+		for ( int j = i + 1; j < grid->width - 1; j++ ) {
 			if ( idMath::Fabs( grid->vertexes[ i + offset ].xyz.x - grid->vertexes[ j + offset ].xyz.x ) > .1 ) {
 				continue;
 			}
@@ -555,15 +552,15 @@ static bool R_MergedWidthPoints( idSurfaceGrid* grid, int offset ) {
 
 //	returns true if there are grid points merged on a height edge
 static bool R_MergedHeightPoints( idSurfaceGrid* grid, int offset ) {
-	for ( int i = 1; i < grid->GetGridData()->height - 1; i++ ) {
-		for ( int j = i + 1; j < grid->GetGridData()->height - 1; j++ ) {
-			if ( idMath::Fabs( grid->vertexes[ grid->GetGridData()->width * i + offset ].xyz.x - grid->vertexes[ grid->GetGridData()->width * j + offset ].xyz.x ) > .1 ) {
+	for ( int i = 1; i < grid->height - 1; i++ ) {
+		for ( int j = i + 1; j < grid->height - 1; j++ ) {
+			if ( idMath::Fabs( grid->vertexes[ grid->width * i + offset ].xyz.x - grid->vertexes[ grid->width * j + offset ].xyz.x ) > .1 ) {
 				continue;
 			}
-			if ( idMath::Fabs( grid->vertexes[ grid->GetGridData()->width * i + offset ].xyz.y - grid->vertexes[ grid->GetGridData()->width * j + offset ].xyz.y ) > .1 ) {
+			if ( idMath::Fabs( grid->vertexes[ grid->width * i + offset ].xyz.y - grid->vertexes[ grid->width * j + offset ].xyz.y ) > .1 ) {
 				continue;
 			}
-			if ( idMath::Fabs( grid->vertexes[ grid->GetGridData()->width * i + offset ].xyz.z - grid->vertexes[ grid->GetGridData()->width * j + offset ].xyz.z ) > .1 ) {
+			if ( idMath::Fabs( grid->vertexes[ grid->width * i + offset ].xyz.z - grid->vertexes[ grid->width * j + offset ].xyz.z ) > .1 ) {
 				continue;
 			}
 			return true;
@@ -586,21 +583,15 @@ static void R_FixSharedVertexLodError_r( int start, idSurfaceGrid* grid1 ) {
 		//
 		idSurfaceGrid* grid2 = ( idSurfaceGrid* )s_worldData.surfaces[ j ];
 		// if the LOD errors are already fixed for this patch
-		if ( grid2->GetGridData()->lodFixed == 2 ) {
+		if ( grid2->lodFixed == 2 ) {
 			continue;
 		}
 		// grids in the same LOD group should have the exact same lod radius
-		if ( grid1->GetGridData()->lodRadius != grid2->GetGridData()->lodRadius ) {
+		if ( grid1->lodRadius != grid2->lodRadius ) {
 			continue;
 		}
 		// grids in the same LOD group should have the exact same lod origin
-		if ( grid1->GetGridData()->lodOrigin[ 0 ] != grid2->GetGridData()->lodOrigin[ 0 ] ) {
-			continue;
-		}
-		if ( grid1->GetGridData()->lodOrigin[ 1 ] != grid2->GetGridData()->lodOrigin[ 1 ] ) {
-			continue;
-		}
-		if ( grid1->GetGridData()->lodOrigin[ 2 ] != grid2->GetGridData()->lodOrigin[ 2 ] ) {
+		if ( grid1->lodOrigin != grid2->lodOrigin ) {
 			continue;
 		}
 		//
@@ -608,24 +599,24 @@ static void R_FixSharedVertexLodError_r( int start, idSurfaceGrid* grid1 ) {
 		for ( n = 0; n < 2; n++ ) {
 			//
 			if ( n ) {
-				offset1 = ( grid1->GetGridData()->height - 1 ) * grid1->GetGridData()->width;
+				offset1 = ( grid1->height - 1 ) * grid1->width;
 			} else {
 				offset1 = 0;
 			}
 			if ( R_MergedWidthPoints( grid1, offset1 ) ) {
 				continue;
 			}
-			for ( k = 1; k < grid1->GetGridData()->width - 1; k++ ) {
+			for ( k = 1; k < grid1->width - 1; k++ ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
-						offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+						offset2 = ( grid2->height - 1 ) * grid2->width;
 					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedWidthPoints( grid2, offset2 ) ) {
 						continue;
 					}
-					for ( l = 1; l < grid2->GetGridData()->width - 1; l++ ) {
+					for ( l = 1; l < grid2->width - 1; l++ ) {
 						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.x - grid2->vertexes[ l + offset2 ].xyz.x ) > .1 ) {
 							continue;
 						}
@@ -636,31 +627,31 @@ static void R_FixSharedVertexLodError_r( int start, idSurfaceGrid* grid1 ) {
 							continue;
 						}
 						// ok the points are equal and should have the same lod error
-						grid2->GetGridData()->widthLodError[ l ] = grid1->GetGridData()->widthLodError[ k ];
+						grid2->widthLodError[ l ] = grid1->widthLodError[ k ];
 						touch = true;
 					}
 				}
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
-						offset2 = grid2->GetGridData()->width - 1;
+						offset2 = grid2->width - 1;
 					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedHeightPoints( grid2, offset2 ) ) {
 						continue;
 					}
-					for ( l = 1; l < grid2->GetGridData()->height - 1; l++ ) {
-						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.x - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.x ) > .1 ) {
+					for ( l = 1; l < grid2->height - 1; l++ ) {
+						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.x - grid2->vertexes[ grid2->width * l + offset2 ].xyz.x ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.y - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.y ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.y - grid2->vertexes[ grid2->width * l + offset2 ].xyz.y ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.z - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.z ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ k + offset1 ].xyz.z - grid2->vertexes[ grid2->width * l + offset2 ].xyz.z ) > .1 ) {
 							continue;
 						}
 						// ok the points are equal and should have the same lod error
-						grid2->GetGridData()->heightLodError[ l ] = grid1->GetGridData()->widthLodError[ k ];
+						grid2->heightLodError[ l ] = grid1->widthLodError[ k ];
 						touch = true;
 					}
 				}
@@ -668,66 +659,66 @@ static void R_FixSharedVertexLodError_r( int start, idSurfaceGrid* grid1 ) {
 		}
 		for ( n = 0; n < 2; n++ ) {
 			if ( n ) {
-				offset1 = grid1->GetGridData()->width - 1;
+				offset1 = grid1->width - 1;
 			} else {
 				offset1 = 0;
 			}
 			if ( R_MergedHeightPoints( grid1, offset1 ) ) {
 				continue;
 			}
-			for ( k = 1; k < grid1->GetGridData()->height - 1; k++ ) {
+			for ( k = 1; k < grid1->height - 1; k++ ) {
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
-						offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+						offset2 = ( grid2->height - 1 ) * grid2->width;
 					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedWidthPoints( grid2, offset2 ) ) {
 						continue;
 					}
-					for ( l = 1; l < grid2->GetGridData()->width - 1; l++ ) {
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz.x - grid2->vertexes[ l + offset2 ].xyz.x ) > .1 ) {
+					for ( l = 1; l < grid2->width - 1; l++ ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz.x - grid2->vertexes[ l + offset2 ].xyz.x ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz.y - grid2->vertexes[ l + offset2 ].xyz.y ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz.y - grid2->vertexes[ l + offset2 ].xyz.y ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz.z - grid2->vertexes[ l + offset2 ].xyz.z ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz.z - grid2->vertexes[ l + offset2 ].xyz.z ) > .1 ) {
 							continue;
 						}
 						// ok the points are equal and should have the same lod error
-						grid2->GetGridData()->widthLodError[ l ] = grid1->GetGridData()->heightLodError[ k ];
+						grid2->widthLodError[ l ] = grid1->heightLodError[ k ];
 						touch = true;
 					}
 				}
 				for ( m = 0; m < 2; m++ ) {
 					if ( m ) {
-						offset2 = grid2->GetGridData()->width - 1;
+						offset2 = grid2->width - 1;
 					} else {
 						offset2 = 0;
 					}
 					if ( R_MergedHeightPoints( grid2, offset2 ) ) {
 						continue;
 					}
-					for ( l = 1; l < grid2->GetGridData()->height - 1; l++ ) {
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz[ 0 ] - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.x ) > .1 ) {
+					for ( l = 1; l < grid2->height - 1; l++ ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz[ 0 ] - grid2->vertexes[ grid2->width * l + offset2 ].xyz.x ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz[ 1 ] - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.y ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz[ 1 ] - grid2->vertexes[ grid2->width * l + offset2 ].xyz.y ) > .1 ) {
 							continue;
 						}
-						if ( idMath::Fabs( grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz[ 2 ] - grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz.z ) > .1 ) {
+						if ( idMath::Fabs( grid1->vertexes[ grid1->width * k + offset1 ].xyz[ 2 ] - grid2->vertexes[ grid2->width * l + offset2 ].xyz.z ) > .1 ) {
 							continue;
 						}
 						// ok the points are equal and should have the same lod error
-						grid2->GetGridData()->heightLodError[ l ] = grid1->GetGridData()->heightLodError[ k ];
+						grid2->heightLodError[ l ] = grid1->heightLodError[ k ];
 						touch = true;
 					}
 				}
 			}
 		}
 		if ( touch ) {
-			grid2->GetGridData()->lodFixed = 2;
+			grid2->lodFixed = 2;
 			R_FixSharedVertexLodError_r( start, grid2 );
 			//NOTE: this would be correct but makes things really slow
 			//grid2->lodFixed = 1;
@@ -745,11 +736,11 @@ static void R_FixSharedVertexLodError() {
 			continue;
 		}
 		idSurfaceGrid* grid1 = ( idSurfaceGrid* )s_worldData.surfaces[ i ];
-		if ( grid1->GetGridData()->lodFixed ) {
+		if ( grid1->lodFixed ) {
 			continue;
 		}
 		//
-		grid1->GetGridData()->lodFixed = 2;
+		grid1->lodFixed = 2;
 		// recursively fix other patches in the same LOD group
 		R_FixSharedVertexLodError_r( i + 1, grid1 );
 	}
@@ -759,25 +750,25 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
-			offset1 = ( grid1->GetGridData()->height - 1 ) * grid1->GetGridData()->width;
+			offset1 = ( grid1->height - 1 ) * grid1->width;
 		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedWidthPoints( grid1, offset1 ) ) {
 			continue;
 		}
-		for ( int k = 0; k < grid1->GetGridData()->width - 2; k += 2 ) {
+		for ( int k = 0; k < grid1->width - 2; k += 2 ) {
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->width >= MAX_GRID_SIZE ) {
+				if ( grid2->width >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+					offset2 = ( grid2->height - 1 ) * grid2->width;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->width - 1; l++ ) {
+				for ( int l = 0; l < grid2->width - 1; l++ ) {
 					{
 					const idVec3& v1 = grid1->vertexes[ k + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + offset2 ].xyz;
@@ -820,29 +811,29 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert column into grid2 right after after column l
 					int row;
 					if ( m ) {
-						row = grid2->GetGridData()->height - 1;
+						row = grid2->height - 1;
 					} else {
 						row = 0;
 					}
 					R_GridInsertColumn( grid2, l + 1, row,
-						grid1->vertexes[ k + 1 + offset1 ].xyz, grid1->GetGridData()->widthLodError[ k + 1 ] );
+						grid1->vertexes[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					return true;
 				}
 			}
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->height >= MAX_GRID_SIZE ) {
+				if ( grid2->height >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = grid2->GetGridData()->width - 1;
+					offset2 = grid2->width - 1;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->height - 1; l++ ) {
+				for ( int l = 0; l < grid2->height - 1; l++ ) {
 					{
 					const idVec3& v1 = grid1->vertexes[ k + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -856,7 +847,7 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 
 					{
 					const idVec3& v1 = grid1->vertexes[ k + 2 + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -868,8 +859,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 					}
 					{
-					const idVec3& v1 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) < .01 &&
 						 idMath::Fabs( v1.y - v2.y ) < .01 &&
 						 idMath::Fabs( v1.z - v2.z ) < .01 ) {
@@ -881,12 +872,12 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert row into grid2 right after after row l
 					int column;
 					if ( m ) {
-						column = grid2->GetGridData()->width - 1;
+						column = grid2->width - 1;
 					} else {
 						column = 0;
 					}
 					R_GridInsertRow( grid2, l + 1, column,
-						grid1->vertexes[ k + 1 + offset1 ].xyz, grid1->GetGridData()->widthLodError[ k + 1 ] );
+						grid1->vertexes[ k + 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					return true;
 				}
 			}
@@ -895,27 +886,27 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
-			offset1 = grid1->GetGridData()->width - 1;
+			offset1 = grid1->width - 1;
 		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedHeightPoints( grid1, offset1 ) ) {
 			continue;
 		}
-		for ( int k = 0; k < grid1->GetGridData()->height - 2; k += 2 ) {
+		for ( int k = 0; k < grid1->height - 2; k += 2 ) {
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->width >= MAX_GRID_SIZE ) {
+				if ( grid2->width >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+					offset2 = ( grid2->height - 1 ) * grid2->width;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->width - 1; l++ ) {
+				for ( int l = 0; l < grid2->width - 1; l++ ) {
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * k + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
@@ -929,7 +920,7 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * ( k + 2 ) + offset1 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * ( k + 2 ) + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + 1 + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
@@ -955,29 +946,29 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert column into grid2 right after after column l
 					int row;
 					if ( m ) {
-						row = grid2->GetGridData()->height - 1;
+						row = grid2->height - 1;
 					} else {
 						row = 0;
 					}
 					R_GridInsertColumn( grid2, l + 1, row,
-						grid1->vertexes[ grid1->GetGridData()->width * ( k + 1 ) + offset1 ].xyz, grid1->GetGridData()->heightLodError[ k + 1 ] );
+						grid1->vertexes[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					return true;
 				}
 			}
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->height >= MAX_GRID_SIZE ) {
+				if ( grid2->height >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = grid2->GetGridData()->width - 1;
+					offset2 = grid2->width - 1;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->height - 1; l++ ) {
+				for ( int l = 0; l < grid2->height - 1; l++ ) {
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * k + offset1 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -990,8 +981,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * ( k + 2 ) + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * ( k + 2 ) + offset1 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -1003,8 +994,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 					}
 					{
-					const idVec3& v1 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) < .01 &&
 						 idMath::Fabs( v1.y - v2.y ) < .01 &&
 						 idMath::Fabs( v1.z - v2.z ) < .01 ) {
@@ -1016,12 +1007,12 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert row into grid2 right after after row l
 					int column;
 					if ( m ) {
-						column = grid2->GetGridData()->width - 1;
+						column = grid2->width - 1;
 					} else {
 						column = 0;
 					}
 					R_GridInsertRow( grid2, l + 1, column,
-						grid1->vertexes[ grid1->GetGridData()->width * ( k + 1 ) + offset1 ].xyz, grid1->GetGridData()->heightLodError[ k + 1 ] );
+						grid1->vertexes[ grid1->width * ( k + 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					return true;
 				}
 			}
@@ -1030,25 +1021,25 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
-			offset1 = ( grid1->GetGridData()->height - 1 ) * grid1->GetGridData()->width;
+			offset1 = ( grid1->height - 1 ) * grid1->width;
 		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedWidthPoints( grid1, offset1 ) ) {
 			continue;
 		}
-		for ( int k = grid1->GetGridData()->width - 1; k > 1; k -= 2 ) {
+		for ( int k = grid1->width - 1; k > 1; k -= 2 ) {
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->width >= MAX_GRID_SIZE ) {
+				if ( grid2->width >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+					offset2 = ( grid2->height - 1 ) * grid2->width;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->width - 1; l++ ) {
+				for ( int l = 0; l < grid2->width - 1; l++ ) {
 					{
 					const idVec3& v1 = grid1->vertexes[ k + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + offset2 ].xyz;
@@ -1090,29 +1081,29 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert column into grid2 right after after column l
 					int row;
 					if ( m ) {
-						row = grid2->GetGridData()->height - 1;
+						row = grid2->height - 1;
 					} else {
 						row = 0;
 					}
 					R_GridInsertColumn( grid2, l + 1, row,
-						grid1->vertexes[ k - 1 + offset1 ].xyz, grid1->GetGridData()->widthLodError[ k + 1 ] );
+						grid1->vertexes[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] );
 					return true;
 				}
 			}
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->height >= MAX_GRID_SIZE ) {
+				if ( grid2->height >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = grid2->GetGridData()->width - 1;
+					offset2 = grid2->width - 1;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->height - 1; l++ ) {
+				for ( int l = 0; l < grid2->height - 1; l++ ) {
 					{
 					const idVec3& v1 = grid1->vertexes[ k + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -1126,7 +1117,7 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 
 					{
 					const idVec3& v1 = grid1->vertexes[ k - 2 + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -1138,8 +1129,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 					}
 					{
-					const idVec3& v1 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) < .01 &&
 						 idMath::Fabs( v1.y - v2.y ) < .01 &&
 						 idMath::Fabs( v1.z - v2.z ) < .01 ) {
@@ -1151,12 +1142,12 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert row into grid2 right after after row l
 					int column;
 					if ( m ) {
-						column = grid2->GetGridData()->width - 1;
+						column = grid2->width - 1;
 					} else {
 						column = 0;
 					}
 					if ( !R_GridInsertRow( grid2, l + 1, column,
-						grid1->vertexes[ k - 1 + offset1 ].xyz, grid1->GetGridData()->widthLodError[ k + 1 ] ) ) {
+						grid1->vertexes[ k - 1 + offset1 ].xyz, grid1->widthLodError[ k + 1 ] ) ) {
 						break;
 					}
 					return true;
@@ -1167,27 +1158,27 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 	for ( int n = 0; n < 2; n++ ) {
 		int offset1;
 		if ( n ) {
-			offset1 = grid1->GetGridData()->width - 1;
+			offset1 = grid1->width - 1;
 		} else {
 			offset1 = 0;
 		}
 		if ( R_MergedHeightPoints( grid1, offset1 ) ) {
 			continue;
 		}
-		for ( int k = grid1->GetGridData()->height - 1; k > 1; k -= 2 ) {
+		for ( int k = grid1->height - 1; k > 1; k -= 2 ) {
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->width >= MAX_GRID_SIZE ) {
+				if ( grid2->width >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = ( grid2->GetGridData()->height - 1 ) * grid2->GetGridData()->width;
+					offset2 = ( grid2->height - 1 ) * grid2->width;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->width - 1; l++ ) {
+				for ( int l = 0; l < grid2->width - 1; l++ ) {
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * k + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
@@ -1201,7 +1192,7 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * ( k - 2 ) + offset1 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * ( k - 2 ) + offset1 ].xyz;
 					const idVec3& v2 = grid2->vertexes[ l + 1 + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
@@ -1227,29 +1218,29 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert column into grid2 right after after column l
 					int row;
 					if ( m ) {
-						row = grid2->GetGridData()->height - 1;
+						row = grid2->height - 1;
 					} else {
 						row = 0;
 					}
 					R_GridInsertColumn( grid2, l + 1, row,
-						grid1->vertexes[ grid1->GetGridData()->width * ( k - 1 ) + offset1 ].xyz, grid1->GetGridData()->heightLodError[ k + 1 ] );
+						grid1->vertexes[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					return true;
 				}
 			}
 			for ( int m = 0; m < 2; m++ ) {
-				if ( grid2->GetGridData()->height >= MAX_GRID_SIZE ) {
+				if ( grid2->height >= MAX_GRID_SIZE ) {
 					break;
 				}
 				int offset2;
 				if ( m ) {
-					offset2 = grid2->GetGridData()->width - 1;
+					offset2 = grid2->width - 1;
 				} else {
 					offset2 = 0;
 				}
-				for ( int l = 0; l < grid2->GetGridData()->height - 1; l++ ) {
+				for ( int l = 0; l < grid2->height - 1; l++ ) {
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * k + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * k + offset1 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -1262,8 +1253,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 
 					{
-					const idVec3& v1 = grid1->vertexes[ grid1->GetGridData()->width * ( k - 2 ) + offset1 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid1->vertexes[ grid1->width * ( k - 2 ) + offset1 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) > .1 ) {
 						continue;
 					}
@@ -1275,8 +1266,8 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					}
 					}
 					{
-					const idVec3& v1 = grid2->vertexes[ grid2->GetGridData()->width * l + offset2 ].xyz;
-					const idVec3& v2 = grid2->vertexes[ grid2->GetGridData()->width * ( l + 1 ) + offset2 ].xyz;
+					const idVec3& v1 = grid2->vertexes[ grid2->width * l + offset2 ].xyz;
+					const idVec3& v2 = grid2->vertexes[ grid2->width * ( l + 1 ) + offset2 ].xyz;
 					if ( idMath::Fabs( v1.x - v2.x ) < .01 &&
 						 idMath::Fabs( v1.y - v2.y ) < .01 &&
 						 idMath::Fabs( v1.z - v2.z ) < .01 ) {
@@ -1288,12 +1279,12 @@ static bool R_StitchPatches( idSurfaceGrid* grid1, idSurfaceGrid* grid2 ) {
 					// insert row into grid2 right after after row l
 					int column;
 					if ( m ) {
-						column = grid2->GetGridData()->width - 1;
+						column = grid2->width - 1;
 					} else {
 						column = 0;
 					}
 					R_GridInsertRow( grid2, l + 1, column,
-						grid1->vertexes[ grid1->GetGridData()->width * ( k - 1 ) + offset1 ].xyz, grid1->GetGridData()->heightLodError[ k + 1 ] );
+						grid1->vertexes[ grid1->width * ( k - 1 ) + offset1 ].xyz, grid1->heightLodError[ k + 1 ] );
 					return true;
 				}
 			}
@@ -1319,17 +1310,11 @@ static int R_TryStitchingPatch( idSurfaceGrid* grid1 ) {
 		}
 		idSurfaceGrid* grid2 = ( idSurfaceGrid* )s_worldData.surfaces[ j ];
 		// grids in the same LOD group should have the exact same lod radius
-		if ( grid1->gridData->lodRadius != grid2->gridData->lodRadius ) {
+		if ( grid1->lodRadius != grid2->lodRadius ) {
 			continue;
 		}
 		// grids in the same LOD group should have the exact same lod origin
-		if ( grid1->gridData->lodOrigin[ 0 ] != grid2->gridData->lodOrigin[ 0 ] ) {
-			continue;
-		}
-		if ( grid1->gridData->lodOrigin[ 1 ] != grid2->gridData->lodOrigin[ 1 ] ) {
-			continue;
-		}
-		if ( grid1->gridData->lodOrigin[ 2 ] != grid2->gridData->lodOrigin[ 2 ] ) {
+		if ( grid1->lodOrigin != grid2->lodOrigin ) {
 			continue;
 		}
 		while ( R_StitchPatches( grid1, grid2 ) ) {
@@ -1350,10 +1335,10 @@ static void R_StitchAllPatches() {
 				continue;
 			}
 			idSurfaceGrid* grid1 = ( idSurfaceGrid* )s_worldData.surfaces[ i ];
-			if ( grid1->GetGridData()->lodStitched ) {
+			if ( grid1->lodStitched ) {
 				continue;
 			}
-			grid1->GetGridData()->lodStitched = true;
+			grid1->lodStitched = true;
 			stitched = true;
 			//
 			numstitches += R_TryStitchingPatch( grid1 );

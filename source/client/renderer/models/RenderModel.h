@@ -213,21 +213,6 @@ struct drawSurf_t {
 	idSurface* surface;					// any of surface*_t
 };
 
-struct srfGridMesh_t {
-	// lod information, which may be different
-	// than the culling information to allow for
-	// groups of curves that LOD as a unit
-	vec3_t lodOrigin;
-	float lodRadius;
-	int lodFixed;
-	int lodStitched;
-
-	// vertexes
-	int width, height;
-	float* widthLodError;
-	float* heightLodError;
-};
-
 //==============================================================================
 //
 //	QUAKE 3 BRUSH MODELS

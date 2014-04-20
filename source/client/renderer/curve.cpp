@@ -207,23 +207,21 @@ static void PutPointsOnCurve( idWorldVertex ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE
 	}
 }
 
-static srfGridMesh_t* R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, int height,
+static void R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, int height,
 	idWorldVertex ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ], float errorTable[ 2 ][ MAX_GRID_SIZE ] ) {
 	// copy the results out to a grid
-	int size = sizeof( srfGridMesh_t );
-
-	srfGridMesh_t* grid = ( srfGridMesh_t* )Mem_Alloc( size );
-	Com_Memset( grid, 0, size );
+	surf->lodFixed = 0;
+	surf->lodStitched = false;
 	surf->vertexes = new idWorldVertex[ width * height ];
 
-	grid->widthLodError = new float[ width ];
-	Com_Memcpy( grid->widthLodError, errorTable[ 0 ], width * 4 );
+	surf->widthLodError = new float[ width ];
+	Com_Memcpy( surf->widthLodError, errorTable[ 0 ], width * 4 );
 
-	grid->heightLodError = new float[ height ];
-	Com_Memcpy( grid->heightLodError, errorTable[ 1 ], height * 4 );
+	surf->heightLodError = new float[ height ];
+	Com_Memcpy( surf->heightLodError, errorTable[ 1 ], height * 4 );
 
-	grid->width = width;
-	grid->height = height;
+	surf->width = width;
+	surf->height = height;
 	surf->bounds.Clear();
 	for ( int i = 0; i < width; i++ ) {
 		for ( int j = 0; j < height; j++ ) {
@@ -235,18 +233,11 @@ static srfGridMesh_t* R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, i
 
 	// compute local origin and bounds
 	surf->boundingSphere = surf->bounds.ToSphere();
-
-	surf->boundingSphere.GetOrigin().ToOldVec3( grid->lodOrigin );
-	grid->lodRadius = surf->boundingSphere.GetRadius();
-
-	surf->gridData = grid;
-	return grid;
 }
 
 void R_FreeSurfaceGridMesh( idSurfaceGrid* grid ) {
-	delete[] grid->GetGridData()->widthLodError;
-	delete[] grid->GetGridData()->heightLodError;
-	Mem_Free( grid->GetGridData() );
+	delete[] grid->widthLodError;
+	delete[] grid->heightLodError;
 }
 
 void R_FreeSurfaceGridMeshAndVertexes( idSurfaceGrid* grid ) {
@@ -254,7 +245,7 @@ void R_FreeSurfaceGridMeshAndVertexes( idSurfaceGrid* grid ) {
 	delete[] grid->vertexes;
 }
 
-srfGridMesh_t* R_SubdividePatchToGrid( idSurfaceGrid* surf, int width, int height, idWorldVertex points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] ) {
+void R_SubdividePatchToGrid( idSurfaceGrid* surf, int width, int height, idWorldVertex points[ MAX_PATCH_SIZE * MAX_PATCH_SIZE ] ) {
 	idWorldVertex ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ];
 	for ( int i = 0; i < width; i++ ) {
 		for ( int j = 0; j < height; j++ ) {
@@ -391,25 +382,24 @@ srfGridMesh_t* R_SubdividePatchToGrid( idSurfaceGrid* surf, int width, int heigh
 	// calculate normals
 	MakeMeshNormals( width, height, ctrl );
 
-	srfGridMesh_t* grid = R_CreateSurfaceGridMesh( surf, width, height, ctrl, errorTable );
-	return grid;
+	R_CreateSurfaceGridMesh( surf, width, height, ctrl, errorTable );
 }
 
 bool R_GridInsertColumn( idSurfaceGrid* grid, int column, int row, const idVec3& point, float loderror ) {
 	int oldwidth = 0;
-	int width = grid->GetGridData()->width + 1;
+	int width = grid->width + 1;
 	if ( width > MAX_GRID_SIZE ) {
 		return false;
 	}
-	int height = grid->GetGridData()->height;
+	int height = grid->height;
 
 	idWorldVertex ctrl[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ];
 	float errorTable[ 2 ][ MAX_GRID_SIZE ];
 	for ( int i = 0; i < width; i++ ) {
 		if ( i == column ) {
 			//insert new column
-			for ( int j = 0; j < grid->GetGridData()->height; j++ ) {
-				ctrl[ j ][ i ] = LerpDrawVert( grid->vertexes[ j * grid->GetGridData()->width + i - 1 ], grid->vertexes[ j * grid->GetGridData()->width + i ] );
+			for ( int j = 0; j < grid->height; j++ ) {
+				ctrl[ j ][ i ] = LerpDrawVert( grid->vertexes[ j * grid->width + i - 1 ], grid->vertexes[ j * grid->width + i ] );
 				if ( j == row ) {
 					ctrl[ j ][ i ].xyz = point;
 				}
@@ -417,37 +407,31 @@ bool R_GridInsertColumn( idSurfaceGrid* grid, int column, int row, const idVec3&
 			errorTable[ 0 ][ i ] = loderror;
 			continue;
 		}
-		errorTable[ 0 ][ i ] = grid->GetGridData()->widthLodError[ oldwidth ];
-		for ( int j = 0; j < grid->GetGridData()->height; j++ ) {
-			ctrl[ j ][ i ] = grid->vertexes[ j * grid->GetGridData()->width + oldwidth ];
+		errorTable[ 0 ][ i ] = grid->widthLodError[ oldwidth ];
+		for ( int j = 0; j < grid->height; j++ ) {
+			ctrl[ j ][ i ] = grid->vertexes[ j * grid->width + oldwidth ];
 		}
 		oldwidth++;
 	}
-	for ( int j = 0; j < grid->GetGridData()->height; j++ ) {
-		errorTable[ 1 ][ j ] = grid->GetGridData()->heightLodError[ j ];
+	for ( int j = 0; j < grid->height; j++ ) {
+		errorTable[ 1 ][ j ] = grid->heightLodError[ j ];
 	}
 	// put all the aproximating points on the curve
 	//PutPointsOnCurve( ctrl, width, height );
 	// calculate normals
 	MakeMeshNormals( width, height, ctrl );
 
-	vec3_t lodOrigin;
-	VectorCopy( grid->GetGridData()->lodOrigin, lodOrigin );
-	float lodRadius = grid->GetGridData()->lodRadius;
 	// free the old grid
 	R_FreeSurfaceGridMeshAndVertexes( grid );
 	// create a new grid
 	R_CreateSurfaceGridMesh( grid, width, height, ctrl, errorTable );
-	grid->GetGridData()->lodRadius = lodRadius;
-	VectorCopy( lodOrigin, grid->GetGridData()->lodOrigin );
-	grid->GetGridData()->lodStitched = false;
 	return true;
 }
 
 bool R_GridInsertRow( class idSurfaceGrid* grid, int row, int column, const idVec3& point, float loderror ) {
 	int oldheight = 0;
-	int width = grid->GetGridData()->width;
-	int height = grid->GetGridData()->height + 1;
+	int width = grid->width;
+	int height = grid->height + 1;
 	if ( height > MAX_GRID_SIZE ) {
 		return false;
 	}
@@ -457,8 +441,8 @@ bool R_GridInsertRow( class idSurfaceGrid* grid, int row, int column, const idVe
 	for ( int i = 0; i < height; i++ ) {
 		if ( i == row ) {
 			//insert new row
-			for ( int j = 0; j < grid->GetGridData()->width; j++ ) {
-				ctrl[ i ][ j ] = LerpDrawVert( grid->vertexes[ ( i - 1 ) * grid->GetGridData()->width + j ], grid->vertexes[ i * grid->GetGridData()->width + j ] );
+			for ( int j = 0; j < grid->width; j++ ) {
+				ctrl[ i ][ j ] = LerpDrawVert( grid->vertexes[ ( i - 1 ) * grid->width + j ], grid->vertexes[ i * grid->width + j ] );
 				if ( j == column ) {
 					ctrl[ i ][ j ].xyz = point;
 				}
@@ -466,29 +450,23 @@ bool R_GridInsertRow( class idSurfaceGrid* grid, int row, int column, const idVe
 			errorTable[ 1 ][ i ] = loderror;
 			continue;
 		}
-		errorTable[ 1 ][ i ] = grid->GetGridData()->heightLodError[ oldheight ];
-		for ( int j = 0; j < grid->GetGridData()->width; j++ ) {
-			ctrl[ i ][ j ] = grid->vertexes[ oldheight * grid->GetGridData()->width + j ];
+		errorTable[ 1 ][ i ] = grid->heightLodError[ oldheight ];
+		for ( int j = 0; j < grid->width; j++ ) {
+			ctrl[ i ][ j ] = grid->vertexes[ oldheight * grid->width + j ];
 		}
 		oldheight++;
 	}
-	for ( int j = 0; j < grid->GetGridData()->width; j++ ) {
-		errorTable[ 0 ][ j ] = grid->GetGridData()->widthLodError[ j ];
+	for ( int j = 0; j < grid->width; j++ ) {
+		errorTable[ 0 ][ j ] = grid->widthLodError[ j ];
 	}
 	// put all the aproximating points on the curve
 	//PutPointsOnCurve( ctrl, width, height );
 	// calculate normals
 	MakeMeshNormals( width, height, ctrl );
 
-	vec3_t lodOrigin;
-	VectorCopy( grid->GetGridData()->lodOrigin, lodOrigin );
-	float lodRadius = grid->GetGridData()->lodRadius;
 	// free the old grid
 	R_FreeSurfaceGridMeshAndVertexes( grid );
 	// create a new grid
 	R_CreateSurfaceGridMesh( grid, width, height, ctrl, errorTable );
-	grid->GetGridData()->lodRadius = lodRadius;
-	VectorCopy( lodOrigin, grid->GetGridData()->lodOrigin );
-	grid->GetGridData()->lodStitched = false;
 	return true;
 }

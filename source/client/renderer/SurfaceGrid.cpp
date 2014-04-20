@@ -35,32 +35,32 @@ void idSurfaceGrid::Draw() {
 	tess.dlightBits |= dlightBits;
 
 	// determine the allowable discrepance
-	float lodError = LodErrorForVolume( gridData->lodOrigin, gridData->lodRadius );
+	float lodError = LodErrorForVolume( lodOrigin, lodRadius );
 
 	// determine which rows and columns of the subdivision
 	// we are actually going to use
 	int widthTable[ MAX_GRID_SIZE ];
 	widthTable[ 0 ] = 0;
 	int lodWidth = 1;
-	for ( int i = 1; i < gridData->width - 1; i++ ) {
-		if ( gridData->widthLodError[ i ] <= lodError ) {
+	for ( int i = 1; i < width - 1; i++ ) {
+		if ( widthLodError[ i ] <= lodError ) {
 			widthTable[ lodWidth ] = i;
 			lodWidth++;
 		}
 	}
-	widthTable[ lodWidth ] = gridData->width - 1;
+	widthTable[ lodWidth ] = width - 1;
 	lodWidth++;
 
 	int heightTable[ MAX_GRID_SIZE ];
 	heightTable[ 0 ] = 0;
 	int lodHeight = 1;
-	for ( int i = 1; i < gridData->height - 1; i++ ) {
-		if ( gridData->heightLodError[ i ] <= lodError ) {
+	for ( int i = 1; i < height - 1; i++ ) {
+		if ( heightLodError[ i ] <= lodError ) {
 			heightTable[ lodHeight ] = i;
 			lodHeight++;
 		}
 	}
-	heightTable[ lodHeight ] = gridData->height - 1;
+	heightTable[ lodHeight ] = height - 1;
 	lodHeight++;
 
 	// very large grids may have more points or indexes than can be fit
@@ -102,7 +102,7 @@ void idSurfaceGrid::Draw() {
 
 		for ( int i = 0; i < rows; i++ ) {
 			for ( int j = 0; j < lodWidth; j++ ) {
-				const idWorldVertex& dv = vertexes[ heightTable[ used + i ] * gridData->width + widthTable[ j ] ];
+				const idWorldVertex& dv = vertexes[ heightTable[ used + i ] * width + widthTable[ j ] ];
 
 				dv.xyz.ToOldVec3( xyz );
 				dv.st.ToOldVec2( texCoords );
@@ -148,7 +148,7 @@ void idSurfaceGrid::Draw() {
 	}
 }
 
-float idSurfaceGrid::LodErrorForVolume( vec3_t local, float radius ) {
+float idSurfaceGrid::LodErrorForVolume( idVec3 local, float radius ) {
 	// never let it go negative
 	if ( r_lodCurveError->value < 0 ) {
 		return 0;
@@ -182,23 +182,23 @@ void idSurfaceGrid::ProjectDecal( decalProjector_t* dp, mbrush46_model_t* bmodel
 	}
 
 	//	walk mesh rows
-	for ( int y = 0; y < ( gridData->height - 1 ); y++ ) {
+	for ( int y = 0; y < ( height - 1 ); y++ ) {
 		//	walk mesh cols
-		for ( int x = 0; x < ( gridData->width - 1 ); x++ ) {
+		for ( int x = 0; x < ( width - 1 ); x++ ) {
 			//	get vertex
-			const idWorldVertex* dv = vertexes + y * gridData->width + x;
+			const idWorldVertex* dv = vertexes + y * width + x;
 
 			vec3_t points[ 2 ][ MAX_DECAL_VERTS ];
 			//	first triangle
 			dv[ 0 ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
-			dv[ gridData->width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+			dv[ width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
 			dv[ 1 ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
 
 			//	second triangle
 			dv[ 1 ].xyz.ToOldVec3( points[ 0 ][ 0 ] );
-			dv[ gridData->width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
-			dv[ gridData->width + 1 ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
+			dv[ width ].xyz.ToOldVec3( points[ 0 ][ 1 ] );
+			dv[ width + 1 ].xyz.ToOldVec3( points[ 0 ][ 2 ] );
 			ProjectDecalOntoWinding( dp, 3, points, this, bmodel );
 		}
 	}
@@ -215,8 +215,8 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 	int maxFragments, markFragment_t* fragmentBuffer,
 	int* returnedPoints, int* returnedFragments,
 	const vec3_t mins, const vec3_t maxs ) const {
-	for ( int m = 0; m < gridData->height - 1; m++ ) {
-		for ( int n = 0; n < gridData->width - 1; n++ ) {
+	for ( int m = 0; m < height - 1; m++ ) {
+		for ( int n = 0; n < width - 1; n++ ) {
 			// We triangulate the grid and chop all triangles within
 			// the bounding planes of the to be projected polygon.
 			// LOD is not taken into account, not such a big deal though.
@@ -240,11 +240,11 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 
 			int numClipPoints = 3;
 
-			idWorldVertex* dv = vertexes + m * gridData->width + n;
+			idWorldVertex* dv = vertexes + m * width + n;
 
 			vec3_t clipPoints[ 2 ][ MAX_VERTS_ON_POLY ];
 			( dv[ 0 ].xyz + dv[ 0 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 0 ] );
-			( dv[ gridData->width ].xyz + dv[ gridData->width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			( dv[ width ].xyz + dv[ width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
 			( dv[ 1 ].xyz + dv[ 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			vec3_t v1, v2;
@@ -267,8 +267,8 @@ void idSurfaceGrid::MarkFragments( const vec3_t projectionDir,
 			}
 
 			( dv[ 1 ].xyz + dv[ 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 0 ] );
-			( dv[ gridData->width ].xyz + dv[ gridData->width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
-			( dv[ gridData->width + 1 ].xyz + dv[ gridData->width + 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 2 ] );
+			( dv[ width ].xyz + dv[ width ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 1 ] );
+			( dv[ width + 1 ].xyz + dv[ width + 1 ].normal * MARKER_OFFSET ).ToOldVec3( clipPoints[ 0 ][ 2 ] );
 			// check the normal of this triangle
 			VectorSubtract( clipPoints[ 0 ][ 0 ], clipPoints[ 0 ][ 1 ], v1 );
 			VectorSubtract( clipPoints[ 0 ][ 2 ], clipPoints[ 0 ][ 1 ], v2 );
