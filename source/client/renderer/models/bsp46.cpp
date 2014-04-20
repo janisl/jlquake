@@ -464,23 +464,13 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	int numIndexes = LittleLong( ds->numIndexes );
 	int numInstances = LittleLong( ds->patchWidth );
 
-	// calculate size
-	srfFoliage_t* foliage;
-	int size = sizeof ( *foliage ) +
-			   numInstances * sizeof ( foliage->instances[ 0 ] );
-
-	// get memory
-	foliage = ( srfFoliage_t* )Mem_Alloc( size );
-
 	// set up surface
 	surf->numVertexes = numVerts;
 	surf->numIndexes = numIndexes;
-	foliage->numInstances = numInstances;
+	surf->numInstances = numInstances;
 	surf->vertexes = new idWorldVertex[ numVerts ];
 	surf->indexes = new int[ numIndexes ];
-	foliage->instances = ( foliageInstance_t* )( foliage + 1 );
-
-	surf->folData = foliage;
+	surf->instances = new foliageInstance_t[ numInstances ];
 
 	// get foliage drawscale
 	float scale = r_drawfoliage->value;
@@ -529,14 +519,14 @@ static idWorldSurface* ParseFoliage( bsp46_dsurface_t* ds, bsp46_drawVert_t* ver
 	for ( int i = 0; i < numInstances; i++ ) {
 		// copy xyz
 		for ( int j = 0; j < 3; j++ ) {
-			foliage->instances[ i ].origin[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
+			surf->instances[ i ].origin[ j ] = LittleFloat( verts[ i ].xyz[ j ] );
 		}
 		idVec3 neworg;
-		neworg.FromOldVec3( foliage->instances[ i ].origin );
+		neworg.FromOldVec3( surf->instances[ i ].origin );
 		surf->bounds.AddBounds( bounds + neworg );
 
 		// copy color
-		R_ColorShiftLightingBytes( verts[ i ].color, foliage->instances[ i ].color );
+		R_ColorShiftLightingBytes( verts[ i ].color, surf->instances[ i ].color );
 	}
 
 	// finish surface

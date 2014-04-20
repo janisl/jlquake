@@ -20,7 +20,7 @@
 #include "cvars.h"
 
 idSurfaceFoliage::~idSurfaceFoliage() {
-	Mem_Free( folData );
+	delete[] instances;
 }
 
 void idSurfaceFoliage::Draw() {
@@ -59,8 +59,8 @@ void idSurfaceFoliage::Draw() {
 	tess.dlightBits |= dlightBits;
 
 	// iterate through origin list
-	foliageInstance_t* instance = folData->instances;
-	for ( int o = 0; o < folData->numInstances; o++, instance++ ) {
+	foliageInstance_t* instance = instances;
+	for ( int o = 0; o < numInstances; o++, instance++ ) {
 		// fade alpha based on distance between inner and outer radii
 		int srcColor = *( int* )instance->color;
 		if ( distanceCull[ 1 ] > 0.0f ) {
