@@ -123,6 +123,7 @@ set(CLIENT_FILES
 	renderer/models/sp2.cpp
 	renderer/models/spr.cpp
 	renderer/backend.cpp
+	renderer/Bsp29LoadHelper.cpp
 	renderer/commands.cpp
 	renderer/curve.cpp
 	renderer/decals.cpp

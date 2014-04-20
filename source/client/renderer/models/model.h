@@ -74,20 +74,6 @@ void Mod_FreeBsp29( idRenderModel* mod );
 void Mod_FreeBsp29NonMap( idRenderModel* mod );
 byte* Mod_LeafPVS( mbrush29_leaf_t* Leaf, idRenderModel* Model );
 mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t P, idRenderModel* Model );
-void ModBsp29_LoadTextures( byte* mod_base, bsp29_lump_t* l, int& numtextures, mbrush29_texture_t**& textures );
-void ModBsp29_LoadLighting( byte* mod_base, bsp29_lump_t* l, byte*& lightdata );
-void ModBsp29_LoadVertexes( byte* mod_base, bsp29_lump_t* l, int& numvertexes, mbrush29_vertex_t*& vertexes );
-void ModBsp20_LoadEdges( byte* mod_base, bsp29_lump_t* l, int& numedges, mbrush29_edge_t*& edges );
-void ModBsp29_LoadTexinfo( byte* mod_base, bsp29_lump_t* l, int numtextures, mbrush29_texture_t* const* textures, int& numtexinfo, mbrush29_texinfo_t*& texinfo, idTextureInfo*& textureInfos );
-void ModBsp29_LoadFaces( byte* mod_base, bsp29_lump_t* l,
-	const mbrush29_edge_t* pedges, const int* surfedges, mbrush29_vertex_t* vertexes,
-	int numtexinfo, mbrush29_texinfo_t* texinfo, idTextureInfo* textureInfos,
-	cplane_t* planes, byte* lightdata,
-	int& numsurfaces, idSurfaceFaceQ1*& surfaces );
-void ModBsp29_LoadSurfedges( byte* mod_base, bsp29_lump_t* l, int& numsurfedges, int*& surfedges );
-void ModBsp29_LoadPlanes( byte* mod_base, bsp29_lump_t* l, int& numplanes, cplane_t*& planes );
-void ModBsp29_LoadSubmodelsQ1( byte* mod_base, bsp29_lump_t* l, int& numsubmodels, mbrush29_submodel_t*& submodels );
-void ModBsp29_LoadSubmodelsH2( byte* mod_base, bsp29_lump_t* l, int& numsubmodels, mbrush29_submodel_t*& submodels );
 
 void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer );
 void Mod_FreeBsp38( idRenderModel* mod );

@@ -24,6 +24,7 @@
 #include "../cvars.h"
 #include "../main.h"
 #include "../surfaces.h"
+#include "../Bsp29LoadHelper.h"
 
 idRenderModelBSP29NonMap::idRenderModelBSP29NonMap() {
 }
@@ -50,20 +51,38 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	}
 
 	// load into heap
-
-	ModBsp29_LoadVertexes( mod_base, &header->lumps[ BSP29LUMP_VERTEXES ], loadmodel->brush29nm_numvertexes, loadmodel->brush29nm_vertexes );
-	ModBsp20_LoadEdges( mod_base, &header->lumps[ BSP29LUMP_EDGES ], loadmodel->brush29nm_numedges, loadmodel->brush29nm_edges );
-	ModBsp29_LoadSurfedges( mod_base, &header->lumps[ BSP29LUMP_SURFEDGES ], loadmodel->brush29nm_numsurfedges, loadmodel->brush29nm_surfedges );
-	ModBsp29_LoadTextures( mod_base, &header->lumps[ BSP29LUMP_TEXTURES ], loadmodel->brush29nm_numtextures, loadmodel->brush29nm_textures );
-	ModBsp29_LoadLighting( mod_base, &header->lumps[ BSP29LUMP_LIGHTING ], loadmodel->brush29nm_lightdata );
-	ModBsp29_LoadPlanes( mod_base, &header->lumps[ BSP29LUMP_PLANES ], loadmodel->brush29nm_numplanes, loadmodel->brush29nm_planes );
-	ModBsp29_LoadTexinfo( mod_base, &header->lumps[ BSP29LUMP_TEXINFO ], loadmodel->brush29nm_numtextures, loadmodel->brush29nm_textures, loadmodel->brush29nm_numtexinfo, loadmodel->brush29nm_texinfo, loadmodel->brush29nm_textureInfos );
-	ModBsp29_LoadFaces( mod_base, &header->lumps[ BSP29LUMP_FACES ], loadmodel->brush29nm_edges, loadmodel->brush29nm_surfedges, loadmodel->brush29nm_vertexes, loadmodel->brush29nm_numtexinfo, loadmodel->brush29nm_texinfo, loadmodel->brush29nm_textureInfos, loadmodel->brush29nm_planes, loadmodel->brush29nm_lightdata, loadmodel->brush29nm_numsurfaces, loadmodel->brush29nm_surfaces );
+	idBsp29LoadHelper loader( name, mod_base );
+	loader.LoadVertexes( &header->lumps[ BSP29LUMP_VERTEXES ] );
+	loader.LoadEdges( &header->lumps[ BSP29LUMP_EDGES ] );
+	loader.LoadSurfedges( &header->lumps[ BSP29LUMP_SURFEDGES ] );
+	loader.LoadPlanes( &header->lumps[ BSP29LUMP_PLANES ] );
+	loader.LoadLighting( &header->lumps[ BSP29LUMP_LIGHTING ] );
+	loader.LoadTextures( &header->lumps[ BSP29LUMP_TEXTURES ] );
+	loader.LoadTexinfo( &header->lumps[ BSP29LUMP_TEXINFO ] );
+	loader.LoadFaces( &header->lumps[ BSP29LUMP_FACES ] );
+	brush29nm_numvertexes = loader.numvertexes;
+	brush29nm_vertexes = loader.vertexes;
+	brush29nm_numedges = loader.numedges;
+	brush29nm_edges = loader.edges;
+	brush29nm_numsurfedges = loader.numsurfedges;
+	brush29nm_surfedges = loader.surfedges;
+	brush29nm_numplanes = loader.numplanes;
+	brush29nm_planes = loader.planes;
+	brush29nm_lightdata = loader.lightdata;
+	brush29nm_numtextures = loader.numtextures;
+	brush29nm_textures = loader.textures;
+	brush29nm_numtexinfo = loader.numtexinfo;
+	brush29nm_texinfo = loader.texinfo;
+	brush29nm_textureInfos = loader.textureInfos;
+	brush29nm_numsurfaces = loader.numsurfaces;
+	brush29nm_surfaces = loader.surfaces;
 	if ( GGameType & GAME_Hexen2 ) {
-		ModBsp29_LoadSubmodelsH2( mod_base, &header->lumps[ BSP29LUMP_MODELS ], loadmodel->brush29nm_numsubmodels, loadmodel->brush29nm_submodels );
+		loader.LoadSubmodelsH2( &header->lumps[ BSP29LUMP_MODELS ] );
 	} else {
-		ModBsp29_LoadSubmodelsQ1( mod_base, &header->lumps[ BSP29LUMP_MODELS ], loadmodel->brush29nm_numsubmodels, loadmodel->brush29nm_submodels );
+		loader.LoadSubmodelsQ1( &header->lumps[ BSP29LUMP_MODELS ] );
 	}
+	brush29nm_numsubmodels = loader.numsubmodels;
+	brush29nm_submodels = loader.submodels;
 
 	q1_numframes = 2;		// regular and alternate animation
 
