@@ -26,9 +26,30 @@
 idBsp29LoadHelper::idBsp29LoadHelper( const idStr& name, byte* fileBase ) {
 	this->name = name;
 	this->fileBase = fileBase;
+	numvertexes = 0;
+	vertexes = NULL;
+	numedges = 0;
+	edges = NULL;
+	numsurfedges = 0;
+	surfedges = NULL;
+	numplanes = 0;
+	planes = NULL;
+	lightdata = NULL;
+	numtextures = 0;
+	textures = NULL;
+	numtexinfo = 0;
+	texinfo = NULL;
+	textureInfos = NULL;
+	numsurfaces = 0;
+	surfaces = NULL;
+	numsubmodels = 0;
+	submodels = NULL;
 }
 
 idBsp29LoadHelper::~idBsp29LoadHelper() {
+	delete[] vertexes;
+	delete[] edges;
+	delete[] surfedges;
 }
 
 void idBsp29LoadHelper::LoadVertexes( bsp29_lump_t* l ) {

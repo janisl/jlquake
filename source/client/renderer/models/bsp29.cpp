@@ -73,14 +73,11 @@ void Mod_FreeBsp29( idRenderModel* mod ) {
 	if ( mod->brush29_entities ) {
 		delete[] mod->brush29_entities;
 	}
-	delete[] mod->brush29_vertexes;
-	delete[] mod->brush29_edges;
 	delete[] mod->brush29_texinfo;
 	delete[] mod->brush29_surfaces;
 	delete[] mod->brush29_nodes;
 	delete[] mod->brush29_leafs;
 	delete[] mod->brush29_marksurfaces;
-	delete[] mod->brush29_surfedges;
 	delete[] mod->brush29_planes;
 	delete[] mod->brush29_submodels;
 }
@@ -101,13 +98,8 @@ void Mod_FreeBsp29NonMap( idRenderModel* mod ) {
 	if ( mod->brush29nm_lightdata ) {
 		delete[] mod->brush29nm_lightdata;
 	}
-	delete[] mod->brush29nm_vertexes;
-	delete[] mod->brush29nm_edges;
 	delete[] mod->brush29nm_texinfo;
 	delete[] mod->brush29nm_surfaces;
-	delete[] mod->brush29nm_surfedges;
-	delete[] mod->brush29nm_planes;
-	delete[] mod->brush29nm_submodels;
 }
 
 mbrush29_leaf_t* Mod_PointInLeafQ1( vec3_t p, idRenderModel* model ) {

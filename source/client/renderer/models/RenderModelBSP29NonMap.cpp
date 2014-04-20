@@ -60,14 +60,7 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	loader.LoadTextures( &header->lumps[ BSP29LUMP_TEXTURES ] );
 	loader.LoadTexinfo( &header->lumps[ BSP29LUMP_TEXINFO ] );
 	loader.LoadFaces( &header->lumps[ BSP29LUMP_FACES ] );
-	brush29nm_numvertexes = loader.numvertexes;
-	brush29nm_vertexes = loader.vertexes;
-	brush29nm_numedges = loader.numedges;
-	brush29nm_edges = loader.edges;
-	brush29nm_numsurfedges = loader.numsurfedges;
-	brush29nm_surfedges = loader.surfedges;
-	brush29nm_numplanes = loader.numplanes;
-	brush29nm_planes = loader.planes;
+	delete[] loader.planes;
 	brush29nm_lightdata = loader.lightdata;
 	brush29nm_numtextures = loader.numtextures;
 	brush29nm_textures = loader.textures;
@@ -81,15 +74,13 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	} else {
 		loader.LoadSubmodelsQ1( &header->lumps[ BSP29LUMP_MODELS ] );
 	}
-	brush29nm_numsubmodels = loader.numsubmodels;
-	brush29nm_submodels = loader.submodels;
 
 	q1_numframes = 2;		// regular and alternate animation
 
 	//
 	// set up the submodels
 	//
-	mbrush29_submodel_t* bm = brush29nm_submodels;
+	mbrush29_submodel_t* bm = loader.submodels;
 
 	brush29nm_firstmodelsurface = bm->firstface;
 	brush29nm_nummodelsurfaces = bm->numfaces;
@@ -98,5 +89,6 @@ bool idRenderModelBSP29NonMap::Load( idList<byte>& buffer, idSkinTranslation* sk
 	VectorCopy( bm->mins, q1_mins );
 
 	q1_radius = RadiusFromBounds( q1_mins, q1_maxs );
+	delete[] loader.submodels;
 	return true;
 }

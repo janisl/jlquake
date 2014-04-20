@@ -188,12 +188,6 @@ bool idRenderModelBSP29::Load( idList<byte>& buffer, idSkinTranslation* skinTran
 	loader.LoadTextures( &header->lumps[ BSP29LUMP_TEXTURES ] );
 	loader.LoadTexinfo( &header->lumps[ BSP29LUMP_TEXINFO ] );
 	loader.LoadFaces( &header->lumps[ BSP29LUMP_FACES ] );
-	brush29_numvertexes = loader.numvertexes;
-	brush29_vertexes = loader.vertexes;
-	brush29_numedges = loader.numedges;
-	brush29_edges = loader.edges;
-	brush29_numsurfedges = loader.numsurfedges;
-	brush29_surfedges = loader.surfedges;
 	brush29_numplanes = loader.numplanes;
 	brush29_planes = loader.planes;
 	brush29_lightdata = loader.lightdata;

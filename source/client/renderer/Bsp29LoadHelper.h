@@ -23,15 +23,6 @@
 
 class idBsp29LoadHelper {
 public:
-	int numvertexes;
-	mbrush29_vertex_t* vertexes;
-
-	int numedges;
-	mbrush29_edge_t* edges;
-
-	int numsurfedges;
-	int* surfedges;
-
 	int numplanes;
 	cplane_t* planes;
 
@@ -67,6 +58,15 @@ private:
 	idStr name;
 	byte* fileBase;
 	idSurfaceSubdivider surfaceSubdivider;
+
+	int numvertexes;
+	mbrush29_vertex_t* vertexes;
+
+	int numedges;
+	mbrush29_edge_t* edges;
+
+	int numsurfedges;
+	int* surfedges;
 
 	void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int lnumverts );
 };

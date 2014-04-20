@@ -450,12 +450,6 @@ public:
 	int brush29_numleafs;				// number of visible leafs, not counting 0
 	mbrush29_leaf_t* brush29_leafs;
 
-	int brush29_numvertexes;
-	mbrush29_vertex_t* brush29_vertexes;
-
-	int brush29_numedges;
-	mbrush29_edge_t* brush29_edges;
-
 	int brush29_numnodes;
 	int brush29_firstnode;
 	mbrush29_node_t* brush29_nodes;
@@ -466,9 +460,6 @@ public:
 
 	int brush29_numsurfaces;
 	idSurfaceFaceQ1* brush29_surfaces;
-
-	int brush29_numsurfedges;
-	int* brush29_surfedges;
 
 	int brush29_nummarksurfaces;
 	idSurfaceFaceQ1** brush29_marksurfaces;
@@ -486,27 +477,12 @@ public:
 	int brush29nm_firstmodelsurface;
 	int brush29nm_nummodelsurfaces;
 
-	int brush29nm_numsubmodels;
-	mbrush29_submodel_t* brush29nm_submodels;
-
-	int brush29nm_numplanes;
-	cplane_t* brush29nm_planes;
-
-	int brush29nm_numvertexes;
-	mbrush29_vertex_t* brush29nm_vertexes;
-
-	int brush29nm_numedges;
-	mbrush29_edge_t* brush29nm_edges;
-
 	int brush29nm_numtexinfo;
 	mbrush29_texinfo_t* brush29nm_texinfo;
 	idTextureInfo* brush29nm_textureInfos;
 
 	int brush29nm_numsurfaces;
 	idSurfaceFaceQ1* brush29nm_surfaces;
-
-	int brush29nm_numsurfedges;
-	int* brush29nm_surfedges;
 
 	int brush29nm_numtextures;
 	mbrush29_texture_t** brush29nm_textures;
