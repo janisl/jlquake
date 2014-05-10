@@ -289,10 +289,10 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 		vec3_t vec;
 		fa->vertexes[ i ].xyz.ToOldVec3( vec );
 		float s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
-		s /= fa->surf.texinfo->texture->width;
+		s /= fa->texinfo->texture->width;
 
 		float t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
-		t /= fa->surf.texinfo->texture->height;
+		t /= fa->texinfo->texture->height;
 
 		fa->vertexes[ i ].st.x = s;
 		fa->vertexes[ i ].st.y = t;
@@ -337,7 +337,7 @@ void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
 		BuildSurfaceVertexesList( out, LittleLong( in->firstedge ), LittleShort( in->numedges ) );
 
-		out->surf.flags = 0;
+		out->flags = 0;
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );
@@ -350,7 +350,7 @@ void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 		if ( ti < 0 || ti >= numtexinfo ) {
 			common->Error( "MOD_LoadBmodel: bad texinfo number" );
 		}
-		out->surf.texinfo = texinfo + ti;
+		out->texinfo = texinfo + ti;
 		out->textureInfo = textureInfos + ti;
 
 		out->CalcSurfaceExtents();
@@ -369,18 +369,18 @@ void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 
 		// set the drawing flags flag
 
-		if ( !String::NCmp( out->surf.texinfo->texture->name, "sky", 3 ) ) {	// sky
-			out->surf.flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
-			out->shader = out->surf.texinfo->texture->shader;
-			out->surf.altShader = out->surf.texinfo->texture->shader;
+		if ( !String::NCmp( out->texinfo->texture->name, "sky", 3 ) ) {	// sky
+			out->flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
+			out->shader = out->texinfo->texture->shader;
+			out->altShader = out->texinfo->texture->shader;
 			Subdivide( out );		// cut up polygon for warps
 			continue;
 		}
 
-		if ( out->surf.texinfo->texture->name[ 0 ] == '*' ) {	// turbulent
-			out->surf.flags |= ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED );
-			out->shader = out->surf.texinfo->texture->shader;
-			out->surf.altShader = out->surf.texinfo->texture->shader;
+		if ( out->texinfo->texture->name[ 0 ] == '*' ) {	// turbulent
+			out->flags |= ( BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED );
+			out->shader = out->texinfo->texture->shader;
+			out->altShader = out->texinfo->texture->shader;
 			for ( int i = 0; i < 2; i++ ) {
 				out->extents[ i ] = 16384;
 				out->textureMins[ i ] = -8192;
@@ -392,11 +392,11 @@ void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 		GL_CreateSurfaceLightmapQ1( out, lightdata );
 		BuildSurfaceDisplayList( out );
 
-		out->shader = R_BuildBsp29Shader( out->surf.texinfo->texture, out->lightMapTextureNum );
-		if ( out->surf.texinfo->texture->alternate_anims ) {
-			out->surf.altShader = R_BuildBsp29Shader( out->surf.texinfo->texture->alternate_anims, out->lightMapTextureNum );
+		out->shader = R_BuildBsp29Shader( out->texinfo->texture, out->lightMapTextureNum );
+		if ( out->texinfo->texture->alternate_anims ) {
+			out->altShader = R_BuildBsp29Shader( out->texinfo->texture->alternate_anims, out->lightMapTextureNum );
 		} else {
-			out->surf.altShader = out->shader;
+			out->altShader = out->shader;
 		}
 	}
 }

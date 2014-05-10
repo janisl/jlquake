@@ -383,7 +383,7 @@ void R_UploadModifiedLightmapsQ1() {
 void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 	shader_t* shader;
 	if ( tr.currentEntity->e.frame ) {
-		shader = surf->surf.altShader;
+		shader = surf->altShader;
 	} else {
 		shader = surf->shader;
 	}
@@ -393,12 +393,12 @@ void R_AddWorldSurfaceBsp29( idSurfaceFaceQ1* surf, int forcedSortIndex ) {
 		return;
 	}
 
-	if ( !( surf->surf.flags & BRUSH29_SURF_DRAWTILED ) &&
+	if ( !( surf->flags & BRUSH29_SURF_DRAWTILED ) &&
 		!( tr.currentEntity->e.renderfx & ( RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT ) ) ) {
 		R_RenderDynamicLightmaps( surf );
 	}
 
-	if ( tr.currentEntityNum == REF_ENTITYNUM_WORLD && surf->surf.flags & BRUSH29_SURF_DRAWTURB ) {
+	if ( tr.currentEntityNum == REF_ENTITYNUM_WORLD && surf->flags & BRUSH29_SURF_DRAWTURB ) {
 		forcedSortIndex = tr.waterSurfForcedSortIndex--;
 	}
 

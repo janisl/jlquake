@@ -77,7 +77,7 @@ static int RecursiveLightPointQ1( mbrush29_node_t* node, vec3_t start, vec3_t en
 
 	idSurfaceFaceQ1* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for ( int i = 0; i < node->numsurfaces; i++, surf++ ) {
-		if ( surf->surf.flags & BRUSH29_SURF_DRAWTILED ) {
+		if ( surf->flags & BRUSH29_SURF_DRAWTILED ) {
 			continue;	// no lightmaps
 		}
 

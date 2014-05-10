@@ -39,18 +39,13 @@ struct mbrush29_texinfo_t {
 	int flags;
 };
 
-struct mbrush29_surface_t {
-	int flags;
-
-	mbrush29_texinfo_t* texinfo;
-	shader_t* altShader;
-};
-
 class idSurfaceFaceQ1 : public idSurfaceFaceQ1Q2 {
 public:
-	mbrush29_surface_t surf;
-	
-    idSurfaceFaceQ1();
+	int flags;
+	shader_t* altShader;
+	mbrush29_texinfo_t* texinfo;
+
+	idSurfaceFaceQ1();
 };
 
 #endif

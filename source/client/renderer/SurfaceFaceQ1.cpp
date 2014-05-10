@@ -17,5 +17,7 @@
 #include "SurfaceFaceQ1.h"
 
 idSurfaceFaceQ1::idSurfaceFaceQ1() {
-	Com_Memset( &surf, 0, sizeof( surf ) );
+	flags = 0;
+	altShader = NULL;
+	texinfo = NULL;
 }
