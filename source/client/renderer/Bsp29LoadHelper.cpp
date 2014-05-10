@@ -260,11 +260,9 @@ void idBsp29LoadHelper::LoadTexinfo( bsp_lump_t* l ) {
 		}
 
 		int miptex = LittleLong( in->miptex );
-		_out->flags = LittleLong( in->flags );
 
 		if ( !textures ) {
 			_out->texture = r_notexture_mip;	// checkerboard texture
-			_out->flags = 0;
 		} else {
 			if ( miptex >= numtextures ) {
 				common->FatalError( "miptex >= numtextures" );
@@ -272,7 +270,6 @@ void idBsp29LoadHelper::LoadTexinfo( bsp_lump_t* l ) {
 			_out->texture = textures[ miptex ];
 			if ( !_out->texture ) {
 				_out->texture = r_notexture_mip;	// texture not found
-				_out->flags = 0;
 			}
 		}
 	}

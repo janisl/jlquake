@@ -36,7 +36,6 @@ struct mbrush29_texture_t {
 
 struct mbrush29_texinfo_t {
 	mbrush29_texture_t* texture;
-	int flags;
 };
 
 class idSurfaceFaceQ1 : public idSurfaceFaceQ1Q2 {
