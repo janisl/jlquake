@@ -41,58 +41,6 @@ idBsp29LoadHelper::idBsp29LoadHelper( const idStr& name, byte* fileBase ) : idBs
 idBsp29LoadHelper::~idBsp29LoadHelper() {
 }
 
-void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {
-	bsp_vertex_t* in = ( bsp_vertex_t* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
-	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush_vertex_t* out = new mbrush_vertex_t[ count ];
-
-	vertexes = out;
-	numvertexes = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->position[ 0 ] = LittleFloat( in->point[ 0 ] );
-		out->position[ 1 ] = LittleFloat( in->point[ 1 ] );
-		out->position[ 2 ] = LittleFloat( in->point[ 2 ] );
-	}
-}
-
-void idBsp29LoadHelper::LoadEdges( bsp_lump_t* l ) {
-	bsp_edge_t* in = ( bsp_edge_t* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
-	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush_edge_t* out = new mbrush_edge_t[ count + 1 ];
-	Com_Memset( out, 0, sizeof ( mbrush_edge_t ) * ( count + 1 ) );
-
-	edges = out;
-	numedges = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->v[ 0 ] = ( unsigned short )LittleShort( in->v[ 0 ] );
-		out->v[ 1 ] = ( unsigned short )LittleShort( in->v[ 1 ] );
-	}
-}
-
-void idBsp29LoadHelper::LoadSurfedges( bsp_lump_t* l ) {
-	int* in = ( int* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
-	}
-	int count = l->filelen / sizeof ( *in );
-	int* out = new int[ count ];
-
-	surfedges = out;
-	numsurfedges = count;
-
-	for ( int i = 0; i < count; i++ ) {
-		out[ i ] = LittleLong( in[ i ] );
-	}
-}
-
 void idBsp29LoadHelper::LoadPlanes( bsp_lump_t* l ) {
 	bsp29_dplane_t* in = ( bsp29_dplane_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {

@@ -65,43 +65,6 @@ static void Mod_LoadVisibility( bsp_lump_t* l ) {
 	}
 }
 
-static void Mod_LoadVertexes( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) {
-	bsp_vertex_t* in = ( bsp_vertex_t* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush_vertex_t* out = new mbrush_vertex_t[ count ];
-
-	surfaceBuilder.vertexes = out;
-	surfaceBuilder.numvertexes = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->position[ 0 ] = LittleFloat( in->point[ 0 ] );
-		out->position[ 1 ] = LittleFloat( in->point[ 1 ] );
-		out->position[ 2 ] = LittleFloat( in->point[ 2 ] );
-	}
-}
-
-static void Mod_LoadEdges( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) {
-	bsp_edge_t* in = ( bsp_edge_t* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	//JL What's the extra edge?
-	mbrush_edge_t* out = new mbrush_edge_t[ count + 1 ];
-	Com_Memset( out, 0, sizeof ( mbrush_edge_t ) * ( count + 1 ) );
-
-	surfaceBuilder.edges = out;
-	surfaceBuilder.numedges = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->v[ 0 ] = ( unsigned short )LittleShort( in->v[ 0 ] );
-		out->v[ 1 ] = ( unsigned short )LittleShort( in->v[ 1 ] );
-	}
-}
-
 static void Mod_LoadTexinfo( bsp_lump_t* l ) {
 	bsp38_texinfo_t* in = ( bsp38_texinfo_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -465,27 +428,6 @@ static void Mod_LoadMarksurfaces( bsp_lump_t* l ) {
 	}
 }
 
-static void Mod_LoadSurfedges( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) {
-	int* in = ( int* )( mod_base + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
-		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
-	}
-	int count = l->filelen / sizeof ( *in );
-	if ( count < 1 || count >= BSP38MAX_MAP_SURFEDGES ) {
-		common->Error( "MOD_LoadBmodel: bad surfedges count in %s: %i",
-			loadmodel->name, count );
-	}
-
-	int* out = new int[ count ];
-
-	surfaceBuilder.surfedges = out;
-	surfaceBuilder.numsurfedges = count;
-
-	for ( int i = 0; i < count; i++ ) {
-		out[ i ] = LittleLong( in[ i ] );
-	}
-}
-
 static void Mod_LoadPlanes( bsp_lump_t* l ) {
 	bsp38_dplane_t* in = ( bsp38_dplane_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
@@ -558,9 +500,9 @@ void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer ) {
 	// load into heap
 	idBspSurfaceBuilder surfaceBuilder( mod->name, mod_base );
 
-	Mod_LoadVertexes( surfaceBuilder, &header->lumps[ BSP38LUMP_VERTEXES ] );
-	Mod_LoadEdges( surfaceBuilder, &header->lumps[ BSP38LUMP_EDGES ] );
-	Mod_LoadSurfedges( surfaceBuilder, &header->lumps[ BSP38LUMP_SURFEDGES ] );
+	surfaceBuilder.LoadVertexes( &header->lumps[ BSP38LUMP_VERTEXES ] );
+	surfaceBuilder.LoadEdges( &header->lumps[ BSP38LUMP_EDGES ] );
+	surfaceBuilder.LoadSurfedges( &header->lumps[ BSP38LUMP_SURFEDGES ] );
 	Mod_LoadLighting( &header->lumps[ BSP38LUMP_LIGHTING ] );
 	Mod_LoadPlanes( &header->lumps[ BSP38LUMP_PLANES ] );
 	Mod_LoadTexinfo( &header->lumps[ BSP38LUMP_TEXINFO ] );

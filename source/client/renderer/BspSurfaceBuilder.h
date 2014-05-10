@@ -18,6 +18,7 @@
 #define __idSurfaceSubdivider__
 
 #include "SurfaceFaceQ1Q2.h"
+#include "../../common/file_formats/bsp.h"
 
 struct mbrush_vertex_t {
 	vec3_t position;
@@ -43,6 +44,9 @@ public:
 
 	idBspSurfaceBuilder( const idStr& name, byte* fileBase );
 	~idBspSurfaceBuilder();
+	void LoadVertexes( bsp_lump_t* l );
+	void LoadEdges( bsp_lump_t* l );
+	void LoadSurfedges( bsp_lump_t* l );
 	void Subdivide( idSurfaceFaceQ1Q2* fa );
 
 private:

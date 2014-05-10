@@ -42,9 +42,6 @@ public:
 
 	idBsp29LoadHelper( const idStr& name, byte* fileBase );
 	~idBsp29LoadHelper();
-	void LoadVertexes( bsp_lump_t* l );
-	void LoadEdges( bsp_lump_t* l );
-	void LoadSurfedges( bsp_lump_t* l );
 	void LoadPlanes( bsp_lump_t* l );
 	void LoadLighting( bsp_lump_t* l );
 	void LoadTextures( bsp_lump_t* l );

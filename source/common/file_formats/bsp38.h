@@ -48,20 +48,10 @@
 // upper design bounds
 // leaffaces, leafbrushes, planes, and verts are still bounded by
 // 16 bit short limits
-#define BSP38MAX_MAP_MODELS     1024
-#define BSP38MAX_MAP_BRUSHES        8192
-#define BSP38MAX_MAP_ENTSTRING  0x40000
-#define BSP38MAX_MAP_TEXINFO        8192
-
-#define BSP38MAX_MAP_AREAS      256
+#define BSP38MAX_MAP_MODELS         1024
+#define BSP38MAX_MAP_AREAS          256
 #define BSP38MAX_MAP_AREAPORTALS    1024
-#define BSP38MAX_MAP_PLANES     65536
-#define BSP38MAX_MAP_NODES      65536
-#define BSP38MAX_MAP_BRUSHSIDES 65536
-#define BSP38MAX_MAP_LEAFS      65536
-#define BSP38MAX_MAP_LEAFBRUSHES 65536
-#define BSP38MAX_MAP_SURFEDGES  256000
-#define BSP38MAX_MAP_VISIBILITY 0x100000
+#define BSP38MAX_MAP_LEAFS          65536
 
 #define BSP38_MAXLIGHTMAPS      4
 
