@@ -92,10 +92,6 @@ struct bsp38_dmodel_t {
 	qint32 numfaces;			// without walking the bsp tree
 };
 
-struct bsp38_dvertex_t {
-	float point[ 3 ];
-};
-
 // planes (x&~1) and (x&~1)+1 are always opposites
 struct bsp38_dplane_t {
 	float normal[ 3 ];
@@ -118,12 +114,6 @@ struct bsp38_texinfo_t {
 	qint32 value;				// light emission, etc
 	char texture[ 32 ];				// texture name (textures/*.wal)
 	qint32 nexttexinfo;			// for animations, -1 = end of chain
-};
-
-// note that edge 0 is never used, because negative edge nums are used for
-// counterclockwise use of the edge in a face
-struct bsp38_dedge_t {
-	quint16 v[ 2 ];				// vertex numbers
 };
 
 struct bsp38_dface_t {

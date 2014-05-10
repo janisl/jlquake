@@ -66,7 +66,7 @@ static void Mod_LoadVisibility( bsp_lump_t* l ) {
 }
 
 static void Mod_LoadVertexes( bsp_lump_t* l ) {
-	bsp38_dvertex_t* in = ( bsp38_dvertex_t* )( mod_base + l->fileofs );
+	bsp_vertex_t* in = ( bsp_vertex_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
@@ -84,7 +84,7 @@ static void Mod_LoadVertexes( bsp_lump_t* l ) {
 }
 
 static void Mod_LoadEdges( bsp_lump_t* l ) {
-	bsp38_dedge_t* in = ( bsp38_dedge_t* )( mod_base + l->fileofs );
+	bsp_edge_t* in = ( bsp_edge_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}

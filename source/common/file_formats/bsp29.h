@@ -81,10 +81,6 @@ struct bsp29_miptex_t {
 	quint32 offsets[ BSP29_MIPLEVELS ];				// four mip maps stored
 };
 
-struct bsp29_dvertex_t {
-	float point[ 3 ];
-};
-
 struct bsp29_dnode_t {
 	qint32 planenum;
 	qint16 children[ 2 ];			// negative numbers are -(leafs+1), not nodes
@@ -131,12 +127,6 @@ struct bsp29_dleaf_t {
 	quint16 nummarksurfaces;
 
 	quint8 ambient_level[ BSP29_NUM_AMBIENTS ];
-};
-
-// note that edge 0 is never used, because negative edge nums are used for
-// counterclockwise use of the edge in a face
-struct bsp29_dedge_t {
-	quint16 v[ 2 ];				// vertex numbers
 };
 
 struct bsp29_dmodel_q1_t {

@@ -22,4 +22,14 @@ struct bsp_lump_t {
 	qint32 filelen;
 };
 
+struct bsp_vertex_t {
+	float point[ 3 ];
+};
+
+// note that edge 0 is never used, because negative edge nums are used for
+// counterclockwise use of the edge in a face
+struct bsp_edge_t {
+	quint16 v[ 2 ];				// vertex numbers
+};
+
 #endif

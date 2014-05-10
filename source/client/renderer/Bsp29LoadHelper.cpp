@@ -53,7 +53,7 @@ idBsp29LoadHelper::~idBsp29LoadHelper() {
 }
 
 void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {
-	bsp29_dvertex_t* in = ( bsp29_dvertex_t* )( fileBase + l->fileofs );
+	bsp_vertex_t* in = ( bsp_vertex_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
@@ -71,7 +71,7 @@ void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {
 }
 
 void idBsp29LoadHelper::LoadEdges( bsp_lump_t* l ) {
-	bsp29_dedge_t* in = ( bsp29_dedge_t* )( fileBase + l->fileofs );
+	bsp_edge_t* in = ( bsp_edge_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
