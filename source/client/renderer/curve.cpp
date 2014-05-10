@@ -212,7 +212,6 @@ static void R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, int height,
 	// copy the results out to a grid
 	surf->lodFixed = 0;
 	surf->lodStitched = false;
-	surf->vertexes = new idWorldVertex[ width * height ];
 
 	surf->widthLodError = new float[ width ];
 	Com_Memcpy( surf->widthLodError, errorTable[ 0 ], width * 4 );
@@ -222,6 +221,7 @@ static void R_CreateSurfaceGridMesh( idSurfaceGrid* surf, int width, int height,
 
 	surf->width = width;
 	surf->height = height;
+	surf->vertexes = new idWorldVertex[ width * height ];
 	surf->bounds.Clear();
 	for ( int i = 0; i < width; i++ ) {
 		for ( int j = 0; j < height; j++ ) {

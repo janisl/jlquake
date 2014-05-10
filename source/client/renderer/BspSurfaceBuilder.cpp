@@ -14,12 +14,12 @@
 //**
 //**************************************************************************
 
-#include "SurfaceSubdivider.h"
+#include "BspSurfaceBuilder.h"
 #include "../../common/Common.h"
 
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
-void idSurfaceSubdivider::Subdivide( idSurfaceFaceQ1Q2* fa ) {
+void idBspSurfaceBuilder::Subdivide( idSurfaceFaceQ1Q2* fa ) {
 	polys = NULL;
 
 	//
@@ -66,7 +66,7 @@ void idSurfaceSubdivider::Subdivide( idSurfaceFaceQ1Q2* fa ) {
 	verts.Clear();
 }
 
-void idSurfaceSubdivider::SubdividePolygon( const idList<int>& vertIndexes ) {
+void idBspSurfaceBuilder::SubdividePolygon( const idList<int>& vertIndexes ) {
 	idBounds bounds = BoundPoly( vertIndexes );
 
 	for ( int i = 0; i < 3; i++ ) {
@@ -120,7 +120,7 @@ void idSurfaceSubdivider::SubdividePolygon( const idList<int>& vertIndexes ) {
 	EmitPolygon( vertIndexes );
 }
 
-void idSurfaceSubdivider::EmitPolygon( const idList<int>& vertIndexes ) {
+void idBspSurfaceBuilder::EmitPolygon( const idList<int>& vertIndexes ) {
 	// add a point in the center to help keep warp valid
 	glpoly_t* poly = ( glpoly_t* )Mem_Alloc( sizeof ( glpoly_t ) + ( ( vertIndexes.Num() - 4 ) + 2 ) * sizeof( int ) );
 	poly->next = polys;
@@ -139,7 +139,7 @@ void idSurfaceSubdivider::EmitPolygon( const idList<int>& vertIndexes ) {
 	poly->indexes[ vertIndexes.Num() + 1 ] = poly->indexes[ 1 ];
 }
 
-idBounds idSurfaceSubdivider::BoundPoly( const idList<int>& vertIndexes ) {
+idBounds idBspSurfaceBuilder::BoundPoly( const idList<int>& vertIndexes ) {
 	idBounds bounds;
 	bounds.Clear();
 	for ( int i = 0; i < vertIndexes.Num(); i++ ) {

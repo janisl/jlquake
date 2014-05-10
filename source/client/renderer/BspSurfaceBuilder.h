@@ -19,7 +19,7 @@
 
 #include "SurfaceFaceQ1Q2.h"
 
-class idSurfaceSubdivider {
+class idBspSurfaceBuilder {
 public:
 	void Subdivide( idSurfaceFaceQ1Q2* fa );
 

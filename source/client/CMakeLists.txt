@@ -124,6 +124,7 @@ set(CLIENT_FILES
 	renderer/models/spr.cpp
 	renderer/backend.cpp
 	renderer/Bsp29LoadHelper.cpp
+	renderer/BspSurfaceBuilder.cpp
 	renderer/commands.cpp
 	renderer/curve.cpp
 	renderer/decals.cpp
@@ -169,7 +170,6 @@ set(CLIENT_FILES
 	renderer/SurfacePoly.cpp
 	renderer/SurfacePolyBuffer.cpp
 	renderer/SurfaceSkip.cpp
-	renderer/SurfaceSubdivider.cpp
 	renderer/SurfaceSP2.cpp
 	renderer/SurfaceSPR.cpp
 	renderer/SurfaceTriangles.cpp

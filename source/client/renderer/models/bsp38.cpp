@@ -22,7 +22,7 @@
 #include "../../../common/strings.h"
 #include "../../../common/endian.h"
 #include "RenderModelBSP38.h"
-#include "../SurfaceSubdivider.h"
+#include "../BspSurfaceBuilder.h"
 
 struct idBrush38ShaderInfoBuild {
 	int flags;
@@ -37,7 +37,7 @@ struct idSurface2LoadTimeInfo
 	int shaderInfoIndex;
 };
 
-static idSurfaceSubdivider surfaceSubdivider;
+static idBspSurfaceBuilder surfaceSubdivider;
 
 static byte* mod_base;
 

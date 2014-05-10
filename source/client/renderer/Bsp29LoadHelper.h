@@ -19,7 +19,7 @@
 
 #include "../../common/Str.h"
 #include "models/RenderModel.h"
-#include "SurfaceSubdivider.h"
+#include "BspSurfaceBuilder.h"
 
 class idBsp29LoadHelper {
 public:
@@ -57,7 +57,7 @@ public:
 private:
 	idStr name;
 	byte* fileBase;
-	idSurfaceSubdivider surfaceSubdivider;
+	idBspSurfaceBuilder surfaceSubdivider;
 
 	int numvertexes;
 	mbrush29_vertex_t* vertexes;
