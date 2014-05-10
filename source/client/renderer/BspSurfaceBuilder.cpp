@@ -21,71 +21,39 @@
 idBspSurfaceBuilder::idBspSurfaceBuilder( const idStr& name, byte* fileBase ) {
 	this->name = name;
 	this->fileBase = fileBase;
-	numvertexes = 0;
+	numVertexes = 0;
 	vertexes = NULL;
-	numedges = 0;
+	numEdges = 0;
 	edges = NULL;
-	numsurfedges = 0;
-	surfedges = NULL;
+	numSurfEdges = 0;
+	surfEdges = NULL;
 }
 
 idBspSurfaceBuilder::~idBspSurfaceBuilder() {
-	delete[] vertexes;
-	delete[] edges;
-	delete[] surfedges;
 }
 
 void idBspSurfaceBuilder::LoadVertexes( bsp_lump_t* l ) {
-	bsp_vertex_t* in = ( bsp_vertex_t* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
+	if ( l->filelen % sizeof ( *vertexes ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
-	int count = l->filelen / sizeof ( *in );
-	mbrush_vertex_t* out = new mbrush_vertex_t[ count ];
-
-	vertexes = out;
-	numvertexes = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->position[ 0 ] = LittleFloat( in->point[ 0 ] );
-		out->position[ 1 ] = LittleFloat( in->point[ 1 ] );
-		out->position[ 2 ] = LittleFloat( in->point[ 2 ] );
-	}
+	numVertexes = l->filelen / sizeof ( *vertexes );
+	vertexes = ( bsp_vertex_t* )( fileBase + l->fileofs );
 }
 
 void idBspSurfaceBuilder::LoadEdges( bsp_lump_t* l ) {
-	bsp_edge_t* in = ( bsp_edge_t* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
+	if ( l->filelen % sizeof ( *edges ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
-	int count = l->filelen / sizeof ( *in );
-	//JL What's the extra edge?
-	mbrush_edge_t* out = new mbrush_edge_t[ count + 1 ];
-	Com_Memset( out, 0, sizeof ( mbrush_edge_t ) * ( count + 1 ) );
-
-	edges = out;
-	numedges = count;
-
-	for ( int i = 0; i < count; i++, in++, out++ ) {
-		out->v[ 0 ] = ( unsigned short )LittleShort( in->v[ 0 ] );
-		out->v[ 1 ] = ( unsigned short )LittleShort( in->v[ 1 ] );
-	}
+	numEdges = l->filelen / sizeof ( *edges );
+	edges = ( bsp_edge_t* )( fileBase + l->fileofs );
 }
 
 void idBspSurfaceBuilder::LoadSurfedges( bsp_lump_t* l ) {
-	int* in = ( int* )( fileBase + l->fileofs );
-	if ( l->filelen % sizeof ( *in ) ) {
+	if ( l->filelen % sizeof ( *surfEdges ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
-	int count = l->filelen / sizeof ( *in );
-	int* out = new int[ count ];
-
-	surfedges = out;
-	numsurfedges = count;
-
-	for ( int i = 0; i < count; i++ ) {
-		out[ i ] = LittleLong( in[ i ] );
-	}
+	numSurfEdges = l->filelen / sizeof ( *surfEdges );
+	surfEdges = ( int* )( fileBase + l->fileofs );
 }
 
 void idBspSurfaceBuilder::BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int numedges ) {
@@ -94,15 +62,17 @@ void idBspSurfaceBuilder::BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int f
 	fa->vertexes = new idWorldVertex[ numedges ];
 	fa->bounds.Clear();
 	for ( int i = 0; i < numedges; i++ ) {
-		int lindex = surfedges[ firstedge + i ];
+		int lindex = LittleLong( surfEdges[ firstedge + i ] );
 
 		float* vec;
 		if ( lindex > 0 ) {
-			vec = vertexes[ edges[ lindex ].v[ 0 ] ].position;
+			vec = vertexes[ ( unsigned short )LittleShort( edges[ lindex ].v[ 0 ] ) ].point;
 		} else {
-			vec = vertexes[ edges[ -lindex ].v[ 1 ] ].position;
+			vec = vertexes[ ( unsigned short )LittleShort( edges[ -lindex ].v[ 1 ] ) ].point;
 		}
-		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		fa->vertexes[ i ].xyz.x = LittleFloat( vec[ 0 ] );
+		fa->vertexes[ i ].xyz.y = LittleFloat( vec[ 1 ] );
+		fa->vertexes[ i ].xyz.z = LittleFloat( vec[ 2 ] );
 		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
 	}
 	fa->boundingSphere = fa->bounds.ToSphere();

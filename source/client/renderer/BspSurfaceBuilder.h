@@ -36,28 +36,20 @@ public:
 private:
 	enum { SUBDIVIDE_SIZE = 64 };
 
-	struct mbrush_vertex_t {
-		vec3_t position;
-	};
-
-	struct mbrush_edge_t {
-		unsigned short v[ 2 ];
-	};
-
 	struct glpoly_t {
 		glpoly_t* next;
 		int numverts;
 		int indexes[ 4 ];		// variable sized
 	};
 
-	int numvertexes;
-	mbrush_vertex_t* vertexes;
+	int numVertexes;
+	bsp_vertex_t* vertexes;
 
-	int numedges;
-	mbrush_edge_t* edges;
+	int numEdges;
+	bsp_edge_t* edges;
 
-	int numsurfedges;
-	int* surfedges;
+	int numSurfEdges;
+	int* surfEdges;
 
 	idList<idVec3> verts;
 	glpoly_t* polys;
