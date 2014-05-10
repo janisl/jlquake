@@ -17,9 +17,8 @@
 #ifndef __Bsp29SurfacesLoader__
 #define __Bsp29SurfacesLoader__
 
-#include "../../common/Str.h"
-#include "models/RenderModel.h"
 #include "BspSurfaceBuilder.h"
+#include "models/RenderModel.h"
 
 class idBsp29LoadHelper : public idBspSurfaceBuilder {
 public:
@@ -55,18 +54,6 @@ public:
 	void LoadSubmodelsH2( bsp_lump_t* l );
 
 private:
-	idStr name;
-	byte* fileBase;
-
-	int numvertexes;
-	mbrush_vertex_t* vertexes;
-
-	int numedges;
-	mbrush_edge_t* edges;
-
-	int numsurfedges;
-	int* surfedges;
-
 	void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int lnumverts );
 };
 

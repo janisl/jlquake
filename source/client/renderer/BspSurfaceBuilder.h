@@ -19,8 +19,30 @@
 
 #include "SurfaceFaceQ1Q2.h"
 
+struct mbrush_vertex_t {
+	vec3_t position;
+};
+
+struct mbrush_edge_t {
+	unsigned short v[ 2 ];
+};
+
 class idBspSurfaceBuilder {
 public:
+	idStr name;
+	byte* fileBase;
+
+	int numvertexes;
+	mbrush_vertex_t* vertexes;
+
+	int numedges;
+	mbrush_edge_t* edges;
+
+	int numsurfedges;
+	int* surfedges;
+
+	idBspSurfaceBuilder( const idStr& name, byte* fileBase );
+	~idBspSurfaceBuilder();
 	void Subdivide( idSurfaceFaceQ1Q2* fa );
 
 private:

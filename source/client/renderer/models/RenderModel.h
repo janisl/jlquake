@@ -39,14 +39,6 @@
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
 
-struct mbrush_vertex_t {
-	vec3_t position;
-};
-
-struct mbrush_edge_t {
-	unsigned short v[ 2 ];
-};
-
 //==============================================================================
 //
 //	QUAKE BRUSH MODELS
@@ -481,12 +473,6 @@ public:
 	int brush38_numleafs;				// number of visible leafs, not counting 0
 	mbrush38_leaf_t* brush38_leafs;
 
-	int brush38_numvertexes;
-	mbrush_vertex_t* brush38_vertexes;
-
-	int brush38_numedges;
-	mbrush_edge_t* brush38_edges;
-
 	int brush38_numnodes;
 	int brush38_firstnode;
 	mbrush38_node_t* brush38_nodes;
@@ -499,9 +485,6 @@ public:
 
 	int brush38_numsurfaces;
 	idSurfaceFaceQ2* brush38_surfaces;
-
-	int brush38_numsurfedges;
-	int* brush38_surfedges;
 
 	int brush38_nummarksurfaces;
 	idSurfaceFaceQ2** brush38_marksurfaces;

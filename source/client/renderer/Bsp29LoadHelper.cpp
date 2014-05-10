@@ -23,15 +23,7 @@
 #include "cvars.h"
 #include "surfaces.h"
 
-idBsp29LoadHelper::idBsp29LoadHelper( const idStr& name, byte* fileBase ) {
-	this->name = name;
-	this->fileBase = fileBase;
-	numvertexes = 0;
-	vertexes = NULL;
-	numedges = 0;
-	edges = NULL;
-	numsurfedges = 0;
-	surfedges = NULL;
+idBsp29LoadHelper::idBsp29LoadHelper( const idStr& name, byte* fileBase ) : idBspSurfaceBuilder( name, fileBase ) {
 	numplanes = 0;
 	planes = NULL;
 	lightdata = NULL;
@@ -47,9 +39,6 @@ idBsp29LoadHelper::idBsp29LoadHelper( const idStr& name, byte* fileBase ) {
 }
 
 idBsp29LoadHelper::~idBsp29LoadHelper() {
-	delete[] vertexes;
-	delete[] edges;
-	delete[] surfedges;
 }
 
 void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {

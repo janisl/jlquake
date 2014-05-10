@@ -75,10 +75,6 @@ idRenderModel::idRenderModel() {
 	brush38_planes = NULL;
 	brush38_numleafs = 0;
 	brush38_leafs = NULL;
-	brush38_numvertexes = 0;
-	brush38_vertexes = NULL;
-	brush38_numedges = 0;
-	brush38_edges = NULL;
 	brush38_numnodes = 0;
 	brush38_firstnode = 0;
 	brush38_nodes = NULL;
@@ -88,8 +84,6 @@ idRenderModel::idRenderModel() {
 	brush38_shaderInfo = NULL;
 	brush38_numsurfaces = 0;
 	brush38_surfaces = NULL;
-	brush38_numsurfedges = 0;
-	brush38_surfedges = NULL;
 	brush38_nummarksurfaces = 0;
 	brush38_marksurfaces = NULL;
 	brush38_vis = NULL;

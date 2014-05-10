@@ -17,6 +17,23 @@
 #include "BspSurfaceBuilder.h"
 #include "../../common/Common.h"
 
+idBspSurfaceBuilder::idBspSurfaceBuilder( const idStr& name, byte* fileBase ) {
+	this->name = name;
+	this->fileBase = fileBase;
+	numvertexes = 0;
+	vertexes = NULL;
+	numedges = 0;
+	edges = NULL;
+	numsurfedges = 0;
+	surfedges = NULL;
+}
+
+idBspSurfaceBuilder::~idBspSurfaceBuilder() {
+	delete[] vertexes;
+	delete[] edges;
+	delete[] surfedges;
+}
+
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
 void idBspSurfaceBuilder::Subdivide( idSurfaceFaceQ1Q2* fa ) {
