@@ -49,9 +49,6 @@ public:
 	void LoadFaces( bsp_lump_t* l );
 	void LoadSubmodelsQ1( bsp_lump_t* l );
 	void LoadSubmodelsH2( bsp_lump_t* l );
-
-private:
-	void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int lnumverts );
 };
 
 #endif

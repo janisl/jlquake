@@ -110,32 +110,6 @@ static void Mod_LoadTexinfo( bsp_lump_t* l ) {
 	}
 }
 
-static void BuildSurfaceVertexesList( idBspSurfaceBuilder& surfaceBuilder, idSurfaceFaceQ1Q2* fa, int firstedge, int numedges ) {
-	// reconstruct the polygon
-	mbrush_edge_t* pedges = surfaceBuilder.edges;
-	int lnumverts = numedges;
-
-	fa->numVertexes = lnumverts;
-	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->bounds.Clear();
-	for ( int i = 0; i < lnumverts; i++ ) {
-		int lindex = surfaceBuilder.surfedges[ firstedge + i ];
-
-		mbrush_edge_t* r_pedge;
-		float* vec;
-		if ( lindex > 0 ) {
-			r_pedge = &pedges[ lindex ];
-			vec = surfaceBuilder.vertexes[ r_pedge->v[ 0 ] ].position;
-		} else {
-			r_pedge = &pedges[ -lindex ];
-			vec = surfaceBuilder.vertexes[ r_pedge->v[ 1 ] ].position;
-		}
-		fa->vertexes[ i ].xyz.FromOldVec3( vec );
-		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-	}
-	fa->boundingSphere = fa->bounds.ToSphere();
-}
-
 static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 	int lnumverts = fa->numVertexes;
 
@@ -268,7 +242,7 @@ static void Mod_LoadFaces( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) 
 	loadTimeInfo.SetNum( count );
 
 	for ( int surfnum = 0; surfnum < count; surfnum++, in++, out++ ) {
-		BuildSurfaceVertexesList( surfaceBuilder, out, LittleLong( in->firstedge ), LittleShort( in->numedges ) );
+		surfaceBuilder.BuildSurfaceVertexesList( out, LittleLong( in->firstedge ), LittleShort( in->numedges ) );
 
 		int planenum = LittleShort( in->planenum );
 		int side = LittleShort( in->side );

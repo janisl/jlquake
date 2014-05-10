@@ -88,6 +88,26 @@ void idBspSurfaceBuilder::LoadSurfedges( bsp_lump_t* l ) {
 	}
 }
 
+void idBspSurfaceBuilder::BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int numedges ) {
+	// reconstruct the polygon
+	fa->numVertexes = numedges;
+	fa->vertexes = new idWorldVertex[ numedges ];
+	fa->bounds.Clear();
+	for ( int i = 0; i < numedges; i++ ) {
+		int lindex = surfedges[ firstedge + i ];
+
+		float* vec;
+		if ( lindex > 0 ) {
+			vec = vertexes[ edges[ lindex ].v[ 0 ] ].position;
+		} else {
+			vec = vertexes[ edges[ -lindex ].v[ 1 ] ].position;
+		}
+		fa->vertexes[ i ].xyz.FromOldVec3( vec );
+		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
+	}
+	fa->boundingSphere = fa->bounds.ToSphere();
+}
+
 //	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
 // sky warps can be done reasonably.
 void idBspSurfaceBuilder::Subdivide( idSurfaceFaceQ1Q2* fa ) {

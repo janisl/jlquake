@@ -20,18 +20,35 @@
 #include "SurfaceFaceQ1Q2.h"
 #include "../../common/file_formats/bsp.h"
 
-struct mbrush_vertex_t {
-	vec3_t position;
-};
-
-struct mbrush_edge_t {
-	unsigned short v[ 2 ];
-};
-
 class idBspSurfaceBuilder {
 public:
 	idStr name;
 	byte* fileBase;
+
+	idBspSurfaceBuilder( const idStr& name, byte* fileBase );
+	~idBspSurfaceBuilder();
+	void LoadVertexes( bsp_lump_t* l );
+	void LoadEdges( bsp_lump_t* l );
+	void LoadSurfedges( bsp_lump_t* l );
+	void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int numedges );
+	void Subdivide( idSurfaceFaceQ1Q2* fa );
+
+private:
+	enum { SUBDIVIDE_SIZE = 64 };
+
+	struct mbrush_vertex_t {
+		vec3_t position;
+	};
+
+	struct mbrush_edge_t {
+		unsigned short v[ 2 ];
+	};
+
+	struct glpoly_t {
+		glpoly_t* next;
+		int numverts;
+		int indexes[ 4 ];		// variable sized
+	};
 
 	int numvertexes;
 	mbrush_vertex_t* vertexes;
@@ -41,22 +58,6 @@ public:
 
 	int numsurfedges;
 	int* surfedges;
-
-	idBspSurfaceBuilder( const idStr& name, byte* fileBase );
-	~idBspSurfaceBuilder();
-	void LoadVertexes( bsp_lump_t* l );
-	void LoadEdges( bsp_lump_t* l );
-	void LoadSurfedges( bsp_lump_t* l );
-	void Subdivide( idSurfaceFaceQ1Q2* fa );
-
-private:
-	enum { SUBDIVIDE_SIZE = 64 };
-
-	struct glpoly_t {
-		glpoly_t* next;
-		int numverts;
-		int indexes[ 4 ];		// variable sized
-	};
 
 	idList<idVec3> verts;
 	glpoly_t* polys;

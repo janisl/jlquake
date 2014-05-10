@@ -401,26 +401,6 @@ void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int lnumverts ) {
-	// reconstruct the polygon
-	fa->numVertexes = lnumverts;
-	fa->vertexes = new idWorldVertex[ lnumverts ];
-	fa->bounds.Clear();
-	for ( int i = 0; i < lnumverts; i++ ) {
-		int lindex = surfedges[ firstedge + i ];
-
-		float* vec;
-		if ( lindex > 0 ) {
-			vec = vertexes[ edges[ lindex ].v[ 0 ] ].position;
-		} else {
-			vec = vertexes[ edges[ -lindex ].v[ 1 ] ].position;
-		}
-		fa->vertexes[ i ].xyz.FromOldVec3( vec );
-		fa->bounds.AddPoint( fa->vertexes[ i ].xyz );
-	}
-	fa->boundingSphere = fa->bounds.ToSphere();
-}
-
 void idBsp29LoadHelper::LoadSubmodelsQ1( bsp_lump_t* l ) {
 	bsp29_dmodel_q1_t* in = ( bsp29_dmodel_q1_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
