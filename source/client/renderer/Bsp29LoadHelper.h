@@ -59,10 +59,10 @@ private:
 	byte* fileBase;
 
 	int numvertexes;
-	mbrush29_vertex_t* vertexes;
+	mbrush_vertex_t* vertexes;
 
 	int numedges;
-	mbrush29_edge_t* edges;
+	mbrush_edge_t* edges;
 
 	int numsurfedges;
 	int* surfedges;

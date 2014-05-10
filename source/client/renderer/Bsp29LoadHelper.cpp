@@ -58,7 +58,7 @@ void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush29_vertex_t* out = new mbrush29_vertex_t[ count ];
+	mbrush_vertex_t* out = new mbrush_vertex_t[ count ];
 
 	vertexes = out;
 	numvertexes = count;
@@ -76,8 +76,8 @@ void idBsp29LoadHelper::LoadEdges( bsp_lump_t* l ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush29_edge_t* out = new mbrush29_edge_t[ count + 1 ];
-	Com_Memset( out, 0, sizeof ( mbrush29_edge_t ) * ( count + 1 ) );
+	mbrush_edge_t* out = new mbrush_edge_t[ count + 1 ];
+	Com_Memset( out, 0, sizeof ( mbrush_edge_t ) * ( count + 1 ) );
 
 	edges = out;
 	numedges = count;

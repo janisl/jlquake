@@ -39,6 +39,14 @@
 #define BLOCK_WIDTH     128
 #define BLOCK_HEIGHT    128
 
+struct mbrush_vertex_t {
+	vec3_t position;
+};
+
+struct mbrush_edge_t {
+	unsigned short v[ 2 ];
+};
+
 //==============================================================================
 //
 //	QUAKE BRUSH MODELS
@@ -50,15 +58,6 @@
 #define BRUSH29_SURF_DRAWTILED      0x20
 
 struct mbrush29_surface_t;
-
-struct mbrush29_vertex_t {
-	vec3_t position;
-};
-
-struct mbrush29_edge_t {
-	unsigned short v[ 2 ];
-	unsigned int cachededgeoffset;
-};
 
 struct mbrush29_node_t {
 // common with leaf
@@ -109,15 +108,6 @@ struct mbrush29_submodel_t {
 //	QUAKE 2 BRUSH MODELS
 //
 //==============================================================================
-
-struct mbrush38_vertex_t {
-	vec3_t position;
-};
-
-struct mbrush38_edge_t {
-	unsigned short v[ 2 ];
-	unsigned int cachededgeoffset;
-};
 
 struct mbrush38_node_t {
 // common with leaf
@@ -492,10 +482,10 @@ public:
 	mbrush38_leaf_t* brush38_leafs;
 
 	int brush38_numvertexes;
-	mbrush38_vertex_t* brush38_vertexes;
+	mbrush_vertex_t* brush38_vertexes;
 
 	int brush38_numedges;
-	mbrush38_edge_t* brush38_edges;
+	mbrush_edge_t* brush38_edges;
 
 	int brush38_numnodes;
 	int brush38_firstnode;

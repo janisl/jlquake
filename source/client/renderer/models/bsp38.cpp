@@ -71,7 +71,7 @@ static void Mod_LoadVertexes( bsp_lump_t* l ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
 	}
 	int count = l->filelen / sizeof ( *in );
-	mbrush38_vertex_t* out = new mbrush38_vertex_t[ count ];
+	mbrush_vertex_t* out = new mbrush_vertex_t[ count ];
 
 	loadmodel->brush38_vertexes = out;
 	loadmodel->brush38_numvertexes = count;
@@ -90,8 +90,8 @@ static void Mod_LoadEdges( bsp_lump_t* l ) {
 	}
 	int count = l->filelen / sizeof ( *in );
 	//JL What's the extra edge?
-	mbrush38_edge_t* out = new mbrush38_edge_t[ count + 1 ];
-	Com_Memset( out, 0, sizeof ( mbrush38_edge_t ) * ( count + 1 ) );
+	mbrush_edge_t* out = new mbrush_edge_t[ count + 1 ];
+	Com_Memset( out, 0, sizeof ( mbrush_edge_t ) * ( count + 1 ) );
 
 	loadmodel->brush38_edges = out;
 	loadmodel->brush38_numedges = count;
@@ -149,7 +149,7 @@ static void Mod_LoadTexinfo( bsp_lump_t* l ) {
 
 static void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int numedges ) {
 	// reconstruct the polygon
-	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
+	mbrush_edge_t* pedges = tr.currentModel->brush38_edges;
 	int lnumverts = numedges;
 
 	fa->numVertexes = lnumverts;
@@ -158,7 +158,7 @@ static void BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int firstedge, int 
 	for ( int i = 0; i < lnumverts; i++ ) {
 		int lindex = tr.currentModel->brush38_surfedges[ firstedge + i ];
 
-		mbrush38_edge_t* r_pedge;
+		mbrush_edge_t* r_pedge;
 		float* vec;
 		if ( lindex > 0 ) {
 			r_pedge = &pedges[ lindex ];
