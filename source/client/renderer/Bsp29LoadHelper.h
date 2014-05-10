@@ -43,16 +43,16 @@ public:
 
 	idBsp29LoadHelper( const idStr& name, byte* fileBase );
 	~idBsp29LoadHelper();
-	void LoadVertexes( bsp29_lump_t* l );
-	void LoadEdges( bsp29_lump_t* l );
-	void LoadSurfedges( bsp29_lump_t* l );
-	void LoadPlanes( bsp29_lump_t* l );
-	void LoadLighting( bsp29_lump_t* l );
-	void LoadTextures( bsp29_lump_t* l );
-	void LoadTexinfo( bsp29_lump_t* l );
-	void LoadFaces( bsp29_lump_t* l );
-	void LoadSubmodelsQ1( bsp29_lump_t* l );
-	void LoadSubmodelsH2( bsp29_lump_t* l );
+	void LoadVertexes( bsp_lump_t* l );
+	void LoadEdges( bsp_lump_t* l );
+	void LoadSurfedges( bsp_lump_t* l );
+	void LoadPlanes( bsp_lump_t* l );
+	void LoadLighting( bsp_lump_t* l );
+	void LoadTextures( bsp_lump_t* l );
+	void LoadTexinfo( bsp_lump_t* l );
+	void LoadFaces( bsp_lump_t* l );
+	void LoadSubmodelsQ1( bsp_lump_t* l );
+	void LoadSubmodelsH2( bsp_lump_t* l );
 
 private:
 	idStr name;

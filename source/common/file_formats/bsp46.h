@@ -17,6 +17,8 @@
 #ifndef _BSP46FILE_H
 #define _BSP46FILE_H
 
+#include "bsp.h"
+
 // little-endian "IBSP"
 #define BSP46_IDENT             ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' )
 
@@ -71,16 +73,11 @@ enum bsp46_mapSurfaceType_t
 	BSP46MST_FLARE
 };
 
-struct bsp46_lump_t {
-	qint32 fileofs;
-	qint32 filelen;
-};
-
 struct bsp46_dheader_t {
 	qint32 ident;
 	qint32 version;
 
-	bsp46_lump_t lumps[ BSP46_HEADER_LUMPS ];
+	bsp_lump_t lumps[ BSP46_HEADER_LUMPS ];
 };
 
 struct bsp46_dmodel_t {

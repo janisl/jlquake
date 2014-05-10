@@ -154,7 +154,7 @@ float R_ProcessLightmap( byte* buf_p, int in_padding, int width, int height, byt
 	return maxIntensity;
 }
 
-static void R_LoadLightmaps( bsp46_lump_t* l ) {
+static void R_LoadLightmaps( bsp_lump_t* l ) {
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;
 	memset( tr.lightmaps, 0, sizeof ( tr.lightmaps ) );
@@ -200,7 +200,7 @@ static void R_LoadLightmaps( bsp46_lump_t* l ) {
 	}
 }
 
-static void R_LoadVisibility( bsp46_lump_t* l ) {
+static void R_LoadVisibility( bsp_lump_t* l ) {
 	int len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = new byte[ len ];
 	Com_Memset( s_worldData.novis, 0xff, len );
@@ -1347,7 +1347,7 @@ static void R_StitchAllPatches() {
 	common->Printf( "stitched %d LoD cracks\n", numstitches );
 }
 
-static void R_LoadSurfaces( bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_t* indexLump ) {
+static void R_LoadSurfaces( bsp_lump_t* surfs, bsp_lump_t* verts, bsp_lump_t* indexLump ) {
 	bsp46_dsurface_t* in = ( bsp46_dsurface_t* )( fileBase + surfs->fileofs );
 	if ( surfs->filelen % sizeof ( *in ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
@@ -1445,7 +1445,7 @@ static void R_SetParent( mbrush46_node_t* node, mbrush46_node_t* parent ) {
 	AddPointToBounds( node->children[ 1 ]->surfMaxs, node->surfMins, node->surfMaxs );
 }
 
-static void R_LoadNodesAndLeafs( bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump ) {
+static void R_LoadNodesAndLeafs( bsp_lump_t* nodeLump, bsp_lump_t* leafLump ) {
 	bsp46_dnode_t* in = ( bsp46_dnode_t* )( fileBase + nodeLump->fileofs );
 	if ( nodeLump->filelen % sizeof ( bsp46_dnode_t ) ||
 		 leafLump->filelen % sizeof ( bsp46_dleaf_t ) ) {
@@ -1518,7 +1518,7 @@ static void R_LoadNodesAndLeafs( bsp46_lump_t* nodeLump, bsp46_lump_t* leafLump 
 	R_SetParent( s_worldData.nodes, NULL );
 }
 
-static void R_LoadShaders( bsp46_lump_t* l ) {
+static void R_LoadShaders( bsp_lump_t* l ) {
 	bsp46_dshader_t* in = ( bsp46_dshader_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
@@ -1537,7 +1537,7 @@ static void R_LoadShaders( bsp46_lump_t* l ) {
 	}
 }
 
-static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
+static void R_LoadMarksurfaces( bsp_lump_t* l ) {
 	int* in = ( int* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
@@ -1554,7 +1554,7 @@ static void R_LoadMarksurfaces( bsp46_lump_t* l ) {
 	}
 }
 
-static void R_LoadPlanes( bsp46_lump_t* l ) {
+static void R_LoadPlanes( bsp_lump_t* l ) {
 	bsp46_dplane_t* in = ( bsp46_dplane_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
@@ -1589,7 +1589,7 @@ unsigned ColorBytes4( float r, float g, float b, float a ) {
 	return i;
 }
 
-static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t* sidesLump ) {
+static void R_LoadFogs( bsp_lump_t* l, bsp_lump_t* brushesLump, bsp_lump_t* sidesLump ) {
 	bsp46_dfog_t* fogs = ( bsp46_dfog_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *fogs ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );
@@ -1712,7 +1712,7 @@ static void R_LoadFogs( bsp46_lump_t* l, bsp46_lump_t* brushesLump, bsp46_lump_t
 	}
 }
 
-static void R_LoadLightGrid( bsp46_lump_t* l ) {
+static void R_LoadLightGrid( bsp_lump_t* l ) {
 	world_t* w = &s_worldData;
 
 	w->lightGridInverseSize[ 0 ] = 1.0f / w->lightGridSize[ 0 ];
@@ -1747,7 +1747,7 @@ static void R_LoadLightGrid( bsp46_lump_t* l ) {
 	}
 }
 
-static void R_LoadEntities( bsp46_lump_t* l ) {
+static void R_LoadEntities( bsp_lump_t* l ) {
 	world_t* w = &s_worldData;
 	w->lightGridSize[ 0 ] = 64;
 	w->lightGridSize[ 1 ] = 64;
@@ -1824,7 +1824,7 @@ static void R_LoadEntities( bsp46_lump_t* l ) {
 	}
 }
 
-static void R_LoadSubmodels( bsp46_lump_t* l ) {
+static void R_LoadSubmodels( bsp_lump_t* l ) {
 	bsp46_dmodel_t* in = ( bsp46_dmodel_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "LoadMap: funny lump size in %s", s_worldData.name );

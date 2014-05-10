@@ -120,7 +120,7 @@ void QClipMap46::ReloadMap( bool ClientLoad ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadShaders( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadShaders( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dshader_t* in = ( const bsp46_dshader_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "CMod_LoadShaders: funny lump size" );
@@ -148,7 +148,7 @@ void QClipMap46::LoadShaders( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadLeafs( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadLeafs( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dleaf_t* in = ( const bsp46_dleaf_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -191,7 +191,7 @@ void QClipMap46::LoadLeafs( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadLeafBrushes( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadLeafBrushes( const quint8* base, const bsp_lump_t* l ) {
 	const int* in = ( const int* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -214,7 +214,7 @@ void QClipMap46::LoadLeafBrushes( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadLeafSurfaces( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadLeafSurfaces( const quint8* base, const bsp_lump_t* l ) {
 	const int* in = ( const int* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -236,7 +236,7 @@ void QClipMap46::LoadLeafSurfaces( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadPlanes( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadPlanes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dplane_t* in = ( const bsp46_dplane_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -268,7 +268,7 @@ void QClipMap46::LoadPlanes( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadBrushSides( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadBrushSides( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dbrushside_t* in = ( const bsp46_dbrushside_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -297,7 +297,7 @@ void QClipMap46::LoadBrushSides( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadBrushes( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadBrushes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dbrush_t* in = ( const bsp46_dbrush_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -336,7 +336,7 @@ void QClipMap46::LoadBrushes( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadNodes( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadNodes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dnode_t* in = ( const bsp46_dnode_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -366,7 +366,7 @@ void QClipMap46::LoadNodes( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadVisibility( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadVisibility( const quint8* base, const bsp_lump_t* l ) {
 	int len = l->filelen;
 	if ( !len ) {
 		clusterBytes = ( numClusters + 31 ) & ~31;
@@ -390,7 +390,7 @@ void QClipMap46::LoadVisibility( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadEntityString( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadEntityString( const quint8* base, const bsp_lump_t* l ) {
 	entityString = new char[ l->filelen ];
 	numEntityChars = l->filelen;
 	Com_Memcpy( entityString, base + l->fileofs, l->filelen );
@@ -402,7 +402,7 @@ void QClipMap46::LoadEntityString( const quint8* base, const bsp46_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap46::LoadPatches( const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts ) {
+void QClipMap46::LoadPatches( const quint8* base, const bsp_lump_t* surfs, const bsp_lump_t* verts ) {
 	const bsp46_dsurface_t* in = ( const bsp46_dsurface_t* )( base + surfs->fileofs );
 	if ( surfs->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -460,7 +460,7 @@ void QClipMap46::LoadPatches( const quint8* base, const bsp46_lump_t* surfs, con
 //
 //==========================================================================
 
-void QClipMap46::LoadSubmodels( const quint8* base, const bsp46_lump_t* l ) {
+void QClipMap46::LoadSubmodels( const quint8* base, const bsp_lump_t* l ) {
 	const bsp46_dmodel_t* in = ( const bsp46_dmodel_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "CMod_LoadSubmodels: funny lump size" );

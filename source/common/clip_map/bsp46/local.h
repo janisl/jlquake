@@ -193,18 +193,18 @@ private:
 	int ContentsToQ2( int Contents ) const;
 
 	//	Load
-	void LoadShaders( const quint8* base, const bsp46_lump_t* l );
-	void LoadLeafs( const quint8* base, const bsp46_lump_t* l );
-	void LoadLeafBrushes( const quint8* base, const bsp46_lump_t* l );
-	void LoadLeafSurfaces( const quint8* base, const bsp46_lump_t* l );
-	void LoadPlanes( const quint8* base, const bsp46_lump_t* l );
-	void LoadBrushSides( const quint8* base, const bsp46_lump_t* l );
-	void LoadBrushes( const quint8* base, const bsp46_lump_t* l );
-	void LoadNodes( const quint8* base, const bsp46_lump_t* l );
-	void LoadVisibility( const quint8* base, const bsp46_lump_t* l );
-	void LoadEntityString( const quint8* base, const bsp46_lump_t* l );
-	void LoadPatches( const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts );
-	void LoadSubmodels( const quint8* base, const bsp46_lump_t* l );
+	void LoadShaders( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafs( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafBrushes( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafSurfaces( const quint8* base, const bsp_lump_t* l );
+	void LoadPlanes( const quint8* base, const bsp_lump_t* l );
+	void LoadBrushSides( const quint8* base, const bsp_lump_t* l );
+	void LoadBrushes( const quint8* base, const bsp_lump_t* l );
+	void LoadNodes( const quint8* base, const bsp_lump_t* l );
+	void LoadVisibility( const quint8* base, const bsp_lump_t* l );
+	void LoadEntityString( const quint8* base, const bsp_lump_t* l );
+	void LoadPatches( const quint8* base, const bsp_lump_t* surfs, const bsp_lump_t* verts );
+	void LoadSubmodels( const quint8* base, const bsp_lump_t* l );
 
 	//	Patch
 	static void ClearLevelPatches();

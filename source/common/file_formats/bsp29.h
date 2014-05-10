@@ -17,6 +17,8 @@
 #ifndef _BSP29FILE_H
 #define _BSP29FILE_H
 
+#include "bsp.h"
+
 #define BSP29_VERSION           29
 
 #define BSP29LUMP_ENTITIES      0
@@ -56,14 +58,9 @@
 #define BSP29_MAX_MAP_HULLS_Q1  4
 #define BSP29_MAX_MAP_HULLS_H2  8
 
-struct bsp29_lump_t {
-	qint32 fileofs;
-	qint32 filelen;
-};
-
 struct bsp29_dheader_t {
 	qint32 version;
-	bsp29_lump_t lumps[ BSP29_HEADER_LUMPS ];
+	bsp_lump_t lumps[ BSP29_HEADER_LUMPS ];
 };
 
 struct bsp29_dplane_t {

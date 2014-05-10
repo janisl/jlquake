@@ -126,7 +126,7 @@ void QClipMap29::ReloadMap( bool ClientLoad ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadVisibility( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadVisibility( const quint8* base, const bsp_lump_t* l ) {
 	if ( !l->filelen ) {
 		visdata = NULL;
 		return;
@@ -141,7 +141,7 @@ void QClipMap29::LoadVisibility( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadEntities( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadEntities( const quint8* base, const bsp_lump_t* l ) {
 	entitychars = l->filelen;
 	if ( !l->filelen ) {
 		entitystring = NULL;
@@ -157,7 +157,7 @@ void QClipMap29::LoadEntities( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadPlanes( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadPlanes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dplane_t* in = ( const bsp29_dplane_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -186,7 +186,7 @@ void QClipMap29::LoadPlanes( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadNodes( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadNodes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dnode_t* in = ( const bsp29_dnode_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -214,7 +214,7 @@ void QClipMap29::LoadNodes( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadLeafs( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadLeafs( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dleaf_t* in = ( const bsp29_dleaf_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -248,7 +248,7 @@ void QClipMap29::LoadLeafs( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadClipnodes( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadClipnodes( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dclipnode_t* in = ( const bsp29_dclipnode_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -368,7 +368,7 @@ void QClipMap29::MakeHulls() {
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsQ1( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadSubmodelsQ1( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dmodel_q1_t* in = ( const bsp29_dmodel_q1_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );
@@ -409,7 +409,7 @@ void QClipMap29::LoadSubmodelsQ1( const quint8* base, const bsp29_lump_t* l ) {
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsH2( const quint8* base, const bsp29_lump_t* l ) {
+void QClipMap29::LoadSubmodelsH2( const quint8* base, const bsp_lump_t* l ) {
 	const bsp29_dmodel_h2_t* in = ( const bsp29_dmodel_h2_t* )( base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size" );

@@ -52,7 +52,7 @@ idBsp29LoadHelper::~idBsp29LoadHelper() {
 	delete[] surfedges;
 }
 
-void idBsp29LoadHelper::LoadVertexes( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadVertexes( bsp_lump_t* l ) {
 	bsp29_dvertex_t* in = ( bsp29_dvertex_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -70,7 +70,7 @@ void idBsp29LoadHelper::LoadVertexes( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadEdges( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadEdges( bsp_lump_t* l ) {
 	bsp29_dedge_t* in = ( bsp29_dedge_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -88,7 +88,7 @@ void idBsp29LoadHelper::LoadEdges( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadSurfedges( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadSurfedges( bsp_lump_t* l ) {
 	int* in = ( int* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -104,7 +104,7 @@ void idBsp29LoadHelper::LoadSurfedges( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadPlanes( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadPlanes( bsp_lump_t* l ) {
 	bsp29_dplane_t* in = ( bsp29_dplane_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -127,7 +127,7 @@ void idBsp29LoadHelper::LoadPlanes( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadLighting( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadLighting( bsp_lump_t* l ) {
 	if ( !l->filelen ) {
 		lightdata = NULL;
 		return;
@@ -136,7 +136,7 @@ void idBsp29LoadHelper::LoadLighting( bsp29_lump_t* l ) {
 	Com_Memcpy( lightdata, fileBase + l->fileofs, l->filelen );
 }
 
-void idBsp29LoadHelper::LoadTextures( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadTextures( bsp_lump_t* l ) {
 	if ( !l->filelen ) {
 		textures = NULL;
 		return;
@@ -303,7 +303,7 @@ void idBsp29LoadHelper::LoadTextures( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadTexinfo( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadTexinfo( bsp_lump_t* l ) {
 	bsp29_texinfo_t* in = ( bsp29_texinfo_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -386,7 +386,7 @@ static void BuildSurfaceDisplayList( idSurfaceFaceQ1* fa ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadFaces( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadFaces( bsp_lump_t* l ) {
 	bsp29_dface_t* in = ( bsp29_dface_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -484,7 +484,7 @@ void idBsp29LoadHelper::BuildSurfaceVertexesList( idSurfaceFaceQ1Q2* fa, int fir
 	fa->boundingSphere = fa->bounds.ToSphere();
 }
 
-void idBsp29LoadHelper::LoadSubmodelsQ1( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadSubmodelsQ1( bsp_lump_t* l ) {
 	bsp29_dmodel_q1_t* in = ( bsp29_dmodel_q1_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );
@@ -508,7 +508,7 @@ void idBsp29LoadHelper::LoadSubmodelsQ1( bsp29_lump_t* l ) {
 	}
 }
 
-void idBsp29LoadHelper::LoadSubmodelsH2( bsp29_lump_t* l ) {
+void idBsp29LoadHelper::LoadSubmodelsH2( bsp_lump_t* l ) {
 	bsp29_dmodel_h2_t* in = ( bsp29_dmodel_h2_t* )( fileBase + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", name.CStr() );

@@ -74,16 +74,16 @@ private:
 	int ContentsToQ3( int Contents ) const;
 
 	//	Load
-	void LoadVisibility( const quint8* base, const bsp29_lump_t* l );
-	void LoadEntities( const quint8* base, const bsp29_lump_t* l );
-	void LoadPlanes( const quint8* base, const bsp29_lump_t* l );
-	void LoadNodes( const quint8* base, const bsp29_lump_t* l );
-	void LoadLeafs( const quint8* base, const bsp29_lump_t* l );
-	void LoadClipnodes( const quint8* base, const bsp29_lump_t* l );
+	void LoadVisibility( const quint8* base, const bsp_lump_t* l );
+	void LoadEntities( const quint8* base, const bsp_lump_t* l );
+	void LoadPlanes( const quint8* base, const bsp_lump_t* l );
+	void LoadNodes( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafs( const quint8* base, const bsp_lump_t* l );
+	void LoadClipnodes( const quint8* base, const bsp_lump_t* l );
 	void MakeHull0();
 	void MakeHulls();
-	void LoadSubmodelsQ1( const quint8* base, const bsp29_lump_t* l );
-	void LoadSubmodelsH2( const quint8* base, const bsp29_lump_t* l );
+	void LoadSubmodelsQ1( const quint8* base, const bsp_lump_t* l );
+	void LoadSubmodelsH2( const quint8* base, const bsp_lump_t* l );
 
 	//	Test
 	void BoxLeafnums_r( leafList_t* ll, int NodeNum ) const;

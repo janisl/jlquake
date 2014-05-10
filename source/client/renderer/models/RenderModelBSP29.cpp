@@ -36,7 +36,7 @@ idRenderModelBSP29::idRenderModelBSP29() {
 idRenderModelBSP29::~idRenderModelBSP29() {
 }
 
-static void Mod_LoadVisibility( bsp29_lump_t* l ) {
+static void Mod_LoadVisibility( bsp_lump_t* l ) {
 	if ( !l->filelen ) {
 		loadmodel->brush29_visdata = NULL;
 		return;
@@ -45,7 +45,7 @@ static void Mod_LoadVisibility( bsp29_lump_t* l ) {
 	Com_Memcpy( loadmodel->brush29_visdata, mod_base + l->fileofs, l->filelen );
 }
 
-static void Mod_LoadEntities( bsp29_lump_t* l ) {
+static void Mod_LoadEntities( bsp_lump_t* l ) {
 	if ( !l->filelen ) {
 		loadmodel->brush29_entities = NULL;
 		return;
@@ -63,7 +63,7 @@ static void Mod_SetParent( mbrush29_node_t* node, mbrush29_node_t* parent ) {
 	Mod_SetParent( node->children[ 1 ], node );
 }
 
-static void Mod_LoadNodes( bsp29_lump_t* l ) {
+static void Mod_LoadNodes( bsp_lump_t* l ) {
 	bsp29_dnode_t* in = ( bsp29_dnode_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
@@ -100,7 +100,7 @@ static void Mod_LoadNodes( bsp29_lump_t* l ) {
 	Mod_SetParent( loadmodel->brush29_nodes, NULL );	// sets nodes and leafs
 }
 
-static void Mod_LoadLeafs( bsp29_lump_t* l ) {
+static void Mod_LoadLeafs( bsp_lump_t* l ) {
 	bsp29_dleaf_t* in = ( bsp29_dleaf_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
@@ -138,7 +138,7 @@ static void Mod_LoadLeafs( bsp29_lump_t* l ) {
 	}
 }
 
-static void Mod_LoadMarksurfaces( bsp29_lump_t* l ) {
+static void Mod_LoadMarksurfaces( bsp_lump_t* l ) {
 	short* in = ( short* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->FatalError( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );

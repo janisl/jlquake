@@ -75,18 +75,18 @@ private:
 	int ContentsToQ3( int Contents ) const;
 
 	//	Load
-	void LoadSurfaces( const quint8* base, const bsp38_lump_t* l );
-	void LoadLeafs( const quint8* base, const bsp38_lump_t* l );
-	void LoadLeafBrushes( const quint8* base, const bsp38_lump_t* l );
-	void LoadPlanes( const quint8* base, const bsp38_lump_t* l );
-	void LoadBrushes( const quint8* base, const bsp38_lump_t* l );
-	void LoadBrushSides( const quint8* base, const bsp38_lump_t* l );
-	void LoadNodes( const quint8* base, const bsp38_lump_t* l );
-	void LoadAreas( const quint8* base, const bsp38_lump_t* l );
-	void LoadAreaPortals( const quint8* base, const bsp38_lump_t* l );
-	void LoadVisibility( const quint8* base, const bsp38_lump_t* l );
-	void LoadEntityString( const quint8* base, const bsp38_lump_t* l );
-	void LoadSubmodels( const quint8* base, const bsp38_lump_t* l );
+	void LoadSurfaces( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafs( const quint8* base, const bsp_lump_t* l );
+	void LoadLeafBrushes( const quint8* base, const bsp_lump_t* l );
+	void LoadPlanes( const quint8* base, const bsp_lump_t* l );
+	void LoadBrushes( const quint8* base, const bsp_lump_t* l );
+	void LoadBrushSides( const quint8* base, const bsp_lump_t* l );
+	void LoadNodes( const quint8* base, const bsp_lump_t* l );
+	void LoadAreas( const quint8* base, const bsp_lump_t* l );
+	void LoadAreaPortals( const quint8* base, const bsp_lump_t* l );
+	void LoadVisibility( const quint8* base, const bsp_lump_t* l );
+	void LoadEntityString( const quint8* base, const bsp_lump_t* l );
+	void LoadSubmodels( const quint8* base, const bsp_lump_t* l );
 
 	//	Test
 	void DecompressVis( const byte* in, byte* out );

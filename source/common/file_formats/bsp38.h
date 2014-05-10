@@ -17,6 +17,8 @@
 #ifndef _BSP38FILE_H
 #define _BSP38FILE_H
 
+#include "bsp.h"
+
 // little-endian "IBSP"
 #define BSP38_HEADER    ( ( 'P' << 24 ) + ( 'S' << 16 ) + ( 'B' << 8 ) + 'I' )
 
@@ -75,15 +77,10 @@
 #define BSP38DVIS_PVS   0
 #define BSP38DVIS_PHS   1
 
-struct bsp38_lump_t {
-	qint32 fileofs;
-	qint32 filelen;
-};
-
 struct bsp38_dheader_t {
 	qint32 ident;
 	qint32 version;
-	bsp38_lump_t lumps[ BSP38HEADER_LUMPS ];
+	bsp_lump_t lumps[ BSP38HEADER_LUMPS ];
 };
 
 struct bsp38_dmodel_t {
