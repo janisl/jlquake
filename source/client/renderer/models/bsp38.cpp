@@ -37,8 +37,6 @@ struct idSurface2LoadTimeInfo
 	int shaderInfoIndex;
 };
 
-static idBspSurfaceBuilder surfaceSubdivider;
-
 static byte* mod_base;
 
 static byte mod_novis[ BSP38MAX_MAP_LEAFS / 8 ];
@@ -288,7 +286,7 @@ static void LoadShaderInfos( idList<idBrush38ShaderInfoBuild>& shaderInfos ) {
 	}
 }
 
-static void Mod_LoadFaces( bsp38_lump_t* l ) {
+static void Mod_LoadFaces( idBspSurfaceBuilder& surfaceBuilder, bsp38_lump_t* l ) {
 	bsp38_dface_t* in = ( bsp38_dface_t* )( mod_base + l->fileofs );
 	if ( l->filelen % sizeof ( *in ) ) {
 		common->Error( "MOD_LoadBmodel: funny lump size in %s", loadmodel->name );
@@ -353,7 +351,7 @@ static void Mod_LoadFaces( bsp38_lump_t* l ) {
 				out->extents[ i ] = 16384;
 				out->textureMins[ i ] = -8192;
 			}
-			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
+			surfaceBuilder.Subdivide( out );		// cut up polygon for warps
 		} else {
 			GL_BuildPolygonFromSurface( out );
 		}
@@ -558,6 +556,7 @@ void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer ) {
 	}
 
 	// load into heap
+	idBspSurfaceBuilder surfaceBuilder;
 
 	Mod_LoadVertexes( &header->lumps[ BSP38LUMP_VERTEXES ] );
 	Mod_LoadEdges( &header->lumps[ BSP38LUMP_EDGES ] );
@@ -565,7 +564,7 @@ void Mod_LoadBrush38Model( idRenderModel* mod, void* buffer ) {
 	Mod_LoadLighting( &header->lumps[ BSP38LUMP_LIGHTING ] );
 	Mod_LoadPlanes( &header->lumps[ BSP38LUMP_PLANES ] );
 	Mod_LoadTexinfo( &header->lumps[ BSP38LUMP_TEXINFO ] );
-	Mod_LoadFaces( &header->lumps[ BSP38LUMP_FACES ] );
+	Mod_LoadFaces( surfaceBuilder, &header->lumps[ BSP38LUMP_FACES ] );
 	Mod_LoadMarksurfaces( &header->lumps[ BSP38LUMP_LEAFFACES ] );
 	Mod_LoadVisibility( &header->lumps[ BSP38LUMP_VISIBILITY ] );
 	Mod_LoadLeafs( &header->lumps[ BSP38LUMP_LEAFS ] );
