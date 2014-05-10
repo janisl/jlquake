@@ -21,7 +21,7 @@
 #include "models/RenderModel.h"
 #include "BspSurfaceBuilder.h"
 
-class idBsp29LoadHelper {
+class idBsp29LoadHelper : public idBspSurfaceBuilder {
 public:
 	int numplanes;
 	cplane_t* planes;
@@ -57,7 +57,6 @@ public:
 private:
 	idStr name;
 	byte* fileBase;
-	idBspSurfaceBuilder surfaceSubdivider;
 
 	int numvertexes;
 	mbrush29_vertex_t* vertexes;

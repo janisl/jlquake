@@ -436,7 +436,7 @@ void idBsp29LoadHelper::LoadFaces( bsp29_lump_t* l ) {
 			out->surf.flags |= ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED );
 			out->shader = out->surf.texinfo->texture->shader;
 			out->surf.altShader = out->surf.texinfo->texture->shader;
-			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
+			Subdivide( out );		// cut up polygon for warps
 			continue;
 		}
 
@@ -448,7 +448,7 @@ void idBsp29LoadHelper::LoadFaces( bsp29_lump_t* l ) {
 				out->extents[ i ] = 16384;
 				out->textureMins[ i ] = -8192;
 			}
-			surfaceSubdivider.Subdivide( out );		// cut up polygon for warps
+			Subdivide( out );		// cut up polygon for warps
 			continue;
 		}
 
