@@ -357,7 +357,7 @@ void GL_EndBuildingLightmaps() {
 }
 
 static void R_UpdateSurfaceLightmap( idSurfaceFaceQ2* surf ) {
-	if ( surf->surf.texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+	if ( surf->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
 		return;
 	}
 
@@ -413,18 +413,18 @@ static mbrush38_shaderInfo_t* R_TextureAnimationQ2( mbrush38_shaderInfo_t* tex )
 }
 
 void R_AddWorldSurfaceBsp38( idSurfaceFaceQ2* surf, int forcedSortIndex ) {
-	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->surf.shaderInfo );
+	mbrush38_shaderInfo_t* texinfo = R_TextureAnimationQ2( surf->shaderInfo );
 
 	int frontFace;
 	if ( surf->Cull( texinfo->shader, &frontFace ) ) {
 		return;
 	}
 
-	if ( !( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
+	if ( !( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) ) {
 		R_UpdateSurfaceLightmap( surf );
 	}
 
-	if ( surf->surf.texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
+	if ( surf->texinfo->flags & ( BSP38SURF_TRANS33 | BSP38SURF_TRANS66 ) ) {
 		int savedShiftedEntityNum = tr.shiftedEntityNum;
 		tr.shiftedEntityNum = REF_ENTITYNUM_WORLD << QSORT_ENTITYNUM_SHIFT;
 		VectorCopy( tr.viewParms.orient.origin, tr.orient.viewOrigin );

@@ -121,10 +121,10 @@ static void GL_BuildPolygonFromSurface( idSurfaceFaceQ2* fa ) {
 		vec3_t vec;
 		fa->vertexes[ i ].xyz.ToOldVec3( vec );
 		float s = DotProduct( vec, fa->textureInfo->vecs[ 0 ] ) + fa->textureInfo->vecs[ 0 ][ 3 ];
-		s /= fa->surf.texinfo->image->width;
+		s /= fa->texinfo->image->width;
 
 		float t = DotProduct( vec, fa->textureInfo->vecs[ 1 ] ) + fa->textureInfo->vecs[ 1 ][ 3 ];
-		t /= fa->surf.texinfo->image->height;
+		t /= fa->texinfo->image->height;
 
 		fa->vertexes[ i ].st.x = s;
 		fa->vertexes[ i ].st.y = t;
@@ -255,7 +255,7 @@ static void Mod_LoadFaces( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) 
 		if ( ti < 0 || ti >= loadmodel->brush38_numtexinfo ) {
 			common->Error( "MOD_LoadBmodel: bad texinfo number" );
 		}
-		out->surf.texinfo = loadmodel->brush38_texinfo + ti;
+		out->texinfo = loadmodel->brush38_texinfo + ti;
 		out->textureInfo = loadmodel->textureInfos + ti;
 
 		out->CalcSurfaceExtents();
@@ -275,15 +275,15 @@ static void Mod_LoadFaces( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) 
 		// create lightmaps
 		// don't bother if we're set to fullbright
 		if ( r_fullbright->value || !loadmodel->brush38_lightdata ||
-			out->surf.texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
+			out->texinfo->flags & ( BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP ) ) {
 			out->lightMapTextureNum = LIGHTMAP_NONE;
 		} else {
 			GL_CreateSurfaceLightmapQ2( out );
 		}
-		loadTimeInfo[ surfnum ].shaderInfoIndex = AddShaderInfo( shaderInfoBuild, out->surf.texinfo, out->lightMapTextureNum );
+		loadTimeInfo[ surfnum ].shaderInfoIndex = AddShaderInfo( shaderInfoBuild, out->texinfo, out->lightMapTextureNum );
 
 		// create polygons
-		if ( out->surf.texinfo->flags & BSP38SURF_WARP ) {
+		if ( out->texinfo->flags & BSP38SURF_WARP ) {
 			for ( int i = 0; i < 2; i++ ) {
 				out->extents[ i ] = 16384;
 				out->textureMins[ i ] = -8192;
@@ -300,8 +300,8 @@ static void Mod_LoadFaces( idBspSurfaceBuilder& surfaceBuilder, bsp_lump_t* l ) 
 
 	out = loadmodel->brush38_surfaces;
 	for ( int surfnum = 0; surfnum < count; surfnum++, out++ ) {
-		out->surf.shaderInfo = &loadmodel->brush38_shaderInfo[ loadTimeInfo[ surfnum ].shaderInfoIndex ];
-		out->shader = out->surf.shaderInfo->shader;
+		out->shaderInfo = &loadmodel->brush38_shaderInfo[ loadTimeInfo[ surfnum ].shaderInfoIndex ];
+		out->shader = out->shaderInfo->shader;
 	}
 }
 

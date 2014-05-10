@@ -34,14 +34,10 @@ struct mbrush38_shaderInfo_t {
 	shader_t* shader;
 };
 
-struct mbrush38_surface_t {
-	mbrush38_texinfo_t* texinfo;
-	mbrush38_shaderInfo_t* shaderInfo;
-};
-
 class idSurfaceFaceQ2 : public idSurfaceFaceQ1Q2 {
 public:
-	mbrush38_surface_t surf;
+	mbrush38_texinfo_t* texinfo;
+	mbrush38_shaderInfo_t* shaderInfo;
 
 	idSurfaceFaceQ2();
 };
